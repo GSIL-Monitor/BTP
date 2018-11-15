@@ -1,0 +1,319 @@
+﻿@using System.Globalization
+@using Jinher.AMP.BTP.Deploy.CustomDTO
+@{
+    Layout = null;
+    ViewBag.Title = "支付方式设置";
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.PaymentsForEditDTO> allPaymentDTOList = ViewBag.allPaymentDTOList;
+
+    Jinher.AMP.BTP.Deploy.CustomDTO.AppScoreSettingDTO appScoreSettingDTO = ViewBag.AppScoreSetting;
+    if (appScoreSettingDTO == null)
+    {
+        appScoreSettingDTO = new Jinher.AMP.BTP.Deploy.CustomDTO.AppScoreSettingDTO();
+    }
+    var scoreCostArrStr = string.Join(",", Jinher.AMP.BTP.Common.CustomConfig.ScoreCostList);
+    bool IsEnableCancelScore = ViewBag.IsEnableCancelScore == null ? true : ViewBag.IsEnableCancelScore;
+        
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>支付方式</title>
+    <link rel="stylesheet" href="/Content/css/style.css" />
+    <style type="text/css">
+        .fieldset div input.textcolor
+        {
+            color: #8c94a9;
+        }
+        .btn120
+        {
+            display: inline-block;
+            width: 120px;
+            height: 28px;
+            line-height: 28px;
+            background: url(../Content/default/images/btn120.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+        }
+        .jifen
+        {
+            overflow: hidden;
+        }
+        .jifen input[type=checkbox]
+        {
+            float: left;
+            width: 14px;
+            height: 14px;
+            color: #686868;
+            margin: 1px 0 0;
+        }
+        .jifen .title
+        {
+            float: left;
+            font-size: 14px;
+            color: #7e7e7e;
+            margin: 0 17px 0 14px;
+        }
+        .jifen .cont
+        {
+            float: left;
+            color: #666;
+            font-size: 12px;
+        }
+        .jifen .cont input[type=text]
+        {
+            display: inline-block;
+            width: 50px;
+            padding: 0 5px;
+            border: none 0;
+            border-bottom: 1px solid #666;
+            outline: none 0;
+        }
+        .jifen .reminder
+        {
+            float: left;
+            margin-left: 16px;
+            color: #323232;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <div class="content">
+            <div class="right right1">
+                <a class="btn120" style="display: none; float: right; margin-right: 24px;" href="javascript:goBack();"
+                                        id="btnBack">返回</a>
+
+                <div class="zf_con">
+                    <form id="form1">
+                        <ul>
+                            <li>
+                                <p class="da">
+                                    支付方式</p>
+                            </li>
+                            <li><span>请选择提供给客户的支付方式</span> <span style="margin-left: 20px; color: gray; font-size: 0.9em">
+                                                               请先仔细阅读<a target="_blank" href="helper1.html">《金和担保交易服务协议》</a>，使用金币和支付宝支付方式，默认您认可该协议。</span>
+                            </li>
+                            @foreach (Jinher.AMP.BTP.Deploy.CustomDTO.PaymentsForEditDTO item in allPaymentDTOList)
+                            {
+                                <li>
+                                    @if (item.PaymentName == "金币")
+                                    {
+                                    
+                                        <div style="float: left; line-height: 55px;">
+                                            <input name="Checkbox" type="checkbox" checked="checked" value="@item.Id" onclick="return false;"  />
+                                            <span style="color: #3F5164;">在线支付</span> @*<span style="margin-left: 35px;color=gray;font-size: 0.9em">金币支付由金和提供担保</span>*@
+                                        </div>
+                                        <div style="float: left; margin-left: 15px; border-left: 2px solid #8C94A9;">
+                                            <img src="/Content/Images/pay1.png" style="margin-left: 13px; float: left; height: 23px;" />
+                                            <span style="display: block; float: left; width: 88px; height: 14px; background: url(/Content/Images/arrow1.png) center no-repeat;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                         margin: 13px; height: 12px;"></span>
+                                            <img src="/Content/Images/pay2.png" style="float: left; height: 23px;" />
+                                            <span style="display: block; float: left; width: 88px; height: 14px; background: url(/Content/Images/arrow1.png) center no-repeat;
+                                                                                                                                                                                    margin: 13px; height: 12px;"></span>
+                                            <img src="/Content/Images/pay3.png" style="float: left; height: 23px;" />
+                                            <span style="display: block; float: left; width: 88px; height: 14px; background: url(/Content/Images/arrow1.png) center no-repeat;
+                                                                                                                                                                                    margin: 13px; height: 12px;"></span>
+                                            <img src="/Content/Images/pay4.png" style="float: left; height: 23px;" />
+                                            <div style="clear: both;">
+                                            </div>
+                                            <div>
+                                                <span style="color: gray; font-size: 0.8em; margin-left: 3px;">付款给金和</span> <span
+                                                                                                                                style="color: gray; font-size: 0.8em; margin-left: 75px;">确认收货</span> <span style="color: gray;
+                                                                                                                                                                                                                                                                                                                                                                                                                                 font-size: 0.8em; margin-left: 74px;">金和给卖家结算</span> <span style="color: gray; font-size: 0.8em;
+                                                                                                                                 margin-left: 68px;">交易成功</span>
+                                            </div>
+                                        </div>
+                                        <div style="clear: both;">
+                                        </div>
+                                    }
+                                    else if (item.PaymentName == "担保支付宝" && item.PaymentName == "不再使用")
+                                    {
+                                    
+                                        <div style="float: left; line-height: 55px;">
+                                            <input name="Checkbox" type="checkbox" value="@item.Id"  @(item.isInitLoad ? "" : item.IsOnuse ? "checked=\"checked\"" : "")/>
+                                            <span style="color: #3F5164;">在线支付</span> @*<span style="margin-left: 35px;color=gray;font-size: 0.9em">金币支付由金和提供担保</span>*@
+                                        </div>
+                                        <div style="float: left; margin-left: 15px; border-left: 2px solid #8C94A9;">
+                                            <img src="/Content/Images/pay1.png" style="margin-left: 13px; float: left; height: 23px;" />
+                                            <span style="display: block; float: left; width: 88px; height: 14px; background: url(/Content/Images/arrow1.png) center no-repeat;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     margin: 13px; height: 12px;"></span>
+                                            <img src="/Content/Images/pay2.png" style="float: left; height: 23px;" />
+                                            <span style="display: block; float: left; width: 88px; height: 14px; background: url(/Content/Images/arrow1.png) center no-repeat;
+                                                                                                                                                                                    margin: 13px; height: 12px;"></span>
+                                            <img src="/Content/Images/pay3.png" style="float: left; height: 23px;" />
+                                            <span style="display: block; float: left; width: 88px; height: 14px; background: url(/Content/Images/arrow1.png) center no-repeat;
+                                                                                                                                                                                    margin: 13px; height: 12px;"></span>
+                                            <img src="/Content/Images/pay4.png" style="float: left; height: 23px;" />
+                                            <div style="clear: both;">
+                                            </div>
+                                            <div>
+                                                <span style="color: gray; font-size: 0.8em; margin-left: 3px;">付款给金和</span> <span
+                                                                                                                                style="color: gray; font-size: 0.8em; margin-left: 75px;">确认收货</span> <span style="color: gray;
+                                                                                                                                                                                                                                                                                                                                                                                                                                 font-size: 0.8em; margin-left: 74px;">金和给卖家结算</span> <span style="color: gray; font-size: 0.8em;
+                                                                                                                                 margin-left: 68px;">交易成功</span>
+                                            </div>
+                                        </div>
+                                        <div style="clear: both;">
+                                        </div>
+                                    }
+                                    else if (item.PaymentName == "支付宝" && item.IsOnuse)
+                                    {
+                                        <input id="alipaycheck" name="Checkbox" type="checkbox" value="@item.Id" @(item.isInitLoad ? "" : item.IsOnuse ? "checked=\"checked\"" : "")/>
+                                        <span style="color: #3F5164;">@item.PaymentName</span>
+                                        <span class="ml20"><a href="https://b.alipay.com/order/productDetail.htm?productId=2013080604609654"
+                                                              target="_blank" class="zhifubao">尚无支付宝签约账号请点此进行申请</a> </span>
+                                        <div class="zhh" id="alipaysetting">
+                                            <fieldset class="fieldset">
+                                                <legend>支付宝设置</legend>
+                                                <div>
+                                                    <span class="alipaytag">合作者身份Id：</span>
+                                                    <input name="AliPayPartnerId" type="text" value="@item.AliPayPartnerId" class="textcolor"/>
+                                                </div>
+                                                <div>
+                                                    <span class="alipaytag">收款支付宝账号：</span>
+                                                    <input name="AliPaySeller" type="text" value="@item.AliPaySeller" class="textcolor"/>
+                                                </div>
+                                                <div>
+                                                    <span class="alipaytag">商户私钥：</span>
+                                                    <input name="AliPayPrivateKey" type="text" value="@item.AliPayPrivateKey" class="textcolor"/>
+                                                </div>
+                                                <div>
+                                                    <span class="alipaytag">支付宝公钥：</span>
+                                                    <input name="AliPayPublicKey" type="text" value="@item.AliPayPublicKey" class="textcolor"/>
+                                                </div>
+                                                <div>
+                                                    <span class="alipaytag">安全校验码：</span>
+                                                    <input name="AliPayVerifyCode" type="text" value="@item.AliPayVerifyCode" class="textcolor"/>
+                                                    <span>针对IOS设备使用，其他设备可不输入</span>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                    }
+                                    else if (item.PaymentName == "货到付款")
+                                    {
+                                        <input  name="Checkbox" type="checkbox" value="@item.Id"  @(item.isInitLoad ? "" : item.IsOnuse ? "checked=\"checked\"" : "")/>
+                                        <span style="color: #3F5164;">@item.PaymentName</span>                                    
+                                        <span style="margin-left: 20px; color: gray; font-size: 0.9em">金和仅提供货到付款交易功能，相关收款和结算服务请自行联系快递公司。</span>
+                                    }
+                                </li>
+                            }
+                            @if (ViewBag.IsMyIntegral)
+                            {
+                                var scoreCost = string.Empty;
+                                var isCashForScore = appScoreSettingDTO.IsCashForScore && appScoreSettingDTO.ScoreCost > 0;
+                                if (isCashForScore)
+                                {
+                                    scoreCost = appScoreSettingDTO.ScoreCost.ToString(CultureInfo.InvariantCulture);
+                                }
+                                <li>
+                                    <div class="jifen">
+                                        <input type="text" name="IsMyIntegral" value="@ViewBag.IsMyIntegral" style="display: none"/>
+                                        <input type="checkbox" name="disable" id="disable" style="pointer-events:none; display: none " disabled="disabled" checked="checked" />
+                                        <input type="checkbox" name="IsCashForScore" id="isCashForScore" @(isCashForScore ? "checked=\"checked\"" : "")  />
+                                        <span class="title">积分抵现</span> <span class="cont">1元=<input name="ScoreCost" id="scoreCost" type="text" value = '@(string.IsNullOrEmpty(scoreCost) ? "" : scoreCost)' />积分</span>
+                                        <span class="reminder">(请输入10的幂数，例1、10、100)</span> <span style="color: red;font-size: .9em ;margin-left: 25px;vertical-align: top;">注：请在积分抵现设置菜单中配置支持积分抵现的商品金额比例~</span> 
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </form>
+                    <div style="text-align: left;">
+                        <a href="javascript:;" id="btnSubmit" class="btn120">保存</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/Scripts/jquery.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var isMyIntegral = '@ViewBag.IsMyIntegral'.toLowerCase();
+        var scoreCostArr = '@scoreCostArrStr'.split(',');
+        $(document).ready(function () {
+            if ("@IsEnableCancelScore".toLowerCase() == "false" && "@appScoreSettingDTO.IsCashForScore".toLowerCase() == "true" && @appScoreSettingDTO.ScoreCost > 0) {
+                $("#isCashForScore").hide();
+                $("#isCashForScore").css("pointer-events", "none");
+                $("#disable").show();
+            }
+            $("#btnSubmit").bind("click", function () {
+                if (!valid())
+                    return;
+                var $form = $("#form1");
+                 if (getQueryString('callBack')) {
+                     var url =encodeURIComponent(getQueryString('callBack'));
+                     $form.attr("action", "/Payment/AddPayment?callBack="+url);
+                 } else {
+                      $form.attr("action", "/Payment/AddPayment");
+                 }
+                $form.attr("method", "post");
+                $form.submit();
+            });
+            if ('@ViewBag.Result' == "1" || '@ViewBag.Result' == "2") {
+                  alert("保存失败");
+            } else if ('@ViewBag.Result' == "0") {
+                 alert("保存成功");
+            }
+            if ($("#alipaycheck")[0] != undefined && $("#alipaycheck")[0].checked) {
+                $("#alipaysetting").show();
+            } else {
+                $("#alipaysetting").hide();
+            }
+
+            $("#alipaycheck").click(function () {
+                var self = $(this);
+                if (self.attr("checked") == "checked") {
+                    $("#alipaysetting").show();
+                } else {
+                    $("#alipaysetting").hide();
+                }
+            });
+        });
+        function valid() {
+            if (isMyIntegral == 'true') {
+                var scoreCost = $("#scoreCost").val().trim();
+                if ($("#isCashForScore").attr("checked")) {
+                    var isScoreCostOk = false;
+                    for (var i = 0; i < scoreCostArr.length; i++) {
+                        if (scoreCost == scoreCostArr[i]) {
+                            isScoreCostOk = true;
+                        }
+                    }
+                    if (!isScoreCostOk) {
+                        alert("积分必须为10的幂数且不能超过100000");
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        try { document.domain = "iuoooo.com"; } catch (e) { }
+    </script>
+    
+    <script type="text/javascript">
+        function getQueryString(name, str) {
+            var r = str ? str.split('?')[1] : '' || window.location.search.substr(1);
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+            r = r.match(reg);
+            if (r != null) return unescape(r[2]);
+            return null;
+        }
+       
+        function goBack() {
+            if (getQueryString('callBack')) {
+                var url = getQueryString('callBack');
+                document.location.href = url;
+            }
+        }
+
+        $(function() {
+            //积分返回三级分销
+            if (getQueryString('callBack')) {
+                $('#btnBack').show();
+            }
+        });
+    </script>
+</body>
+</html>

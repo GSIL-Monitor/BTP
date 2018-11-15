@@ -1,0 +1,19 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Runtime.Serialization;
+
+namespace Jinher.AMP.BTP.Deploy.CustomDTO
+{
+    [Serializable]
+    [DataContract]
+    public class CommodityOrderVMDTO
+    {
+        [DataMember]
+        public List<CommodityOrderVM> List { get; set; }
+        [DataMember]
+        public int Total { get; set; }
+
+    }
+}

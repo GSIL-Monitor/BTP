@@ -1,0 +1,23 @@
+﻿@using Jinher.JAP.MVC.UIJquery
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>@ViewBag.Title</title>
+    @{Html.jQuery().StyleSheetRegistrar().DefaultGroup(group => group.Add("css/common.css").Combined(true).Compress(true));
+    }
+    @RenderSection("Css", required: false)
+    @{Html.jQuery().StyleSheetRegistrar().Render();}
+    @RenderSection("Head", required: false)
+</head>
+<script type="text/javascript">
+    var rootPath = "@Url.Content("~")";
+    document.domain = "iuoooo.com";  
+</script>
+<body>  
+    @RenderBody()
+    @RenderSection("Script", required: false)
+    @{Html.jQuery().ScriptRegistrar().Render();}
+</body>
+@RenderSection("ClientScript", required: false)
+</html>

@@ -1,0 +1,277 @@
+﻿@{
+    ViewBag.Title = "促销列表";
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.PromotionItemsVM> comcalist = ViewBag.CommodityList;
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.CategorySDTO> categorylist = ViewBag.CategoryList;
+}
+<head>
+    <title></title>
+    <script src="/Scripts/DatePicker/jquery.ui.datepicker.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhdatetime.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhstartandenddate.js" type="text/javascript"></script>
+    <style type="text/css">
+        .btn120
+        {
+            background: url("/Content/default/images/btn120.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+            box-shadow: 1px 1px 2px #dbdbdb;
+            color: #5f7392;
+            display: inline-block;
+            height: 28px;
+            line-height: 28px;
+            text-align: center;
+            vertical-align: middle;
+            width: 120px;
+        }
+    </style>
+    <script type="text/javascript" id="script">
+
+        $(document).ready(function () {
+            if (getQueryString("intensity") * 1 < 10) {
+                $(".intve").html("折扣价");
+            }
+            function showContent(event, data) {
+                var data = $(data);
+                var table = data.find('table');
+                var data_1 = data.find('#totalCount').val().split("'_'");
+
+                $("#insert_box").html(table);
+                $("#pager").jhpager('refresh', data_1[1], data_1[0]);
+            }
+            $("#CommodityCategory").focus(function () {
+                if ("@ViewBag.IsShowCategoryTree".toLowerCase() == "false") {
+                    return;
+                }
+                var top = $('#CommodityCategory').offset().top;
+                var left = $('#CommodityCategory').offset().left;
+                var height = $('#CommodityCategory').height();
+                $("#SearchcategoryDiv").css({ "top": top + height, "left": left }).show();
+                //  $("#SearchcategoryDiv").show();
+            });
+            $("#SearchtcategoryUl input[type='checkbox']").change(function () {
+                toSearchCheckSelected(this);
+            });
+            $("#pager").jhpager({
+                dataType: 'html',
+                requestType: 'post',
+                dataSource: '/Promotion/PromotionCommodityDetail',
+                async: true,
+                totalCount: '@ViewBag.Count',
+                rowNum: 20,
+                currentPage: '@ViewBag.currentPage',
+                requestSuccess: showContent,
+                requestData: function () { return { promotionId: "@ViewBag.promotionId"} }
+            });
+
+            try {
+                document.domain = "iuoooo.com";
+            }
+            catch (e) { }
+
+        });
+        function toSearch(obj) {
+            if ($.trim($("#CommodityCategory").val()) == "") {
+                searchcateogryIdList = "";
+                searchcateogryIdList = "";
+                var cks = document.all("SearchtcategoryUl").getElementsByTagName("input");
+                var len = cks.length;
+                for (i = 0; i < len; i++) {
+                    if (cks[i].type == "checkbox") {
+                        if (cks[i].checked == true) {
+                            cks[i].checked = false;
+                        }
+                    }
+                }
+            }
+            var CommodityName = $("#CommodityName").val();
+            var CommodityCategory = searchcateogryIdList;
+            var CommodityCode = $("#CommodityCode").val();
+            var promotionId = '@ViewBag.promotionId';
+            var wh = "commodityName=" + CommodityName + "&commodityCode=" + CommodityCode + "&category=" + CommodityCategory;
+            var psource = sessionStorage.source == "share" ? "&source=share" : "";
+            this.location.href = "/Promotion/PromotionCommodityDetail?promotionId=" + promotionId + "&intensity=" + getQueryString("intensity") + "&" + wh + psource;
+
+        }
+
+        var searchcateogryIdList = "";
+        var searchcategoryNameList = "";
+        function toSearchCheckSelected(obj) {
+            searchcateogryIdList = "";
+            searchcategoryNameList = "";
+            $("#SearchtcategoryUl input:checkbox:checked").each(function () {
+                searchcateogryIdList = searchcateogryIdList + "," + $(this).val();
+                searchcategoryNameList = searchcategoryNameList + "," + $(this).next().text();
+            });
+            if (searchcateogryIdList.length > 0) {
+                searchcateogryIdList = searchcateogryIdList.substring(1, searchcateogryIdList.length);
+                searchcategoryNameList = searchcategoryNameList.substring(1, searchcategoryNameList.length);
+            }
+            $("#CommodityCategory").val(searchcategoryNameList);
+        }
+
+        function toReset(obj) {
+            $("#CommodityName").val("");
+            $("#CommodityCategory").val("");
+            $("#CommodityCode").val("");
+        }
+        function CloseSearchCate(obj) {
+            $("#SearchcategoryDiv").hide();
+        }
+    </script>
+</head>
+<form id="procde" method="get" action="http://www.baidu.com">
+<div class="box">
+    <div class="content">
+        <input type="hidden" value="@ViewBag.Count'_'@ViewBag.currentPage" id="totalCount" />
+        <div class="right right1">
+            <div class="manag_top  manag_top3">
+                <ul class="clearfix">
+                    <li class="door_one door_one1"><span>商品名称：</span><input id="CommodityName" type="text" />&nbsp;&nbsp;</li>
+                    <li class="door_two door_one1"><span>商品编号：</span><input id="CommodityCode" type="text" /></li></ul>
+                <ul class="clearfix" style="margin-top: 10px;">
+                    <li class="door_one door_one1"><span>商品类目：</span><input id="CommodityCategory" type="text" />&nbsp;&nbsp;</li>
+                    <li class="door_two door_one1"><span></span><a href="javascript:void(0)" class="btn120"
+                        onclick="toSearch(this);">查询</a> <span><a href="javascript:void(0)" class="btn120"
+                            onclick="toReset(this);">重置</a></span></li>
+                </ul>
+            </div>
+            <div class="manag_bot manag_bot1" id='insert_box'>
+                <table border="0" cellspacing="0" cellpadding="0" id="dataTable" class="m_talbe m_talbe3">
+                    <tr class="t_tr1">
+                        <td class="one to">
+                            缩略图
+                        </td>
+                        <td class="two to">
+                            商品名称
+                        </td>
+                        <td class="three to">
+                            商品类别
+                        </td>
+                        <td class="four fo">
+                            价格
+                        </td>
+                        <td class="five fi intve">
+                            优惠价
+                        </td>
+                        <td class="six six1 si">
+                            每人限购数量
+                        </td>
+                        <td class="seven seven1 si">
+                            参加促销商品总数
+                        </td>
+                    </tr>
+                    @if (comcalist.Count > 0 && comcalist != null)
+                    {
+                        foreach (var commodity in comcalist)
+                        {
+                              
+                        <tr class="t_tr2 t_tr2_bg">
+                            <td class="one to">
+                                <img src="@commodity.PicturesPath" alt="" width="86" height="85" style="margin-left:6px;"/>
+                            </td>
+                            <td class="two to">
+                                <p>@commodity.CommodityName</p>
+                            </td>
+                            <td class="three to">
+                                @if (commodity.CommodityCategorys != null)
+                                {
+                                    foreach (var c in commodity.CommodityCategorys)
+                                    {
+                                    <p>@c</p>
+                                    }
+                                }
+                            </td>
+                            <td class="four fo">
+                                <span>@commodity.Price</span><br />
+                            </td>
+                            <td class="five fi">
+                                <span>
+                                    @if (commodity.DiscountPrice > -1)
+                                    {
+                                        @commodity.DiscountPrice
+                                    }
+                                    else
+                                    {
+
+                                        var rprice = Math.Round((commodity.Price * Convert.ToDecimal(Request.QueryString["intensity"]) / 10), 2, MidpointRounding.AwayFromZero);
+                                       
+                                        <text>@rprice</text>
+                                    }</span>
+                            </td>
+                            <td class="six six1 si">
+                                @if (commodity.LimitBuyEach == null || commodity.LimitBuyEach == -1)
+                                {
+                                    <text>无限制</text>
+                                }
+                                else
+                                {
+                                    <text>@commodity.LimitBuyEach</text>
+                                }
+                            </td>
+                            <td class="seven seven1 si">
+                                @if (commodity.LimitBuyTotal == null || commodity.LimitBuyTotal == -1)
+                                {
+                                    <text>@commodity.Stock</text>
+                                }
+                                else
+                                {
+                                    <text>@commodity.LimitBuyTotal</text>
+                                }
+                            </td>
+                        </tr>   }
+                    }
+                </table>
+            </div>
+            <div id="pager">
+            </div>
+        </div>
+    </div>
+    <div class="floa2 float_new addfloa2" id="SearchcategoryDiv" style="display: none">
+        <div style="overflow-y: auto; height: 190px; margin-top: 6px;">
+            <ul class="first" id="SearchtcategoryUl">
+                 @foreach (var cate in categorylist)
+                {
+                    <li class="firs">
+                        <label>
+                          @if (cate.SecondCategory == null || cate.SecondCategory.Count==0)
+                          {
+                                <input name="cateogryClassLevel1" type="checkbox" value="@cate.Id"/>
+                             }<span>@cate.Name</span>
+                        </label>
+                        <ul class="second">
+                            @if (cate.SecondCategory == null) { cate.SecondCategory = new List<Jinher.AMP.BTP.Deploy.CustomDTO.SCategorySDTO>(); }
+                            @foreach (var scate in cate.SecondCategory)
+                            {
+                                <li class="firs firs1">
+                                    <label>
+                                     @if (scate.ThirdCategory == null || scate.ThirdCategory.Count == 0)
+                                     {
+                                        <input name="cateogryClassLevel2" type="checkbox" value="@scate.Id"/>
+                                     }<span>@scate.Name</span>
+                                    </label>
+                                    <ul class="third">
+                                        @if (scate.ThirdCategory == null) { scate.ThirdCategory = new List<Jinher.AMP.BTP.Deploy.CustomDTO.TCategorySDTO>(); }
+                                        @foreach (var tcate in scate.ThirdCategory)
+                                        {
+                                            <li>
+                                                <label>
+                                                    <input name="cateogryClassLevel3" type="checkbox"
+								       value="@tcate.Id"/><span>@tcate.Name</span>
+                                                </label>
+                                            </li>
+                                        }
+                                    </ul>
+                                </li>
+                            }
+                        </ul>
+                    </li>
+                }
+            </ul>
+            <div class="shut">
+                <img src="/Images/shut.png" alt="" width="7" height="7" onclick="CloseSearchCate(this)" />
+            </div>
+            <div class="btn">
+                <button id="searchcate" type="button" onclick="CloseSearchCate(this)">
+                    确定</button></div>
+        </div>
+    </div>
+</div>
+</form>

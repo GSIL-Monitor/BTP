@@ -1,0 +1,666 @@
+﻿@using System.Collections.Generic
+@{
+    ViewBag.Title = "商品类目设置";
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.CategoryS2DTO> catelist = ViewBag.catelist;
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.ColorAndSizeAttributeVM> attributeList = ViewBag.AttributeList;
+    int n = 1;
+    bool isCustomEC = ViewBag.isCustomEC;
+    string isCustomECShow = isCustomEC ? "display:none;" : "display:inline-block;";
+    string isCustomECInt = isCustomEC ? "1" : "0";
+    string isShowSearchMenu = ViewBag.isShowSearchMenu ? "checked='checked'" : "";
+    string isFoodAppShow = ViewBag.isFoodApp ? "" : "display:none";
+}
+@{
+    string jsonData = "";
+    foreach (Jinher.AMP.BTP.Deploy.CustomDTO.CategoryS2DTO tempSDTO1 in catelist)
+    {
+        if (catelist.IndexOf(tempSDTO1) > 0)
+        {
+            jsonData = jsonData + ",";
+        }
+        jsonData = jsonData + "{ name:\"" + tempSDTO1.Name + "\", id:\"" + tempSDTO1.Id + "\",pid:\"" + tempSDTO1.ParentId + "\",code:\"" + tempSDTO1.Code + "\"";
+        if (tempSDTO1.SecondCategory == null)
+        {
+            tempSDTO1.SecondCategory = new List<Jinher.AMP.BTP.Deploy.CustomDTO.SCategorySDTO>();
+        }
+        foreach (Jinher.AMP.BTP.Deploy.CustomDTO.SCategorySDTO tempSDTO2 in tempSDTO1.SecondCategory)
+        {
+            if (tempSDTO1.SecondCategory.IndexOf(tempSDTO2) == 0)
+            {
+                jsonData = jsonData + ", nocheck:true, open:true , children: [";
+                jsonData = jsonData + "{ name:\"" + tempSDTO2.Name + "\", id:\"" + tempSDTO2.Id + "\",pid:\"" + tempSDTO2.ParentId + "\",code:\"" + tempSDTO2.Code + "\"";
+            }
+            else
+            {
+                jsonData = jsonData + ",{ name:\"" + tempSDTO2.Name + "\", id:\"" + tempSDTO2.Id + "\",pid:\"" + tempSDTO2.ParentId + "\",code:\"" + tempSDTO2.Code + "\"";
+            }
+            if (tempSDTO2.ThirdCategory == null)
+            {
+                tempSDTO2.ThirdCategory = new List<Jinher.AMP.BTP.Deploy.CustomDTO.TCategorySDTO>();
+            }
+            foreach (Jinher.AMP.BTP.Deploy.CustomDTO.TCategorySDTO tempSDTO3 in tempSDTO2.ThirdCategory)
+            {
+                if (tempSDTO2.ThirdCategory.IndexOf(tempSDTO3) == 0)
+                {
+                    jsonData = jsonData + ", nocheck:true, open:true , children: [";
+                    jsonData = jsonData + "{ name:\"" + tempSDTO3.Name + "\", id:\"" + tempSDTO3.Id + "\",pid:\"" + tempSDTO3.ParentId + "\",code:\"" + tempSDTO3.Code + "\"";
+                }
+                else
+                {
+                    jsonData = jsonData + ",{ name:\"" + tempSDTO3.Name + "\", id:\"" + tempSDTO3.Id + "\",pid:\"" + tempSDTO3.ParentId + "\",code:\"" + tempSDTO3.Code + "\"";
+                }
+                if (tempSDTO3.FourCategory == null)
+                {
+                    tempSDTO3.FourCategory = new List<Jinher.AMP.BTP.Deploy.CustomDTO.FCategorySDTO>();
+                }
+                foreach (Jinher.AMP.BTP.Deploy.CustomDTO.FCategorySDTO tempSDTO4 in tempSDTO3.FourCategory)
+                {
+                    if (tempSDTO3.FourCategory.IndexOf(tempSDTO4) == 0)
+                    {
+                        jsonData = jsonData + ", nocheck:true, open:true , children: [";
+                        jsonData = jsonData + "{ name:\"" + tempSDTO4.Name + "\", id:\"" + tempSDTO4.Id + "\",pid:\"" + tempSDTO4.ParentId + "\",code:\"" + tempSDTO4.Code + "\"}";
+                    }
+                    else
+                    {
+                        jsonData = jsonData + ",{ name:\"" + tempSDTO4.Name + "\", id:\"" + tempSDTO4.Id + "\",pid:\"" + tempSDTO4.ParentId + "\",code:\"" + tempSDTO4.Code + "\"}";
+                    }
+                    if (tempSDTO3.FourCategory.IndexOf(tempSDTO4) == tempSDTO3.FourCategory.Count - 1)
+                    {
+                        jsonData = jsonData + "]";
+                    }
+                }
+                jsonData = jsonData + "}";
+                if (tempSDTO2.ThirdCategory.IndexOf(tempSDTO3) == tempSDTO2.ThirdCategory.Count - 1)
+                {
+                    jsonData = jsonData + "]";
+                }
+            }
+            jsonData = jsonData + "}";
+            if (tempSDTO1.SecondCategory.IndexOf(tempSDTO2) == tempSDTO1.SecondCategory.Count - 1)
+            {
+                jsonData = jsonData + "]";
+            }
+        }
+        jsonData = jsonData + "}";
+    }
+}
+@helper getUrlParam()
+    { 
+        try
+        {
+            string url = Request.Url.PathAndQuery.Split('?')[1];
+    @url;
+        }
+        catch { }    
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="/Content/common.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.jhtablebox.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/ui.jqgrid.css" />
+    <link rel="stylesheet" type="text/css" href="/ztreejs/zTreeStyle/zTreeStyle.css" />
+    <link rel="stylesheet" type="text/css" href="/Scripts/uploadify/uploadify.css" />
+    <script type="text/javascript" src="/ztreejs/jquery.ztree.core-3.5.js"></script>
+    <script type="text/javascript" src="/ztreejs/jquery.ztree.excheck-3.5.js"></script>
+    <script type="text/javascript" src="/ztreejs/jquery.ztree.exedit-3.5.js"></script>
+    <script type="text/javascript" src="/Scripts/jquery.nicescroll.min.js"></script>
+    <script type="text/javascript" src="/Scripts/uploadify/jquery.uploadify.min.js"></script>
+    <style type="text/css">
+        li.las li
+        {
+            cursor: pointer;
+            background-color: rgb(224, 224, 224);
+        }
+    </style>
+    <script type="text/javascript">
+    var isUpdateCheck = false;
+    var id, name, parentId, icon;
+    var isFoodAppStr = '@ViewBag.isFoodApp'.toLowerCase();
+    var isFoodApp = isFoodAppStr == "true";
+    function getQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]);
+        return null;
+    }
+
+    $(document).ready(function() {
+        $('#tele_scroll').niceScroll({
+            horizrailenabled: false
+        });
+        $("#showSearchMenu").on("click", function() {
+               if(@isCustomECInt==1){
+                     return;
+               }
+                if (isUpdateCheck) {
+                    return;
+                }
+                isUpdateCheck = true;
+                var chked = $(this).attr("checked") ? true : false;
+
+                $.ajax({
+                    url: '@Url.Action("UpdateIsShowSearchMenu")',
+                    async: false,
+                    type: 'post',
+                    data: { isChecked: chked},
+                    success: function(data) {
+                        if (!data || !data.Result) {
+                            $("#showSearchMenu").each(function() {
+                                this.checked = !chked;
+                            });
+                        }
+                        isUpdateCheck = false;
+                    },
+                    error: function() {
+                        $("#showSearchMenu").each(function() {
+                            this.checked = !chked;
+                        });
+                        isUpdateCheck = false;
+                    }
+                });
+
+
+            });
+    });
+    try {
+        document.domain = "iuoooo.com";
+    } catch (e) {
+    }
+
+    var zNodes = [@Html.Raw(jsonData)];
+    var selectedNode;
+    var treeObject;
+    var treeAction;
+    var setting = {
+        edit: {
+            enable: false,
+            showRemoveBtn: false,
+            showRenameBtn: false,
+            drag: {
+                isMove: false,
+                prev: false,
+                next: false,
+                inner: false
+            }
+        },
+        data: {
+            simpleData: {
+                enable: false,
+                idKey: "id",
+                pIdKey: "pid"
+            }
+        },
+        callback: {
+            beforeDrag: beforeDrag,
+            onClick: zTreeOnClick
+        },
+        view: {
+            showIcon: false,
+            showLine: true
+        }
+    };
+
+    function beforeDrag(treeId, treeNodes) {
+        for (var i = 0, l = treeNodes.length; i < l; i++) {
+            if (treeNodes[i].drag === false) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    var isError = false;
+    $(document).ready(function() {
+        treeObject = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+        var nodes = treeObject.getNodes();
+    });
+
+    var arrayObj = new Array();
+    arrayObj[0] = 0;
+    var n = 0;
+    function setsize() {
+        window.location.href = "/SecondAttribute/SizeIndex?@getUrlParam()";
+    }
+
+    function setcolor() {
+        window.location.href = "/SecondAttribute/ColorIndex?@getUrlParam()";
+    }
+
+    function moveUpNode() {
+        if (treeAction === "add" || treeAction === "update") {
+            return;
+        }
+        if (selectedNode == null) {
+            alert("请选择需要上移的节点！");
+            return;
+        }
+        if (!selectedNode.isFirstNode) {
+            $.ajax({
+                url: '@Url.Action("UpCategory")',
+                type: 'post',
+                data: { categoryId: selectedNode.id, targetId: selectedNode.getPreNode().id },
+                success: function() {
+                    treeObject.moveNode(selectedNode.getPreNode(), selectedNode, "prev");
+                },
+                error: function() {
+                    alert("请稍候再试");
+                }
+            });
+
+        } else {
+            alert('已经是第一个节点！');
+        }
+    }
+
+    function moveDownNode() {
+        if (treeAction === "add" || treeAction === "update") {
+            return;
+        }
+        if (selectedNode == null) {
+            alert("请选择需要下移的节点！");
+            return;
+        }
+        if (!selectedNode.isLastNode) {
+            $.ajax({
+                url: '@Url.Action("DownCategory")',
+                type: 'post',
+                data: { categoryId: selectedNode.id, targetId: selectedNode.getNextNode().id },
+                success: function(msg) {
+                    treeObject.moveNode(selectedNode.getNextNode(), selectedNode, "next");
+                },
+                error: function() {
+                    alert("请稍候再试");
+                }
+            });
+        } else {
+            alert('已经是最后一个节点！');
+        }
+    }
+
+    function zTreeOnClick(event, treeId, treeNode) {
+        if (treeNode) {
+            selectedNode = treeNode;
+        }
+        return true;
+    }
+    var result = true;
+
+    function deleteNode() {
+        if (treeAction === "add" || treeAction === "update") {
+            return;
+        }
+        if (selectedNode == null) {
+            alert("请先选择节点！");
+            return;
+        }
+        if (selectedNode.children == undefined) {
+            result = confirm("是否确认要删除选中的分类？");
+        } else {
+            if (selectedNode.children.length > 0) {
+                result = alert("此分类下有子分类，不能删除！");
+                return;
+            } else {
+            result = confirm("是否确认要删除选中的分类？");
+            }
+        }
+        if (result == true) {
+            if (treeObject.getNodes().length <= 1) {
+                if (selectedNode.level == 0) {
+                    alert("必须保留一个一级分类");
+                    return;
+                }
+            }
+            var categoryId = selectedNode.id;
+            $.ajax({
+                url: '@Url.Action("DeleteCategory")',
+                type: 'post',
+                data: { categoryId: categoryId },
+                success: function(data) {
+                    if (data.Result) {
+                        treeObject.removeNode(selectedNode);
+                        selectedNode = null;
+                    } 
+                    alert(data.Messages);
+                },
+                error: function() {
+                    alert("请稍候再试");
+                }
+            });
+        } else {
+            return;
+        }
+    }
+    </script>
+    <script>
+        //0添加 1修改
+        function EditRow(isAdd) {
+            if (selectedNode == null) {
+                alert("请先选择节点！");
+                return;
+            }
+            if (selectedNode.level >= 1 && isAdd === 0) {
+                alert("添加失败，类目【根目录除外】只能有1层！");
+                return;
+            }
+            if (selectedNode.level > 0 && isAdd === 0 && isFoodApp) {
+                alert("点餐列表只支持一级分类！");
+                return;
+            }
+            if (isAdd === 0) {
+                if (selectedNode.getParentNode() !== null) {
+                    var cNodes = selectedNode.getParentNode().children;
+                    for (var i = 0; i < cNodes.length; i++) {
+                        GetCommoditys(cNodes[i].id);
+                        //添加子分类时 判断该分类下是否有商品 有商品则不允许添加子分类
+                        var count = $("#hidCurCommodityCount").val();
+                        if (count !== "0") {
+                            alert("该分类层级下已有分类存在商品，不能添加子分类！");
+                            return;
+                        }
+                    }
+                }
+            }
+            if (selectedNode.level === 0 && isAdd === 1) {
+                alert("根目录不能编辑！");
+                return;
+            }
+            //弹出DIV
+            var oWin = document.getElementById("win");
+            var oLay = document.getElementById("overlay");
+            var oClose = document.getElementById("close");
+            var oH2 = oWin.getElementsByTagName("h2")[0];
+            var bDrag = false;
+            var disX = disY = 0;
+
+            oWin.style.display = "block";
+            oLay.style.display = "block";
+
+            oClose.onclick = function () {
+                oLay.style.display = "none";
+                oWin.style.display = "none";
+                treeAction = "";
+            };
+            oClose.onmousedown = function (event) {
+                (event || window.event).cancelBubble = true;
+            };
+            oH2.onmousedown = function (event) {
+                var event = event || window.event;
+                bDrag = true;
+                disX = event.clientX - oWin.offsetLeft;
+                disY = event.clientY - oWin.offsetTop;
+                this.setCapture && this.setCapture();
+                return false
+            };
+            document.onmousemove = function (event) {
+                if (!bDrag) return;
+                var event = event || window.event;
+                var iL = event.clientX - disX;
+                var iT = event.clientY - disY;
+                var maxL = document.documentElement.clientWidth - oWin.offsetWidth;
+                var maxT = document.documentElement.clientHeight - oWin.offsetHeight;
+                iL = iL < 0 ? 0 : iL;
+                iL = iL > maxL ? maxL : iL;
+                iT = iT < 0 ? 0 : iT;
+                iT = iT > maxT ? maxT : iT;
+
+                oWin.style.marginTop = oWin.style.marginLeft = 0;
+                oWin.style.left = iL + "px";
+                oWin.style.top = iT + "px";
+                return false
+            };
+            document.onmouseup = window.onblur = oH2.onlosecapture = function () {
+                bDrag = false;
+                oH2.releaseCapture && oH2.releaseCapture();
+            };
+            if (isAdd === 0) {
+                treeAction = "add";
+                $("#txtCategoryName").val("");
+                $("#txtCategoryCode").val("");
+                $("#txtParentCategory").val(selectedNode.name);
+            } else {
+                treeAction = "update";
+                $("#txtCategoryName").val(selectedNode.name);
+                $("#txtCategoryCode").val(selectedNode.code);
+                if (selectedNode.getParentNode() == null) {
+                    $("#txtParentCategory").val("");
+                } else {
+                    $("#txtParentCategory").val(selectedNode.getParentNode().name);
+                }
+            }
+        };
+
+        //刷新上一级页面高度
+        function refreshLayout() {
+            try {
+                var h = $("#outer").height();
+                if (h < 760) {
+                    h = 760;
+                }
+                $("body").height(h);
+                window.parent.refreshLayout();
+            } catch (e) {
+            }
+        }
+
+        function CloseN() {
+            var oWin = document.getElementById("win");
+            var oLay = document.getElementById("overlay");
+
+            oLay.style.display = "none";
+            oWin.style.display = "none";
+            treeAction = "";
+        }
+
+        function SaveN() {
+            if (checkIsValid()) {
+                AddOrUpdateCategory(selectedNode);
+            }
+            treeAction = "";
+        }
+
+        function checkIsValid() {
+            if ($.trim($("#txtCategoryName").val()) === "") {
+                alert("分类名称不能为空！");
+                return false;
+            }
+            if ($.trim($("#txtCategoryCode").val()) === "") {
+                alert("分类编码不能为空！");
+                return false;
+            }
+            return true;
+        }
+
+        function GetCommoditys(categoryId) {
+            $.ajax({
+                async: false,
+                type: "POST",
+                data: { categoryId: categoryId },
+                url: '/CommodityManage/GetCommodityCountInCategory2',
+                dataType: "json",
+                success: function (res) {
+                    $("#hidCurCommodityCount").val(res.Count);
+                },
+                error: function () {
+                    alert("请稍候再试");
+                    return false;
+                }
+            });
+        }
+
+        function AddOrUpdateCategory(treeNode) {
+            var name = $("#txtCategoryName").val();
+            var code = $("#txtCategoryCode").val();
+            $("#ReleaseClick").attr("onclick", "");
+            if (treeAction == "update") {
+                $.ajax({
+                    url: '@Url.Action("UpdateCategory2")',
+                    type: 'post',
+                    data: { categoryId: treeNode.id, name: name, code: code },
+                    success: function (data) {
+                        if (data.Result) {
+                            window.location.reload();
+                        } else {
+                            $("#ReleaseClick").attr("onclick", "SaveN()");
+                        }
+                        alert(data.Messages);
+                    },
+                    error: function () {
+                        alert("请稍候再试");
+                    }
+                });
+            } else {
+                $.ajax({
+                    url: '@Url.Action("AddChildCategory2")',
+                    type: 'post',
+                    data: { categoryId: treeNode.id, name: name, code: code },
+                    success: function (data) {
+                        if (data.ResultCode === 0) {
+                            window.location.reload();
+                        } else {
+                            $("#ReleaseClick").attr("onclick", "SaveN()");
+                        }
+                        alert(data.Message);
+                    },
+                    error: function () {
+                        alert("请稍候再试");
+                    }
+                });
+
+            }
+        }
+
+        $(function () {
+            if (getQueryString('callBack')) {
+                $('#btnBack').show();
+            }
+        });
+
+        function change() {
+            if ($.trim($("#txtCategoryName").val()).length > 5 && ((selectedNode.level === 0 && treeAction == "add") || (selectedNode.level === 1 && treeAction == "update"))) {
+                $("#txtCategoryName").blur(function() {
+                    var txtName = $("#txtCategoryName").val();
+                    $("#txtCategoryName").val(txtName.substring(0, 5));
+                });
+            }
+        }
+        function goBack() {
+            if (getQueryString('callBack')) {
+                var url = getQueryString('callBack');
+                document.location.href = url;
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="box">
+        <div class="content">
+            <div class="right" style="min-width: 800px;">
+                <div class="formList">
+                    <div class="item">
+                        <a class="btn120" type="button" href="javascript:EditRow(0);">添加节点</a> <a class="btn120"
+                            type="button" href="javascript:moveUpNode();">上移节点</a> <a class="btn120" type="button"
+                                href="javascript:moveDownNode();">下移节点</a> <a class="btn120" type="button" href="javascript:deleteNode();">
+                                    删除节点</a> <a class="btn120" type="button" href="javascript:EditRow(1);">编辑节点</a><a
+                                        class="btn120" style="display: none; float: right; margin-right: 24px;" href="javascript:goBack();"
+                                        id="btnBack">返回</a>
+                    </div>
+                </div>
+                <div class="spfb_b ">
+                    <div class="spfb_b1">
+                        <div class="spfb_b1t">
+                            <span class="zihao">类目设置</span> <span style="@isCustomECShow">
+                                <label for="showSearchMenu" style="cursor: pointer; vertical-align: middle; margin-left: 20px;">
+                                    显示分类到菜单导航栏</label>
+                                <input type="checkbox" id="showSearchMenu" style="width: auto; height: auto; vertical-align:middle;margin-left: 4px;
+                                    cursor: pointer;" @isShowSearchMenu />
+
+                            </span>
+                            <span style="@isFoodAppShow">
+                                <label style="cursor: pointer; vertical-align: middle; margin-left: 20px; color: red;">
+                                    点餐列表只支持一级分类</label>
+                            </span>
+                        </div>
+                        <div class="clearFloat">
+                            <div class="set_bot">
+                                <h1 style="width: 300px;">
+                                    设置商品类目：</h1>
+                                <table border="0" class="tb1" style="float: left; margin-top: 20px;">
+                                    <tr>
+                                        <td colspan="3" align="left" valign="top">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="center" valign="top">
+                                            <div class="zTreeDemoBackground">
+                                                <ul id="treeDemo" class="ztree">
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--层遮罩部分-->
+    <div id="overlay">
+    </div>
+    <!--层遮罩部分结束-->
+    <div id="win" class="ui-jhtablebox ui-widget ui-draggable ui-jhtablebox-top" tabindex="-1"
+        role="jhtablebox" aria-labelledby="ui-dialog-title-checkNoPass" style="z-index: 1002;
+        outline: 0px; height: auto; width: 550px; top: 209px; left: 445px; display: none;
+        background-color: White;">
+        <div>
+            <div class="ui-jhsingletablebox-leftcorner">
+            </div>
+            <div class="ui-jhsingletablebox-rightcorner">
+            </div>
+            <h2 class="ui-jhsingletablebox-titlebar ui-helper-clearfix">
+                <span class="ui-dialog-title" id="ui-dialog-title-checkNoPass" style="margin-bottom: 4px;">
+                    添加/编辑分类</span><a href="#" class="ui-dialog-titlebar-button" role="button"><span id="close"
+                        class="ui-icon ui-tabbox-icon ui-tabbox-icon-close" title="关闭">关闭</span></a>
+            </h2>
+        </div>
+        <div id="checkNoPass" style="padding: 10px; margin: 0px auto; width: auto; min-height: 0px;"
+            class="ui-jhtablebox-element ui-jhtablebox-content ui-corner-bottom">
+            <div class=" formList">
+                <div class="item">
+                    <span class="tabCell tabCellWth"><span class="required">*</span><label>分类名称：</label></span>
+                    <span class="tabCell">
+                        <input type="text" id="txtCategoryName" class="inp-txt w200" maxlength="10" value=""
+                            oninput="change(this)" />
+                    </span>
+                </div>
+                <div class="item">
+                    <span class="tabCell tabCellWth"><span class="required">*</span><label>分类编码：</label></span>
+                    <span class="tabCell">
+                        <input type="text" id="txtCategoryCode" class="inp-txt w200" maxlength="10" value="" />
+                    </span>
+                </div>
+                <div class="item">
+                    <span class="tabCell tabCellWth"><span class="required">*</span><label>父级分类：</label></span>
+                    <span class="tabCell">
+                        <input type="text" id="txtParentCategory" class="inp-txt w200" maxlength="50" value=""
+                            disabled="true" />
+                    </span>
+                </div>
+                <div class="item" style="text-align: center">
+                    <a id="ReleaseClick" onclick="SaveN()" class="btn60">保存</a> <a onclick="CloseN()"
+                        class="btn60">取消</a>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" id="hidId" value="" />
+        <input type="hidden" id="hidCurCommodityCount" value="" />
+    </div>
+    <div id="loadImgDiv" style="overflow: hidden; width: auto; min-height: 0; height: 470px;
+        display: none;">
+        <iframe id="contentFrame" name="contentFrame" scrolling="no" src="" height="480"
+            width="630" frameborder="0" style="border: 0; overflow: hidden;"></iframe>
+    </div>
+</body>
+</html>

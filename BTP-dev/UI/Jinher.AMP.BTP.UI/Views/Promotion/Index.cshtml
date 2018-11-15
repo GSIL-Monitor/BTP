@@ -1,0 +1,392 @@
+﻿@{
+    ViewBag.Title = "促销列表";
+}
+<head>
+    <title>促销管理</title>
+    <script src="/Scripts/DatePicker/jquery.ui.datepicker.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhdatetime.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhstartandenddate.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        function win(url, obj, width, height) {
+            return window.showModalDialog(url, obj || window, "center=1;dialogWidth=" + (width || 970) + "px;dialogHeight=" + (height || 620) + "px;")
+        }
+    </script>
+    <script type="text/javascript">
+        document.ondragstart = function () { return false; }
+        $(document).ready(function () {
+
+            $("#AddPromotion").bind("click", function () {
+                // window.open("/Promotion/AddPromotion/");
+                window.location.href = "/Promotion/AddPromotion?appId=" + getQueryString('appId');
+            });
+
+            $('#EndTime').datepicker({
+
+                changeMonth: true,
+
+                changeYear: true,
+
+                showOtherMonths: true,
+
+                selectOtherMonths: true
+
+            });
+
+            $('#StartTime').datepicker({
+
+                changeMonth: true,
+
+                changeYear: true,
+
+                showOtherMonths: true,
+
+                selectOtherMonths: true
+            });
+
+
+            $(".del").bind("click", function () {
+                var id = this.id;
+                if (confirm("确定要删除吗?")) {
+                    $.ajax({
+                        url: '/Promotion/DelPromotion/',
+                        type: 'post',
+                        dataType: 'json',
+                        data: { promotionId: id },
+                        error: function () {
+                            alert("删除错误");
+                        },
+                        success: function () {
+                            window.location.href = location.href
+                        }
+
+                    });
+                }
+            });
+            function showContent(event, data) {
+                //                $("#dataTable").replaceWith(data);
+                $("#content_makes").html(data);
+                newSetIframeHeight();
+            }
+
+            $("#pager").jhpager({
+                dataType: 'html',
+                requestType: 'post',
+                dataSource: '/Promotion/PartialIndex',
+                async: true,
+                totalCount: '@ViewBag.Count',
+                rowNum: 10,
+                requestSuccess: showContent,
+                beforeRequest: function () {
+                    $("#content_makes").empty();
+                    $(window.parent.document).scrollTop(0);
+                    ajaxLoading(1, '#content_makes');
+                },
+                requestFailure: function () {
+                }
+            });
+
+            function win(url, obj, width, height) {
+                return window.showModalDialog(url, obj || window, "center=1;dialogWidth=" + (width || 970) + "px;dialogHeight=" + (height || 620) + "px;");
+            }
+        });
+
+
+        function searchCommodity(promotionId, Intensity) {
+            var url = "/Promotion/PromotionCommodityDetail?promotionId=" + promotionId + "&intensity=" + Intensity;
+            var ret = win(url, null, null, 620);
+        }
+
+        function toSearch(obj) {
+            var StartTime = $("#StartTime").val();
+            var EndTime = $("#EndTime").val();
+            var Sintensity = $("#Sintensity").val();
+            var Eintensity = $("#Eintensity").val()
+            var CommodityName = $("#ssalesvolume").val()
+            var State = $("#State").val();
+            $.ajax({
+                url: '/Promotion/PartialIndex',
+                type: 'post',
+                data: { startTime: StartTime, endTime: EndTime, sintensity: Sintensity, eintensity: Eintensity, commodityName: CommodityName, state: State },
+                success: function (html) {
+                    sendSuccess(html);
+                    var rowCount = $("#rowcounts").val();
+                    $("#pager").jhpager("refresh", 1, rowCount);
+                },
+                beforeSend: beforeSends,
+                complete: function () {
+                    //		            ajaxLoading(1, '');
+                },
+                error: function () {
+                    alert("请稍后再试！！！！！");
+                }
+
+            });
+        }
+
+
+    </script>
+    <style type="text/css">
+        .item
+        {
+            line-height: 28px;
+            margin-bottom: 10px;
+            min-height: 28px;
+            padding-left: 10px;
+        }
+        
+        .lable
+        {
+            display: block;
+            float: left;
+            width: 125px;
+            line-height: 28px;
+            padding-right: 5px;
+            margin-left: -130px;
+            _display: inline;
+            text-align: right;
+        }
+        input.inp-txt
+        {
+            height: 18px;
+            line-height: 18px;
+            border: 1px solid #B6C0CD;
+            padding: 4px 5px;
+            vertical-align: middle;
+            border-radius: 3px;
+            box-shadow: inset 1px 1px 2px #DBDBDB;
+        }
+        .btn120
+        {
+            display: inline-block;
+            width: 120px;
+            height: 28px;
+            line-height: 28px;
+            background: url(../Content/default/images/btn120.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+        }
+        
+        select
+        {
+            width: 70px;
+            height: 27px;
+            line-height: 27px;
+            padding: 3px;
+            border: 1px solid #B8BFCF;
+            border-radius: 3px;
+            text-align: center;
+            margin-bottom: 10px;
+            color: #8c94a9;
+        }
+        td.five a, td.eight a
+        {
+            color: #409FFF;
+        }
+        td.five a:hover, td.eight a:hover
+        {
+            color: #80BDE3;
+        }
+        
+        .btn60
+        {
+            display: inline-block;
+            width: 60px;
+            height: 28px;
+            line-height: 28px;
+            background: url(../Content/default/images/btn60.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+        }
+    </style>
+</head>
+<div class="box" style="padding: 0;">
+    <div class="content">
+        <!--div class="right1">
+                <div class="manag_top manag_top3" style="height:auto;">        
+					<div style="float:left;">
+						<div class="item">
+							<span class="lable">促销时间：</span>
+							<input type="text" id="StartTime" class="inp-txt" style="width:200px;"/>
+							&nbsp;- &nbsp;
+							<input type="text" id="EndTime" class="inp-txt" style="width:200px;"/>
+						</div>
+						<div class="item">
+							<span class="lable">促销商品：</span>
+							<input type="text" id="ssalesvolume" class="inp-txt" style="width:200px;"/>
+							<span style="margin-left:20px;">促销状态：</span>
+							<select id="State">
+								<option value="">请选择</option>
+								<option value="0">促销中</option>
+								<option value="1">已结束</option>
+								<option value="2">未开始</option>
+							</select>
+						</div>
+					</div>
+					<div style="float:right;">
+						<div class="item">
+							<span class="lable">折扣：</span>
+							<input type="text" id="Sintensity" class="inp-txt" style="width:200px;"/>
+							&nbsp;- &nbsp;
+							<input type="text" id="Eintensity" class="inp-txt" style="width:200px;"/>
+						</div>
+						<div class="item">
+							<span class="lable" style="color:transparent;">按钮：</span>
+							<a class="btn120" id="search"  href="###" onclick="toSearch(this)">查询</a>
+						</div>
+					</div>
+					<div style="clear:both;"></div>			
+                </div-->
+        <div style="margin-top: 10px; height: 45px;">
+            <span>促销时间：</span>
+            <input type="text" id="StartTime" class="inp-txt" style="width: 70px;" />
+            <strong style="font-weight: normal;">-</strong>
+            <input type="text" id="EndTime" class="inp-txt" style="width: 70px;" />
+            <span style="margin-left: 5px;">折扣：</span>
+            <input type="text" id="Sintensity" class="inp-txt" style="width: 30px;" />
+            <strong style="font-weight: normal;">-</strong>
+            <input type="text" id="Eintensity" class="inp-txt" style="width: 30px;" />
+            <span style="margin-left: 5px;">促销商品：</span>
+            <input type="text" id="ssalesvolume" class="inp-txt" style="width: 70px;" />
+            <span style="margin-left: 5px;">促销状态：</span>
+            <select id="State">
+                <option value="">请选择</option>
+                <option value="0">促销中</option>
+                <option value="1">已结束</option>
+                <option value="2">未开始</option>
+            </select>
+            <a class="btn60" id="search" href="javascript:;" style="margin-left: 10px;" onclick="toSearch(this)">
+                查询</a>
+        </div>
+        <div style="background: #F2F2F2; margin-bottom: 0; font-size: 14px; height: 40px;
+            line-height: 35px; text-align: right;">
+            <a class="btn120" href="javascript:;" id="AddPromotion" style="margin-right: 5px;">发布促销信息</a>
+        </div>
+        <div class="manag_bot" style="width: 100%; margin-top: 10px;">
+            <div id="content_makes">
+                <table id="dataTable" border="0" cellspacing="0" cellpadding="0" class="m_talbe">
+                    <tr class="t_tr1">
+                        <td class="one">
+                            序号
+                        </td>
+                        <td class="two">
+                            促销名称
+                        </td>
+                        <td class="three">
+                            促销时间
+                        </td>
+                        <td class="four">
+                            折扣
+                        </td>
+                        <td class="five">
+                            促销商品
+                        </td>
+                        <td class="six">
+                            宣传图片
+                        </td>
+                        <td class="seven">
+                            状态
+                        </td>
+                        <td class="eight">
+                            操作
+                        </td>
+                    </tr>
+                    @{int index = 1;
+                      foreach (Jinher.AMP.BTP.Deploy.CustomDTO.DiscountsVM promotion in ViewBag.PromotionList)
+                      {
+                        <tr class="t_tr2">
+                            <td class="one">
+                                @index
+                            </td>
+                            <td class="two">
+                                @promotion.Name
+                            </td>
+                            <td class="three">
+                                @{
+                           string time = string.Empty;
+                           if (promotion.StartTime != null && promotion.StartTime.ToString() != "")
+                           {
+                               time = promotion.StartTime.ToString("yyyy-MM-dd HH:mm");
+                           }
+                           if (promotion.EndTime != null && promotion.EndTime.ToString() != "")
+                           {
+                               time += "-" + promotion.EndTime.ToString("yyyy-MM-dd HH:mm");
+                           }
+                                }
+                                @time
+                            </td>
+                            <td class="four">
+                                @{
+                           string inten = string.Empty;
+                           if (promotion.Intensity.ToString() == "10.00")
+                           {
+                               inten = "无折扣,有优惠价";
+                           }
+                           else
+                           {
+                               int indx = promotion.Intensity.ToString().IndexOf('.');
+
+                               if (indx > 0)
+                               {
+                                   if (promotion.Intensity.ToString().Substring(indx + 1, 1) == "0")
+                                   {
+                                       inten = promotion.Intensity.ToString().Substring(0, 1);
+                                   }
+                                   else
+                                   {
+                                       inten = promotion.Intensity.ToString().Substring(0, 3);
+                                   }
+                               }
+                           }
+                                }
+                                @inten
+                            </td>
+                            <td class="five">
+                                @{
+                           string commodityString = string.Empty;
+                           if (promotion.Commoditys.Count > 3)
+                           {
+                               promotion.Commoditys.RemoveAt(3);
+                               commodityString = string.Join(",", promotion.Commoditys) + "...";
+                           }
+                           else
+                           {
+                               commodityString = string.Join(",", promotion.Commoditys);
+                           }
+                                }<a  href="../Promotion/PromotionCommodityDetail?promotionId=@promotion.PromotionId&intensity=@promotion.Intensity" target="_blank">@commodityString</a>
+                            </td>
+                            <td class="six">
+                                <img src="@promotion.PicturesPath" width="120" height="120" alt="" draggable="false"/>
+                            </td>
+                            <td class="seven">
+                                @if (promotion.StartTime > DateTime.Now)
+                                {
+                                    <text>未开始</text>
+                                }
+                                @if (promotion.StartTime < DateTime.Now && promotion.EndTime > DateTime.Now)
+                                {
+                                    <text>促销中</text>
+                                }
+                                @if (promotion.EndTime < DateTime.Now)
+                                {
+                                    <text>已结束</text>
+                                }
+                            </td>
+                            <td class="eight">
+                                @*                                   @if (promotion.EndTime >= DateTime.Now)
+                                   {*@ <span><a href="/Promotion/UpdatePromotion?promotionId=@promotion.PromotionId">编辑</a></span>
+                                @* }*@ <span><a href="javascript:void(0)" class="del" id="@promotion.PromotionId">删除</a></span>
+                            </td>
+                        </tr>
+                                                                                     index++;
+                      }}
+                </table>
+            </div>
+            <div id="pager">
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,267 @@
+﻿@{ Layout = null; bool showExp = false; List<Jinher.AMP.BTP.Deploy.ExpressTraceDTO> traces = null;
+    if (ViewBag.ExpressRoute == null)
+    {
+    showExp = false;
+    }
+    else
+    {
+    Jinher.AMP.BTP.Deploy.CustomDTO.ResultDTO<Jinher.AMP.BTP.Deploy.CustomDTO.OrderExpressRouteExtendDTO> expressResult = ViewBag.ExpressRoute as Jinher.AMP.BTP.Deploy.CustomDTO.ResultDTO<Jinher.AMP.BTP.Deploy.CustomDTO.OrderExpressRouteExtendDTO>;
+        if (expressResult.ResultCode != 0
+        || expressResult.Data == null
+        || expressResult.Data.Traces == null
+        || expressResult.Data.Traces.Count == 0)
+        {
+        showExp = false;
+        }
+        else
+        {
+        showExp = true;
+        traces = expressResult.Data.Traces;
+        }
+        }
+        }
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="x5-orientation" content="portrait">
+    <meta name="full-screen" content="yes">
+    <meta name="x5-fullscreen" content="true">
+    <meta name="browsermode" content="application">
+    <meta name="x5-page-mode" content="app">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="black" name="apple-mobile-web-app-status-bar-style">
+    <meta content="telephone=no" name="format-detection">
+    <title>查看物流</title>
+    <link href="/Content/Mobile/zphStyle/checkLogistics.css?v1" rel="stylesheet" type="text/css" />
+    <script src="/Content/Mobile/zepto.min.js"></script>
+    <script src="/Content/Mobile/Common.js"></script>
+    <script src="/Content/Mobile/clipboard.min.js"></script>
+
+    <script type="text/javascript">
+        function getQueryString(name, str) {
+            var r = str ? str.split('?')[1] : '' || window.location.search.substr(1);
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+            r = r.match(reg);
+            if (r != null) return unescape(r[2]);
+            return null;
+        }
+    </script>
+</head>
+<body>
+<div class="page">
+    <!--<header class="header hide">
+        <a id="aBack" href="javascript:void(0);" class="header-left"><img src="/Content/Mobile/angle-left.png" alt="返回"/></a>
+        <h1 class="header-title">查看物流</h1>
+    </header>-->
+    <div class="content">
+       
+        <div class="order-logistics-wrap">
+            <div class="order-logistics">
+                <img src="/Content/Mobile/xiaoqiche.png">
+                <div class="order-logistics-info">
+                    <div class="name">物流公司：@ViewBag.ShipperCode</div>
+                    <div class="number" style="cursor:pointer;" onclick="viewTrace(this);" id="@ViewBag.ExpOrderNo" >物流单号：@ViewBag.ExpOrderNo<a class="copy" href="javascript: void(0)" data-clipboard-text="@ViewBag.ExpOrderNo">复制</a></div>
+                    <div class="number"><a style="cursor:pointer;" class="copy" href="javascript: void(0)" onclick="ToKD100()">第三方查询</a></div>
+                </div>
+            </div>
+        </div>
+        <input type="hidden"" name="expNos" id="expNos" value="@ViewBag.SubExpressNos"  />
+        <div id="subExpNoDiv" style="display:none; padding-left:10px;height:50px;">
+        </div>
+        @if (showExp){
+        int i = 0;
+        <div id="logisticsDiv" class="check-logistics">
+            <div class="name">物流跟踪</div>
+            <ul class="logistics-info">
+                @foreach (Jinher.AMP.BTP.Deploy.ExpressTraceDTO et in traces.OrderByDescending(p=>p.AcceptTime))
+                {
+                string acceptTime = et.AcceptTime.ToString("yyyy-MM-dd HH:mm:ss");
+                System.Text.RegularExpressions.Regex regex = new  System.Text.RegularExpressions.Regex("(\\d{7,})",System.Text.RegularExpressions.RegexOptions.Multiline);
+                string result = regex.Replace(et.AcceptStation, "<a href='tel:$1'>$1</a>");
+                if (result.Contains("感谢您在京东购物"))
+                {
+                    result = result.Replace("感谢您在京东购物","感谢您在易捷北京购物");
+                }
+                <li>
+                    <div class="mark">
+                        <div class="line"></div>
+                        <i></i>
+                    </div>
+                    <div class="introduce">
+                        <div class="introduce-info">@Html.Raw(result)</div>
+                        <div class="time">@acceptTime</div>
+                    </div>
+                </li>
+                i++;
+                }
+            </ul>
+        </div>
+        }else{
+        <div style="margin-top: 20px;">
+            <p style="text-align: center;">
+                没有找到相关物流信息!</p>
+        </div>
+        }
+    </div>
+</div>
+<script type="text/javascript"  src="/Scripts/h5New/libs/mobileKit/mobileKit.min.js"></script>
+<script type="text/javascript" src="../../Scripts/Asy.js"></script>
+<script type="text/javascript">
+    // 对Date的扩展，将 Date 转化为指定格式的String   
+    // 月(M)、日(d)、小时(h)、分(m)、秒(s)、季度(q) 可以用 1-2 个占位符，   
+    // 年(y)可以用 1-4 个占位符，毫秒(S)只能用 1 个占位符(是 1-3 位的数字)   
+    // 例子：   
+    // (new Date()).Format("yyyy-MM-dd hh:mm:ss.S") ==> 2006-07-02 08:09:04.423   
+    // (new Date()).Format("yyyy-M-d h:m:s.S")      ==> 2006-7-2 8:9:4.18   
+    Date.prototype.Format = function (fmt) { //author: meizz   
+        var o = {
+            "M+": this.getMonth() + 1,                 //月份   
+            "d+": this.getDate(),                    //日   
+            "h+": this.getHours(),                   //小时   
+            "m+": this.getMinutes(),                 //分   
+            "s+": this.getSeconds(),                 //秒   
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度   
+            "S": this.getMilliseconds()             //毫秒   
+        };
+        if (/(y+)/.test(fmt))
+            fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt))
+                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+    function viewTrace(o) {
+        var no = o.id;
+        if (no) {
+            //生成参数请求.
+            var param = "";
+            var oldUrl = window.location.href.toString().substr(window.location.href.indexOf('?'));
+            param += oldUrl;
+            param += "&SubExpressNo=" + no;
+
+            new Asy(false).sendAsyn("SubExpressNos" + param, backSubExpressNos);
+        }
+
+    }
+
+    function ToKD100() {
+        var url = "https://m.kuaidi100.com/index_all.html?type=&postid=@ViewBag.ExpOrderNo&callbackurl=" + encodeURIComponent(getQueryString('backUrl'));
+        document.location.href = url;
+    }
+
+    function backSubExpressNos(str) {
+        if (str == undefined)
+            return;
+        str = str.trim();
+        if (str == "")
+            return;
+        //准备：
+        logisticsDiv.innerHTML = "";
+        var rowHtml = "<li><div class=\"mark\"><div class=\"line\"></div><i></i></div><div class=\"introduce\"><div class=\"introduce-info\">描述</div><div class=\"time\">接手时间</div></div></li>";
+        var rowHtmlSub = "<a>#</a>";
+        //标题：
+        var littleTitleDiv = document.createElement("div");
+//        littleTitleDiv.className = "name";
+        littleTitleDiv.innerText = "物流跟踪";
+        //物流轨迹：
+        var jsn = JSON.parse(str);
+        if (jsn.Data == undefined) return;
+        jsn = jsn.Data;
+        if (jsn.Traces == undefined) return;
+        jsn = jsn.Traces;
+        if (jsn.length == 0) return;
+        for (var i = 0; i < jsn.length; i++) {
+            var tmpO = jsn[i];
+            if (tmpO == undefined) continue;
+            if (tmpO.AcceptStation == undefined) continue;
+            if (tmpO.AcceptTime == undefined) continue;
+            var perRowTrace = document.createElement("ul");
+            perRowTrace.className = "logistics-info";
+            //每一行内的每一个字段；
+            var row = rowHtml;
+            var rowS = rowHtmlSub;
+            rowS = rowS.replace('#', tmpO.AcceptStation);
+            rowS = rowS.replace('#', tmpO.AcceptStation);
+            row = row.replace("描述", rowS);
+            var dateStr = eval(tmpO.AcceptTime.replace(/\/Date\((\d+)\)\//gi, "new Date($1)")).Format('yyyy-M-d h:m');
+            //var dt_ = eval(tmpO.AcceptTime.replace('/', '').replace('/', ''));
+            //dt_ = new Date(dt_);
+            row = row.replace("接手时间",dateStr);// dt_.getFullYear()+'-' + (dt_.getMonth() + 1)+'-'+dt_.getDate()+' '+dt_.getHours()+':'+dt_.getMinutes()+':'+dt_.getSeconds());
+            perRowTrace.innerHTML = row;
+
+            logisticsDiv.appendChild(perRowTrace);
+        }
+        
+
+    }
+    window.onload = function () {
+        window.setTimeout(function () {
+            var exp = expNos.value;
+            if (exp != "") {
+                exp = exp.split(',');
+                if (exp)
+                    if (exp.length > 0) {
+
+                        var titl = document.createElement("div");
+                        titl.innerText = "-------子包裹-------";
+                        titl.style = "font-size:12px;";
+                        subExpNoDiv.appendChild(titl);
+                        var nosDiv = document.createElement("div");
+
+
+                        for (var i = 0; i < exp.length; i++) {
+                            var one = exp[i];
+                            subExpNoDiv.style.display = "block";
+                            var divExp = document.createElement("span");
+                            divExp.id = "" + one;
+                            divExp.style = "display:inline-block; float:left; width:120px;height:26px;line-height:22px;line-height:22px;background-color:white;margin:2px;padding:2px;border:solid 1px orange;cursor:pointer;text-align:center;";
+                            divExp.innerText = "" + one;
+                            divExp.onclick = function () {
+                                //生成参数请求.
+                                var param = "";
+                                var oldUrl = window.location.href.toString().substr(window.location.href.indexOf('?'));
+                                param += oldUrl;
+                                param += "&SubExpressNo=" + this.id;
+
+                                new Asy(false).sendAsyn("SubExpressNos" + param, backSubExpressNos);
+                            }
+                            nosDiv.appendChild(divExp);
+
+
+                        }
+                        subExpNoDiv.appendChild(nosDiv);
+
+                    }
+            }
+        }, 200);
+    }
+
+</script>
+<script type="text/ecmascript">
+    $(function () {
+        /* if (!isWeiXin() && (sessionStorage.source == "share" || getQueryString("source") == "share")) {
+        $("header").removeClass("hide");
+        $('.content').addClass('top44');
+        }
+        else {
+        $("header").addClass("hide");
+        $('.content').removeClass('top44');
+        }*/
+
+        $("#aBack").on("click", function () {
+            document.location.href = getQueryString("backUrl");
+        });
+
+        //复制剪贴板
+        var clipboard = new Clipboard('.copy');
+        clipboard.on('success', function (e) {
+            toast('复制成功');
+        });
+    });
+</script>
+</body>
+</html>

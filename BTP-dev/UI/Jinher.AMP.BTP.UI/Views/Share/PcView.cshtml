@@ -1,0 +1,177 @@
+﻿@{Layout = null;}<!DOCTYPE html>
+<html>
+<head>
+    <title>@Html.Raw(ViewBag.AppName)</title>
+    <script type="text/javascript" src="/Scripts/jquery.js"></script>
+    <style type="text/css">
+        html,body{background:transparent;font-family:微软雅黑}a{text-decoration:none;font-size:14px}h2{font-size:22px;text-align:center;padding:5px 5px 0 0;margin:5px}.imgCursor{cursor:pointer}img{border:none}.top{font-size:14px;text-align:center;padding:5px 5px 10px 5px;zoom:1}.content{font-size:16px;line-height:1.5;text-align:justify;-webkit-text-align-last:justify;padding-top:10px;}.down{text-align:center}.down img{width:213px;height:40px}.left{float:left;width:150px;text-align:left;color:#999999}.right{float:right}
+        .attach{text-align:justify;-webkit-text-align-last:justify;clear:both;padding:5px 0;}.attachFile{padding:0 auto; text-align:center;}.attachName{font-family:微软雅黑;font-size:16px;text-align:center;margin:10px 0;}
+        .audio{font-weight:bold;clear:both;}.audioLink{color:#0099ff;margin:0 5px;}.audioLinkDiv{clear:none;padding:5px;}.audioFlag{width:40px;height:20px;color:white;background-color:#0099ff;clear:none;padding:2px;margin-top:5px; vertical-align:middle;text-align:center;float:left;}
+    </style>
+</head>
+<body style=" width:960px; margin:0 auto; padding:0;" >
+<script>    document.body.onselectstart = document.body.oncontextmenu = function () { return false; };</script>
+<div style=" margin-top:15px; clear:both;"></div>
+<div style=" width:700px; float:left; border:1px solid #E3E3E3;" >
+    <div id="conDiv" style=" width:650px; margin:0 auto;">
+        <h2 style=" text-align:left;" id="title">@Html.Raw(ViewBag.CommdityName)</h2>
+        <div class="top">
+        <div class="left">来自：@ViewBag.AppName</div>
+        <div class="left" style=" text-align:center;">销量：@ViewBag.SalesNumber</div>
+        <div class="left">收藏量：@ViewBag.CollectNumber</div>
+        </div>
+        <div style=" clear:both;"></div>       
+        <div id="contentDiv" class="content">
+        <img src="@ViewBag.CommdityImage" alter="商品图片" style="max-height:290px;max-width:330px;"/>
+        </div>
+        <!-- JiaThis Button BEGIN -->
+        <div class="jiathis_style" style="margin: 19px 0 8px 0; ">
+            <a class="jiathis_button_qzone"></a><a class="jiathis_button_tsina"></a><a class="jiathis_button_tqq">
+            </a><a class="jiathis_button_weixin"></a><a class="jiathis_button_renren"></a><a
+                class="jiathis_button_xiaoyou"></a><a href="http://www.jiathis.com/share?uid=1872250"
+                    class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a><a class="jiathis_counter_style">
+                    </a>
+        </div>
+        <div style=" clear:both;"></div>
+        <script type="text/javascript">
+            var jiathis_config = { data_track_clickback: 'true' };
+        </script>
+        <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1354332409055583" charset="utf-8"></script>
+        <!-- JiaThis Button END -->
+        <div style=" clear:both;"></div>
+    </div>
+</div>
+<div style=" width:245px; height:624px; float:right; border:1px solid #E3E3E3; text-align:center;">
+    <ul style=" width:245px; height:624px;list-style:none; margin:0;padding:0;">
+        <li style=" margin-top:20px;">
+            <img width="96" height="96" src="@ViewBag.Icon" />
+        </li>
+        <li id="AppPackageName" style=" font-size:30px; margin-top:2px;">@this.ViewBag.AppName</li>
+        <li style=" font-size:12px; color:#999999; margin-top:15px; ">
+            <label style="vertical-align:bottom;"> @ViewBag.CommentCount 人下载</label>
+        </li>
+        <li style=" margin-top:39px;">
+            <a id="iPhoneUrl" target="_blank" style="width:180px; height:51px; display:block; margin:0 auto"></a>
+        </li>
+        <li style="margin-top:19px;">
+            <a id="AppUrl" target="_blank" style=" width:180px; height:51px; display:block; margin:0 auto"></a>            
+        </li>
+        <li style="margin-top:19px; height:50px; line-height:25px;">
+            <span id="forPhoneSpan"><img src="/Content/images/forPhone.png" class="imgCursor" onclick="show()" /></span>
+            <span id="forPhoneSend" style=" font:12px; display:none;">
+                <input type="text" id="phoneNum" class="inp-txt" onkeypress="return JSTools.numberOnly()" maxlength="11" style=" width:100px;" />
+                <a href="javascript:" onclick="SendDownLoad(this)">发送下载地址</a>
+                <a href="javascript:" onclick="back()" style=" color:#666666">返回</a><br />
+                <span id="messageSpan" style=" display:none;font-size:12px;"><span id="numSpan"></span>秒之后，可再次发送</span>
+            </span>
+        </li>
+        <li style="margin-top:19px;">
+            <img src="@ViewBag.QRCodeUrl" width="128" height="128" />
+        </li>
+        <li style="font-size:14px; color:#999999;">
+           <span>扫描二维码即可下载</span>
+        </li>
+    </ul>
+</div>
+</body>
+</html>
+<script type="text/javascript" src="/Scripts/jquery.js"></script>
+<script type="text/javascript" src="/Scripts/JSTools.js"></script>
+<script type="text/javascript">
+    if ("@ViewBag.iPhoneUrl" == "") {
+        $("#iPhoneUrl").css("background-image", "url(/Content/images/iPhoneNo.png)")
+    }
+    else {
+        $("#iPhoneUrl").css("background-image", "url(/Content/images/iPhone.png)")
+        $("#iPhoneUrl").attr("href", "@ViewBag.iPhoneUrl")
+    }
+    if ("@ViewBag.AppUrl" == "") {
+        $("#AppUrl").css("background-image", "url(/Content/images/AndroidNo.png)")
+    }
+    else {
+        $("#AppUrl").css("background-image", "url(/Content/images/Android.png)")
+        $("#AppUrl").attr("href", "@ViewBag.AppUrl")
+    }
+
+    function show() {
+        $("#forPhoneSpan").hide();
+        $("#forPhoneSend").show();
+    }
+    function back() {
+        $("#phoneNum").val("");
+        $("#forPhoneSpan").show();
+        $("#forPhoneSend").hide();
+    }
+
+    var wait = 0;
+    function SendDownLoad(o) {
+        if ($("#phoneNum").val().length != 11) {
+            alert("手机号码格式不正确");
+        }
+        else {
+            if (wait == 0) {
+                wait = 60;
+                SendMessage();
+                timeOut(o);
+                $("#messageSpan").show();
+                $(o).attr("onclick", "return false")
+            }
+        }
+    }
+    function timeOut(o) {
+        wait--;
+        $("#numSpan").html(wait);
+        if (wait == 0) {
+            $("#messageSpan").hide();
+            $(o).attr("onclick", "SendDownLoad(this)")
+        }
+        else {
+            setTimeout(function () { timeOut(o); }, 1000)
+        }
+    }
+    function getUrlPrerfix() {
+        var htmpro = (("https:" == document.location.protocol) ? "https://" : "http://");
+        var url = document.location.href;
+        var urlPrerfix = htmpro;
+        if (url.indexOf(htmpro + "dev") >= 0) {
+            urlPrerfix += "dev";
+        }
+        else if (url.indexOf(htmpro + "test") >= 0) {
+            urlPrerfix += "test";
+        }
+        return urlPrerfix;
+    }
+    function SendMessage() {
+        $.ajax({
+            async: true,
+            type: "post",
+            url: "/View/SendDownLoad",
+            dataType: "json",
+            data: { "phoneNum": $("#phoneNum").val(), "appUrl": getUrlPrerfix() + "app.iuoooo.com/AppAssembly/GetAppDetail?appId=@ViewBag.AppId", "appName": $("#AppPackageName").html(), "title": $("#title").html() },
+            success: function (res) {
+            },
+            error: function (err) {
+                alert("发送失败，请检查手机号码格式是否正确.");
+            }
+        });
+    }
+</script>
+
+<script type="text/javascript">
+    // 等比缩放图片
+    function DrawImg(img, boxWidth) {
+        var imgWidth = img.width;
+        var imgHeight = img.height;
+        if (imgWidth > boxWidth) {
+            var imgObj = $(img);
+            //重新设置img的width和height
+            imgObj.width("100%");
+            imgObj.height("auto");
+        }
+    }
+    var winWidth = 650;
+    var images = document.getElementsByTagName('img');
+    for (var i = 0; i < images.length; i++) {
+        images[i].onload = DrawImg(images[i], winWidth);
+    }
+</script>

@@ -1,0 +1,251 @@
+﻿@{
+    ViewBag.Title = "自动调价设置";
+    Layout = "~/Views/Shared/_Vue2Layout.cshtml";
+}
+<div class="content">
+    <div id="listWithFiltersPage">
+        <div class="content-inner">
+            <div id="bread" class="breadcrumb" >
+                <span>商品列表</span>
+                <span> > </span>
+                <span style="color:red">自动调价设置</span>
+                <a class="back" href="javascript:window.history.back();">
+                    <img src="/Content/images/wx-back.png"  /><span>&nbsp;返回上一级</span>
+                </a>
+            </div>
+            <div class="operations">
+                <el-button size="small" type="primary" icon="el-icon-add" @@click="handleCreating">新增指定店铺</el-button>  
+            </div>
+
+            <el-table :data="tableData" style="width: 100%;" class="scrollbar" max-height="860" element-loading-text="拼命加载中" v-loading="loading" border stripe>
+                <el-table-column type="index" lable="序号" width="60"></el-table-column>
+                <el-table-column prop="AppNames" label="指定店铺" min-width="200"></el-table-column>
+                <el-table-column prop="FloatPrice" label="浮动金额（元）" min-width="80"></el-table-column>
+                <el-table-column label="操作" width="195" align="center">
+                    <template scope="scope">
+                        <el-button type="primary" plain size="mini" @@click="handleUpdating(scope.row)">编辑</el-button>
+                        <el-button type="danger" plain size="mini" @@click="handleDelete(scope.row)">删除</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <!-- <div class="pagination-wrapper" v-show="!loading">
+                <el-pagination layout="total, sizes, prev, pager, next, jumper" @@size-change="handleSizeChange" @@current-change="handleCurrentChange" :total="total" :current-page="page" :page-sizes="[10, 20, 50, 100]" :page-size="pageSize" >
+                </el-pagination>
+            </div> -->
+        </div>
+    </div>
+</div>
+
+<template>
+    <el-dialog title="新增指定店铺" :visible.sync="createDialogVisible">
+        <el-form ref="createForm" :model="createForm" :rules="createFormRules" label-width="150px">
+            <el-form-item label="指定店铺：" prop="AppIds">
+                <el-select v-model="createForm.AppIds" multiple filterable placeholder="请选择">
+                    <el-option v-for="item in appOptions" :key="item.value" :label="item.label" :value="item.value" :disabled="item.disabled">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="浮动金额（元）：" prop="FloatPrice">
+                <el-input v-model.number="createForm.FloatPrice" style="max-width: 215px;"></el-input>
+            </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+            <el-button @@click="createDialogVisible=false">取 消</el-button>
+            <el-button type="primary" @@click="handleCreate" :loading="createSubimtLoading">保 存</el-button>
+        </span>
+    </el-dialog>
+</template>
+
+<template>
+    <el-dialog title="店铺调价设置" :visible.sync="updateDialogVisible">
+        <el-form ref="updateForm" :model="updateForm" :rules="createFormRules" label-width="150px">
+            <el-form-item label="指定店铺：" prop="AppIds">
+                <el-select v-model="updateForm.AppIds" multiple filterable placeholder="请选择">
+                    <el-option v-for="item in appOptions" :key="item.value" :label="item.label" :value="item.value" :disabled="item.disabled">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="浮动金额（元）：" prop="FloatPrice">
+                <el-input v-model.number="updateForm.FloatPrice" style="max-width: 215px;"></el-input>
+            </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+            <el-button @@click="updateDialogVisible=false">取 消</el-button>
+            <el-button type="primary" @@click="handleUpdate" :loading="createSubimtLoading">保 存</el-button>
+        </span>
+    </el-dialog>
+</template>
+
+
+@section Script{
+<script>
+var defaultVue = new Vue({
+    el: '#app',
+    data: {
+        appOptions:[],
+        createDialogVisible:false,
+        createSubimtLoading:false,
+        createForm:{
+            AppIds:'',
+            FloatPrice:''
+        },
+        createFormRules:{
+        //   AppIds: [
+        //     { required: true, type:'array', message: '请选择店铺', trigger: 'change' }
+        //   ],
+          FloatPrice: [
+            { required: true, message: '请输入浮动金额', trigger: 'blur' },
+            { type: 'number', message: '浮动金额必须为数字值'},
+            { type: 'number', min: 0.01, message: '浮动金额必须大于0', trigger: 'blur' }
+          ]
+        },
+        updateDialogVisible:false,
+        updateForm:{
+            Id:'',
+            AppIds:'',
+            FloatPrice:''
+        },
+        loading: true,
+        tableData: [],
+        total: 0,
+        page: 1,
+        pageSize: 20
+    },
+    methods: {
+        handleSearch: function () {
+            this.$refs['searchForm'].validate(function (valid) {
+                if (valid) {
+                    defaultVue.page = 1;
+                    defaultVue.fetchData();
+                } else {
+                    console.log('error submit!!');
+                }
+            });
+        },
+        handleSizeChange: function (val) {
+            this.pageSize = val;
+            this.handleCurrentChange(1);
+        },
+        handleCurrentChange: function (page) {
+            this.page = page || this.page;
+            this.fetchData();
+        },
+        fetchData: function () {
+            this.loading = true;
+            this.$http.post('@Url.Action("GetData")', {
+                PageSize: this.pageSize,
+                PageIndex: this.page,
+                AppId: '@ViewBag.AppId'
+            }).
+            then(function (res) {
+                defaultVue.loading = false;
+                if (res.body.isSuccess) {
+                    defaultVue.appOptions = res.body.Data.Apps;
+                    defaultVue.tableData = res.body.Data.List;
+                    defaultVue.total = res.body.Data.Count;
+                } else {
+                    defaultVue.$message.error(res.body.Message);
+                }
+            });
+        },
+        dateFormat: function (row, column) {
+            return moment(row.AmountDate).format("YYYY-MM-DD");
+        },
+        handleCreating: function() {
+            this.createDialogVisible = true;
+        },
+        handleCreate: function() {
+            this.$refs["createForm"].validate((valid) => {
+                if (valid) {
+                    this.createSubimtLoading = true;
+                    this.$http.post('@Url.Action("Add")', {
+                        EsAppId: '@ViewBag.AppId',
+                        AppIds: this.createForm.AppIds.join(','),
+                        FloatPrice: this.createForm.FloatPrice,
+                    }).
+                    then(function (res) {
+                        defaultVue.createSubimtLoading = false;
+                        if (res.body.isSuccess) {
+                            defaultVue.fetchData();
+                            defaultVue.createDialogVisible = false;
+                            defaultVue.$message.success('添加成功');
+                            defaultVue.$refs["createForm"].resetFields();
+                        } else {
+                            defaultVue.$message.error(res.body.Message);
+                        }
+                    });
+                } else {
+                    return false;
+                }
+            });
+        },
+        handleUpdating: function(row){
+            this.currentRow = row;
+            this.updateForm.Id = row.Id;
+            if(row.AppIds) {
+                this.updateForm.AppIds = row.AppIds.split(',');
+            } else {
+                this.updateForm.AppIds = [];
+            }
+            this.updateForm.FloatPrice = row.FloatPrice;
+            this.updateDialogVisible = true;
+        },
+        handleUpdate: function() {
+            this.$refs["updateForm"].validate((valid) => {
+                if (valid) {
+                    this.createSubimtLoading = true;
+                    this.$http.post('@Url.Action("Update")', {
+                        Id:this.updateForm.Id,
+                        EsAppId: '@ViewBag.AppId',
+                        AppIds: this.updateForm.AppIds.join(','),
+                        FloatPrice: this.updateForm.FloatPrice
+                    }).
+                    then(function (res) {
+                        defaultVue.createSubimtLoading = false;
+                        if (res.body.isSuccess) {
+                            defaultVue.fetchData();
+                            defaultVue.$message.success('修改成功');
+                            defaultVue.updateDialogVisible = false;
+                            defaultVue.currentRow = undefined;
+                        } else {
+                            defaultVue.$message.error(res.body.Message);
+                        }
+                    });
+                } else {
+                    return false;
+                }
+            });
+        },
+        handleDelete: function(row) {
+            this.$confirm('此操作将永久删除该记录, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                modalAppendToBody: false
+            }).then(() => {
+                    this.$http.post('@Url.Action("Delete")', {
+                        Id: row.Id
+                    }).
+                    then(function (res) {
+                        if (res.body.isSuccess) {
+                            defaultVue.fetchData();
+                            defaultVue.$message.success('删除成功');
+                        } else {
+                            defaultVue.$message.error(res.body.Message);
+                        }
+                    });
+            }).catch(() => {
+
+            });        
+        }
+    },
+    mounted: function () {
+        this.fetchData();
+        // newSetIframeHeight(0);
+    },
+    updated: function(){
+        // newSetIframeHeight(0);
+    }
+})
+</script>
+}

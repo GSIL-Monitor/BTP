@@ -1,0 +1,323 @@
+﻿@{
+    Layout = "~/Views/Shared/_IndexLayout.cshtml";
+}
+@section CssStyles{
+    <style type="text/css">
+        body
+        {
+            min-height: 300px;
+            font-size: 1.0em;
+        }
+        .yhzknum
+        {
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+            padding: 0 6px;
+            background-color: rgba(230,220, 228,.7);
+            color: #E4393C;
+            font-size: 12px;
+            line-height: 1.5;
+            text-align: center;
+        }
+        .toporder
+        {
+            height: 35px;
+            line-height: 35px;
+            text-align: center;
+        }
+        .toporder ul
+        {
+            width: 100%;
+            height: 100%;
+        }
+        .toporder ul li
+        {
+            float: left;
+            border: 1px solid gray;
+        }
+        #cdefault
+        {
+            border: 1px solid gray;
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+        }
+        #cnewcom
+        {
+            border: 1px solid gray;
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+        .topon
+        {
+            background: #eaeaea;
+        }
+        
+        
+        .kslider
+        {
+            width: 100%;
+            overflow: hidden;
+            margin: 0 auto;
+            background: #f0f0f0;
+        }
+        
+        .kslider .ks_warp
+        {
+            width: 100%;
+        }
+        
+        .kslider .ks_ts
+        {
+            -webkit-transition: 500ms;
+        }
+        .kslider .ks_dbox
+        {
+            width: 100%;
+            display: -webkit-box;
+            text-align: left;
+        }
+        
+        .kslider .ks_wt
+        {
+            display: -webkit-box;
+            margin: 0px;
+            padding: 0px;
+            -webkit-box-pack: center;
+        }
+        .kslider .ks_wt li
+        {
+            text-align: center;
+            list-style: none;
+            background: -webkit-linear-gradient(top, #AAAAAA 0%,#979797 100%);
+            color: #fff;
+        }
+        
+        .ks_wt_1 .ks_wt li
+        {
+            -webkit-box-flex: 1;
+            height: 35px;
+            line-height: 35px;
+            border-right: solid 1px #BBB;
+        }
+        .ks_wt_2 .ks_wt li
+        {
+            background: -webkit-linear-gradient(top, #e7e7e7 0%,#dfdfdf 100%);
+            text-indent: 20px;
+            height: 10px;
+            width: 10px;
+            overflow: hidden;
+            border-radius: 100%;
+            margin: 5px;
+        }
+        
+        .ks_wt_1 .ks_wt .ks_t2
+        {
+            background: -webkit-linear-gradient(top, #e7e7e7 0%,#dfdfdf 100%);
+            color: #000;
+        }
+        .ks_wt_2 .ks_wt .ks_t2
+        {
+            background: -webkit-linear-gradient(top, #AAAAAA 0%,#979797 100%);
+            -webkit-animation: kt2 500ms linear;
+        }
+        .ks_warp img
+        {
+            width: 100%;
+            height: auto;
+        }
+        .title
+        {
+            background-color: Black;
+            opacity: 0.6;
+        }
+        .ks_warp
+        {
+            position: relative;
+            z-index: 10;
+        }
+        .zcz
+        {
+            float: right;
+            padding: 1px 4px;
+            font-size: .6rem;
+            background-color: #000;
+            color: #fff;
+            display: none;
+        }
+        .footdi
+        {
+            font-size: .7rem;
+            box-shadow: 0px 0px 2px #c8c7cc;
+        }
+        #items
+        {
+            background-color: #E6E6EC;
+        }
+        .kslider
+        {
+            position: relative;
+        }
+        .kslider .ks_wt
+        {
+            position: absolute;
+            bottom: 2px;
+            width: 100%;
+        }
+        .kslider .ks_wt li
+        {
+            opacity: .2;
+            width: 6px;
+            height: 6px;
+        }
+        .kslider .ks_wt li.ks_t2
+        {
+            opacity: .6;
+        }
+    </style>
+}
+@section ClientScript{
+    <script src="../../Content/Mobile/zepto.kslider.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var html = "";
+        var service_type = "0x0009";
+        var needSpreadCode = true;
+        var frameSrc = "@ViewBag.ZPHUrl";
+        //document.domain = "iuoooo.com";
+
+        function JsVilaDataNull(obj) {
+            if (obj != undefined && obj != "" && obj != "null" && obj != null && obj != "undefined" && obj) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        if (getQueryString('isStart') == 0) {
+            alert("亲，活动还未开始哦~");
+        }
+        function getFrameSrc() {
+            if (JsVilaDataNull(getUserId()) && frameSrc.indexOf('user') < 0) {
+                if (frameSrc.indexOf('?') >= 0) {
+                    frameSrc = frameSrc + "&userId=" + getUserId();
+                } else {
+                    frameSrc = frameSrc + "?userId=" + getUserId();
+                }
+            }
+            if (frameSrc.indexOf('?') >= 0) {
+                frameSrc = frameSrc + "&type=" + sessionStorage.AppType + "&producttype=" + sessionStorage.ProductType;
+            } else {
+                frameSrc = frameSrc + "?type=" + sessionStorage.AppType + "&producttype=" + sessionStorage.ProductType;
+            }
+            if (frameSrc.toLowerCase().indexOf('srctype') < 0) {
+                if (frameSrc.indexOf('?') >= 0) {
+                    frameSrc = frameSrc + "&srctype=" + sessionStorage.SrcType;
+                } else {
+                    frameSrc = frameSrc + "?srctype=" + sessionStorage.SrcType;
+                }
+            }
+            if (frameSrc.toLowerCase().indexOf("source") < 0 ) {
+                if (frameSrc.indexOf('?') >= 0) {
+                    frameSrc = frameSrc + "&source=" + sessionStorage.source;
+                } else {
+                    frameSrc = frameSrc + "?source=" + sessionStorage.source;
+                }
+            }
+            if (frameSrc.toLowerCase().indexOf("wxOpenId") < 0 && JsVilaDataNull(sessionStorage.wxOpenId)) {
+                if (frameSrc.indexOf('?') >= 0) {
+                    frameSrc = frameSrc + "&wxOpenId=" + sessionStorage.wxOpenId;
+                } else {
+                    frameSrc = frameSrc + "?wxOpenId=" + sessionStorage.wxOpenId;
+                }
+            }
+
+        }
+        getFrameSrc();
+        CommodityList(true);
+
+        window.onload = function () {
+            if (!sessionStorage.appId || sessionStorage.appId == "null" || sessionStorage.appId == "undefined") {
+                sessionStorage.appId = sessionStorage.appIdCong;
+            }
+            if (getQueryString('opa') == "search") {
+                var nav = document.getElementById('Commodity_nav'),
+                    $nav = $(nav);
+                $nav.css({ position: "fixed", display: "block", left: "0px", top: "50px", bottom: "0" });
+                if (sessionStorage.ProductType == "webcjzy" || sessionStorage.ProductType == "appcjzy") {
+                    footmenu($("#guang"));
+                } else {
+                    footmenu($("#search"));
+                }
+            } else {
+                footmenu($("#guang"));
+            }
+            shareAndroid(null, "正品 • 特卖 • O2O轻松到家", document.location.origin + "/Content/images/zph_LOGO-72.png", window.location.href, 18);
+        };
+
+        $(function () {
+            saveContextDTOByUrl();
+            $("#guanggao").attr("src", frameSrc);
+            $(".toporder").width($(window).width());
+            $(".toporder ul li").width(($(window).width() / 4) - 2.1);
+            sessionStorage.ComTypeSearch = 0;
+
+            $('#footer_loading').show();
+
+            setTimeout(function () {
+                $("#guanggao").height($(window).height() - 100);
+            }, 200);
+
+        });
+
+     
+ 
+    </script>
+}
+<input type="hidden" id="userId" value="@ViewBag.UserId"/>
+<div id="box">
+    <div id="Commodity_nav" style="top: 50px; bottom: 0">
+        <div class="nav_list">
+            <ul id="nav_list">
+            </ul>
+        </div>
+    </div>
+    <div id="main" style="padding: 0; display: none" class="">
+        <div style="height: 50px;">
+        </div>
+        <div class="imgfor">
+        </div>
+        <div class="item_1 noDisplay" id="parent_item" style="background-color: #E6E6EC;">
+            <div class="item_1_s">
+                <div class="position_r">
+                    <div class="yhzknum">
+                    </div>
+                    <img class='picLazyLoadImg' src='/Content/Mobile/1.png' data-original='' alt='' />
+                    <div class="zk">
+                    </div>
+                    <div class="mb_box noDisplay">
+                        <div class="mb">
+                        </div>
+                        <p class="mb_1">
+                            已售完</p>
+                    </div>
+                </div>
+                <p class="item_title double_row">
+                    {name}</p>
+                <p class="item_price">
+                    <span class="price_1">{price1}</span><span class="price_2">{price2}</span><span class="zcz"
+                        style="display: none">众筹</span></p>
+            </div>
+        </div>
+        <div id="items" class="clearFloat">
+        </div>
+        <div id="footer_loading">
+            <span>获取更多信息</span>
+        </div>
+    </div>
+</div>
+<iframe id="guanggao" name="guanggao" width="100%" scrolling="no" marginwidth="0"
+    marginheight="0" style="margin-bottom: 50px; border: 0;"></iframe>
+<a href='#top' class='u-backtop'><span class='u-icon i-backtop'></span></a>
+<script src="../../Content/Mobile/zepto.picLazyLoad.js" type="text/javascript"></script>
+@Html.Raw(@Jinher.AMP.BTP.UI.Util.WebUtil.GetBehaviorRecordJs())

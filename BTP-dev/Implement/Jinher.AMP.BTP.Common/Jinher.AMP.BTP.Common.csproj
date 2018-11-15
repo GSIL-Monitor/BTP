@@ -1,0 +1,233 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{4D40B31E-3239-4671-8017-9CDA7E98C227}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Jinher.AMP.BTP.Common</RootNamespace>
+    <AssemblyName>Jinher.AMP.BTP.Common</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>obj\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>obj\Debug\Jinher.AMP.BTP.Common.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BookSleeve">
+      <HintPath>..\..\..\..\..\Lib\TP\BookSleeve.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.CBC.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.CBC.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.CBC.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.CBC.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.BF.BE.Deploy">
+      <HintPath>..\..\..\..\..\Lib\JAP\Interface\Jinher.JAP.BF.BE.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.BF.IBP">
+      <HintPath>..\..\..\..\..\Lib\JAP\Interface\Jinher.JAP.BF.IBP.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.Cache">
+      <HintPath>..\..\..\..\..\Lib\JAP\Implement\Jinher.JAP.Cache.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.Cache.CacheWrapper">
+      <HintPath>..\..\..\..\..\Lib\JAP\Implement\Jinher.JAP.Cache.CacheWrapper.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.Common">
+      <HintPath>..\..\..\..\..\Lib\JAP\Implement\Jinher.JAP.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.EMB.MB">
+      <HintPath>..\..\..\..\..\Lib\JAP\Implement\Jinher.JAP.EMB.MB.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.RedisCache">
+      <HintPath>..\..\..\..\..\Lib\JAP\Implement\Jinher.JAP.RedisCache.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\..\..\..\..\Lib\TP\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks">
+      <HintPath>..\..\..\..\..\Lib\TP\Microsoft.Threading.Tasks.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks.Extensions">
+      <HintPath>..\..\..\..\..\Lib\TP\Microsoft.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks.Extensions.Desktop">
+      <HintPath>..\..\..\..\..\Lib\TP\Microsoft.Threading.Tasks.Extensions.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\..\..\Lib\TP\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Bson, Version=1.8.2.34, Culture=neutral, PublicKeyToken=f686731cfb9cc103, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\TP\MongoDB.Bson.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Driver, Version=1.8.2.34, Culture=neutral, PublicKeyToken=f686731cfb9cc103, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\TP\MongoDB.Driver.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI">
+      <HintPath>..\..\..\..\..\Lib\TP\NPOI.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OOXML">
+      <HintPath>..\..\..\..\..\Lib\TP\NPOI.OOXML.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXml4Net">
+      <HintPath>..\..\..\..\..\Lib\TP\NPOI.OpenXml4Net.dll</HintPath>
+    </Reference>
+    <Reference Include="RabbitMQ.Client">
+      <HintPath>..\..\..\..\..\Lib\TP\rabbitmq-dotnet-client-3.5.3-dotnet-4.0\RabbitMQ.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="RabbitMQ.ServiceModel">
+      <HintPath>..\..\..\..\..\Lib\TP\rabbitmq-dotnet-client-3.5.3-dotnet-4.0\RabbitMQ.ServiceModel.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Common">
+      <HintPath>..\..\..\..\..\Lib\TP\ServiceStack.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Interfaces">
+      <HintPath>..\..\..\..\..\Lib\TP\ServiceStack.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Redis">
+      <HintPath>..\..\..\..\..\Lib\TP\ServiceStack.Redis.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Text">
+      <HintPath>..\..\..\..\..\Lib\TP\ServiceStack.Text.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AppBTPSearch.cs" />
+    <Compile Include="AppSearch.cs" />
+    <Compile Include="AppSearchResultDTO.cs" />
+    <Compile Include="AuthorizeHelper.cs" />
+    <Compile Include="BaseRequest.cs" />
+    <Compile Include="CommonUtil.cs" />
+    <Compile Include="Config\CrowdfundingAccountModel.cs" />
+    <Compile Include="Config\OrderPayBackSection.cs" />
+    <Compile Include="Config\WeChatSpreaderSection.cs" />
+    <Compile Include="ConsoleLog.cs" />
+    <Compile Include="Config\CustomConfig.cs" />
+    <Compile Include="DistanceHelper.cs" />
+    <Compile Include="EmailHelper.cs" />
+    <Compile Include="EMBPublishHelper.cs" />
+    <Compile Include="EnumHelper.cs" />
+    <Compile Include="ExcelHelper.cs" />
+    <Compile Include="Extensions\EnumExtensions.cs" />
+    <Compile Include="Extensions\ExpressionExtension.cs" />
+    <Compile Include="Extensions\SimpleMapper.cs" />
+    <Compile Include="FeatureConstant.cs" />
+    <Compile Include="Config\GeneralAgencyAccountModel.cs" />
+    <Compile Include="InputControl.cs" />
+    <Compile Include="Config\JhAccountModel.cs" />
+    <Compile Include="IPHelper.cs" />
+    <Compile Include="JdHelper.cs" />
+    <Compile Include="JsonHelper.cs" />
+    <Compile Include="MD5Helper.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MultiWorkTask.cs" />
+    <Compile Include="PhoneHelper.cs" />
+    <Compile Include="RabbitMqHelper.cs" />
+    <Compile Include="RedisConnectionGateway.cs" />
+    <Compile Include="LinqHelper.cs" />
+    <Compile Include="RedisHelperNew.cs" />
+    <Compile Include="RequestHelper.cs" />
+    <Compile Include="SerializationHelper.cs" />
+    <Compile Include="Snowflake.cs" />
+    <Compile Include="SQLHelper.cs" />
+    <Compile Include="StopwatchLogHelper.cs" />
+    <Compile Include="TimeHelper.cs" />
+    <Compile Include="TypeToStringHelper.cs" />
+    <Compile Include="MongoManager.cs" />
+    <Compile Include="OrderHelper.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProvinceCityHelper.cs" />
+    <Compile Include="RedisHelper.cs" />
+    <Compile Include="RedisQueque.cs" />
+    <Compile Include="RefUtil.cs" />
+    <Compile Include="Config\RentAgreementConfigSection.cs" />
+    <Compile Include="Config\SaleShareModel.cs" />
+    <Compile Include="SearchHelper.cs" />
+    <Compile Include="Config\ShareGoldAccoutModel.cs" />
+    <Compile Include="CrowdfundingConfig.cs" />
+    <Compile Include="SessionHelper.cs" />
+    <Compile Include="SignHelper.cs" />
+    <Compile Include="Config\SpreaderAccountModel.cs" />
+    <Compile Include="Config\ShareOwnerModel.cs" />
+    <Compile Include="Config\JinherBtpAccountModel.cs" />
+    <Compile Include="Ext\DecimalExt.cs" />
+    <Compile Include="Ext\LongExt.cs" />
+    <Compile Include="BTPAopLogAttribute.cs" />
+    <Compile Include="WebRequestHelper.cs" />
+    <Compile Include="BTPConstants.cs" />
+    <Compile Include="Ext\StringExt.cs" />
+    <Compile Include="FunctionCodeConst.cs" />
+    <Compile Include="XmlUtil.cs" />
+    <Compile Include="ApplyNameCategoryConfigSection.cs" />
+    <Compile Include="JdProvinceCityHelper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Interface\Jinher.AMP.BTP.Deploy\Jinher.AMP.BTP.Deploy.csproj">
+      <Project>{77DC4033-3DB5-4A90-B490-A6180CC64E44}</Project>
+      <Name>Jinher.AMP.BTP.Deploy</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy $(TargetDir)$(TargetName).dll $(TargetDir)..\..\..\..\..\..\..\Lib\BizApp\Implement\ /y
+xcopy $(TargetDir)$(TargetName).pdb $(TargetDir)..\..\..\..\..\..\..\Lib\BizApp\Implement\ /y
+xcopy $(TargetDir)$(TargetName).xml $(TargetDir)..\..\..\..\..\..\..\Lib\BizApp\Implement\ /y
+xcopy $(TargetDir)$(TargetName).dll $(TargetDir)..\..\..\..\..\..\..\Product\Portal\BizApp\Implement\ /y
+xcopy $(TargetDir)$(TargetName).pdb $(TargetDir)..\..\..\..\..\..\..\Product\Portal\BizApp\Implement\ /y
+xcopy $(TargetDir)$(TargetName).xml $(TargetDir)..\..\..\..\..\..\..\Product\Portal\BizApp\Implement\ /y</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

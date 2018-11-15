@@ -1,0 +1,251 @@
+﻿@model Jinher.AMP.BTP.Deploy.CustomDTO.SettleAccountDetailsDTO
+@{
+    ViewBag.Title = "结算单";
+    Layout = "~/Views/Shared/_VueLayout.cshtml";
+}
+
+@helper GetStatusDesc(int status)
+{
+    // 0、待结算 1、等待商家确认 2、待打款 3、已结算
+    if (status == 0)
+    {
+        @:待结算
+    }
+    else if (status == 1)
+    {
+        @:等待商家确认
+    }
+    else if (status == 2)
+    {
+        @:待打款
+    }
+    else if (status == 3)
+    {
+        @:已结算
+    }
+}
+
+@section Css {
+    <style>
+        .el-row {
+            margin-bottom: 20px;
+        }
+        .el-row:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+}
+
+<div class="breadcrumb">
+    <span>入驻管理</span>
+    <span> > </span>
+    <span>结算管理</span>
+    <span> > </span>
+    @if (ViewBag.IsFromHistory)
+    {
+        <span>历史结算单</span>
+        <span> > </span>
+    }
+    <span style="color:red">结算详情</span>
+    <a class="back" href="javascript:window.history.back();">
+        <img style="height: 17px;vertical-align: middle;margin-bottom: 3px;"  src="/Content/images/wx-back.png" /><span>&nbsp;返回上一级</span>
+    </a>
+</div>
+<div class="content">
+    <header>
+        <el-row>
+            <el-col :span="6">
+                @if(ViewBag.IsMall)
+                {
+                    <div>App名称：@Model.AppName</div>
+                }
+                else
+                {
+                    <div>商城名称：@Model.EsAppName</div>
+                }
+            </el-col>
+            <el-col :span="6">
+                <div>商家类型： @Jinher.AMP.BTP.Common.MallTypeHelper.GetMallTypeString(Model.SellerType)</div>
+            </el-col>
+            <el-col :span="6">
+                <div>订单总额： ￥@Model.OrderAmount.ToString("f2")</div>
+            </el-col>
+            <el-col :span="6">
+                <div>实收款总额： ￥@Model.OrderRealAmount.ToString("f2")</div>
+            </el-col>
+        </el-row>
+        <el-row>
+            <el-col :span="6">
+                <div>商家结算总金额：<span @Html.Raw((Model.SettleStatue && Model.SellerAmount > 0) ? "" : "style=\"color:red;\"")>￥@Model.SellerAmount.ToString("f2")</span></div>
+            </el-col>
+            <el-col :span="6">
+                <div>结算开始时间：  @(Model.AmountStartDate.HasValue?Model.AmountStartDate.Value.ToString("yyyy-MM-dd"):"")</div>
+            </el-col>
+            <el-col :span="6">
+                <div>结算截止日期：  @Model.AmountDate.ToString("yyyy-MM-dd")</div>
+            </el-col>
+            <el-col :span="3">
+                <div>结算状态： @GetStatusDesc(Model.State)</div>
+            </el-col>
+            <el-col :span="3">
+                <div style="float:right">
+                    <a class="el-button el-button--primary el-button--small" href="@Url.Action("Export", new{id = ViewContext.RouteData.Values["id"]})">导出结算单</a>
+                </div>
+            </el-col>
+        </el-row>
+    </header>
+    <div style="height:20px;"></div>
+    <div>
+        <div style="background:rgb(0,153,255);font-size:16px;color:white;padding:6px 30px;width:80px;text-align:center">订单列表</div>
+        <el-table :data="tableData" style="width: 100%" element-loading-text="拼命加载中" v-loading="loading" border style="">
+            <el-table-column type="index" lable="序号" width="60" align="center"></el-table-column>
+            <el-table-column prop="OrderCode" label="订单编号" min-width="158"></el-table-column>
+            <el-table-column prop="OrderSubTime" label="下单时间" min-width="100" :formatter="dateFormat"></el-table-column>
+            <el-table-column prop="OrderAmount" label="订单金额 " min-width="90"></el-table-column>
+            <el-table-column prop="OrderRealAmount" label="实收款 " min-width="90"></el-table-column>
+            <el-table-column label="订单结算金额" min-width="110">
+                <template scope="scope">
+                    <span v-if="scope.row.Successed">{{scope.row.SellerAmount}}</span>
+                    <span v-else style="color:red">{{scope.row.SellerAmount}}</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="OrderYJBAmount" label="易捷币抵用金额 " min-width="90"></el-table-column>
+            <el-table-column prop="PromotionAmount" label="商城佣金 " min-width="90"></el-table-column>
+            <el-table-column prop="RefundAmount" label="退款金额 " min-width="90"></el-table-column>
+            <el-table-column label="操作" width="115" align="center">
+                <template scope="scope">
+                    <el-button type="info" size="mini" @@click="details(scope.row)">订单结算详情</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+        <div class="pagination-wrapper" v-show="!loading">
+            <el-pagination layout="total, sizes, prev, pager, next, jumper" @@size-change="handleSizeChange" @@current-change="handleCurrentChange" :total="total" :current-page="page" :page-sizes="[10, 20, 50, 100]" :page-size="pageSize" >
+            </el-pagination>
+        </div>
+    </div>
+</div>
+
+<template>
+    <el-dialog title="订单结算详情" v-model="showDialog" size="large">
+        <header>
+            <el-row>
+                <el-col :span="5"><div>订单编号：{{currentRow.OrderCode}}</div></el-col>
+                <el-col :span="5"><div>下单时间： {{currentRow.OrderSubTime | datetime}}</div></el-col>
+                <el-col :span="5"><div>订单金额： {{currentRow.OrderAmount | currency}}</div></el-col>
+                <el-col :span="9"><div>实收款： {{currentRow.OrderRealAmount | currency}}</div></el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="5"><div>结算状态：@GetStatusDesc(Model.State)</div></el-col>
+                <!-- <el-col :span="6"><div>商城优惠券金额：{{currentRow.CouponAmount | currency}}</div></el-col> -->
+                <el-col :span="5"><div>退款金额：{{currentRow.RefundAmount | currency}}</div></el-col>
+                <el-col :span="5"><div>运费：{{currentRow.OrderFreight | currency}}</div></el-col>
+                <el-col :span="9">
+                    <div>结算金额：{{currentRow.SellerAmount | currency}} = {{currentRow.SettleAmount | currency}} + {{currentRow.OrderFreight | currency}} - {{currentRow.RefundAmount | currency}}</div>
+                    <div style="font-size:10px;color:#AEAEAE">&nbsp;&nbsp;&nbsp;&nbsp;注：结算金额 = ∑商品结算价*数量 + 运费 - 退款金额</div>
+                </el-col>
+            </el-row>
+        </header>
+        <div style="height:10px;"></div>
+        <div>
+            <el-table :data="dialogTableData" style="width: 100%" element-loading-text="拼命加载中" v-loading="loading" border stripe>
+                <el-table-column prop="Name" label="商品名称" min-width="150" align="center"></el-table-column>
+                <el-table-column label="商品价格" min-width="100" align="center">
+                    <template scope="scope">
+                        {{scope.row.Price | currency}}
+                    </template>
+                </el-table-column>
+                <el-table-column prop="Number" label="购买数量 " min-width="80"></el-table-column>
+                <el-table-column prop="SettleAmount" label="商品结算价" min-width="80" align="center">
+                    <template scope="scope">
+                        {{scope.row.SettleAmount | currency}}
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <span slot="footer" class="dialog-footer">
+            <el-button @@click="showDialog = false">关 闭</el-button>
+        </span>
+    </el-dialog>
+</template>
+@section Script{
+    <script>
+        var digitsRE = /(\d{3})(?=\d)/g;
+        Vue.filter('currency', function(value) {
+            value = parseFloat(value);
+            if (!isFinite(value) || (!value && value !== 0)) return '';
+            var currency = '¥ ';
+            var decimals = 2;
+            var stringified = Math.abs(value).toFixed(decimals);
+            var _int = decimals ? stringified.slice(0, -1 - decimals) : stringified;
+            var i = _int.length % 3;
+            var head = i > 0 ? (_int.slice(0, i) + (_int.length > 3 ? ',' : '')) : '';
+            var _float = decimals ? stringified.slice(-1 - decimals) : '';
+            var sign = value < 0 ? '-' : '';
+            return sign + currency + head + _int.slice(i).replace(digitsRE, '$1,') + _float;
+        });
+        Vue.filter('datetime', function (value) {
+            return moment(value).format("YYYY-MM-DD HH:mm:ss");
+        });
+        Vue.filter('percent', function(value){
+            if(value) return value + '%';
+            return '-';
+        });
+        var defaultVue = new Vue({
+            el: '#app',
+            data: {
+                loading: true,
+                tableData: [],
+                total:0,
+                page:1,
+                pageSize:20,
+                showDialog: false,
+                currentRow:{},
+                dialogTableData:[]
+            },
+            methods: {
+                handleSizeChange: function(val) {
+                    this.pageSize = val;
+                    this.page = 1;
+                    this.fetchData();
+                },
+                handleCurrentChange: function(page) {
+                    this.page = page || this.page;
+                    this.fetchData();
+                },
+                fetchData: function() {
+                    this.loading = true;
+                    this.$http.post('@Url.Action("GetOrderInfoes", new { Id = ViewContext.RouteData.Values["id"] })', {
+                        PageSize:this.pageSize,
+                        PageIndex:this.page }).
+                    then(function(res) {
+                       if(res.body.isSuccess) {
+                            defaultVue.tableData = res.body.Data.List;
+                            defaultVue.total = res.body.Data.Count;
+                        } else {
+                            defaultVue.$message.error(res.body.Message);
+                        }
+                    });
+                },
+                dateFormat: function(row, column) {
+                    return moment(row.OrderSubTime).format("YYYY-MM-DD HH:mm");
+                },
+                details: function(row) {
+                    this.currentRow = row;
+                    this.$http.get('@Url.Action("GetOrderItemInfoes")/' + row.Id).
+                    then(function(res) {
+                       if(res.body.isSuccess) {
+                            defaultVue.showDialog = true;
+                            defaultVue.dialogTableData = res.body.Data.List;
+                        } else {
+                            defaultVue.$message.error(res.body.Message);
+                        }
+                    });
+                }
+            },
+            mounted: function() {
+                this.fetchData();
+            }
+        })
+    </script>
+}
+

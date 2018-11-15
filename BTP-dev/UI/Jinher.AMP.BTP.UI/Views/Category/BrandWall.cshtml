@@ -1,0 +1,843 @@
+﻿@{
+    ViewBag.Title = "品牌墙";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>品牌墙</title>
+    <link rel="stylesheet" type="text/css" href="/Content/css/common.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.jhtablebox.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.all.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/ui.jqgrid.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.datepicker.css" />
+    <link rel="stylesheet" type="text/css" href="/Scripts/bigautocomplete/jquery.bigautocomplete.css" />
+    <link rel="Stylesheet" type="text/css" href="../../Scripts/japaginator/bootstrap.min.css" />
+    <style>
+        .ui-jqgrid tr.jqgrow td
+        {
+            white-space: normal !important;
+            height: auto;
+            vertical-align: text-top;
+            padding-top: 2px;
+        }
+        
+        
+        /* 半透明的遮罩层 */
+        #overlay
+        {
+            background: #000;
+            filter: alpha(opacity=50); /* IE的透明度 */
+            opacity: 0.5; /* 透明度 */
+            display: none;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 100%;
+            height: 100%;
+            z-index: 100; /* 此处的图层要大于页面 */
+            display: none;
+            _background-color: #a0a0a0; /* 解决IE6的不透明问题 */
+        }
+        
+        #divLayContent
+        {
+            background: #fff;
+            z-index: 105;
+            display: block;
+            position: absolute;
+            min-height: 300px;
+            min-width: 400px;
+        }
+        
+        #divLayContent span
+        {
+            cursor: pointer;
+            float: right;
+        }
+        
+        .uploadify-queue
+        {
+            margin-bottom: 1em;
+        }
+        
+        .uploadify-queue-item
+        {
+            background-color: #F5F5F5;
+            -webkit-border-radius: 3px;
+            -moz-border-radius: 3px;
+            border-radius: 3px;
+            font: 11px Verdana,Geneva,sans-serif;
+            margin-top: 5px;
+            max-width: 350px;
+            padding: 10px;
+        }
+        
+        .uploadify-queue-item .cancel a
+        {
+            background: url('/Images/uploadify-cancel.png') 0 0 no-repeat;
+            float: right;
+            height: 16px;
+            text-indent: -9999px;
+            width: 16px;
+        }
+        
+        .uploadify-queue-item.completed
+        {
+            background-color: #E5E5E5;
+        }
+        .uploadify-progress
+        {
+            background-color: #E5E5E5;
+            margin-top: 10px;
+            width: 100%;
+        }
+        .uploadify-progress-bar
+        {
+            background-color: #09F;
+            height: 3px;
+            width: 1px;
+        }
+        .uploadify-error
+        {
+            background-color: #FDE5DD !important;
+        }
+        .bitem
+        {
+            line-height: 28px;
+            margin-bottom: 10px;
+            min-height: 28px;
+            padding-left: 78px;
+        }        
+    </style>
+    <script language="javascript" type="text/javascript">
+        try {
+            var rootPath = "/";
+            var arr = window.location.host.split('.');
+            if (arr.length > 0) {
+                document.domain = arr[arr.length - 2] + "." + arr[arr.length - 1];
+            }
+        } catch (err) { }
+        function getCurrency() {
+            return "&#165;";
+        }
+    </script>
+</head>
+<body>
+    <div>
+        <div>
+            <span>分类管理 > 品牌墙 </span>
+        </div>
+        <div style="float: right">
+            <span style="cursor: pointer" onclick="window.history.back();">返回上一级 </span>
+        </div>
+    </div>
+    <div class="Search">
+        <div class="mt10">
+            分类名称:
+            <input type="text" value="" name="txtCategoryName" id="txtCategoryName" maxlength="10" />
+            <input type="button" value="查询" class="btn120" id="butCategorySelect" onclick="reLoadJqGride()" />
+        </div>
+        <div class="GridArea mt10 ml10">
+            <table id="jqGrid">
+            </table>
+            <div id="jqGridPager">
+            </div>
+        </div>
+        <!--设置品类广告-->
+        <div id="divCategoryList" style="display: none">
+            广告名称
+            <input id="txtAdvertiseMent" type="text" />
+            广告状态
+            <select id="selAdvertiseState">
+                <option value="-1">请选择</option>
+                <option value="0">未开始 </option>
+                <option value="1">投放中 </option>
+                <option value="2">已结束 </option>
+            </select>
+            <input value="查询" type="button" class="btn100" onclick="reLoadAdvetise()" />
+            <input value="新增广告" type="button" onclick="addAdvertiseMent()" class="btn120" />
+            <input value="" type="hidden" id="hidCategoryId" />
+            <div class="GridArea mt10 ml10">
+                <table id="jqGridAdvertise">
+                </table>
+                <div id="jqGridAdvertisePager">
+                </div>
+            </div>
+        </div>
+        <!--新增/编辑品类广告-->
+        <div id="divAdvertiseCreate" style="display: none">
+            <iframe frameborder="0" width="100%" height="100%" scrolling="no" title="品牌类广告" id="ifAdvertise">
+            </iframe>
+        </div>
+    </div>
+    <!--层遮罩部分-->
+    <div id="overlay">
+    </div>
+    <!--层遮罩部分结束-->
+    <div id="win" class="ui-jhtablebox ui-widget ui-draggable ui-jhtablebox-top" tabindex="-1"
+        role="jhtablebox" aria-labelledby="ui-dialog-title-checkNoPass" style="z-index: 1002;
+        outline: 0px; height: auto; width: 550px; top: 209px; left: 445px; display: none;
+        background-color: White;">
+        <div>
+            <div class="ui-jhsingletablebox-leftcorner">
+            </div>
+            <div class="ui-jhsingletablebox-rightcorner">
+            </div>
+            <h2 class="ui-jhsingletablebox-titlebar ui-helper-clearfix" style="height: 30px;
+                margin-top: 0px; margin-bottom: 1px;">
+                <span class="ui-dialog-title" id="ui-dialog-title-checkNoPass" style="margin-bottom: 4px;">
+                    设置品牌墙</span><a href="#" class="ui-dialog-titlebar-button" role="button"><span id="close"
+                        class="ui-icon ui-tabbox-icon ui-tabbox-icon-close" title="关闭">关闭</span></a>
+            </h2>
+        </div>
+        <div id="checkNoPass" style="padding: 10px; margin: 0px auto; width: auto; min-height: 0px;"
+            class="ui-jhtablebox-element ui-jhtablebox-content ui-corner-bottom">
+            <div class=" formList">
+                <div class="bitem">
+                    <label>
+                        品牌名称：
+                    </label>
+                    <input type="text" class="inp-txt" style="height: 28px;" id="txtBrandName" maxlength="20" />
+                    <a href="#Nogo" class="btn80 ml10" onclick="searchBrandList(1,1);">查询</a>
+                </div>
+                <div class="bitem">
+                    <table align="center" width="288" border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <th colspan="4" style="text-align: center">
+                                品牌库：
+                            </th>
+                            <th>
+                            </th>
+                            <th colspan="4" style="text-align: center">
+                                <label id="lblCategoryName">
+                                </label>
+                                ---品牌墙：
+                            </th>
+                            <th>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">
+                                <select name="selectBrand" id="selectBrand" multiple="multiple" size="10" style="width: 150px;
+                                    height: 230px;">
+                                </select>
+                            </td>
+                            <td align="center">
+                                <input type="button" id="addOne" value=">> >>" style="width: 50px;" />
+                                <br />
+                                <br />
+                                <input type="button" id="removeOne" value="<< <<" style="width: 50px;" />
+                            </td>
+                            <td colspan="4">
+                                <select name="toBrand" id="toBrand" multiple="multiple" size="10" style="width: 150px;
+                                    height: 230px;">
+                                </select>
+                            </td>
+                            <td align="center">
+                                <input type="button" id="Up" value="↑" style="width: 50px;" />
+                                <br />
+                                <br />
+                                <input type="button" id="Down" value="↓" style="width: 50px;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4">
+                                <ul class="pagination" id="pagination2">
+                                </ul>
+                            </td>
+                            <td>
+                            </td>
+                            <td colspan="4">
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="bitem" style="text-align: right">
+                    <a id="ReleaseClick" onclick="SaveN()" class="btn120" style="cursor: pointer">确定</a>
+                    <a onclick="CloseN()" class="btn120" style="cursor: pointer">取消</a>
+                </div>
+                <input type="hidden" id="hidId" value="" />
+                <input type="hidden" id="hidCategoryName" value="" />
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript" src="/Scripts/jquery.js"></script>
+<script type="text/javascript" src="/Scripts/jquery.extend.js"></script>
+<script type="text/javascript" src="/Scripts/jquery.ui.base.js"></script>
+<script type="text/javascript" src="/Scripts/i18n/jquery.ui-zh.js"></script>
+<script type="text/javascript" src="/Scripts/Grid/jquery.grid.base.js"></script>
+<script type="text/javascript" src="/Scripts/Pager/jquery.ui.jhpager.js"></script>
+<script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.datepicker.js"></script>
+<script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.jhdatetime.js"></script>
+<script type="text/javascript" src="/Scripts/i18n/jquery.ui.datepicker-zh.js"></script>
+<script type="text/javascript" src="/Scripts/bigautocomplete/jquery.bigautocomplete.js"></script>
+<script type="text/javascript" src="/Scripts/CommLib.js"></script>
+<script src="/Scripts/TableBox/jquery.ui.jhtablebox.js" type="text/javascript"></script>
+<script type="text/javascript" src="/Scripts/uploadify/jquery.uploadify.min.js"></script>
+<script type="text/javascript" src="/Scripts/japaginator/jqPaginator.js"></script>
+<script type="text/javascript">
+    var boolIsReload = false;
+
+    $(function () {
+        $(".searchbtn").click(function () {
+            RefreshList();
+        });
+
+        InitGrid();
+        //initUplodaImg();
+    });
+
+    function InitGrid() {
+        var data = {
+            categoryName: $("#txtCategoryName").val()
+        };
+
+        $("#jqGrid").jqGrid({
+            datatype: "json",
+            postData: data,
+            url: "GetBrandList",
+            mtype: 'POST',
+            rownumbers: true,
+            colModel: [
+                { sortable: false, label: '一级分类名称', name: 'Name', width: 50 },
+                { sortable: false, label: '品牌墙', name: 'PicturesPath', width: 50 },
+                { label: '操作', name: "edit", index: "edit", autowidth: "true", align: "center", width: 30 }
+            ],
+            rowNum: 20,
+            pager: '#jqGridPager',
+            height: 700,
+            autowidth: true,
+            forceFit: true,
+            rownumbers: true,
+            afterInsertRow: function (rowid, aData) {
+                var editBtn = "<a href='javascript:showBrand(\"" + rowid + "\",\"" + aData.Name + "\")'> 设置品牌墙 </a> <a href='javascript:showOverlay(\"" + rowid + "\")'>设置品类广告计划</a>";
+                $('#jqGrid').jqGrid('setCell', rowid, 'edit', editBtn);
+            }
+        });
+    }
+
+    function reLoadJqGride() {
+        var data = {
+            categoryName: $("#txtCategoryName").val()
+        };
+        $("#jqGrid").jqGrid('clearGridData');  //清空表格
+        $("#jqGrid").jqGrid('setGridParam', {
+            datatype: "json",
+            postData: data,
+            url: "GetBrandList",
+            mtype: 'POST'
+        }).trigger("reloadGrid", { page: 1 });
+    }
+
+    function showOverlay(rowid) {
+        if (boolIsReload) {
+            reLoadAdvetise(rowid);
+        }
+        boolIsReload = true;
+
+        var data = {
+            CategoryId: rowid,
+            AdvertiseName: $("#txtAdvertiseMent").val(),
+            state: $("#selAdvertiseState").val()
+        }
+
+        $("#hidCategoryId").val(rowid);
+        $("#jqGridAdvertise").jqGrid({
+            datatype: "json",
+            postData: data,
+            url: "GetCategoryAdvertise",
+            mtype: 'POST',
+            rownumbers: true,
+            colModel: [
+                { sortable: false, label: '广告名称', name: 'AdvertiseName', width: 100 },
+                { sortable: false, label: '投放时间', name: 'PutTime', width: 150 },
+                { sortable: false, label: '投放结束时间', name: 'PushTime', width: 150 },
+                { sortable: false, label: '广告状态', name: 'State', width: 100 },
+                { sortable: false, label: '推广链接', name: 'spreadEnum', width: 150 },
+                { label: '操作', name: "edit", index: "edit", autowidth: "true", align: "center", width: 150 }
+            ],
+            rowNum: 20,
+            pager: '#jqGridAdvertisePager',
+            height: 700,
+            autowidth: true,
+            forceFit: true,
+            afterInsertRow: function (rowid, aData) {
+                var adTime = aData.PutTime + " --- " + aData.PushTime;
+                $('#jqGridAdvertise').jqGrid('setCell', rowid, 'AdvertiseTime', adTime);
+
+                switch (aData.State) {
+                    case "0": $('#jqGridAdvertise').jqGrid('setCell', rowid, 'State', "未开始"); break;
+                    case "1": $('#jqGridAdvertise').jqGrid('setCell', rowid, 'State', "投放中"); break;
+                    case "2": $('#jqGridAdvertise').jqGrid('setCell', rowid, 'State', "已结束"); break;
+                    default: $('#jqGridAdvertise').jqGrid('setCell', rowid, 'State', "未开始"); break;
+                }
+
+                switch (aData.spreadEnum) {
+                    case "1": $('#jqGridAdvertise').jqGrid('setCell', rowid, 'spreadEnum', "专题活动"); break;
+                    case "2": $('#jqGridAdvertise').jqGrid('setCell', rowid, 'spreadEnum', "会员服务"); break;
+                    case "3": $('#jqGridAdvertise').jqGrid('setCell', rowid, 'spreadEnum', "商品"); break;
+                    case "4": $('#jqGridAdvertise').jqGrid('setCell', rowid, 'spreadEnum', "自定义链接"); break;
+                    case "1": $('#jqGridAdvertise').jqGrid('setCell', rowid, 'spreadEnum', "专题活动"); break;
+                }
+
+                var editBtn = "<a href='javascript:editAdvertise(\"" + rowid + "\")'> 编辑 </a> <a href='javascript:deleteAdvertise(\"" + rowid + "\")'>删除</a>";
+                $('#jqGridAdvertise').jqGrid('setCell', rowid, 'edit', editBtn);
+            }
+        });
+
+        $("#divCategoryList").jhtablebox({
+            title: "设置品类广告",
+            width: 900,
+            height: 800,
+            modal: true,
+            resizable: false,
+            beforeClose: function (e) {
+
+            }
+        });
+    }
+
+    function reLoadAdvetise(rowid, pageNo) {
+        if (rowid == undefined || rowid == "") {
+            rowid = $("#hidCategoryId").val();
+        }
+
+        if (pageNo == undefined || pageNo < 0) {
+            pageNo = 1;
+        }
+
+        var data = {
+            CategoryId: rowid,
+            AdvertiseName: $("#txtAdvertiseMent").val(),
+            state: $("#selAdvertiseState").val()
+        }
+
+        $("#hidCategoryId").val(rowid);
+        $("#jqGridAdvertise").jqGrid('clearGridData');  //清空表格
+        $("#jqGridAdvertise").jqGrid('setGridParam', {  // 重新加载数据
+            datatype: "json",
+            postData: data,
+            url: "GetCategoryAdvertise",
+            mtype: 'POST'
+        }).trigger("reloadGrid", { page: pageNo });
+    }
+
+    function initUplodaImg() {
+
+    }
+
+    function addAdvertiseMent() {
+        var rowid = $("#hidCategoryId").val();
+
+        window.open("FileUpload?AppId=@ViewBag.AppId&CategoryId=" + rowid, 'newwindow', 'height=700, width=1024, top=0, left=0, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no');
+
+        //        $("#ifAdvertise").attr("src", "FileUpload?AppId=@ViewBag.AppId&CategoryId=" + rowid);
+        //        $("#divAdvertiseCreate").show();
+        //        $("#divAdvertiseCreate").jhtablebox({
+        //            title: "新增广告",
+        //            width: 850,
+        //            height: 700,
+        //            modal: true,
+        //            resizable: false,
+        //            beforeClose: function (e) {
+
+        //            }
+        //        });
+    }
+
+    function editAdvertise(editRowID) {
+        var rowid = $("#hidCategoryId").val();
+        if (editRowID != null) {
+            window.open("FileUpload?AppId=@ViewBag.AppId&CategoryId=" + rowid + "&advertiseId=" + editRowID, 'newwindow', 'height=700, width=1024, top=0, left=0, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no');
+        }
+    }
+
+    function deleteAdvertise(delRowID) {
+        if (delRowID != "") {
+            $.ajax({
+                async: false,
+                type: "POST",
+                data: { AdvertiseID: delRowID },
+                url: 'DeleteAdvertise',
+                dataType: "json",
+                success: function (res) {
+                    if (res.Result == true) {
+                        alert("删除成功");
+                        reLoadAdvetise();
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("删除失败");
+                }
+            })
+        }
+    }
+
+    function RefreshList(pageNo) {
+        var isPageNo = typeof (pageNo) == "number";
+        if (isPageNo) {
+            if (pageNo <= 0) pageNo = $("#jqGrid").getGridParam("page");
+        } else {
+            pageNo = $("#jqGrid").getGridParam("page");
+        }
+
+        var data = {
+            categoryName: $("#txtCategoryName").val()
+        };
+
+        $('#jqGrid').jqGrid('setGridParam', {
+            datatype: "json",
+            postData: data,
+            url: "GetBrandList",
+            mtype: 'POST'
+        });
+
+        $('#jqGrid').trigger("reloadGrid", [{
+            page: pageNo
+        }]);
+    }
+</script>
+<script type="text/javascript">
+    //设置品牌墙
+    var pageSize = 50;
+    var pageIndex = 1;
+    var pageCount = 1;
+    //关闭弹层
+    function CloseN() {
+        var oWin = document.getElementById("win");
+        var oLay = document.getElementById("overlay");
+
+        oLay.style.display = "none";
+        oWin.style.display = "none";
+        $("#hidId").val("");
+        $("#hidCategoryName").val("");
+    }
+    function SaveN() {
+        var id = $("#hidId").val();
+        var name = $("#hidCategoryName").val();
+        var brandIdList = "";
+        var brandNameList = "";
+        $("#toBrand option").each(function () {
+            brandIdList += $(this).val() + ',';
+            brandNameList += $(this).text() + ',';
+        });
+        $.ajax({
+            url: 'AddCategoryInnerBrand',
+            type: 'post',
+            data: { CategoryId: id, CategoryName: name, BrandIdList: brandIdList, BrandNameList: brandNameList },
+            success: function (data) {
+                if (data.Result) {
+                    alert(data.Messages);
+                    CloseN();
+                    RefreshList();
+                } else {
+                    $("#ReleaseClick").attr("onclick", "SaveN()");
+                    alert(data.Messages);
+                }
+            },
+            error: function () {
+                alert("请稍候再试");
+            }
+        });
+    }
+    function searchBrandList(tag, index) {
+        //tag 1查询2分页
+        if (tag == 1) {
+            //            selectedBrand($("#hidId").val());
+            var pageIndex = 1;
+            var pageCount = 0;
+            var brandName = $.trim($("#txtBrandName").val());
+            var brandStatus = 1;
+            var data = {
+                "brandName": brandName,
+                "brandStatus": brandStatus,
+                "PageNo": pageIndex,
+                "PageSize": pageSize
+            };
+            $.ajax({
+                async: false,
+                type: "POST",
+                data: data,
+                url: '../Brand/GetBrandList',
+                dataType: "json",
+                success: function (res) {
+                    if (res.Result) {
+                        pageCount = res.DataCount == 0 ? 1 : res.DataCount;
+                        $("#pagination2").jqPaginator("option", {
+                            currentPage: 1,
+                            totalCounts: pageCount,
+                            pageSize: pageSize,
+                            visiblePages: 0,
+                            currentPage: pageIndex
+                        });
+                        $("#selectBrand").html("");
+                        var allOpts = $("#toBrand option");
+                        for (var i = 0; i < res.DataList.length; i++) {
+                            var toflag = false;
+                            if (allOpts.length > 0) {
+                                $("#toBrand option").each(function () {
+                                    if (res.DataList[i].Id == $(this).val()) {
+                                        toflag = true;
+                                    }
+                                });
+                                if (!toflag) {
+                                    $("#selectBrand").append("<option value='" + res.DataList[i].Id + "'>" + res.DataList[i].Brandname + "</option>");
+                                }
+                            }
+                            else {
+                                $("#selectBrand").append("<option value='" + res.DataList[i].Id + "'>" + res.DataList[i].Brandname + "</option>");
+                            }
+                        }
+                    }
+                },
+                error: function () {
+                    alert("请稍候再试");
+                    return false;
+                }
+            });
+        }
+        if (tag == 2) {
+            var brandName = $.trim($("#txtBrandName").val());
+            var brandStatus = 1;
+            var data = {
+                "brandName": brandName,
+                "brandStatus": brandStatus,
+                "PageNo": index,
+                "PageSize": pageSize
+            };
+            $.ajax({
+                async: false,
+                type: "POST",
+                data: data,
+                url: '../Brand/GetBrandList',
+                dataType: "json",
+                success: function (res) {
+                    if (res.Result) {
+                        pageCount = res.DataCount == 0 ? 1 : res.DataCount;
+                        $("#selectBrand").html("");
+                        var allOpts = $("#toBrand option");
+                        for (var i = 0; i < res.DataList.length; i++) {
+                            var toflag = false;
+                            if (allOpts.length > 0) {
+                                $("#toBrand option").each(function () {
+                                    if (res.DataList[i].Id == $(this).val()) {
+                                        toflag = true;
+                                    }
+                                });
+                                if (!toflag) {
+                                    $("#selectBrand").append("<option value='" + res.DataList[i].Id + "'>" + res.DataList[i].Brandname + "</option>");
+                                }
+                            }
+                            else {
+                                $("#selectBrand").append("<option value='" + res.DataList[i].Id + "'>" + res.DataList[i].Brandname + "</option>");
+                            }
+                        }
+                    }
+                },
+                error: function () {
+                    alert("请稍候再试");
+                    return false;
+                }
+            });
+        }
+    }
+
+    function selectedBrand(id) {
+        $.ajax({
+            async: false,
+            type: "POST",
+            data: { CategoryID: id },
+            url: '../Brand/getBrandByCateID',
+            dataType: "json",
+            success: function (res) {
+                if (res.Result) {
+                    $("#toBrand").html("");
+                    for (var i = 0; i < res.DataList.length; i++) {
+                        $("#toBrand").append("<option value='" + res.DataList[i].Id + "'>" + res.DataList[i].Brandname + "</option>");
+                    }
+                }
+            },
+            error: function () {
+                alert("请稍候再试");
+                return false;
+            }
+        });
+    }
+
+
+    function showBrand(id, name) {
+        $("#txtBrandName").val("");
+        $("#hidId").val(id);
+        $("#hidCategoryName").val(name);
+        //品牌墙
+        selectedBrand(id);
+
+        //品牌库
+        $("#lblCategoryName").text(name);
+        var brandName = $.trim($("#txtBrandName").val());
+        var brandStatus = 1;
+        var data = {
+            "brandName": brandName,
+            "brandStatus": brandStatus,
+            "PageNo": pageIndex,
+            "PageSize": pageSize
+        };
+        var initFlag = true;
+        $.ajax({
+            async: false,
+            type: "POST",
+            data: data,
+            url: '../Brand/GetBrandList',
+            dataType: "json",
+            success: function (res) {
+                if (res.Result) {
+                    pageCount = res.DataCount == 0 ? 1 : res.DataCount;
+                    $.jqPaginator('#pagination2', {
+                        totalCounts: pageCount,
+                        pageSize: pageSize,
+                        visiblePages: 0,
+                        currentPage: pageIndex,
+                        prev: '<li class="prev"><a href="javascript:;">上一页</a></li>',
+                        next: '<li class="next"><a href="javascript:;">下一页</a></li>',
+                        onPageChange: function (index) {
+                            pageIndex = index;
+                            if (initFlag) {
+                                initFlag = false
+                            }
+                            else {
+                                searchBrandList(2, index);
+                            }
+                        }
+                    });
+                    $("#selectBrand").html("");
+                    var allOpts = $("#toBrand option");
+                    for (var i = 0; i < res.DataList.length; i++) {
+                        var toflag = false;
+                        if (allOpts.length > 0) {
+                            $("#toBrand option").each(function () {
+                                if (res.DataList[i].Id == $(this).val()) {
+                                    toflag = true;
+                                }
+                            });
+                            if (!toflag) {
+                                $("#selectBrand").append("<option value='" + res.DataList[i].Id + "'>" + res.DataList[i].Brandname + "</option>");
+                            }
+                        }
+                        else {
+                            $("#selectBrand").append("<option value='" + res.DataList[i].Id + "'>" + res.DataList[i].Brandname + "</option>");
+                        }
+                    }
+                }
+            },
+            error: function () {
+                alert("请稍候再试");
+                return false;
+            }
+        });
+
+
+        //弹出DIV
+        var oWin = document.getElementById("win");
+        var oLay = document.getElementById("overlay");
+        var oClose = document.getElementById("close");
+        var oH2 = oWin.getElementsByTagName("h2")[0];
+        var bDrag = false;
+        var disX = disY = 0;
+
+        oWin.style.display = "block";
+        oLay.style.display = "block";
+
+        oClose.onclick = function () {
+            oLay.style.display = "none";
+            oWin.style.display = "none";
+        };
+        oClose.onmousedown = function (event) {
+            (event || window.event).cancelBubble = true;
+        };
+        oH2.onmousedown = function (event) {
+            var event = event || window.event;
+            bDrag = true;
+            disX = event.clientX - oWin.offsetLeft;
+            disY = event.clientY - oWin.offsetTop;
+            this.setCapture && this.setCapture();
+            return false
+        };
+        document.onmousemove = function (event) {
+            if (!bDrag) return;
+            var event = event || window.event;
+            var iL = event.clientX - disX;
+            var iT = event.clientY - disY;
+            var maxL = document.documentElement.clientWidth - oWin.offsetWidth;
+            var maxT = document.documentElement.clientHeight - oWin.offsetHeight;
+            iL = iL < 0 ? 0 : iL;
+            iL = iL > maxL ? maxL : iL;
+            iT = iT < 0 ? 0 : iT;
+            iT = iT > maxT ? maxT : iT;
+
+            oWin.style.marginTop = oWin.style.marginLeft = 0;
+            oWin.style.left = iL + "px";
+            oWin.style.top = iT + "px";
+            return false
+        };
+        document.onmouseup = window.onblur = oH2.onlosecapture = function () {
+            bDrag = false;
+            oH2.releaseCapture && oH2.releaseCapture();
+        };
+    };
+    //上移一行
+    $("#Up").click(function () {
+        var selected = $("#toBrand option:selected");
+        if (selected.get(0).index != 0) {
+            selected.each(function () {
+                $(this).prev().before($(this));
+            });
+        }
+    });
+    //下移一行
+    $("#Down").click(function () {
+        var allOpts = $("#toBrand option");
+        var selected = $("#toBrand option:selected");
+
+        if (selected.get(selected.length - 1).index != allOpts.length - 1) {
+            for (i = selected.length - 1; i >= 0; i--) {
+                var item = $(selected.get(i));
+                item.insertAfter(item.next());
+            }
+        }
+    });
+    //移除一项
+    $("#removeOne").click(function () {
+        $("#toBrand option:selected").clone().appendTo("#selectBrand");
+        $("#toBrand option:selected").remove();
+    });
+    //选择一项
+    $("#addOne").click(function () {
+        //如果品牌墙中已经有了30个，提示
+        var allOpts = $("#toBrand option");
+        if (allOpts.length >= 30) {
+            alert("分类品牌墙最多可以设置30个");
+            return;
+        }
+        //如果品牌库中多选了，品牌库+品牌墙的个数不能大于30
+        var totalSelected = allOpts.length;
+        var i = 0;
+        $("#selectBrand option:selected").each(function () {
+            i++;
+        });
+        totalSelected += i;
+        if (totalSelected > 30) {
+            alert("分类品牌墙最多可以设置30个");
+            return;
+        }
+        $("#selectBrand option:selected").clone().appendTo("#toBrand");
+        $("#selectBrand option:selected").remove();
+    });
+</script>

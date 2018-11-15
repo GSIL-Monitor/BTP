@@ -1,0 +1,32 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>优惠券</title>
+    <script type="text/javascript">
+        function getQueryString(a) {
+            var b = new RegExp("(^|&)" + a + "=([^&]*)(&|$)", "i");
+            var c = window.location.search.substr(1).match(b);
+            return null != c ? unescape(c[2]) : null
+        }
+
+        window.onload = function () {
+            goCoupon();
+        }
+        function goCoupon() {
+            var _shopId = storeInfo.setting.AppId;
+            var url = "http://devcoupon.iuoooo.com/CouponList/Index?from=cy";
+            url = addSessionToUrl(url);
+            var srcurl = window.location.host + "/Mobile/CYCommodityList?appId=" + _appId + "&shopId=" + _shopId + "&storeId=" + _storeId;
+            url += "&appId=" + _appId + "&srcUrl=" + encodeURIComponent(srcurl);
+            document.location.href = url;
+        }
+    </script>
+</head>
+<body>
+    <div>
+    </div>
+</body>
+</html>

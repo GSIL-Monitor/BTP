@@ -1,0 +1,359 @@
+﻿@{
+    Layout = "~/Views/Shared/_CYMobileLayout.cshtml"; 
+}
+@section TitleHtml
+{
+    <title>订单详情</title>
+}
+<div class="page">
+    <header class="bar bar-nav process-header">
+        <a href="javascript:window.history.back();" class="pull-left fa">
+          <img src="/Content/style/images/fanhui.png"/>
+        </a>
+        <h1 class="title">订单详情</h1>
+     </header>
+    <div class="content">
+        <div class="order-detail">
+            <div class="pay-state">
+                <div class="number-state">
+                    <div class="number" id="horderNO">流水号：@ViewBag.Batch </div> 
+                    <div class="state">
+                       <span id="horderState"> </span>
+                       <span id="tipOrder" class="tip hide">请您到付款账户确认</span>
+                    </div>
+                </div>
+            </div>
+            <div class="receiving-information" id="Receipt">
+                <div class="info">
+                    <div class="name-tel clearfix">
+                        <img src="/Content/style/images/dingwei.png" />
+                        <span class="name pull-left" id="ReceiptUserName"></span> <span class="tel pull-right"
+                            id="ReceiptPhone"></span>
+                    </div>
+                    <div class="address clearfix" id="ReceiptAddress">
+                        <span class="general" id="hAddress1"></span> <span class="detail" id="hAddress2"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="pay-intro">
+                <div class="title">
+                    <img src="/Content/style/images/shangjia.png" /><span id="spanShopName">@ViewBag.StoreName</span>
+                     <a id="contactOwner"  onclick="return mulPhone(this,'@ViewBag.StorePhoneStr');" href="javascript:void();" class="tell"><img src="/Content/style/images/lianxishangjia.png">联系商家</a>
+                </div>
+                <div id="ulCommodityList">
+                </div>
+                <div class="com-intro"  style="height:auto; padding-bottom:10px;" >
+                    <ul>
+                        <li class="com-price">商品金额<span id="Price"></span></li>
+                        <li class="fee">餐盒费<span id="boxPrice"></span></li>
+                        <li class="fee">配送费<span id="Freight"></span></li>
+                        <li class="fee">配送费优惠<span id="FreightDiscount"></span></li>
+                        <li id="hlicoupon" class="coupon">优惠券<span id="couponValue"></span></li>
+                        <li class="total">合计<span id="payprice"></span></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="remark clearfix" id="details">
+                <span class="remark-title">备注</span> <span class="remark-con"></span>
+            </div>
+            <div class="order-intro">
+                <ul>
+                    <li class="pay-time">支付时间<span id="SubTime"></span></li>
+                    <li class="order-state">支付方式<span id="payType">在线支付</span></li>
+                    <li class="dining-mode">用餐方式<span>外卖</span></li>
+                </ul>
+            </div>
+             <!--取消订单按钮-->
+            <div  id="divcancelorder" class="cancel-order">取消订单</div>
+            <!--取消订单弹出框-->
+            <div class="cancel-order-tip hide">
+                <div class="mask"></div>
+                <div class="pop-up">
+                    <div class="tip">您好，如需取消或退款请电话联系~</div>
+                    <div class="handle-btn clearfix">
+                        <div class="cancel pull-left">再等等</div>
+                        <div class="call pull-right"> <a href="javascript:void();" onclick="return mulPhone(this,'@ViewBag.StorePhoneStr');">打电话</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="divCommodityItemTemplate" style="display: none;">
+    <div class="com-detail">
+        <div class="com-detail-wb">
+            <div class="com-two clearfix">
+                <div class="com-name">
+                    <div class="com-change">
+                        <div class="com-name-one">
+                            <span class="dish">{Name}</span>
+                        </div>
+                        <div class="com-name-two" style="display: {SizeDisplay};">
+                            <span class="taste">{SizeText}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="com-number">
+                    <span>×{CommodityNumber}</span></div>
+            </div>
+            <div class="total-price-finish">
+                <span>¥{RealPrice}</span></div>
+        </div>
+    </div>
+</div>
+@{Html.RenderPartial("../CYMobile/MulPhone");}
+@section CssFile
+{
+    <link href="/Content/style/mobile_cy/orderdetail.css" rel="stylesheet" type="text/css" />
+}
+@section CssCode
+{
+ <style type="text/css">
+        ul, li {
+            list-style-type: none;
+        }
+
+        a, a:hover {
+            text-decoration: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /*电话弹出框*/
+        .tel-alert {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 99;
+            background: rgba(0, 0, 0, .6);
+        }
+
+        .tel-alert > div {
+            position: absolute;
+            bottom: .2rem;
+            left: .2rem;
+            right: .2rem;
+            z-index: 100;
+            text-align: center;
+        }
+
+        .tel-alert .tel-list {
+            -webkit-border-radius: .25rem;
+            border-radius: .25rem;
+            overflow: hidden;
+        }
+
+        .tel-alert .tel-list li {
+            background: #cfcdcc;
+            border-bottom: 1px solid #999;
+        }
+
+        .tel-alert .tel-list li:last-child {
+            border-bottom: none;
+        }
+
+        .tel-alert .tel-list li a, .tel-alert .cancel {
+            height: 1rem;
+            line-height: 1rem;
+            font-size: .34rem;
+            color: #0079ff;
+        }
+
+        .tel-alert .tel-list li a {
+            display: block;
+        }
+
+        .tel-alert .cancel {
+            background: #fff;
+            -webkit-border-radius: .25rem;
+            border-radius: .25rem;
+            margin-top: .2rem;
+        }
+            </style>
+}
+@section ScriptCode
+{
+    <script type="text/javascript">
+        function ChangeDateFormat(cellval) {
+            var state = 1;
+            try {
+                var date = new Date(parseInt(cellval.replace("/Date(", "").replace(")/", ""), 10));
+                var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+                var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+                var hour = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+                var minu = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+                if (state == 1) {
+                    return date.getFullYear() + "-" + month + "-" + currentDate + " " + hour + ":" + minu;
+                } else {
+                    return date.getFullYear() + "-" + month + "-" + currentDate;
+                }
+            } catch (e) {
+                return "";
+            }
+        }
+        var _commodityItemTemplate = "";
+        var orderId = "";
+        var appId = '@ViewBag.appId';
+        var _orderDetail = new Object();
+        $(function () {
+            _commodityItemTemplate = $("#divCommodityItemTemplate").html();
+            sessionStorage.orderId = getQueryString('orderId');
+            _orderDetail = $.parseJSON(decodeURIComponent("@ViewBag.odJsonString"));
+            showOrderDetails(_orderDetail);
+        });
+
+
+
+
+    </script>
+    <script type="text/javascript">
+        function showOrderDetails(data) {
+            pay = data.data.Payment;
+            sta = data.data.State;
+            if (document.referrer.indexOf("/Mobile/MyOrderList") > -1) {
+                sessionStorage.orderState = getQueryString("orderState");
+            }
+//            var payType = pay == 1 ? "货到付款" : "在线支付";
+//            if (data.data.State != 0) {
+//                $("#payTypeLi").html('<span class="pull-right" id="payType">' + payType + ' </span>支付方式 ');
+//            }
+            $("#payType").html(data.data.PaymentName);
+            //判断订单状态
+            switch (data.data.State) {
+                case 18:
+                    $("#horderState").html("待处理");
+                    break;
+                case 19:
+                    $("#horderState").html("已处理");
+                    break;
+                case 7:
+                    $("#divcancelorder").addClass("hide");
+                    $("#horderState").html("已退款");
+                    $("#tipOrder").removeClass("hide");
+                    break;
+                default:
+                    break;
+            }
+
+            $("#ReceiptUserName").html(data.data.ReceiptUserName);
+            $("#ReceiptPhone").html(data.data.ReceiptPhone);
+            // $("#ReceiptAddress").html(data.data.Province + "" + data.data.City + "" + data.data.District + "" + data.data.ReceiptAddress);
+            $("#hAddress1").html(data.data.Province + "" + data.data.City + "" + data.data.District);
+            $("#hAddress2").html(data.data.ReceiptAddress);
+            $("#SubTime").html(ChangeDateFormat(data.data.SubTime, 1));
+            // $("#Code").html(data.data.Code);订单编号
+
+            //$("#spanShopName").html(data.AppName); //店铺名称
+
+            //商品件数。
+            var totalcn = 0;
+            var cis = data.data.ShoppingCartItemSDTO;
+            if (cis != null && cis.length > 0) {
+                for (var i = 0; i < cis.length; i++) {
+                    totalcn += cis[i].CommodityNumber;
+                }
+            }
+            $("#spanCommodityNum").html(totalcn);
+            $("#payprice").text("¥" + data.data.Price); //商品总价
+            //优惠券
+            if (_orderDetail.data.CouponValue > 0) {
+                $('#couponValue').html("-" + Math.abs(_orderDetail.data.CouponValue).toFixed(2));
+            } else {
+                $("#couponValue").html("0.00");
+                $("#hlicoupon").hide();
+            }
+
+            //改过价，运费为0.
+            if (_orderDetail.data.IsModifiedPrice) {
+                $('#Freight').html("¥0.00");
+            } else {
+                $('#Freight').html("¥" + Math.abs(data.data.Freight).toFixed(2));
+            }
+
+            if (_orderDetail.data.MealBoxFee > 0) {
+                $("#boxPrice").html("-" + "¥" + Math.abs(_orderDetail.data.MealBoxFee).toFixed(2));
+            }
+            else {
+                $("#boxPrice").parent().hide();
+            }
+            if (_orderDetail.data.FreeAmount > 0 || _orderDetail.data.DeliveryFeeDiscount > 0) {
+                $("#FreightDiscount").html("-"+"¥" + Math.abs(_orderDetail.data.FreeAmount + _orderDetail.data.DeliveryFeeDiscount).toFixed(2))
+            }
+            else {
+                $("#FreightDiscount").parent().hide();
+            }
+
+            var _tp = _orderDetail.data.FreeAmount + _orderDetail.data.DeliveryFeeDiscount - _orderDetail.data.MealBoxFee;
+
+            //合计
+            // $("#payprice").html("¥" + _orderDetail.data.RealPrice);
+            $("#Price").html("¥" + eval(_orderDetail.data.Price +_tp+ _orderDetail.data.CouponValue + _orderDetail.data.ScorePrice - (_orderDetail.data.IsModifiedPrice ? 0 : Math.abs(data.data.Freight).toFixed(2))).toFixed(2));
+            if (data.data.Details != "" && data.data.Details != null && data.data.Details != "undefined") {
+                $("#details").html('<span class="remark-title">备注</span><span class="remark-con">' + data.data.Details + "</span>");
+            }
+
+            //向页面填充 商品
+            var html = getCommodityListHtml(data.data);
+            $("#ulCommodityList").html(html);
+            $("#ulCommodityList").attr("selfTakeFlag", data.data.SelfTakeFlag);
+        }
+        function getCommodityListHtml(orderInfo) {
+            var data = orderInfo.ShoppingCartItemSDTO;
+            var html = "";
+            if (data == null || data.length == 0) {
+                return html;
+            }
+
+            for (var i = 0; i < data.length; i++) {
+                var datai = data[i];
+
+                //datai.Size以，分隔；前颜色，后尺寸。
+                if (datai.Size != null && datai.Size.length > 1) {
+                    var splitR = datai.Size.split(",");
+                    var sizeText = "";
+                    var s01 = false;
+                    var s02 = false;
+                    if (splitR.length == 1) {
+                        if (splitR[0] != null && splitR[0].length > 0 && splitR[0] != "null") {
+                            s01 = true;
+                        }
+                    } else if (splitR.length >= 1) {
+                        if (splitR[0] != null && splitR[0].length > 0 && splitR[0] != "null") {
+                            s01 = true;
+                        }
+                        if (splitR[1] != null && splitR[1].length > 0 && splitR[1] != "null") {
+                            s02 = true;
+                        }
+                    }
+                    datai.SizeDisplay = s01 || s02 ? "block" : "none";
+                    if (s01) {
+                        //sizeText += "颜色：" + splitR[0];
+                        sizeText += splitR[0];
+                    }
+                    if (s02) {
+                        if (sizeText.length > 0) {
+                            sizeText += "&nbsp;&nbsp;";
+                        }
+                        //sizeText += "尺寸：" + splitR[1];
+                        sizeText += splitR[1];
+                    }
+                    datai.SizeText = sizeText;
+                } else {
+                    datai.SizeText = "";
+                    datai.SizeDisplay = "none";
+                }
+                //                datai.SelfTakeDisplay = orderInfo.SelfTakeFlag == 1 ? "block" : "none";
+                //                datai.selfTakeFlag = orderInfo.SelfTakeFlag;
+                //                datai.srckey = "src";
+                //                datai.CategoryNameDisplay = JsVilaDataNull(datai.ComCategoryName) ? "block" : "none";
+                html += _commodityItemTemplate.format(datai);
+            }
+            return html;
+        }
+    </script>
+}
+@section ScriptFile
+{
+    <script type="text/javascript" src="/content/js/mobile_cy/orderdetail.js"></script>
+}

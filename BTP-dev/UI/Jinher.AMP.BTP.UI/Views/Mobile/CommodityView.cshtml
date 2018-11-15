@@ -1,0 +1,188 @@
+﻿@{
+    Layout = "~/Views/Shared/_MobileLayout.cshtml";
+}
+@section CssStyles{
+    <link rel="stylesheet" href="/Content/Mobile/zphStyle/normalize.css" />
+    <link rel="stylesheet" href="/Content/Mobile/zphStyle/function.css" />
+    <link rel="stylesheet" href="/Content/Mobile/zphStyle/general.css" />
+    <link rel="stylesheet" href="/Content/Mobile/zphStyle/font-awesome.css" />
+    <link rel="stylesheet" href="/Content/Mobile/zphStyle/skin.css" />
+    <style type="text/css">
+        .yhzknum
+        {
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+            padding: 0 6px;
+            background-color: rgb(230,220, 228);
+            color: #FF0000;
+            font-size: 14px;
+        }
+        .outer
+        {
+            display: none;
+            padding: auto;
+            text-align: center;
+            vertical-align: middle;
+            padding-top: 50px;
+        }
+        .item_1 .item_title
+        {
+            font-size: .8rem;
+            line-height: 1.2;
+            text-overflow: ellipsis;
+            height: 2.5rem;
+            padding: 10px 5px;
+            color: #050505;
+            font-family: sans-serif;
+        }
+                .double_row
+        {
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            white-space: normal;
+            word-break: break-all;
+        }
+    </style>
+}
+@section ClientScript{
+    <script type="text/javascript">
+        setSessionStorageItemHeightAndImgHeight();
+ 
+        var srcType = getQueryString('SrcType');
+        if (srcType != undefined && srcType != "" && srcType != "null" && srcType != null && srcType != "undefined") {
+
+            sessionStorage.SrcType = getQueryString('SrcType');
+        }
+        var cpsId = getQueryString('CPSId');
+
+        if (cpsId != undefined && cpsId != "" && cpsId != "null" && cpsId != null && cpsId != "undefined") {
+            sessionStorage.CPSId = getQueryString('CPSId');
+        }
+
+        window.onload = function () {
+            var Commodity_nav = $('#Commodity_nav');
+            Commodity_nav.css({
+                //			left: '-' + $(window).width() / 2 + 'px',
+                height: $(window).height()
+            }).find('ul').css({
+                height: $(window).height() - Commodity_nav.find('.nav_search').height() - Commodity_nav.find('.title').height()
+            });
+        };
+
+        $(function () {
+            saveContextDTOByUrl();
+            sessionStorage.appId = getQueryString('shopId');
+            sessionStorage.appIdCong = getQueryString('shopId');
+            //如果是分享跳到list
+            if (sessionStorage.source == "share") {
+                var comid = getQueryString('commodityIds');
+                if (sessionStorage.source == "share") {
+                    var comid = getQueryString('commodityIds');
+                }
+                if (comid != undefined && comid != "" && comid != "null" && comid != null && comid != "undefined") {
+                    if (sessionStorage.SrcType == undefined || sessionStorage.SrcType == "") {
+                        sessionStorage.SrcTagId = getQueryString('commodityIds');
+                        sessionStorage.SrcType = 34;
+                    }
+                    var comIdarr = comid.split(',');
+                    if (comIdarr.length == 1) {
+
+                        window.location.href = urlAppendCommonParams('/Mobile/CommodityDetail?commodityId=' + getQueryString('commodityIds'));
+                        return;
+                    }
+                }
+                else {
+                    sessionStorage.SrcTagId = getQueryString('orderId');
+                    sessionStorage.SrcType = 33;
+
+                    window.location.href = urlAppendCommonParams("/Mobile/ShareMyOrderDetail?shopId=" + getQueryString('shopId') + "&type=tuwen&commodityIds=" + "@ViewBag.commodityIds" + "&orderId=" + getQueryString('orderId'));
+                    return;
+                }
+
+            }
+            var items = $('#items');
+            var item = $('#parent_item');
+            var height = item.height();
+            var img_height = item.find('img').height();
+            var clone_item;
+            var div = $('<div></div>');
+
+            $.get('/mobile/GetCommodityByIds', { appId: getQueryString('shopId'), commodityIds: $('#commodityIds').val(), areaCode: '' }, function (data) {
+                if (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        clone_item = item.clone().removeClass('noDisplay').removeAttr('id');
+                        div.append(setItemData({ element: clone_item, data: data[i], height: height, img_height: img_height }));
+                    }
+                    if (data.length == 0) {
+                        $(".outer").show();
+                        $(".divData").hide();
+                    }
+                    else {
+                        $(".outer").hide();
+                        $(".divData").show();
+                    }
+
+                    items.append(div);
+
+                    showLazyLoadImg();
+                }
+                else {
+                    $(".outer").show();
+                    $(".divData").hide();
+                }
+            }, 'json');
+
+            $('#main').on('click', '.item_1', function (e) {
+                var self = $(this);
+                sessionStorage.commodityId_2 = self.data('id');
+                setTimeout(function () {
+                    window.location.href = urlAppendCommonParams('/Mobile/CommodityDetail?commodityId=' + self.data('id'));
+                }, 200);
+            });
+        });
+
+    </script>
+}
+<div class="outer">
+    <img src="../../Content/Mobile/redredenvelope/fail.png" alt="" style="margin: auto;" />
+    <span style="padding: 20px; display: block; color: #a1a1a1;">亲，暂无红包哦，快去分享商品赚红包吧~</span>
+</div>
+<div class="divData">
+    <input type="hidden" id="commodityIds" value="@ViewBag.commodityIds"/>
+    <div id="box">
+        <div id="main" style="padding: 0" class="clearFloat">
+            <div class="item_1 noDisplay" id="parent_item">
+                <div class="item_1_s">
+                    <div class="position_r">
+                        <div class="yhzknum">
+                        </div>
+                        <img class="img" src="" alt="" />
+                        <div class="zk">
+                        </div>
+                        <div class="mb_box noDisplay">
+                            <div class="mb">
+                            </div>
+                            <p class="mb_1">
+                                已售完</p>
+                        </div>
+                        <div class="selfTake noDisplay">
+                            <img class="selfTakeImg" src="/Images/selftake.png" alt="自提" />
+                        </div>
+                    </div>
+                    <p class="item_title double_row">
+                        {name}</p>
+                    <p class="item_price">
+                        <span class="price_1">{price1}</span><span class="price_2">{price2}</span></p>
+                </div>
+            </div>
+            <div id="items" class="clearFloat">
+            </div>
+        </div>
+    </div>
+    <!--<div id="box_2"></div>-->
+    <iframe id="box_2" style="display: none;"></iframe>
+</div>

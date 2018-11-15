@@ -1,0 +1,78 @@
+﻿@{
+    Layout = null;
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.CommodityVM> comcalist = ViewBag.CommodityList;
+}
+<input type="hidden" id="rowcounts" value="@ViewBag.Count"/>
+<table id="dataTable" border="0" cellspacing="5" cellpadding="0" class="m_talbe m_talbe3">
+    <tr class="t_tr1">
+        <td width="30">
+            <input type="checkbox" id="selecetall" />
+        </td>
+        <td width="80">
+            全选
+        </td>
+        <td style="text-align: left; padding-left: 50px; width: 80px;">
+            商品编号/名称
+        </td>
+        <td width="100">
+            增加销量
+        </td>
+        <td width="100">
+            总销量
+        </td>
+        <td width="100">
+            库存
+        </td>
+    </tr>
+    <script type="text/javascript">
+        $("#selecetall").on('click', function () {
+            var s = document.getElementsByName("itemCheckBox");
+            if ($(this).prop('checked')) {
+                for (var i = 0; i < s.length; i += 1)
+                    s[i].checked = "checked";
+            } else {
+                for (var i = 0; i < s.length; i += 1)
+                    s[i].checked = "";
+            }
+        });
+        _rowCount = "@ViewBag.Count";
+      
+        
+    </script>
+    <tbody id="sortables">
+        @foreach (var items in comcalist)
+        {  
+
+            <tr class="t_tr2 t_tr2_bg wysort" data-items-id="@items.Id">
+                <td>
+                    <input name="itemCheckBox" value="@items.Id" type="checkbox"/>
+                </td>
+                <td>
+                    <img src="@items.Pic" alt="" width="86" height="85" />
+                </td>
+                <td style="text-align: left; padding-left: 50px;" class="parentElement">
+                    <p class="setElementText1">
+                        @items.Code
+                    </p>
+                    <p class="setElementText">@items.Name</p>
+                    <input name="nameText" type="text" class="showElement"
+                           style="border: 1px solid #ccc; height: 30px; display: none;"
+                           value="@items.Name" />
+                </td>
+                <td style="color: Orange">
+                    <span id="Total" class="setElementText">0</span>
+                    <input id="TotalText" type="text" class="showElement" style="display: none; border:1px solid black; width:40px;" value="" />
+                    <br />
+                    <span><a href="#" id="upSalesvolume">修改</a> <a href="javascript:void(0)"    style="display: none" id="btnXOk" comid="@items.Id" kc="@items.Stock" total="@items.Total" >
+                        确定</a></span>
+                </td>
+                <td class="editable_cell parentElement">
+                    <span id="pTotal" class="setElementText">@items.Total</span>
+                </td>
+                <td class="editable_cell parentElement">
+                    <span id="pstock" class="setElementText">@items.Stock</span>
+                </td>
+            </tr>     
+        }
+    </tbody>
+</table>

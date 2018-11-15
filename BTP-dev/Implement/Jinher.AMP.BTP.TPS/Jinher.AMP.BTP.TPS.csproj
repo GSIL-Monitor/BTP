@@ -1,0 +1,454 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{20EACC61-173D-4D4D-A6BB-EA7F5C631AD7}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Jinher.AMP.BTP.TPS</RootNamespace>
+    <AssemblyName>Jinher.AMP.BTP.TPS</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>obj\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>obj\Debug\Jinher.AMP.BTP.TPS.XML</DocumentationFile>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="api-sdk">
+      <HintPath>..\..\..\..\..\Lib\TP\api-sdk.dll</HintPath>
+      <Aliases>snsdk</Aliases>
+    </Reference>
+    <Reference Include="Jinher.AMP.ADM.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.ADM.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.ADM.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.ADM.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.App.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.App.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.App.IBP">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.App.IBP.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.App.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.App.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.AVM.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.AVM.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.AVM.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.AVM.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.BAC.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.BAC.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.BAC.IBP">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.BAC.IBP.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.BAC.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.BAC.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.CBC.Deploy, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.CBC.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.CBC.IBP">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.CBC.IBP.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.CBC.ISV, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.CBC.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.Coupon.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.Coupon.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.Coupon.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.Coupon.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.DSS.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.DSS.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.DSS.IBP">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.DSS.IBP.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.DSS.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.DSS.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.EBC.Common">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Implement\Jinher.AMP.EBC.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.EBC.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.EBC.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.EBC.IBP">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.EBC.IBP.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.EBC.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.EBC.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.Finance.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.Finance.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.Finance.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.Finance.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.FSP.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.FSP.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.FSP.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.FSP.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.Game.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.Game.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.Game.IBP">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.Game.IBP.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.Info.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.Info.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.Info.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.Info.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.IUS.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.IUS.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.IUS.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.IUS.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.LBP.Deploy, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.LBP.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.LBP.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.LBP.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.LSP.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.LSP.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.LSP.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.LSP.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.LVP.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.LVP.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.LVP.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.LVP.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.Promotion.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.Promotion.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.Sign.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.Sign.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.Sign.IBP">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.Sign.IBP.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.SNS.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.SNS.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.SNS.IBP">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.SNS.IBP.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.SNS.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.SNS.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.WCP.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.WCP.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.WCP.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.WCP.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.YJB.Deploy, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.YJB.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.YJB.IBP">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.YJB.IBP.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.YJB.ISV, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.YJB.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.YJBJMQ.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.YJBJMQ.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.YJBJMQ.IBP">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.YJBJMQ.IBP.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.YJBJMQ.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.YJBJMQ.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.ZPH.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.ZPH.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.ZPH.IBP">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.ZPH.IBP.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.ZPH.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.ZPH.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.BaseApp.FileServer.Deploy">
+      <HintPath>..\..\..\..\..\Lib\JAP\Interface\Jinher.JAP.BaseApp.FileServer.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.BaseApp.FileServer.ISV">
+      <HintPath>..\..\..\..\..\Lib\JAP\Interface\Jinher.JAP.BaseApp.FileServer.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.BaseApp.MessageCenter.Deploy, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\JAP\Interface\Jinher.JAP.BaseApp.MessageCenter.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.BaseApp.MessageCenter.ISV, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\JAP\Interface\Jinher.JAP.BaseApp.MessageCenter.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.BaseApp.Tools.Deploy, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\JAP\Interface\Jinher.JAP.BaseApp.Tools.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.BaseApp.Tools.ISV">
+      <HintPath>..\..\..\..\..\Lib\JAP\Interface\Jinher.JAP.BaseApp.Tools.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.BF.BE">
+      <HintPath>..\..\..\..\..\Lib\JAP\Implement\Jinher.JAP.BF.BE.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.BF.BE.Deploy">
+      <HintPath>..\..\..\..\..\Lib\JAP\Interface\Jinher.JAP.BF.BE.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.BF.IBP">
+      <HintPath>..\..\..\..\..\Lib\JAP\Interface\Jinher.JAP.BF.IBP.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.Cache">
+      <HintPath>..\..\..\..\..\Lib\JAP\Implement\Jinher.JAP.Cache.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.Cache.CacheWrapper, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cf9e7442103fe422, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\JAP\Implement\Jinher.JAP.Cache.CacheWrapper.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.Common">
+      <HintPath>..\..\..\..\..\Lib\JAP\Implement\Jinher.JAP.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.PL">
+      <HintPath>..\..\..\..\..\Lib\JAP\Implement\Jinher.JAP.PL.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.ShortUrl.ISV">
+      <HintPath>..\..\..\..\..\Lib\JAP\Interface\Jinher.JAP.ShortUrl.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\TP\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="O2S.Components.PDFRender4NET">
+      <HintPath>..\..\..\..\..\Lib\TP\O2S.Components.PDFRender4NET.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Common">
+      <HintPath>..\..\..\..\..\Lib\TP\ServiceStack.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Interfaces">
+      <HintPath>..\..\..\..\..\Lib\TP\ServiceStack.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Redis">
+      <HintPath>..\..\..\..\..\Lib\TP\ServiceStack.Redis.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Text">
+      <HintPath>..\..\..\..\..\Lib\TP\ServiceStack.Text.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AampHelper.cs" />
+    <Compile Include="ADMSV.cs" />
+    <Compile Include="APPBP.cs" />
+    <Compile Include="AppSelfTakeSV.cs" />
+    <Compile Include="BACBP.cs" />
+    <Compile Include="BACSV.cs" />
+    <Compile Include="BaseAppToolsSV.cs" />
+    <Compile Include="BTPFileSV.cs" />
+    <Compile Include="BTPMessageSV.cs" />
+    <Compile Include="BTP\DistributionDeal.cs" />
+    <Compile Include="BTP\OrderSV.cs" />
+    <Compile Include="BTP\WeChatQrCodeSV.cs" />
+    <Compile Include="Cache\CommodityCache.cs" />
+    <Compile Include="Cache\LVPCache.cs" />
+    <Compile Include="Cache\CacheHelper.cs" />
+    <Compile Include="Cache\CommoditySpecificationsCache.cs" />
+    <Compile Include="Cache\CommodityCategoryCache.cs" />
+    <Compile Include="Cache\Consts.cs" />
+    <Compile Include="Cache\MallApplyCache.cs" />
+    <Compile Include="Cache\AppCache.cs" />
+    <Compile Include="Cache\YJBCache.cs" />
+    <Compile Include="Cache\ZPHCache.cs" />
+    <Compile Include="CBCBP.cs" />
+    <Compile Include="CBCSV.cs" />
+    <Compile Include="CouponSV.cs" />
+    <Compile Include="DSSBP.cs" />
+    <Compile Include="DSSSV.cs" />
+    <Compile Include="EBCSV.cs" />
+    <Compile Include="Express100SV.cs" />
+    <Compile Include="FangZhengSV.cs" />
+    <Compile Include="Finance.cs" />
+    <Compile Include="FSPSV.cs" />
+    <Compile Include="GameSV.cs" />
+    <Compile Include="Helper\AutoCommodityHelper.cs" />
+    <Compile Include="Helper\JdJobHelper.cs" />
+    <Compile Include="Helper\JdJosHelper.cs" />
+    <Compile Include="Helper\JdOrderHelper.cs" />
+    <Compile Include="Helper\Jobs.cs" />
+    <Compile Include="Helper\OrderRiskHelper.cs" />
+    <Compile Include="Helper\SNJobHelper.cs" />
+    <Compile Include="Helper\SNOrderAfterSalesHelper.cs" />
+    <Compile Include="Helper\OrderEventHelper.cs" />
+    <Compile Include="Helper\OrderHelper.cs" />
+    <Compile Include="Helper\PromotionHelper.cs" />
+    <Compile Include="Helper\SettleAccountHelper.cs" />
+    <Compile Include="Helper\YJBHelper.cs" />
+    <Compile Include="Helper\ThirdECommerceHelper.cs" />
+    <Compile Include="Helper\YPKCommodityHelper.cs" />
+    <Compile Include="Helper\YXCommodityHelper.cs" />
+    <Compile Include="Helper\YXJob.cs" />
+    <Compile Include="Helper\YXOrderHelper.cs" />
+    <Compile Include="Helper\YXOrderRefundHelper.cs" />
+    <Compile Include="Helper\ThirdECommerceOrderHelper.cs" />
+    <Compile Include="Helper\ThirdECommerceServiceHelper.cs" />
+    <Compile Include="InfoSV.cs" />
+    <Compile Include="Invoic\InvoicManage.cs" />
+    <Compile Include="IUSSV.cs" />
+    <Compile Include="JDSV.cs" />
+    <Compile Include="KdApiSubscribeKit.cs" />
+    <Compile Include="MessageCenter.cs" />
+    <Compile Include="BTP\OtherSV.cs" />
+    <Compile Include="OAPISV.cs" />
+    <Compile Include="PromotionSV.cs" />
+    <Compile Include="Service References\eInvoService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="ShortUrlSV.cs" />
+    <Compile Include="LSPSV.cs" />
+    <Compile Include="SignSV.cs" />
+    <Compile Include="SNSSV.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="APPSV.cs" />
+    <Compile Include="SuningSV.cs" />
+    <Compile Include="TestHelper.cs" />
+    <Compile Include="YJBJMQSV.cs" />
+    <Compile Include="YJBSV.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="YPKSV.cs" />
+    <Compile Include="ZPHSV.cs" />
+    <Compile Include="SpreadSV.cs" />
+    <Compile Include="AVMSV.cs" />
+    <Compile Include="WCPSV.cs" />
+    <Compile Include="BTP\ScoreSV.cs" />
+    <Compile Include="LVPSV.cs" />
+    <Compile Include="ExchangeSV.cs" />
+    <Compile Include="YXSV.cs" />
+    <Compile Include="LBPSV.cs" />
+    <Compile Include="ThirdECommerceSV.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Interface\Jinher.AMP.BTP.Deploy\Jinher.AMP.BTP.Deploy.csproj">
+      <Project>{77DC4033-3DB5-4A90-B490-A6180CC64E44}</Project>
+      <Name>Jinher.AMP.BTP.Deploy</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Interface\Jinher.AMP.BTP.IBP\Jinher.AMP.BTP.IBP.csproj">
+      <Project>{AE8ED766-27DA-4992-8F96-ADF20AEF932E}</Project>
+      <Name>Jinher.AMP.BTP.IBP</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Interface\Jinher.AMP.BTP.ISV\Jinher.AMP.BTP.ISV.csproj">
+      <Project>{2DCAB1F9-D0AB-444F-8CEE-25712DC9ACCC}</Project>
+      <Name>Jinher.AMP.BTP.ISV</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Model\Jinher.AMP.BTP.EDMX\Jinher.AMP.BTP.EDMX.csproj">
+      <Project>{8636DFFC-CDE2-4F52-9C86-1BDF55493283}</Project>
+      <Name>Jinher.AMP.BTP.EDMX</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jinher.AMP.BTP.BE\Jinher.AMP.BTP.BE.csproj">
+      <Project>{EDF3387C-EF7F-4A8A-BA24-AD7F919E7882}</Project>
+      <Name>Jinher.AMP.BTP.BE</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jinher.AMP.BTP.Common\Jinher.AMP.BTP.Common.csproj">
+      <Project>{4D40B31E-3239-4671-8017-9CDA7E98C227}</Project>
+      <Name>Jinher.AMP.BTP.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Service References\eInvoService\EInvoiceServiceService.wsdl" />
+    <None Include="Service References\eInvoService\IEInvoiceService.wsdl" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\eInvoService\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\eInvoService\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\eInvoService\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\eInvoService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy $(TargetDir)$(TargetName).dll $(TargetDir)..\..\..\..\..\..\..\Lib\BizApp\Implement\ /y
+xcopy $(TargetDir)$(TargetName).pdb $(TargetDir)..\..\..\..\..\..\..\Lib\BizApp\Implement\ /y
+xcopy $(TargetDir)$(TargetName).xml $(TargetDir)..\..\..\..\..\..\..\Lib\BizApp\Implement\ /y
+xcopy $(TargetDir)$(TargetName).dll $(TargetDir)..\..\..\..\..\..\..\Product\Portal\BizApp\Implement\ /y
+xcopy $(TargetDir)$(TargetName).pdb $(TargetDir)..\..\..\..\..\..\..\Product\Portal\BizApp\Implement\ /y
+xcopy $(TargetDir)$(TargetName).xml $(TargetDir)..\..\..\..\..\..\..\Product\Portal\BizApp\Implement\ /y
+</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,704 @@
+﻿@using Jinher.AMP.BTP.Deploy.CustomDTO;
+@{
+    Layout = null;
+    List<UserRedEnvelopeDTO> shareRedEnvelopesList = ViewBag.ShareRedEnvelopesList != null ? ViewBag.ShareRedEnvelopesList as List<UserRedEnvelopeDTO> : null;
+    DateTime dtnow = DateTime.Now;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <title>红包列表</title>
+    <link href="../../Scripts/Jquerymobile/1.4.5/jquery.mobile-1.4.5.min.css" rel="stylesheet"
+        type="text/css" />
+    <script src="/Scripts/first-js.js" type="text/javascript"></script>
+    <script src="../../Scripts/jquery-1.7.2.min.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquerymobile/1.4.5/jquery.mobile-1.4.5.min.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquerymobile/iscroll/iscroll.js" type="text/javascript"></script>
+    <script src="../../Content/Mobile/Common.js" type="text/javascript"></script>
+    <style type="text/css" media="all">
+        body, ul, li
+        {
+            padding: 0;
+            margin: 0;
+            border: 0;
+        }       
+        body
+        {
+            -webkit-user-select: none;
+            -webkit-text-size-adjust: none;
+            font-family: 微软雅黑;
+            background-color: #f9f9f9;
+            background-position: center center;
+            background-repeat: no-repeat;
+            border-radius: 1em;
+        }
+        #wrapper
+        {
+            position: absolute;
+            z-index: 1;
+            top: 0px;
+            bottom: 0px;
+            left: 0;
+            width: 100%;
+            overflow: auto;
+            -webkit-transform: translate3d(0,0,0);
+        }
+        
+        #scroller
+        {
+            -webkit-transform: translate3d(0,0,0); /* position: relative; 	-webkit-touch-callout:none;*/
+            -webkit-tap-highlight-color: rgba(0,0,0,0);
+            float: left;
+            width: 100%;
+            padding: 0;
+        }
+        
+        #scroller ul
+        {
+            /*  position: relative;*/
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            text-align: left;
+        }
+        
+        #scroller li
+        {
+            background-color: #fafafa;
+        }
+        
+        #scroller li > a
+        {
+            display: block;
+        }
+        
+        /**
+ *
+ * 下拉样式 Pull down styles
+ *
+ */
+        #pullDown, #pullUp
+        {
+            background: #fff;
+            height: 40px;
+            line-height: 40px;
+            padding: 5px 10px;
+            font-weight: bold;
+            font-size: 12px;
+            color: #888;
+        }
+        #pullDown .pullDownIcon, #pullUp .pullUpIcon
+        {
+            display: block;
+            float: left;
+            width: 40px;
+            height: 40px;
+            background: url(../Scripts/Jquerymobile/iscroll/pull-icon@2x.png) 0 0 no-repeat;
+            -webkit-background-size: 40px 80px;
+            background-size: 40px 80px;
+            -webkit-transition-property: -webkit-transform;
+            -webkit-transition-duration: 250ms;
+        }
+        #pullDown .pullDownIcon
+        {
+            -webkit-transform: rotate(0deg) translateZ(0);
+        }
+        #pullUp .pullUpIcon
+        {
+            -webkit-transform: rotate(-180deg) translateZ(0);
+        }
+        
+        #pullDown.flip .pullDownIcon
+        {
+            -webkit-transform: rotate(-180deg) translateZ(0);
+        }
+        
+        #pullUp.flip .pullUpIcon
+        {
+            -webkit-transform: rotate(0deg) translateZ(0);
+        }
+        
+        #pullDown.loading .pullDownIcon, #pullUp.loading .pullUpIcon
+        {
+            background-position: 0 100%;
+            -webkit-transform: rotate(0deg) translateZ(0);
+            -webkit-transition-duration: 0ms;
+            -webkit-animation-name: loading;
+            -webkit-animation-duration: 2s;
+            -webkit-animation-iteration-count: infinite;
+            -webkit-animation-timing-function: linear;
+        }
+        #thelist
+        {
+            min-height: 600px;
+        }
+        .listBtn
+        {
+            display: block;
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            @*border: 1px solid #eee;*@
+            z-index: 100;
+            padding: 6px;
+            font-size:0.9em !important;
+        }
+        .listBtn:hover
+        {
+            @*background-color: #eee;*@
+        }
+         .outer
+        {
+            padding: auto;
+            text-align: center;
+            vertical-align: middle;
+            padding-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    @{
+        
+        @*<div class="outer">
+            <img src="../../Content/Mobile/redredenvelope/fail.png" alt="" style="margin: auto;" />
+            <span style="padding: 20px; display: block; color: #a1a1a1;">亲，暂无红包哦，快去分享商品赚红包吧~</span>
+        </div>*@
+       
+       <div id="divContent">
+        <div id="wrapper">
+            <div data-role="page" id="pageone">
+                <div id="scroller">
+                    <div data-role="content">
+                        <div id="pullDown">
+                            <span class="pullDownIcon"></span><span class="pullDownLabel">下拉刷新...</span>
+                        </div>
+                        <ul id="thelist" data-role="listview" data-icon="false">
+                            @{
+            string tempHtml = string.Empty;
+            string imgShow = string.Empty;
+            string tempTime = string.Empty;
+            if (shareRedEnvelopesList != null && shareRedEnvelopesList.Count > 0)
+            {
+                tempHtml += "<li id=\"DivOne\" style=\"display:none;\"></li>";
+                foreach (UserRedEnvelopeDTO _model in shareRedEnvelopesList)
+                {
+                    if (_model.State == 0 && _model.DueDate >= DateTime.Now)
+                    {
+                        
+                    tempHtml += "<li class=\"ui-li-has-thumb ui-first-child\" style=\"position: relative;\">";
+                    imgShow = "../../Content/Mobile/redredenvelope/redwei.png";
+                   
+                    string[] strhlist = _model.Description.Split(',');
+                    string strl = "";
+                    if (strhlist.Length > 3)
+                    {
+                        for (int i = 0; i < 3; i++)
+                        {
+                            strl += strhlist[i] + "</br>";
+                        }
+                        strl = strl + "...";
+                    }
+                    else
+                    {
+                        strl = _model.Description.Replace(",", "<br/>");
+                    }
+                    tempHtml += "<a href=\"#\" onclick=\"Goto('ShareRedEnvelopesDetail?msgId=" + _model.Id + "&os=" + ViewBag.MobileType + "&isannon=false&type=0&sessionid=" + ViewBag.sessionid + "&appid=" + ViewBag.AppId + "&userid=" + ViewBag.UserId + "&source=" + ViewBag.source + "'," + _model.State + ",'" + _model.DueDate + "')\">";
+                    tempHtml += "<img src=\"" + imgShow + "\" width=\"50em\" height=\"50em\" style=\"margin:0.3em;\">";
+                    tempHtml += "<p style=\"font-size:1.0em;width:80%;line-height:1.7em;\">" + strl + "</p>";
+                    tempHtml += "<p style=\" color:#a3a3a3; font-size:0.95em;line-height:1.7em;\">" + _model.SubTime.ToString("yyyy-MM-dd HH:mm") + "</p>";
+                    tempHtml += " <p class=\"ui-li-aside\" style=\" color:#a3a3a3; font-size:0.95em; top:0.7em;\"></p><div style=\" height:25px;\"></div></a>";
+                    tempHtml += "<span class=\"listBtn nowbtn\" style=\"color:#ff5400;\" id=\"" + _model.Id + "\">立即领取</span>";
+                    
+                    tempHtml += "</li>";
+                    }
+                    
+                }
+                tempHtml += "<li id=\"DivTwo\" style=\"display:none;\"></li>";
+                foreach (UserRedEnvelopeDTO _model in shareRedEnvelopesList)
+                {
+                    if (_model.State == 1)
+                    {
+                        
+                        tempHtml += "<li class=\"ui-li-has-thumb ui-first-child\" style=\"position: relative;\">";
+                        imgShow = "../../Content/Mobile/redredenvelope/redyi.png";
+                        
+                        string[] strhlist = _model.Description.Split(',');
+                        string strl = "";
+                        if (strhlist.Length > 3)
+                        {
+                            for (int i = 0; i < 3; i++)
+                            {
+                                strl += strhlist[i] + "</br>";
+                            }
+                            strl = strl + "...";
+                        }
+                        else
+                        {
+                            strl = _model.Description.Replace(",", "<br/>");
+                        }
+                        tempHtml += "<a href=\"#\" onclick=\"Goto('ShareRedEnvelopesDetail?msgId=" + _model.Id + "&os=" + ViewBag.MobileType + "&isannon=false&type=0&sessionid=" + ViewBag.sessionid + "&appid=" + ViewBag.AppId + "&userid=" + ViewBag.UserId + "&source=" + ViewBag.source +"'," + _model.State + ",'" + _model.DueDate + "')\">";
+                        tempHtml += "<img src=\"" + imgShow + "\" width=\"50em\" height=\"50em\" style=\"margin:0.3em;\">";
+                        tempHtml += "<p style=\"font-size:1.0em;width:80%;line-height:1.7em;\">" + strl + "</p>";
+                        tempHtml += "<p style=\" color:#a3a3a3; font-size:0.95em;line-height:1.7em;\">" + _model.SubTime.ToString("yyyy-MM-dd HH:mm") + "</p>";
+                        tempHtml += " <p class=\"ui-li-aside\" style=\" color:#a3a3a3; font-size:0.95em; top:0.7em;\"></p><div style=\" height:25px;\"></div></a>";
+                        tempHtml += "<span class=\"listBtn\"><span style=\"color:#c10003;\">+" + _model.GoldCount + "个</span><br/>已领</span>";
+                        
+                        tempHtml += "</li>";
+
+                    }
+                }
+                tempHtml += "<li id=\"DivThree\" style=\"display:none;\"></li>";
+                foreach (UserRedEnvelopeDTO _model in shareRedEnvelopesList)
+                {
+                    if (_model.DueDate < DateTime.Now && _model.State == 0)
+                    {
+                        
+                        tempHtml += "<li class=\"ui-li-has-thumb ui-first-child\" style=\"position: relative;\">";
+                        imgShow = "../../Content/Mobile/redredenvelope/redguo.png";
+
+                        string[] strhlist = _model.Description.Split(',');
+                        string strl = "";
+                        if (strhlist.Length > 3)
+                        {
+                            for (int i = 0; i < 3; i++)
+                            {
+                                strl += strhlist[i] + "</br>";
+                            }
+                            strl = strl + "...";
+                        }
+                        else
+                        {
+                            strl = _model.Description.Replace(",", "<br/>");
+                        }
+                        tempHtml += "<a href=\"#\" onclick=\"Goto('ShareRedEnvelopesDetail?msgId=" + _model.Id + "&os=" + ViewBag.MobileType + "&isannon=false&type=0&sessionid=" + ViewBag.sessionid + "&appid=" + ViewBag.AppId + "&userid=" + ViewBag.UserId + "&source=" + ViewBag.source +"'," + _model.State + ",'" + _model.DueDate + "')\">";
+                        tempHtml += "<img src=\"" + imgShow + "\" width=\"50em\" height=\"50em\" style=\"margin:0.3em;\">";
+                        tempHtml += "<p style=\"font-size:1.0em;width:80%;line-height:1.7em;\">" + strl + "</p>";
+                        tempHtml += "<p style=\" color:#a3a3a3; font-size:0.95em;line-height:1.7em;\">" + _model.SubTime.ToString("yyyy-MM-dd HH:mm") + "</p>";
+                        tempHtml += " <p class=\"ui-li-aside\" style=\" color:#a3a3a3; font-size:0.95em; top:0.7em;\"></p><div style=\" height:25px;\"></div></a>";
+                         tempHtml += "<span class=\"listBtn\">已过期</span>";
+
+                        tempHtml += "</li>";
+                    }
+
+                }
+            }
+            else
+            {
+                tempHtml += "<li id=\"DivOne\" style=\"display:none;\"></li>";
+                tempHtml += "<li id=\"DivTwo\" style=\"display:none;\"></li>";
+                tempHtml += "<li id=\"DivThree\" style=\"display:none;\"></li>";
+                tempHtml += "<li id=\"DivFour\" style=\"display:none;\"></li>";
+            }
+
+                            }
+                            @(new HtmlString(tempHtml))
+                        </ul>
+                        <div id="pullUp">
+                            <span class="pullUpIcon"></span><span class="pullUpLabel">上拉加载更多...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <input type="hidden" id="HidSessionId" value="@(ViewBag.sessionid)" />
+            <input type="hidden" id="HidUserId" value="@(ViewBag.UserId)" />
+            <input type="hidden" id="HidAppId" value="@(ViewBag.AppId)" />
+            <input type="hidden" id="HidMobileType" value="@ViewBag.MobileType" />
+        </div>
+        </div>
+        <div id="ErrorDiv">
+        </div>
+    }
+</body>
+</html>
+<script type="text/javascript">
+
+    var myScroll,
+	pullDownEl, pullDownOffset,
+	pullUpEl, pullUpOffset,
+	generatedCount = 0;
+
+    /**
+    * 下拉刷新 （自定义实现此方法）
+    * myScroll.refresh();		// 数据加载完成后，调用界面更新方法
+    */
+    function pullDownAction() {
+        setTimeout(function () {	// <-- Simulate network congestion, remove setTimeout from production!
+            $("#ErrorDiv").hide();
+            $("#divContent").show();
+            //模拟浏览器数据加载延迟
+            UpOrDown = 0;
+            CurrentPage = 1;
+            GetData();
+
+            myScroll.refresh(); 	//数据加载完成后，调用界面更新方法   Remember to refresh when contents are loaded (ie: on ajax completion)
+        }, 1000); // <-- Simulate network congestion, remove setTimeout from production!
+    };
+
+    /**
+    * 滚动翻页 （自定义实现此方法）
+    * myScroll.refresh();		// 数据加载完成后，调用界面更新方法
+    */
+    function pullUpAction() {
+        setTimeout(function () {	// <-- Simulate network congestion, remove setTimeout from production!
+            UpOrDown = 1;
+            GetData();
+
+            myScroll.refresh(); 	// 数据加载完成后，调用界面更新方法 Remember to refresh when contents are loaded (ie: on ajax completion)
+        }, 1000); //
+    };
+
+
+    /**
+    * 初始化iScroll控件
+    */
+    function loaded() {
+        pullDownEl = document.getElementById('pullDown');
+        pullDownOffset = pullDownEl.offsetHeight;
+        pullUpEl = document.getElementById('pullUp');
+        pullUpOffset = pullUpEl.offsetHeight;
+
+        myScroll = new iScroll('wrapper', {
+            scrollbarClass: 'myScrollbar', /* 重要样式 */
+            useTransition: false, /* 此属性不知用意，本人从true改为false */
+            topOffset: pullDownOffset,
+            onRefresh: function () {
+                if (pullDownEl.className.match('loading')) {
+                    pullDownEl.className = '';
+                    pullDownEl.querySelector('.pullDownLabel').innerHTML = '下拉刷新...';
+                } else if (pullUpEl.className.match('loading')) {
+                    pullUpEl.className = '';
+                    pullUpEl.querySelector('.pullUpLabel').innerHTML = '上拉加载更多...';
+                }
+            },
+            onScrollMove: function () {
+                if (this.y > 5 && !pullDownEl.className.match('flip')) {
+                    pullDownEl.className = 'flip';
+                    pullDownEl.querySelector('.pullDownLabel').innerHTML = '松手开始更新...';
+                    this.minScrollY = 0;
+                } else if (this.y < 5 && pullDownEl.className.match('flip')) {
+                    pullDownEl.className = '';
+                    pullDownEl.querySelector('.pullDownLabel').innerHTML = '下拉刷新...';
+                    this.minScrollY = -pullDownOffset;
+                } else if (this.y < (this.maxScrollY - 5) && !pullUpEl.className.match('flip')) {
+                    pullUpEl.className = 'flip';
+                    pullUpEl.querySelector('.pullUpLabel').innerHTML = '松手开始更新...';
+                    this.maxScrollY = this.maxScrollY;
+                } else if (this.y > (this.maxScrollY + 5) && pullUpEl.className.match('flip')) {
+                    pullUpEl.className = '';
+                    pullUpEl.querySelector('.pullUpLabel').innerHTML = '上拉加载更多...';
+                    this.maxScrollY = pullUpOffset;
+                }
+            },
+            onScrollEnd: function () {
+                if (pullDownEl.className.match('flip')) {
+                    pullDownEl.className = 'loading';
+                    pullDownEl.querySelector('.pullDownLabel').innerHTML = '加载中...';
+                    pullDownAction(); // Execute custom function (ajax call?)
+                } else if (pullUpEl.className.match('flip')) {
+                    pullUpEl.className = 'loading';
+                    pullUpEl.querySelector('.pullUpLabel').innerHTML = '加载中...';
+                    pullUpAction(); // Execute custom function (ajax call?)
+                }
+            }
+        });
+
+        setTimeout(function () { document.getElementById('wrapper').style.left = '0'; }, 800);
+    }
+
+    //初始化绑定iScroll控件 
+    document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+    document.addEventListener('DOMContentLoaded', loaded, false); 
+
+</script>
+<script type="text/javascript">
+    var CurrentPage = 2;
+    var UpOrDown = 1; //0:下滑，1:上滑
+
+    $(function () {
+        $("#ErrorDiv").hide();
+        $("#divContent").show();
+
+        //start立即领取按钮
+        $(".nowbtn").live("click", function () {
+            var id = $(this).attr("id");
+            $.ajax({
+                async: true,
+                type: "POST",
+                dataType: "json",
+                url: "/ShareRedEnvelope/ReceiveShareRedEnvelopes",
+                data: { RedEnvelopesId: id },
+                success: function (data) {
+                    if (data.ResultCode == 0) {
+                        var psource = sessionStorage.source == "share" ? "&source=share" : "";
+                        Goto("ShareRedEnvelopesDetail?msgId=" + id + "&os=" + $("#HidMobileType").val() + "&isannon=false&type=0&sessionid=" + $("#HidSessionId").val() + "&appid=" + $("#HidAppId").val() + "&userid=" + $("#HidUserId").val() + psource, 1);
+                    }
+                    else {
+                        alert(data.Message);
+                    }
+                    $(".nowbtn").removeAttr("disabled");
+                    $("#ajaxLoadBlind").remove();
+                },
+                beforeSend: function () {
+                    $(".nowbtn").attr({ "disabled": "disabled" });
+                    ajaxLoading('22', '');
+                },
+                error: function (err) {
+                    alert("领取失败了,请重试");
+                    $(".nowbtn").removeAttr("disabled");
+                    $("#ajaxLoadBlind").remove();
+                }
+            });
+        });
+        //end立即领取按钮
+
+        GetOrgRedList();
+    });
+
+    function GetOrgRedList() {
+        var _isNull = "";
+        var itemThelist = $("#thelist").html();
+        if (itemThelist == "" || itemThelist.indexOf("id=\"DivFour\"") != -1) {
+            _isNull = "1";
+        }
+        var postdata = {
+            userId: $("#HidUserId").val(),
+            type: 0,
+            pageIndex: 1,
+            pageSize: 20
+        };
+        $.ajax({
+            async: true,
+            type: "POST",
+            dataType: "json",
+            url: "/ShareRedEnvelope/GetOrgShareRedEnvelopesList?r=" + Math.random(),
+            data: postdata,
+            success: function (data) {
+                if (data && data.length > 0) {
+
+                    var dataContent = "";
+                    var RefContent = "";
+                    var itemDivOne = $("#DivOne");
+                    var itemDivTwo = $("#DivTwo");
+                    var itemDivThree = $("#DivThree");
+
+
+                    for (var i = 0; i < data.length; i++) {
+                        dataContent = createItem(data[i], 2);
+
+                        var dueDate = data[i].DueDate.split("(")[1].split(")")[0];
+                        if (data[i].State == 0 && data[i].DueDate >= (new Date()).getTime()) {
+                            itemDivOne.after(dataContent);
+                        }
+                        if (data[i].State == 1) {
+                            itemDivTwo.after(dataContent);
+                        }
+                        if (data[i].DueDate < (new Date()).getTime() && data[i].State == 0) {
+                            itemDivThree.after(dataContent);
+                        }
+                    }
+
+                    //数据加载完成后，调用页面更新方法
+                    myScroll.refresh();
+
+                }
+                else {
+                    if (_isNull == "1") {
+                        $("#ErrorDiv").show();
+                        $("#divContent").hide();
+
+                        var ErrorPage = '<div class="outer">'
+                        + '<img src="../../Content/Mobile/redredenvelope/fail.png" alt="" style="margin: auto;" />'
+                        + '<span style="padding: 20px; display: block; color: #a1a1a1;">亲，暂无红包哦，快去分享商品赚红包吧~</span>'
+                        + '</div>';
+
+                        $("#ErrorDiv").html(ErrorPage);
+                        //  window.location.href = "WalletError";
+                    }
+                }
+            },
+            error: function (err) {
+                myScroll.refresh();
+            }
+        });
+    }
+
+    function GetData() {
+
+        if (UpOrDown == 0) {
+            CurrentPage = 1;
+        }
+        var postdata = {
+            userId: $("#HidUserId").val(),
+            type: 0,
+            pageIndex: CurrentPage,
+            pageSize: 20
+        };
+
+
+        $.ajax({
+            async: true,
+            type: "POST",
+            dataType: "json",
+            url: "/ShareRedEnvelope/GetShareRedEnvelopesList?r=" + Math.random(),
+            data: postdata,
+            success: function (data) {
+                if (data) {
+                    var dataContent = "";
+                    var RefContent = "";
+                    var itemThelist = $("#thelist");
+                    for (var i = 0; i < data.length; i++) {
+                        dataContent = createItem(data[i],1);
+                        if (UpOrDown == 1) {
+                            //itemThelist.append(dataContent)
+                        } else {
+                            if (data.State == 0 && data.DueDate >= DateTime.Now) {
+                                if (RefContent.indexOf("id=\"DivOne\"") == -1) {
+                                    RefContent += "<li id=\"DivOne\" style=\"display:none;\"></li>";
+                                }
+                            }
+                            else if (data.State == 1) {
+                                if (RefContent.indexOf("id=\"DivTwo\"") == -1) {
+                                    RefContent += "<li id=\"DivTwo\" style=\"display:none;\"></li>";
+                                }
+                            }
+                            else if (data.DueDate < DateTime.Now && _model.State == 0) {
+                                if (RefContent.indexOf("id=\"DivThree\"") == -1) {
+                                    RefContent += "<li id=\"DivThree\" style=\"display:none;\"></li>";
+                                }
+                            }
+                            RefContent += dataContent
+                        }
+                    }
+                    if (UpOrDown == 0) {
+                        itemThelist.html(RefContent);
+                    }
+                    //数据加载完成后，调用页面更新方法
+                    myScroll.refresh();
+                    if (data.length > 0) {
+                        //CurrentPage++;
+                    }
+                    GetOrgRedList();
+                }
+                else {
+                    var RefContent = "";
+                    var itemThelist = $("#thelist");
+                    RefContent += "<li id=\"DivOne\" style=\"display:none;\"></li>";
+                    RefContent += "<li id=\"DivTwo\" style=\"display:none;\"></li>";
+                    RefContent += "<li id=\"DivThree\" style=\"display:none;\"></li>";
+                    RefContent += "<li id=\"DivFour\" style=\"display:none;\"></li>";
+                    if (UpOrDown == 0) {
+                        itemThelist.html(RefContent);
+                    }               
+                    myScroll.refresh();
+                    GetOrgRedList();
+                }
+            },
+            error: function (err) {
+                myScroll.refresh();
+            }
+        });
+        
+    }
+
+    var myDate = new Date();
+    var psource = sessionStorage.source == "share" ? "&source=share" : "";
+    var template = '<li class="ui-li-has-thumb ui-first-child" style="position: relative;"><a class="ui-btn" href="#" onclick="Goto(\'ShareRedEnvelopesDetail?msgId={redid}&os={MobileType}&isannon=false&type=0&sessionid={sessionid}&appid={appid}&userid={userid}' + psource + '\',{state},\'{time}\')">'
+                        + '<img src="{image}" width="50em" height="50em" style="margin:0.3em;" />'
+                        + '<p style="font-size:1.0em;width:80%;line-height:1.7em;">{description}</p>'
+                        + '<p style=\" color:#a3a3a3; font-size:0.95em;line-height:1.7em;\">{time1}</p>'
+                        + '<p class="ui-li-aside" style="color:#a3a3a3; font-size:0.95em; top:0.7em;">'
+                        + '</p><div style=\" height:25px;\"></div></a>{redstate}</li>';
+
+
+    function createItem(data,roleType) {
+        var myArray = new Array();
+        var myhlist = "";
+        myArray = data.Description.split(',');
+        if (myArray.length > 3) {
+            for (var i = 0; i < 3; i++) {
+
+                myhlist += myArray[i] + "</br>";
+            }
+            myhlist = myhlist + "...";
+        }
+        else {
+            myhlist = data.Description.replace(new RegExp(/(,)/g), "<br/>");
+        }
+        var str = template;
+        str = str.replace("{userid}", $("#HidUserId").val());
+        str = str.replace("{sessionid}", $("#HidSessionId").val());
+        str = str.replace("{appid}", $("#HidAppId").val());
+        str = str.replace("{redid}", data.Id);
+        str = str.replace("{state}", data.State);
+        str = str.replace("{time}", ChangeDateFormat(data.DueDate, 0));
+        str = str.replace("{time1}", ChangeDateFormat(data.SubTime, 1));
+        str = str.replace("{description}", myhlist);
+        str = str.replace("{MobileType}", $("#HidMobileType").val());
+
+        if (data.State == 0 && new Date(ChangeDateFormat(data.DueDate, 2)) >= new Date(GetDateNow())) {
+            if (roleType == 2) {
+                str = str.replace("{image}", "../../Content/Mobile/redredenvelope/orgredwei.png");
+            }
+            else {
+                str = str.replace("{image}", "../../Content/Mobile/redredenvelope/redwei.png");
+            }
+            str = str.replace("{redstate}", " <span class=\"listBtn nowbtn\" style=\"color:#ff5400;\" id=\"" + data.Id + "\">立即领取</span>");
+        } else if (data.State == 1) {
+            str = str.replace("{image}", "../../Content/Mobile/redredenvelope/redyi.png");
+            str = str.replace("{redstate}", " <span class=\"listBtn\"><span style=\"color:#c10003;\">+" + data.GoldCount + "个</span><br/>已领</span>");
+        }
+        else {
+            str = str.replace("{image}", "../../Content/Mobile/redredenvelope/redguo.png");
+            str = str.replace("{redstate}", " <span class=\"listBtn\">已过期<span>");
+
+        }
+        return str;
+    }
+
+
+    function Goto(_href, state, time) {
+
+        if (state == 0 && new Date(time) >= new Date(GetDateNow())) {
+
+        }
+        else {
+            window.location.href = _href;
+        }
+    }
+
+    function GetDateNow() {
+        var date = new Date();
+        var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+        var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+        var hour = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+        var minu = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+        var miao = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+        return date.getFullYear() + "/" + month + "/" + currentDate + " " + hour + ":" + minu + ":" + miao;
+    }
+
+    function ChangeDateFormat(cellval, state) {
+        try {
+            var date = new Date(parseInt(cellval.replace("/Date(", "").replace(")/", ""), 10));
+            var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+            var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+            var hour = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+            var minu = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+            var miao = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+            if (state == 1) {
+                return date.getFullYear() + "-" + month + "-" + currentDate + " " + hour + ":" + minu;
+            }
+            else {
+                return date.getFullYear() + "/" + month + "/" + currentDate + " " + hour + ":" + minu + ":" + miao;
+            }
+        } catch (e) {
+            return "";
+        }
+    }
+</script>

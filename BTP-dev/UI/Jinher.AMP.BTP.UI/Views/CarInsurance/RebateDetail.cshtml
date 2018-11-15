@@ -1,0 +1,138 @@
+﻿@{ 
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>汇款单详情页</title>
+    <link rel="stylesheet" type="text/css" href="/Content/default/ui.jqgrid.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.all.css" />
+    <style>
+        .elbutton {
+            display: inline-block;
+            line-height: 1;
+            white-space: nowrap;
+            cursor: pointer;
+            background: #fff;
+            border: 1px solid #dcdfe6;
+            border-color: #dcdfe6;
+            color: #606266;
+            -webkit-appearance: none;
+            text-align: center;
+            box-sizing: border-box;
+            outline: none;
+            margin: 0;
+            transition: .1s;
+            font-weight: 500;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            padding: 12px 20px;
+            font-size: 14px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body style="overflow-x:hidden">
+    <div style="margin-bottom: 20px;">
+        <input type="button" value="导出Excel" class="elbutton" onclick="ExportExcel()" />
+    </div>
+    <div class="GridArea mt10 ml10" id="table" style="overflow:auto">
+        <table id="jqgrid"></table>
+    </div>
+    <div id="page">
+    </div>
+    <form id="FormExcel" action="ExportRebateDetailExcel" method="post">
+        <input type="hidden" name="JQgridTable" id="JQgridTable" />
+    </form>
+</body>
+</html>
+<script type="text/javascript" src="/Scripts/jquery.js"></script>
+<script type="text/javascript" src="/Scripts/jquery.extend.js"></script>
+<script type="text/javascript" src="/Scripts/jquery.ui.base.js"></script>
+<script type="text/javascript" src="/Scripts/i18n/jquery.ui-zh.js"></script>
+<script type="text/javascript" src="/Scripts/Grid/jquery.grid.base.js"></script>
+<script type="text/javascript" src="/Scripts/Pager/jquery.ui.jhpager.js"></script>
+<script src="/Scripts/TableBox/jquery.ui.jhtablebox.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(function () {
+        InitGrid();
+    });
+
+    function InitGrid() {
+
+        var data = {
+            "pageSize": 20,
+            "PageNo": 1,
+            "RebateId": "@ViewBag.RebateId"
+        };
+
+        $("#jqgrid").jqGrid({
+            datatype: "json",
+            postData: data,
+            url: "/CarInsurance/GetRebateDetail",
+            mtype: 'POST',
+            rownumbers: true,
+            colNames: ['汇款日期', '审核日期', '订单编号', '笔数', '保险公司名称', '爱豆汇款金额', '保险公司汇款金额', '爱豆返利比例', '保险公司返利比例', '爱豆返利金额', '保险公司返利金额', '返利总金额', '商险金额', '强险金额', '车船税', '保单金额', '手机号', '汇款单号', '状态'],
+            colModel: [
+                { sortable: false, name: 'RebateDate', index: 'RebateDate', align: "center" },
+                { sortable: false, name: 'AuditDate', index: 'AuditDate', align: "center" },
+                { sortable: false, name: 'OrderNo', index: 'OrderNo', align: "center" },
+                { sortable: false, name: 'RebateNum', index: 'RebateNum', align: "center" },
+                { sortable: false, name: 'InsuranceCompanyName', index: 'InsuranceCompanyName', align: "center" },
+                { sortable: false, name: 'DouRemittanceAmount', index: 'DouRemittanceAmount', align: "center" },
+                { sortable: false, name: 'CompanyRemittanceMoney', index: 'CompanyRemittanceMoney', align: "center" },
+                { sortable: false, name: 'DouRebatePersent', index: 'DouRebatePersent', align: "center" },
+                { sortable: false, name: 'CompanyRebatePersent', index: 'CompanyRebatePersent', align: "center" },
+                { sortable: false, name: 'DouRebateMoney', index: 'DouRebateMoney', align: "center" },
+                { sortable: false, name: 'CompanyRebateMoney', index: 'CompanyRebateMoney', align: "center" },
+                { sortable: false, name: 'RebateMoney', index: 'RebateMoney', align: "center" },
+                { sortable: false, name: 'BusinessInsuranceAmount', index: 'BusinessInsuranceAmount', align: "center" },
+                { sortable: false, name: 'StrongInsuranceAmount', index: 'StrongInsuranceAmount', align: "center" },
+                { sortable: false, name: 'CarShipAmount', index: 'CarShipAmount', align: "center" },
+                { sortable: false, name: 'InsuranceAmount', index: 'InsuranceAmount', align: "center" },
+                { sortable: false, name: 'PhoneNum', index: 'PhoneNum', align: "center" },
+                { sortable: false, name: 'RemittanceNo', index: 'RemittanceNo', align: "center" },
+                { sortable: false, name: 'RebateState', index: 'RebateState', align: "center", formatter: FormatterRebateState }
+            ],
+            rowNum: 20,
+            pager: 'page',
+            height: 300,
+            shrinkToFit: false,
+            loadComplete: function () {
+                $('#page div').eq(0).css({ 'margin-left': 0 });
+                var obj = xhr.rows;
+                jQuery(obj).each(function (xhr) {
+                    var s = this.cell[19];
+                    if (s == 0) {
+                        $('#' + this.id).find("td").css("color", "red");
+                    }
+                });
+            }
+        });
+    }
+    function FormatterRebateState(callvalue, opts, rowdata) {
+        if (callvalue == 'NOPAY') {
+            return "未支付";
+        }
+        if (callvalue == 'NOAUDIT') {
+            return "待审核";
+        }
+        if (callvalue == 'REBATESUCCESS') {
+            return "返利成功";
+        }
+        if (callvalue == 'REBATEFAIL') {
+            return "返利失败";
+        }
+    }
+
+    function ExportExcel() {
+        var Dtodata = $("#jqgrid").jqGrid("getRowData");
+        var DTOstr = JSON.stringify(Dtodata);
+        $("#JQgridTable").val(DTOstr);
+        $("#FormExcel").submit();
+
+    }
+</script>

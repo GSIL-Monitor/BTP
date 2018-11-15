@@ -1,0 +1,277 @@
+﻿ 
+<link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.jhtablebox.css" />
+<link rel="stylesheet" type="text/css" href="/Content/default/ui.jqgrid.css" />
+<link rel="stylesheet" type="text/css" href="/Content/css/common.css" />
+<script type="text/javascript" src="/Scripts/Grid/jquery.grid.base.js"></script>
+<style type="text/css">
+    .title
+    {
+        height: 50px;
+        color: #4E7093;
+        line-height: 45px;
+        background-color: #EFF1F4;
+        padding-left: 10px;
+        min-width: 600px;
+    }
+    .skcolor_ljg
+    {
+        color: Blue;
+    }
+</style>
+<div id="_mask" style="background-color: #9D9D9D; width: 100%; height: 100%; position: absolute; opacity: 0.5; z-index: 10; left: 0; top: 0; display: none;">
+    <img src="../../Content/images/ajax-loader.gif" style="position:absolute;top:45%;left:45%;" />
+</div>
+<div>
+    <div class="title">
+        <div>
+            <div>
+                <span>APP名称:</span>
+                <input id="txtAppName" type="text" class="inp-txt" />
+                <select id="selAddToAppSetStatus" class="select" style="width: 80px; margin-left: 10px;">
+                    <option value="-1">全部</option>
+                    <option value="1" selected="selected">已加入</option>
+                </select>
+                <a href="#Nogo" class="btn80 ml10" onclick="RefreshList()">查询</a>
+                <a href="#Nogo" class="btn80 ml10" onclick="AddAppToAppSet()">批量加入</a>
+                <a href="#Nogo" class="btn80 ml10" onclick="forbidApp()">过滤非法应用</a>
+            </div>
+        </div>
+    </div>
+    <div>
+        <table id="AppGrid">
+        </table>
+        <div id="page">
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    //表格相关全局变量
+    var Grid = {
+        PageSize: 20,
+        IsScroll: false,
+        LastScrollTop: 0
+    };
+
+    $(function () {
+        InitGrid();
+    });
+
+    //初始化表格
+    function InitGrid() {
+        var keywords = $.trim($("#txtAppName").val());
+        var addToAppSetStatus = $("#selAddToAppSetStatus").val();
+        var data = {
+            "appName": keywords,
+            "PageNo": 1,
+            "PageSize": Grid.PageSize,
+            "addToAppSetStatus": addToAppSetStatus
+        };
+        $("#AppGrid").jqGrid({
+            datatype: "json",
+            postData: data,
+            url: "GetAppManageList",
+            mtype: 'POST',
+            colNames: ['APP图标', 'APP名称', '生成时间', '操作'],
+            colModel: [{
+                name: 'AppIcon',
+                index: 'AppIcon',
+                width: 100,
+                align: "center",
+                sortable: false,
+                formatter: FormatterColumnAppIcon
+            },
+            {
+                name: 'AppName',
+                index: 'AppName',
+                width: 200,
+                align: "center",
+                sortable: false
+            },
+            {
+                name: 'AppCreateOn',
+                index: 'AppCreateOn',
+                width: 100,
+                align: "center",
+                sortable: false
+            },
+            {
+                name: 'IsAddToAppSet',
+                index: 'IsAddToAppSet',
+                width: 70,
+                align: "center",
+                sortable: false,
+                formatter: FormatterColumn
+            }],
+            rowNum: Grid.PageSize,
+            pager: 'page',
+            pagerAlone: true,
+            height: '100%',
+            multiselect: true,
+            autowidth: true,
+            multiboxonly: false,
+            forceFit: true,
+            scroll: false,
+            shrinkToFit: false,
+            rownumbers: true,
+            gridComplete: function () {
+                if (Grid.IsScroll) $(".ui-jqgrid-bdiv").scrollTop(Grid.LastScrollTop);
+                Grid.IsScroll = false;
+                Grid.LastScrollTop = 0;
+            }
+        });
+        $("#AppGrid").setGridHeight($(window).height() - 120);
+        $("#AppGrid").setGridWidth($(window).width() - 15);
+    }
+
+    //格式化操作
+    function FormatterColumn(callvalue, opts, rowdata) {
+        if (callvalue == "True") {
+            return "<a href=\"#nogo\" onclick=\"delappset('" + opts.rowId + "')\">取消</a>";
+        } else {
+            return "<a href=\"#nogo\" onclick=\"addappset('" + opts.rowId + "')\">加入</a>";
+        }
+    }
+    //格式化app图标
+    function FormatterColumnAppIcon(callvalue, opts, rowdata) {
+        return "<img width=\"45\" height=\"40\" src=\"" + callvalue + "\" />";
+    }
+
+    //删除
+    function delappset(appid) {
+        $("<div></div>").jhtablebox({
+            type: "Confirm",
+            title: "提示",
+            content: "确认取消？",
+            autoOpen: true,
+            confirm: function () {
+                $.ajax({
+                    async: false,
+                    type: "POST",
+                    data: {
+                        "AppID": appid
+                    },
+                    url: './DelAppFromAppSet',
+                    dataType: "json",
+                    success: function (res) {
+                        if (res.Success) {
+                            alert("成功");
+                            RefreshList(0);
+                        } else {
+                            alert("失败");
+                        }
+                    }
+                });
+            }
+        });
+    }
+    //添加
+    function addappset(appid) {
+        $.ajax({
+            async: false,
+            type: "POST",
+            data: {
+                "AppID": appid,
+                "AppName": $("#" + appid + " td").eq(3).text(),
+                "AppLocn": $("#" + appid + " td").eq(2).find("img").attr("src"),
+                "AppCreateOn": $("#" + appid + " td").eq(4).text()
+            },
+            url: './AddAppToAppSet',
+            dataType: "json",
+            success: function (res) {
+                if (res.Success) {
+
+                    alert("成功");
+                    RefreshList(0);
+                } else {
+                    alert("失败");
+                }
+            }
+        });
+    }
+
+    // 过滤非法应用
+    function forbidApp() {
+        document.getElementById('_mask').style.display = 'block';
+        $.post('/AppManage/ForbitApp', null, function (data, status) {
+            document.getElementById('_mask').style.display = 'none';
+            if (status === 'success') {
+                alert(data.Message);
+            } else {
+                alert('过滤非法应用失败');
+            }
+
+            RefreshList(1);
+        });
+    }
+
+    //刷新列表
+    function RefreshList(pageNo) {
+        var isPageNo = typeof (pageNo) == "number";
+        if (isPageNo) {
+            if (pageNo <= 0) pageNo = $("#AppGrid").getGridParam("page");
+            Grid.IsScroll = true;
+            Grid.LastScrollTop = $(".ui-jqgrid-bdiv").scrollTop();
+        } else {
+            pageNo = 1;
+        }
+        var keywords = $.trim($("#txtAppName").val());
+        var addToAppSetStatus = $("#selAddToAppSetStatus").val();
+        var data = {
+            "appName": keywords,
+            "PageNo": pageNo,
+            "PageSize": Grid.PageSize,
+            "addToAppSetStatus": addToAppSetStatus
+        };
+        $('#AppGrid').jqGrid('setGridParam', {
+            datatype: "json",
+            postData: data,
+            url: 'GetAppManageList?' + new Date().getTime(),
+            mtype: 'POST'
+        });
+        $('#AppGrid').trigger("reloadGrid", [{
+            page: pageNo
+        }]);
+    }
+
+    //添加
+    function AddAppToAppSet() {
+        var input = $("#AppGrid").jqGrid('getGridParam', 'selarrrow');
+        if (input.length == 0) {
+            alert("请选择要加入的应用");
+            return false;
+        }
+        var appid = "", appname = "", applocn = "", appCreateOn = "";
+        for (var i = 0; i < input.length; i++) {
+            appid += input[i] + "$$$$";
+            appname += $("#" + input[i] + " td").eq(3).text() + "$$$$";
+            applocn += $("#" + input[i] + " td").eq(2).find("img").attr("src") + "$$$$";
+            appCreateOn += $("#" + input[i] + " td").eq(4).text() + "$$$$";
+        }
+        if (appid.length == 0) {
+            alert("请选择要加入的应用");
+        } else {
+            $.ajax({
+                async: false,
+                type: "POST",
+                data: {
+                    "AppID": appid.substring(0, appid.length - 4),
+                    "AppName": appname.substring(0, appname.length - 4),
+                    "AppLocn": applocn.substring(0, applocn.length - 4),
+                    "AppCreateOn": appCreateOn.substring(0, applocn.length - 4)
+                },
+                url: './AddAppToAppSet',
+                dataType: "json",
+                success: function (res) {
+                    if (res.Success) {
+
+                        alert("成功");
+                        RefreshList(0);
+                    } else {
+                        alert("失败");
+                    }
+                }
+            });
+        }
+    }
+</script>
+

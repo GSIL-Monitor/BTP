@@ -1,0 +1,41 @@
+﻿@{
+    ViewBag.Title = ViewBag.Name;
+}
+<style type="text/css">
+    .nav_right
+    {
+        width: 100%;
+        height: 100%;
+        float: left;
+        overflow: hidden;
+    }
+    
+    .nav_block
+    {
+        width: 100px;
+        height: 110px;
+        display: inline-block;
+        margin-left: 100px;
+        margin: 20px 0px 0px 100px;
+        float: left;
+    }
+    .spn
+    {        
+        display: inline-block;
+        font-size: 13px;
+    }
+</style>
+<body>
+    <div class="nav_right">
+        <div class="nav_block">
+            <a href="@Url.Action("ApplyCommodity", "AuditCommodity")?appId=@ViewBag.appId">
+                <img src="../../Content/images/ApplyCom.png" style="width: 80px; height: 80px;" />
+            </a><span class="spn">商品修改记录</span>
+        </div>
+        <div class="nav_block">
+            <a href="@Url.Action("AuditCommodity", "AuditCommodity")?appId=@ViewBag.appId">
+                <img src="../../Content/images/AuidtCom.png" style="width: 80px; height: 80px;" />
+            </a><span class="spn">商品修改审核</span>
+        </div>
+    </div>
+</body>

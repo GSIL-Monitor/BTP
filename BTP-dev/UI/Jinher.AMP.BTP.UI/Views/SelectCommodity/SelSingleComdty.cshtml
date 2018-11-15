@@ -1,0 +1,338 @@
+﻿@using Jinher.JAP.MVC.UIJquery
+@using Jinher.JAP.MVC.UIJquery.Validate
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "选择商品";
+}
+@section Css{
+@*@{Html.jQuery().StyleSheetRegistrar().DefaultGroup(group => group.Add("common.css").Add("default/ui.jqgrid.css").Add("default/jquery.ui.jhtablebox.css"));}*@
+<link href="/Content/common.css" rel="stylesheet" type="text/css" />
+<link href="/Content/default/ui.jqgrid.css" rel="stylesheet" type="text/css" />
+<link href="/Content/default/jquery.ui.jhtablebox.css" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+        body, th, td
+        {
+            font-size: 12px;
+        }
+        .input
+        {
+            border: 1px solid #B8BFCF;
+        }
+        .ui-jqgrid tr.jqgrow
+        {
+            height: 50px;
+        }
+        .sAppUL li
+        {
+            padding: 5px 0;
+            cursor: pointer;
+        }
+        .sAppUL li a
+        {
+            float: right;
+        }
+        .sAppUL li img
+        {
+            width: 20px;
+            height: 20px;
+        }
+        .radioLabel
+        {
+            width: 120px;
+            display: inline-block;
+            line-height: 30px;
+        }
+        .curApp
+        {
+            background-color: #ccc;
+        }
+    </style>
+}
+<div id="outer" class="formList" style="padding: 5px;">
+    <div id="divMyApp" class="item" style="text-align: center; font-weight: bold; font-size: 15px;">
+        选择商品
+    </div>
+    <div class="bor-top" style="margin: 10px 0; clear: both;">
+    </div>
+    <div style="padding-top: 5px; width: 98%;">
+        <div style="width: 150px; float: left; padding-right: 10px">
+            <div style="height: 30px;">
+                <span>APP列表：</span>
+            </div>
+            <div style="border: solid #DBDBDB 1px; padding: 10px; margin-top: 10px; height: 420px; overflow-y: scroll;">
+                <ul id="appList" class="sAppUL">
+                </ul>
+                <input type="hidden" id="appListCurId" />
+            </div>
+            <div style="text-align: center">
+                <a id="prePage" href="javascript:void(0)" data-page="1" style="cursor: pointer">上一页</a>
+                <a id="nextPage" href="javascript:void(0)" class="ml10" style="cursor: pointer">下一页</a>
+            </div>
+        </div>
+        <div style="float: left;">
+            <div class="item" style="padding-left: 10px;">
+                <label for="txtAppName" style="cursor: pointer;">
+                    APP名称：</label>
+                <input class="inp-txt mr10" id="txtAppName" maxlength="30" />&nbsp;
+                <label for="txtCommodityName" style="cursor: pointer;">
+                    商品名称：</label>
+                <input class="inp-txt mr10" id="txtCommodityName" maxlength="30" />&nbsp; <a id="search"
+                    href="javascript:void(0);" type="button" class="btn60">查 询</a>
+            </div>
+            <table id="commodityGrid">
+            </table>
+            <div id="commodityPager">
+            </div>
+        </div>
+    </div>
+    <div style="clear: both;">
+    </div>
+    <div class="btn-center" style="padding: 5px 0 5px 0;">
+        <a id="confirmSelect" href="javascript:void(0)" class="btn120">确定</a> <a id="consoleClick"
+            href="javascript:void(0)" class="btn120">取消</a>
+    </div>
+</div>
+@section ClientScript{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // 查询 商品列表参数
+            var comdtySendData = { "AppName": $.trim($("#txtAppName").val()), "commodityName": $.trim($("#txtCommodityName").val()), "AppId": $("#appListCurId").val() };
+
+            // 
+            initAppList();
+
+            initSelSingleComdtyEvent(comdtySendData);
+        });
+
+        // 初始化 绑定事件
+        function initSelSingleComdtyEvent(sendData) {
+            // App列表 上一页
+            $("#prePage").click(function () {
+                var curPage = $(this).data("page");
+                if (curPage <= 1) {
+                    return;
+                }
+                curPage = (curPage - 1) || 1;
+
+                initAppList(curPage);
+            });
+            // App列表 下一页
+            $("#nextPage").click(function () {
+                var curPage = $("#prePage").data("page");
+                curPage = (curPage + 1) || 1;
+
+                initAppList(curPage);
+            });
+
+            // 查询商品列表
+            function selectGoodsGrid(sendData, curLi) {
+                if (!sendData && typeof sendData !== "object") {
+                    return;
+                }
+
+                $('#commodityGrid').jqGrid('setGridParam', {
+                    url: "/SelectCommodity/SearchSingleCmdty",
+                    postData: sendData,
+                    datatype: "json",
+                    mtype: 'POST',
+                    gridComplete: function () {
+                        // 表格加载完成之后，改变左侧选中的值
+                        if (curLi) {
+                            curLi.addClass("curApp").siblings("li").removeClass("curApp");
+                        }
+                    }
+                });
+
+                $("#commodityGrid").trigger("reloadGrid", [{ page: 1}]);
+            }
+
+            // 查询
+            $("#search").click(function () {
+                var appName = $.trim($("#txtAppName").val()),
+                    commodityName = $.trim($("#txtCommodityName").val()),
+                    appId = $.trim($("#appListCurId").val());
+
+                sendData.AppName = appName;
+                sendData.commodityName = commodityName;
+                //sendData.AppId = appId;
+
+                selectGoodsGrid(sendData);
+            });
+
+            // 根据左侧appId 查询商品列表
+            $("#appList").on("click", "li", function (e) {
+                //console.log(e);
+
+                var $thisLi = $(e.currentTarget) || $(this),
+                    $appId = $thisLi.attr("id");
+
+                if ($(this).hasClass("curApp") || $appId === "") {
+                    return;
+                }
+
+                //sendData.AppName = "";
+                //sendData.commodityName = "";
+                sendData.AppId = $appId;
+
+                selectGoodsGrid(sendData, $thisLi);
+            });
+
+            // 选中某行
+            $("#commodityGrid").on("click", "input", function (e) {
+                var $input = $(e.currentTarget) || $(this),
+                    $thiGrid = $(e.delegateTarget) || $("#commodityGrid");
+
+                if (!$input.hasClass("radioComdty")) {
+                    return;
+                }
+                // 参数为 id
+                $thiGrid.setSelection($input.attr("id").replace("r_", ""));
+            });
+
+            // 确定
+            $("#confirmSelect").click(function () {
+                var cmdyGrid = $('#commodityGrid'),
+                    id = cmdyGrid.jqGrid('getGridParam', 'selrow'),
+                    name = "",
+                    appId = "",
+                    price = "",
+                    pic = "",
+                    appName = "";
+
+                if (typeof id != "string") {
+                    alert("请选择要参与活动的商品");
+                    return false;
+                }
+
+                var rowData = cmdyGrid.jqGrid('getRowData', id);
+                if (rowData) {
+                    name = rowData.Name;
+                    pic = $(rowData.Pic).attr("src");
+                    price = rowData.Price;
+                    appId = rowData.AppId;
+                    appName = rowData.AppName;
+                } else {
+                    alert("请选择要参与活动的商品");
+                    return false;
+                }            
+
+                if (window.parent) {
+                    var selected = new Array();
+                    selected.push({ "id": id, "pic": pic, "price": price, "appName": appName, "comdtyName": name, "appId": appId });
+                    window.parent.setComdtyData(selected);
+                    window.parent.closeTbBox();
+                } else {
+                    alert("请刷新后重试！");
+                }
+            });
+
+            // 取消
+            $("#consoleClick").click(function () {
+                if (window.parent) {
+                    window.parent.closeTbBox();
+                } else {
+                    alert("请刷新后重试！");
+                }
+            });
+        }
+
+        // 初始化App列表 和 商品列表
+        function initAppList(pageIndex, pageSize) {
+            pageIndex = pageIndex || 1;
+            pageSize = pageSize || 50;
+            $.ajax({
+                async: true,
+                type: "POST",
+                dataType: "json",
+                url: "/SelectCommodity/GetAppList?apppage=" + pageIndex + "&pagesize=" + pageSize,
+                success: function (ret) {
+                    // 下一页控制
+                    if (pageIndex > ret.totalpage) {
+                        return;
+                    }
+                    $("#prePage").data("page", pageIndex);
+
+                    var data = ret.applist;
+                    if (data && data.length > 0) {
+                        $("#appList").empty();
+                        $(data).each(function (index) {
+                            var val = data[index], appitem = "";
+
+                            if (typeof (val) == "object") {
+                                if (index !== 0) {
+                                    appitem = "<li id='" + val.AppId + "'><a href='javascript:void(0)'>" + val.AppName + "</a><div style='clear:both;'></div></li>";
+                                    $("#appListCurId").val(val.AppId);
+                                }
+                                else {
+                                    appitem = "<li id='" + val.AppId + "' class='curApp'><a href='javascript:void(0)'>" + val.AppName + "</a><div style='clear:both;'></div></li>";
+                                }
+
+                                $("#appList").append(appitem);
+                            }
+                        });
+                    }
+
+                    // 根据appId 初始化 商品列表
+                    var comdtySendData = { "AppName": $.trim($("#txtAppName").val()), "commodityName": $.trim($("#txtCommodityName").val()), "AppId": $("#appListCurId").val() };
+                    initGoodsGrid(comdtySendData);
+                },
+                error: function (err) {
+                    alert("操作失败.");
+                }
+            });
+        }
+
+        // 初始化商品列表
+        function initGoodsGrid(postParam) {
+            $("#commodityGrid").jqGrid({
+                datatype: "json",
+                mtype: 'POST',
+                postData: postParam,
+                url: "/SelectCommodity/SearchSingleCmdty",
+                colNames: ['AppId', 'App名称', '商品图片', '商品名称', '商品价格(元)', '库存', ''],
+                colModel: [
+                        { name: 'AppId', index: 'AppId', align: "center", sortable: false, hidden: true },
+                        { name: 'AppName', index: 'AppName', width: 150, align: "center", sortable: false },
+                        { name: 'Pic', index: 'Pic', width: 60, align: "center", sortable: false, formatter: FormatePic },
+                        { name: 'Name', index: 'Name', width: 150, align: "center", sortable: false },
+                        { name: 'Price', index: 'Price', width: 80, align: "center", sortable: false },
+                        { name: 'Stock', index: 'Stock', width: 80, align: "center", sortable: false },
+                        { name: 'Radio', index: 'Radio', width: 80, align: "center", sortable: false,
+                            formatter: function (name, opts, rodwData) {
+                                return '<input type="radio" id="r_' + opts.rowId + '" class="radioComdty" name="radioComdty"/>';
+                            }
+                        }
+   	            ],
+                rowNum: 20,
+                pager: 'commodityPager',
+                height: 420,
+                pagerAlone: true,
+                autowidth: false,
+                forceFit: true,
+                rownumbers: true,
+                scroll: false,
+                shrinkToFit: true,
+                onSelectRow: function (rowid, status) {
+                    $("#r_" + rowid).attr("checked", "checked");
+                }
+            });
+        }
+        // 展示图片
+        function FormatePic(callvalue, opts, rowdata) {
+            return "<img id='img" + opts.rowId + "' src='" + callvalue + "' style='width:48px;height:48px;' />";
+        }
+    </script>
+}
+@section Script{
+    @{Html.jQuery().ScriptRegistrar().DefaultGroup(group => group.Add("i18n/jquery.ui-zh.js")
+        .Add("Grid/jquery.grid.base.js")
+        .Add("TableBox/jquery.ui.jhtablebox.js")
+        .Add("jquery.ui.base.js")
+        .Add("jquery.nicescroll.min.js")
+        .Add("Pager/jquery.ui.jhpager.js")
+        .Add("DatePicker/jquery.ui.jhdatetime.js")
+        .Add("DatePicker/jquery.ui.datepicker.js")
+        .Add("DatePicker/jquery.ui.jhstartandenddate.js")
+        .Add("../Content/Mobile/allEvent.js")
+        );}
+}

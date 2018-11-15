@@ -1,0 +1,244 @@
+﻿@{
+    ViewBag.Title = "易捷员工编辑";
+    Layout = "~/Views/Shared/_Vue2Layout.cshtml";
+}
+<div class="content">
+    <div id="listWithFiltersPage1">
+        <div class="content-inner">
+            <!-- filters start -->
+            <div class="filters">
+                <el-form style="width:500px;" label-width="180px":model="searchForm" :rules="searchFormRules" ref="searchForm" >
+                    <el-form-item label="登录账户：" prop="UserAccount" >
+                        <el-input v-model="searchForm.UserAccount" ></el-input>
+                    </el-form-item>
+                    <el-form-item label="姓名：" prop="UserName">
+                        <el-input v-model="searchForm.UserName"></el-input>
+                    </el-form-item>
+                    <el-form-item label="联系方式：" prop="Phone">
+                        <el-input v-model="searchForm.Phone"></el-input>
+                    </el-form-item>
+                     <el-form-item label="所在区域：" prop="Area">
+                        <el-select v-model="searchForm.Area">
+                            <el-option label="全部" value=""></el-option>
+                            <el-option v-for="item in AreaOptions" :key="item.label" :label="item.label" :value="item.label"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="站名称：" prop="StationName">
+                        <el-input v-model="searchForm.StationName"></el-input>
+                    </el-form-item>
+                    <el-form-item label="站编码：" prop="StationCode">
+                        <el-input v-model="searchForm.StationCode"></el-input>
+                    </el-form-item>
+                    <el-form-item label="身份证号：" prop="IdentityNum">
+                        <el-input v-model="searchForm.IdentityNum"></el-input>
+                    </el-form-item>                  
+                    <el-form-item label="是否管理岗：" prop="IsManager">
+                        <el-select v-on:change="SelectIsManager" v-model="searchForm.IsManager">                                                      
+                            <el-option v-for="item in Managers" :key="item.label" :label="item.label" :value="item.value"></el-option>
+                        </el-select>
+                    </el-form-item> 
+                    <el-form-item v-show=ok label="部   门：" prop="Department">
+                        <el-input v-model="searchForm.Department" placeholder="请输入部门名称"></el-input>
+                    </el-form-item>
+                    <el-form-item v-show=ok label="岗   位：" prop="Station">
+                        <el-input v-model="searchForm.Station" placeholder="请输入岗位"></el-input>
+                    </el-form-item>                      
+                    <el-form-item>
+                        <el-button type="success" @@click="handleSearch()">提交</el-button>
+                        <el-button type="success" @@click="handleBack()">取消</el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Script{
+<script>
+     var IsManagerNum;
+    function CheckUserAccount (rule, value, callback) {
+        if (value === '') {
+            callback(new Error('用户账户不能为空~'));
+        }
+         else if(!/^(13[0-9]|14[0-9]|15[0-9]|16[0-9]|17[0-9]|18[0-9])\d{8}$/.test(Number(value))){
+            callback(new Error('用户账号必须为手机号~'));
+        }
+        else {
+            callback();
+        }
+    }
+    function CheckUserName (rule, value, callback) {
+        if (value === '') {
+            callback(new Error('用户姓名不能为空~'));
+        }
+        else if(value.length>30){
+            callback(new Error('用户姓名最大长度不超过30~'));
+        }
+        else {
+            callback();
+        }
+    }
+    function CheckPhone (rule, value, callback) {
+        if (value === '') {
+            callback(new Error('联系方式不能为空~'));
+        }
+        else {
+            callback();
+        }
+    }
+    function CheckArea (rule, value, callback) {
+        if (value ==='') {
+            callback(new Error('未选择所在区域~'));
+        }
+        else {
+            callback();
+        }
+    }
+    function CheckStationName (rule, value, callback) {
+        if (value === '') {
+            callback(new Error('站名称不能为空~'));
+        }        
+        else {
+            callback();
+        }
+    }
+    function CheckStationCode (rule, value, callback) {
+        if (value === '') {
+            callback(new Error('站编码不能为空~'));
+        }
+        else if(value.length!=8){
+            callback(new Error('站编码长度为8~'));
+        }
+        else {
+            callback();
+        }
+    }
+    function CheckIdentityNum (rule, value, callback) {
+        if (value === '') {
+            callback(new Error('身份证号不能为空~'));
+        }        
+        else {
+            callback();
+        }
+    }
+    function CheckDepartment (rule, value, callback) {        
+        if (value === ''&&IsManagerNum==1) {
+            callback(new Error('管理岗位部门不能为空~'));
+        }       
+        else {
+            callback();
+        }
+    }
+    function CheckStation (rule, value, callback) {
+        if (value === ''&&IsManagerNum==1) {
+            callback(new Error('管理岗位职位不能为空~'));
+        }       
+        else {
+            callback();
+        }
+    }
+    var defaultVue = new Vue({
+    el: '#app',
+    data: {
+        searchForm: {
+            UserAccount: '@ViewBag.YJEmployeeInfo.UserAccount',
+            UserName: '@ViewBag.YJEmployeeInfo.UserName',
+            Phone: '@ViewBag.YJEmployeeInfo.Phone',
+            StationName:'@ViewBag.YJEmployeeInfo.StationName',
+            StationCode:'@ViewBag.YJEmployeeInfo.StationCode',
+            IdentityNum:'@ViewBag.YJEmployeeInfo.IdentityNum',
+            Area:'@ViewBag.YJEmployeeInfo.Area',
+            IsManager:'@ViewBag.YJEmployeeInfo.IsManager'==1?'是':'否',
+            Department:'@ViewBag.YJEmployeeInfo.Department',
+            Station:'@ViewBag.YJEmployeeInfo.Station'
+        },
+        searchFormRules: {
+          UserAccount: [{ validator: CheckUserAccount, trigger: 'blur' }],
+          UserName: [{ validator: CheckUserName, trigger: 'blur' }],
+          Phone: [{ validator: CheckPhone, trigger: 'blur' }],
+          Area:[{ validator: CheckArea, trigger: 'blur' }],
+          StationName: [{ validator: CheckStationName, trigger: 'blur' }],
+          StationCode: [{ validator: CheckStationCode, trigger: 'blur' }],
+          IdentityNum: [{ validator: CheckIdentityNum, trigger: 'blur' }],
+          Department: [{ validator: CheckDepartment, trigger: 'blur' }],
+          Station:[{ validator: CheckStation, trigger: 'blur' }],
+        },  
+        loading: true,       
+        AreaOptions: [{            
+            label: '大兴分公司'
+        }, {            
+            label: '朝阳分公司'
+        }, {           
+            label: '京东分公司'
+        },{           
+            label: '京西分公司'
+        },{           
+            label: '城区分公司'
+        },{           
+            label: '东北分公司'
+        },{           
+            label: '西北分公司'
+        },{           
+            label: '通州分公司'
+        },{           
+            label: '房山分公司'
+        }],        
+        Managers: [{
+             value:1,           
+            label: '是'            
+        }, { 
+            value:2,           
+            label: '否'
+        }],        
+        ok:'@ViewBag.YJEmployeeInfo.IsManager'==1?true:false
+    },
+    methods: {        
+        handleSearch: function () {
+            this.loading = true;
+            var postData = {
+                Id:'@ViewBag.YJEmployeeInfo.Id',
+                UserAccount: this.searchForm.UserAccount,
+                UserName: this.searchForm.UserName,
+                Area: this.searchForm.Area,
+                Phone: this.searchForm.Phone,
+                StationName: this.searchForm.StationName,
+                StationCode: this.searchForm.StationCode,
+                IdentityNum: this.searchForm.IdentityNum,
+                IsManager:this.searchForm.IsManager=='否'||this.searchForm.IsManager==2?2:1,
+                Department:this.searchForm.Department,
+                Station:this.searchForm.Station
+            }; 
+        this.$refs["searchForm"].validate((valid) => {
+            if (valid) {
+                this.$http.post('@Url.Action("Update")', postData).
+                then(function (res) {
+                    defaultVue.loading = false;
+                    if (res.body.isSuccess) {
+                        defaultVue.$message.success('修改成功');
+                        defaultVue.handleBack();
+                    } else {
+                        defaultVue.$message.error(res.body.Message);
+                    }
+                });
+            } else {
+                return false;
+            }
+         });
+        },
+        SelectIsManager:function(){
+            IsManager=this.searchForm.IsManager;
+            if(IsManager==1){
+                this.ok=true;
+                IsManagerNum=1;
+            }else{
+                this.ok=false;
+                IsManagerNum=2;
+            }
+        },
+        handleBack:function(){
+            history.back();
+        },
+        
+    }    
+})
+</script>
+}

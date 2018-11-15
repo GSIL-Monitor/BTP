@@ -1,0 +1,1436 @@
+﻿@using System.Web @{ Layout = "~/Views/Shared/_MobileFittedLayout.cshtml"; } @section CssStyles{
+<link rel="stylesheet" href="/Content/Mobile/zphStyle/shoppingCart.css" />
+<input id="hiddnumshop" type="hidden" value="" />
+<style type="text/css">
+    .bar-footer-secondary-tab~.content {
+        padding-bottom: 99px;
+    }
+
+    .loginTitle {
+        alpha: 0.5;
+        font-size: 14px;
+    }
+
+    .f-bottom-50 {
+        bottom: 50px !important;
+    }
+
+    [v-cloak] {
+        display: none !important;
+    }
+</style>
+} @section ClientScript{
+
+<script src="/Scripts/CommLib.js" type="text/javascript"></script>
+<script src="/Content/Mobile/provinceCity.js" type="text/javascript"></script>
+<script src="/Content/Mobile/fastclick.min.js" type="text/javascript"></script>
+<script src="/Content/js/mobile_libs/vue.js" type="text/javascript"></script>
+<script src="/Content/js/mobile_libs/vue-mobileKit.js" type="text/javascript"></script>
+<script type="text/javascript">
+    var flex = function() {
+        var deviceWidth = document.documentElement.clientWidth > 500 ? 500 : document.documentElement.clientWidth;
+        document.documentElement.style.fontSize = deviceWidth / 7.5 + 'px';
+    };
+    flex();
+    window.onresize = function() {
+        flex();
+    };
+    var wait = 60;
+
+    //修改click事件
+    $(function() {
+
+        FastClick.attach(document.body);
+
+        saveContextDTOByUrl();
+
+        sessionStorage.ShopCartDate = "";
+        document.title = "购物车";
+
+        if (sessionStorage.source == "share") {
+            $("#h1Cart").show();
+        } else {
+            $("#h1Cart").hide();
+        }
+
+        if (!JsVilaDataNull(sessionStorage.appId) || sessionStorage.appId ==
+            '00000000-0000-0000-0000-000000000000') {
+            sessionStorage.appId = getQueryString('appId');
+        }
+        if (JsVilaDataNull(getQueryString('SrcType'))) {
+            sessionStorage.SrcType = getQueryString('SrcType');
+        }
+
+        //客户端直接进购物车页面，传选中的城市.
+        var selectCityCode = getQueryString("selectCityCode");
+        var selectCityName = "";
+        if (JsVilaDataNull(selectCityCode)) {
+            setCookie("selectCityCode", selectCityCode);
+
+            var ai = getAreaInfoByCode(selectCityCode);
+            if (JsVilaDataNull(ai)) {
+                setCookie("selectCityName", ai.Name);
+            }
+        }
+        if (getQueryString('type') == "tuwen") {
+
+            footmenu($("#shopcart"));
+        } else {
+            $(".footdi").addClass("hide");
+
+        }
+    });
+
+    function zj() {
+        $(window).resize(function() {
+            jiresize();
+        });
+    }
+
+    function _handle() {
+        var scrollHeight = document.body.scrollHeight;
+        var scrollTop = document.documentElement.scrollTop;
+        var documentHeight = document.documentElement.clientHeight;
+        if (scrollHeight - documentHeight - scrollTop < 10) {
+            // 加载下一页
+            operationObj.tuijian();
+        }
+    }
+
+    //按id获取商品详细信息。
+    function getShopCartCommodity(el) {
+        var shopcartitemid = $(el).parents(".goods").attr("shopcartitemid");
+        var cinfo;
+        for (let index = 0; index < vue.shopList.length; index++) {
+            const shop = vue.shopList[index];
+            for (let index2 = 0; index2 < shop.List.length; index2++) {
+                var good = shop.List[index2];
+                if (good.ShopCartItemId == shopcartitemid) {
+                    cinfo = good;
+                    return cinfo;
+                }
+            }
+        }
+        return cinfo;
+    }
+
+    //结算.
+
+    function SettleAccounts() {
+
+        var id = "#btnSettleAccounts";
+        var msg = "";
+        var boprice = false;
+        var bonum = false;
+        var bostate = false;
+        var xcdata = "";
+        var preselled = false;
+        var sxname = "";
+        var sxstate = "";
+
+        var allChks = $('.content .u-cart-list .goods input:checked');
+
+        //检查自提商品、非自提商品不能同时下单
+        var isSelfTakeWrong = 0;
+        allChks.each(function() {
+            if ($(this).attr("selftake") == 1) {
+                isSelfTakeWrong++;
+            } else {
+                isSelfTakeWrong--;
+            }
+        });
+        if (allChks.length != Math.abs(isSelfTakeWrong)) {
+            toast("自提商品、非自提商品不能同时下单");
+            return;
+        }
+
+        var jcActivityId = "00000000-0000-0000-0000-000000000000";
+        var actids = new Array();
+        allChks.each(function() {
+            var cinfo = getShopCartCommodity(this);
+            xcdata += "{\"CommodityId\":\"" + cinfo.Id + "\" ,\"CommodityStockId\":\"" + cinfo.CommodityStockId + "\"},";
+            sxstate = cinfo.ShopCartState;
+            sxname = cinfo.Name;
+            if (sxstate == 1) {
+                msg += sxname + " 已售完 \r\n" + "<br>";
+            } else if (sxstate == 2) {
+                msg += sxname + " 已下架 \r\n" + "<br>";
+            } else if (sxstate == 3 || sxstate == 4 || sxstate == 9999) {
+                msg += sxname + " 已失效 \r\n" + "<br>";
+            }
+            //获取参与sku活动以及不参与的价格集合
+            if ($.inArray(cinfo.JcActivityId, actids) === -1) {
+                actids.push(cinfo.JcActivityId);
+            }
+        });
+        if (actids.length > 1) {
+            toast("您选择的商品中包含非企业团购活动的商品，不能使采用金采支付方式，请重新选择商品！");
+            return;
+        } else {
+            if (actids[0] != null) {
+                jcActivityId = actids[0];
+            }
+        }
+
+        if (JsVilaDataNull(msg)) {
+            toast(msg);
+            return;
+        }
+        if (xcdata == "") {
+            toast("请选择要结算的商品！");
+            return;
+        }
+
+        var checkdata = "{\"UserID\":\"" + getUserId() + "\" ,\"CommodityIdAndStockIds\":[" + xcdata.substr(0, xcdata.length -1) +
+            "],\"promotionType\":-1,\"diyGroupId\":\"00000000-0000-0000-0000-000000000000\",\"jcActivityId\":\"" + jcActivityId + "\"}";
+
+        getDataAjax2({
+            url: '/Mobile/CheckCommodity',
+            data: checkdata,
+            callback: function(data) {
+                var typeArr = [];
+                if (data && data.length > 1) {
+                    $.each(data, function(index, value) {
+                        if (value.Type == 1) typeArr.push(1);
+                    });
+                    if (typeArr.length > 0 && typeArr.length != data.length) {
+                        toast("实物商品和虚拟商品不能一起购买，请分开下单购买");
+                        return false;
+                    }
+
+                }
+
+                var commodSeled = new Array();
+                allChks.each(function() {
+                    var cinfo = getShopCartCommodity(this);
+                    cinfo = CommLib.clone(cinfo);
+
+                    var crci = data.PropertyValueEqual("Id", cinfo.Id);
+                    if (crci != null) {
+                        if (crci.length == 1) {
+                            crci = crci[0];
+                        } else {
+                            crci = crci.PropertyValueEqual("CommodityStockId", cinfo.CommodityStockId =="00000000-0000-0000-0000-000000000000" ? null : cinfo.CommodityStockId
+                            );
+                            if (crci != null && crci.length > 0)
+                                crci = crci[0];
+                        }
+
+                    }
+
+                    var ginfo = $(this).parent().siblings(".goods-info").eq(0);
+                    var quantity = ginfo.find('.goods-quantity input[class=ispinner]').val();
+                    quantity = parseInt(quantity);
+                    var price = ginfo.find(".goods-price1").html();
+
+                    price = parseFloat(price);
+                    cinfo.CommodityNumber = quantity;
+                    cinfo.UserId = getUserId();
+
+                    var isJoin = $(this).parents(".goods").attr("isJoin");
+                    if (crci.Price != price && crci.Price > 0) {
+                        ginfo.find(".goods-price1").html(cinfo.Price);
+                        boprice = true;
+                    }
+                    if (crci.State == 1 || crci.State == 3) {
+                        msg += cinfo.Name + " 已下架 \n";
+                        bostate = true;
+                    } else if (crci.IsNeedPresell && (!crci.IsPreselled)) {
+                        msg += cinfo.Name + " 需要预约才可以购买 \n";
+                        preselled = true;
+                    } else if (crci.LimitBuyEach > 0 && quantity > crci.LimitBuyEach && isJoin ==="true") {
+                        if (allChks.length == 1) {
+                            msg += "该商品每人限购" + crci.LimitBuyEach + "件，您已超限 \n";
+                        } else {
+                            msg += cinfo.Name + " 每人限购" + crci.LimitBuyEach + "件，您已超限 \n";
+                        }
+                        bonum = true;
+                    } else if (quantity > crci.Stock || (crci.LimitBuyTotal > 0 && quantity > (crci.LimitBuyTotal - crci.SurplusLimitBuyTotal) && isJoin === "true")) {
+                        if (allChks.length == 1) {
+                            msg += "该商品的购买数量超过了可购上限 \n";
+                        } else {
+                            msg += cinfo.Name + " 的购买数量超过了可购上限 \n";
+                        }
+                        bonum = true;
+                    }
+
+                    var size = cinfo.Size;
+                    var yan = "";
+                    var chi = "";
+                    if (size != "undefined" && size != "" && size != null) {
+                        if (size.split(',')[0] != "" && size.split(',')[0] != null && size.split(',')[0] != "null") {
+                            yan = size.split(',')[0] + "";
+                        }
+                        if (size.split(',')[1] != "" && size.split(',')[1] != null && size.split(',')[1] != "null") {
+                            chi = size.split(',')[1] + "";
+                        }
+                    }
+                    cinfo.SizeAndColorId = chi + "," + yan;
+
+                    commodSeled.push(cinfo);
+                });
+
+
+                if (boprice == true) {
+                    msg = "购物车价格发生变化，页面即将刷新";
+                    toast(msg);
+                    window.location.href = window.location.href;
+                }
+                if (bonum == true || bostate == true || preselled == true) {
+                    if (msg != "") {
+                        toast(msg);
+                    }
+                    return false;
+                }
+
+                //start 当价格和库存都没发生改变时 进入下订单页面
+                if (boprice == false && bonum == false) {
+                    commodSeled = buildShopCartData(commodSeled);
+                    sessionStorage.ShopCartDate = JSON.stringify(commodSeled);
+                    sessionStorage.JcActivityId = vue.shopList[0].List[0].JcActivityId;
+                    setTimeout(function() {
+                        gotoCreateOrder("gouwuche", '', (Number(vue.totalPrice)).toFixed(2));
+                    }, 1000);
+                }
+                //end  当价格和库存都没发生改变时 进入下订单页面
+            }
+        });
+
+
+    }
+
+    function buildShopCartData(commodSeled) {
+        if (commodSeled == null || commodSeled.length == 0) {
+            return;
+        }
+        //找出选中的店铺id.
+        var appIdSeled = new Array();
+        for (var i = 0; i < commodSeled.length; i++) {
+            var cartItem = commodSeled[i];
+            var rprice = cartItem.DiscountPrice > -1 ? cartItem.DiscountPrice : Math.abs(cartItem.Price * (cartItem.Intensity /10)).toFixed(2);
+            cartItem.RealPrice = rprice;
+            var appid = cartItem.AppId;
+            if (appIdSeled.indexOf(appid) > -1) {
+                continue;
+            }
+            appIdSeled.push(appid);
+        }
+
+        var shops = new Array();
+        for (var b = 0; b < appIdSeled.length; b++) {
+            var appid = appIdSeled[b];
+            var cishop = commodSeled.PropertyValueEqual("AppId", appid);
+            var shopOld = cishop[0];
+            var shop = new Object();
+            shop.AppId = shopOld.AppId;
+            shop.AppName = shopOld.AppName;
+            //shop.RealPrice = shopOld.RealPrice;
+            shop.ShoppingCartItemSDTO = cishop;
+
+            //计算app下总金额、总数量。
+            var appAmount = 0;
+            var commodityNum = 0;
+            for (var d = 0; d < cishop.length; d++) {
+                appAmount += cishop[d].RealPrice * cishop[d].CommodityNumber;
+                commodityNum += cishop[d].CommodityNumber;
+            }
+            appAmount = eval(appAmount).toFixed(2);
+            shop.AppAmount = parseFloat(appAmount).toFixed(2);
+            shop.CommodityNum = commodityNum;
+
+            shops.push(shop);
+        }
+        return shops;
+    }
+
+    //计算总价。
+
+    function calculatePrice() {
+        var totalPrice = 0;
+        var totalQuantity = 0;
+
+        for (let index = 0; index < vue.shopList.length; index++) {
+            const shop = vue.shopList[index];
+            for (let index2 = 0; index2 < shop.List.length; index2++) {
+                const good = shop.List[index2];
+                if (good.Checked == true) {
+                    let quantity = good.CommodityNumber;
+                    //商品规格使用
+                    if (good.Specifications && Number(good.Specifications.Attribute)>0) {
+                        quantity = quantity * good.Specifications.Attribute;
+                    }
+                    let price = good.Price;
+
+                    totalPrice += quantity * price;
+                    //totalQuantity += quantity;
+                    totalQuantity++;
+                }
+            }
+        }
+
+        vue.totalPrice = totalPrice.toFixed(2);
+        vue.totalQuantity = totalQuantity;
+    }
+
+    function jiresize() {
+        var winWidth = $(window).width();
+        $(".product-info").css({
+            "width": winWidth - 120 - 20
+        });
+    }
+
+    function getSizeAndColorId(attrs) {
+        var yan = "";
+        var chi = "";
+        if (JsVilaDataNull(attrs)) {
+            if (attrs.split(',')[0] != "" && attrs.split(',')[0] != null && attrs.split(',')[0] != "null") {
+                yan = attrs.split(',')[0] + "";
+            }
+            if (attrs.split(',')[1] != "" && attrs.split(',')[1] != null && attrs.split(',')[1] != "null") {
+                chi = attrs.split(',')[1] + "";
+            }
+        }
+        if (JsVilaDataNull(chi) && JsVilaDataNull(yan)) {
+            return chi + "," + yan;
+        } else if (JsVilaDataNull(chi)) {
+            return chi;
+        } else if (JsVilaDataNull(yan)) {
+            return yan;
+        }
+        return '';
+    }
+
+    //生成单个订单项html.
+    function getShopCartItemHtml(shopList) {
+        if (shopList == false || shopList.length == 0) {
+            return;
+        }
+        shopList.forEach(shop => {
+            shop.Checked = false;
+            shop.List.forEach(good => {
+                var cartItem = good;
+                
+                var rprice = cartItem.DiscountPrice > -1 ? cartItem.DiscountPrice.toFixed(2) : Math.abs(
+                    cartItem.Price * (cartItem.Intensity / 10)).toFixed(2);
+                cartItem.RealPrice = rprice;
+                var strAttribute = "";
+                if (cartItem.Specifications && cartItem.Specifications.Attribute != 0 && cartItem.Specifications
+                    .Attribute != "" && cartItem.Specifications.Attribute != undefined) {
+                    strAttribute = cartItem.Specifications.strAttribute;
+                }
+                if (getSizeAndColorId(cartItem.Size).length > 0) {
+                    cartItem.SizeAndColorId = getSizeAndColorId(cartItem.Size) + "," + strAttribute;
+                } else {
+                    cartItem.SizeAndColorId = strAttribute;
+                }
+
+                //gongxy   
+                updatePresent(cartItem);
+                cartItem.Checked = false;
+                if (cartItem.IsEnableSelfTake == 1) {
+                    cartItem.SelfTakeDisplay = "";
+                } else {
+                    cartItem.SelfTakeDisplay = "none";
+                }
+                cartItem.IsSelfTake = cartItem.IsEnableSelfTake;
+            });
+        });
+    }
+
+    function changeQuantity(item, isJia) {       
+        var v = item.CommodityNumber;
+        if (isJia) {
+            v++;
+        } else {
+            v--;
+        }
+        v = v > 0 ? v : 1;
+        v = v > 99999 ? 99999 : v;
+        if (v > item.Stock) {
+            toast("购买数量超出最大范围");
+            item.CommodityNumber = item.Stock;
+            return;
+        }
+        item.CommodityNumber = v;
+        updatePresent(item);
+
+        if (item.LimitBuyEach > 0 && item.CommodityNumber > item.LimitBuyEach) {
+            item.CommodityNumber = item.LimitBuyEach;
+            return;
+        }
+
+        calculatePrice();
+
+        if (item.Present && item.Present.Limit > 0) {
+            var limit = item.Present.Limit;
+            UpdateShoppingCart(item.ShopCartItemId, item.CommodityNumber, vue.appId, limit);
+        }
+        UpdateShoppingCart(item.ShopCartItemId, item.CommodityNumber, vue.appId);
+    }
+
+    function updatePresent(cartItem) {
+        cartItem.Present.IsHasPresent = false;
+        cartItem.Present.Number = parseInt(cartItem.CommodityNumber / cartItem.Present.Limit);
+        if (cartItem.Present != null && cartItem.Present.Items != null && cartItem.Present.Number > 0) {
+            cartItem.Present.IsHasPresent = true;
+        }
+    }
+
+    function UpdateShoppingCart(shopCartItemId, commodityNumber, appId, presentLimit) {
+        //TODO dzc 需要将esappId传到后台  并保存
+        var comnum = "{\"Number\":" + commodityNumber + ",\"ShopCartItemId\":\"" + shopCartItemId + "\"}";
+        var strjson = "{\"shopCartCommodityUpdateDTOs\":[" + comnum + "],\"userId\":\"" + getUserId() +
+            "\",\"appId\":\"" + appId + "\"}"
+        if (comnum != "") {
+            getDataAjax2({
+                url: '/Mobile/UpdateShoppingCart',
+                data: strjson,
+                callback: function(data) {
+                    if (data.Message == 'Success') {
+
+                    } else {
+                        ajaxLoading(2, '');
+                        toast(data.Message);
+                    }
+                }
+            });
+        }
+    }
+
+    function DeleteCommoditysFromShoppingCart() {
+        var xcdata = "";
+        var allChks = $('.content .u-cart-list .goods input:checked');
+        allChks.each(function() {
+            var citemId = $(this).parents(".goods").attr("shopcartitemid");
+            xcdata += citemId + ",";
+        });
+        if (xcdata == null || xcdata == "") {
+            toast("请选择要删除的商品！");
+            return;
+        }
+        getDataAjax({
+            url: '/Mobile/DeleteCommoditysFromShoppingCart',
+            data: {
+                shopCartItemIds: xcdata,
+                userId: getUserId(),
+                appId: sessionStorage.appId
+            },
+            callback: function(data) {
+                if (data.ResultCode == 0) {
+                    calculatePrice();
+                    vue.load();
+                    toast("删除商品成功");
+                    $("#ajaxLoadBlind").remove();
+                } else {
+                    toast("删除商品失败");
+                    $("#ajaxLoadBlind").remove();
+                }
+            },
+            beforeSend: function() {
+                ajaxLoading('22', '');
+            },
+            error: function() {
+                toast("删除商品失败");
+                $("#ajaxLoadBlind").remove();
+            }
+        });
+    }
+</script>
+<script type="text/javascript">
+    $(function() {
+        if (DealLoginPartial == undefined) {
+            return;
+        }
+
+        //设置登录成功之后回调函数
+        DealLoginPartial.setCallback(function() {
+            $("#cartHeader").removeClass("hide");
+            //todo $(".content").empty();
+            if (sessionStorage.ProductType == "webcjzy" || sessionStorage.ProductType == "appcjzy") {
+                $("#searchZPH").attr("href", getZphCategoryUrl());
+                $("#guang").attr("href", getZphIndexUrl());
+            }
+
+        });
+        DealLoginPartial.setLoginOut(function() {
+            $(".content").html($("#divNotLoginTemplate").html());
+            $("#cartHeader").addClass("hide");
+            $("#navfoot").addClass("hide");
+        });
+        //判断用户是否已登录
+        if ((JsVilaDataNull(getUserId()) && JsVilaDataNull(getSessionId())) || JsVilaDataNull(sessionStorage.neeLoginWhenLoad)) {
+            DealLoginPartial.initPartialPage();
+        }
+        if (!JsVilaDataNull(getUserId()) || !JsVilaDataNull(getSessionId())) {
+            $(".content").html($("#divNotLoginTemplate").html());
+            $("#cartHeader").addClass("hide");
+            $("#navfoot").addClass("hide");
+        }
+
+        //点击登录
+        $(".content").on("click", "#btnLogin", function() {
+            delContextDTO();
+            DealLoginPartial.initPartialPage();
+        });
+    });
+
+
+    Array.prototype.findone = function(call) {
+        var self = this;
+        for (var i = 0; i < self.length; i++) {
+            if (call(self[i])) return self[i];
+        }
+        return null;
+    };
+</script>
+<script type="text/javascript">
+    var attrObj = {
+        init: function() {
+            vue.attr.ComAttibutes = [];
+            vue.attr.CommodityStocks = [];
+            vue.attr.Price = 0;
+            vue.attr.Pic = "";
+            vue.attr.StockId = "";
+            vue.attr.skuResult = [];
+            vue.attr.hasSKU = [];
+            vue.attr.selectColor = null;
+            vue.attr.selectSize = null;
+            vue.attr.skuColor = [];
+            vue.attr.skuSize = [];
+            vue.attr.modalShow = false;
+            vue.attr.attributeTitle = [];
+        },
+        /*
+         * 将存在库存的sku 转换成 这种形式:{'红色;xl码':{Price:1,Stock:1}}         
+         */
+        transformSKU: function(item) {
+            vue.attr.attributeTitle = [];
+            // 获取属性类别名称
+            if (item.ComAttibutes && item.ComAttibutes.length) {
+                for (var i = 0; i < item.ComAttibutes.length; i++) {
+                    if (vue.attr.attributeTitle.indexOf(item.ComAttibutes[i].Attribute) < 0) {
+                        vue.attr.attributeTitle.push(item.ComAttibutes[i].Attribute);
+                    }
+                }
+            }
+            var skuSize = [],
+                skuColor = [];
+            //获取color和size 所有的值
+            for (var i = 0; i < item.ComAttibutes.length; i++) {
+                if (vue.attr.attributeTitle[0].indexOf(item.ComAttibutes[i].Attribute) == -1) {
+                    skuSize.push(item.ComAttibutes[i].SecondAttribute);
+                } else {
+                    skuColor.push(item.ComAttibutes[i].SecondAttribute);
+                }
+            }
+            vue.attr.skuSize = skuSize;
+            vue.attr.skuColor = skuColor;
+
+            // 将存在库存的sku 转换成 这种形式:{'红色;xl码':{Price:1,Stock:1}}, 放到skuResult数组中，方便后续进行选择判断
+            for (var i = 0; i < item.CommodityStocks.length; i++) {
+                var commodity = item.CommodityStocks[i];
+                if (commodity.Stock > 0) {
+                    var obj = {};
+                    if (commodity.ComAttribute[0].Attribute == vue.attr.attributeTitle[0]) {
+                        var color = commodity.ComAttribute[0].SecondAttribute;
+                        if (vue.attr.attributeTitle.length == 2) { //有两种SKU属性
+                            var size = commodity.ComAttribute[1].SecondAttribute;
+                            obj[color + ';' + size] = {
+                                Price: commodity.Price,
+                                Stock: commodity.Stock,
+                                Pic: commodity.ThumImg || item.Pic,
+                                StockId: commodity.Id,
+                            };
+                        } else if (vue.attr.attributeTitle.length == 1) { //有一种SKU属性
+                            obj[color] = {
+                                Price: commodity.Price,
+                                Stock: commodity.Stock,
+                                Pic: commodity.ThumImg || item.Pic,
+                                StockId: commodity.Id,
+                            };
+                        }
+                        vue.attr.skuResult.push(obj);
+                    }
+                }
+            }
+            vue.attr.hasSKU = this.getAllSku();
+        },
+        getObjKeys: function(obj) {
+            if (obj !== Object(obj)) {
+                throw new TypeError('Invalid object');
+            }
+            var keys = [];
+            for (var key in obj) {
+                keys.push(key);
+            }
+            return keys;
+        },
+        /**
+         * 点击加入购物车按钮，
+         * 有sku属性的商品需要进行sku选择
+         * 无sku属性时直接加入购物车
+         */
+        addCartClick: function(item) {
+            this.init();
+            vue.attr.Pic = item.Pic;
+            vue.attr.Price = item.Price;
+            vue.attr.ComAttibutes = item.ComAttibutes;
+            vue.attr.CommodityStocks = item.CommodityStocks;
+            vue.attr.ShopCartItemId = item.ShopCartItemId;
+
+            if (item.ComAttibutes && item.ComAttibutes.length) { //有sku属性
+                this.transformSKU(item); //将数据转换成我们需要的形式                                
+                vue.attr.modalShow = true;
+            }
+        },
+        /**
+         * 选择属性
+         */
+        changeSku: function(item, type, isDisabled) {
+            if (isDisabled) {
+                return;
+            }
+            if (type == 'color') {
+                vue.attr.selectColor = vue.attr.selectColor == item ? null : item;
+            } else {
+                vue.attr.selectSize = vue.attr.selectSize == item ? null : item;
+            }
+            if (vue.attr.attributeTitle.length == 2) { //两种sku属性
+                vue.attr.hasSKU = this.getHasSku(vue.attr.selectColor, vue.attr.selectSize);
+            }
+            //更新信息
+            var select = null;
+            if (vue.attr.attributeTitle.length == 2) { //两种sku属性
+                select = vue.attr.selectColor + ';' + vue.attr.selectSize;
+            } else { //一种sku属性
+                select = vue.attr.selectColor
+            }
+            for (var i = 0; i < vue.attr.skuResult.length; i++) {
+                for (var key in vue.attr.skuResult[i]) {
+                    if (key == select) {
+                        vue.attr.skuPrice = vue.attr.skuResult[i][key].Price;
+                        vue.attr.maxCount = vue.attr.skuResult[i][key].Stock;
+                        vue.attr.Price = vue.attr.skuResult[i][key].Price;
+                        vue.attr.Pic = vue.attr.skuResult[i][key].Pic;
+                        vue.attr.StockId = vue.attr.skuResult[i][key].StockId;
+                    }
+                }
+            }
+        },
+        /**
+         * 将 skuResult中所有属性值返回一个数组
+         *  
+         */
+        getAllSku: function() {
+            var allHasSKU = [];
+            for (var i = 0, len = vue.attr.skuResult.length; i < len; i++) {
+                var skuKeys = this.getObjKeys(vue.attr.skuResult[i]);
+                var values = skuKeys[0].split(';');
+                for (var j = 0; j < values.length; j++) {
+                    allHasSKU.indexOf(values[j]) === -1 && allHasSKU.push(values[j])
+                }
+            }
+            return allHasSKU;
+        },
+        /**
+         * 获取可以选择的所有属性值
+         *  
+         * 
+         *  
+         */
+        getHasSku: function(color, size) {
+            var vale1 = color == null ? this.getAllSku() : [];
+            var vale2 = size == null ? this.getAllSku() : [];
+            var hasSKU = [];
+            for (var i = 0; i < vue.attr.skuResult.length; i++) {
+                for (var key in vue.attr.skuResult[i]) {
+                    var keys = key.split(';');
+                    if (color !== null) {
+                        vale1.indexOf(keys[0]) == -1 && vale1.push(keys[0]);
+                        if (keys[0] == color) {
+                            vale1.indexOf(keys[1]) == -1 && vale1.push(keys[1]);
+                        }
+                    }
+                    if (size !== null) {
+                        vale2.indexOf(keys[1]) == -1 && vale2.push(keys[1]);
+                        if (keys[1] == size) {
+                            vale2.indexOf(keys[0]) == -1 && vale2.push(keys[0]);
+                        }
+                    }
+                }
+            }
+            var long = vale1.length < vale2.length ? vale2 : vale1;
+            var short = vale1.length < vale2.length ? vale1 : vale2;
+            for (var i = 0; i < short.length; i++) {
+                if (long.indexOf(short[i]) >= 0) {
+                    hasSKU.push(short[i]);
+                }
+            }
+            return hasSKU;
+        },
+        /**
+         * 点击确认按钮
+         */
+        clickSubmit: function() {
+            if (vue.attr.selectColor == null) {
+                vue.$toast('请选择' + vue.attr.attributeTitle[0]);
+                return;
+            }
+            if (vue.attr.attributeTitle.length == 2 && vue.attr.selectSize == null) {
+                vue.$toast('请选择' + vue.attr.attributeTitle[1]);
+                return;
+            }
+            //todo 更新购物车商品属性
+            var url = "/Jinher.AMP.BTP.SV.ShoppingCartSV.svc/UpdateShoppingAttribute"
+            var data = {
+                "shopAttribute": {
+                    "AppId": vue.appId,
+                    "ShopCartItemId": vue.attr.ShopCartItemId,
+                    "Specifications": -1,
+                    "StrComAttributes": vue.attr.selectColor + "," + vue.attr.selectSize,
+                    "UserId": vue.userId
+                }
+            }
+
+            getDataAjax2({
+                url: url,
+                data: data,
+                callback: function(data) {
+                    if (data && data.Message == "Success") {
+                        attrObj.sizeModalHide();
+                        vue.load();
+                    } else {
+                        vue.$toast(data.Message);
+                    }
+                }
+            });
+
+        },
+        sizeModalHide: function sizeModalHide() {
+            vue.attr.modalShow = false;
+            $('body').removeClass('clock');
+        }
+    };
+
+    var operationObj = {
+        hide: function() {
+            $("#modal-del").addClass("hide");
+        },
+        show: function() {
+            $("#modal-del").removeClass("hide");
+        },
+        checked: function() {
+            var arr = [];
+            for (let index = 0; index < vue.shopList.length; index++) {
+                const shop = vue.shopList[index];
+                for (let index2 = 0; index2 < shop.List.length; index2++) {
+                    const good = shop.List[index2];
+                    if (good.Checked == true) {
+                        arr.push(good);
+                    }
+                }
+            }
+            return arr;
+        },
+        delConfirm: function() {
+            var xcdata = operationObj.checked();
+            if (xcdata.length == 0) {
+                toast("请选择要删除的商品！");
+                return;
+            }
+            operationObj.show();
+        },
+        delCancel: function() {
+            operationObj.hide();
+        },
+        delOk: function() {
+            DeleteCommoditysFromShoppingCart();
+            operationObj.hide();
+        },
+        delInvalid: function() {
+            var xcdata = "";
+            var idList = [];
+            vue.invalidList.forEach(a => {
+                idList.push(a.ShopCartItemId);
+            });
+            xcdata = idList.join(",");
+            if (xcdata == null || xcdata == "") {
+                toast("请选择要清空的商品！");
+                return;
+            }
+            getDataAjax({
+                url: '/Mobile/DeleteCommoditysFromShoppingCart',
+                data: {
+                    shopCartItemIds: xcdata,
+                    userId: getUserId(),
+                    appId: sessionStorage.appId
+                },
+                callback: function(data) {
+                    if (data.ResultCode == 0) {
+                        calculatePrice();
+                        vue.load();
+                        toast("清空成功");
+                        $("#ajaxLoadBlind").remove();
+                    } else {
+                        toast("清空失败");
+                        $("#ajaxLoadBlind").remove();
+                    }
+                },
+                beforeSend: function() {
+                    ajaxLoading('22', '');
+                },
+                error: function() {
+                    toast("清空失败");
+                    $("#ajaxLoadBlind").remove();
+                }
+            });
+        },
+        fav: function() {
+            var xcdata = operationObj.checked();
+            if (xcdata.length == 0) {
+                toast("请选择要收藏的商品！");
+                return;
+            }
+        },
+        tuijian: function() {
+            var data = {
+                "appId": getEsAppId(),
+                "userId": getUserId()
+            };
+            getDataAjax({
+                url: '/Mobile/GetHotRed',
+                data: data,
+                callback: function(res) {
+                    if (res && res.IsSuccess && res.Data.length > 0) {
+                        vue.tuijian.isShow = res.Data.length > 0;
+                        vue.tuijian.list = vue.tuijian.list.concat(res.Data);
+                    }
+                }
+            });
+        },
+        couponCreate: function(coupon) {
+            console.log(coupon);
+            if (coupon.LimitUse - coupon.UseNum==0) {
+                vue.$toast("已领取");
+                return 1;
+            }
+
+            var data = {
+                "appId": getEsAppId(),
+                "userId": getUserId(),
+                "couponId": coupon.Id
+            };
+            getDataAjax({
+                url: '/Mobile/CreateCoupon',
+                data: data,
+                callback: function(res) {
+                    if (res && res.IsSuccess) {
+                        coupon.UseNum = coupon.UseNum+1;
+                        vue.$toast("领取成功");
+                        return 1;
+                    } else {
+                        console.log(res);
+                        vue.$toast("操作失败");
+                        return 0;
+                    }
+                }
+            });
+        }
+    }
+
+    var vue = new Vue({
+        el: '#box',
+        data: function() {
+            return {
+                appId: "",
+                userId: "",
+                shopList: [],
+                invalidList: [],
+                tuijian: {
+                    isShow: false,
+                    list: []
+                },
+                totalQuantity: 0,
+                totalPrice: 0,
+                attr: {
+                    ComAttibutes: [],
+                    CommodityStocks: [],
+                    Price: 0,
+                    Pic: "",
+                    StockId: "",
+                    ShopCartItemId: "",
+                    skuResult: [],
+                    hasSKU: [],
+                    selectColor: "",
+                    selectSize: "",
+                    skuColor: [],
+                    skuSize: [],
+                    modalShow: false,
+                    attributeTitle: []
+                },
+                page: {
+                    isEdit: false
+                },
+                coupon: {
+                    list: [],
+                    couponModal: false
+                }
+            }
+        },
+        mounted: function() {
+            zj();
+            this.load();
+            operationObj.tuijian();
+            document.addEventListener('scroll', function() {
+                _handle();
+            }, false);
+        },
+
+        methods: {
+            load: function() {
+                this.appId = getEsAppId();
+                this.userId = getUserId();
+                getDataAjax({
+                    url: '/Mobile/GetShoppongCartList2',
+                    data: {
+                        appId: this.appId,
+                        userId: this.userId
+                    },
+                    callback: function(data) {
+                        if (data && data.ShopList) {
+                            getShopCartItemHtml(data.ShopList);
+                            vue.shopList = data.ShopList;
+                            vue.invalidList = data.InvalidList;
+                        }
+                    }
+                });
+            },
+            edit: function() {
+                var self = $("#delcommodityFromCart");
+                vue.page.isEdit = !vue.page.isEdit;
+                if (vue.page.isEdit == false) {
+                    self.text('编辑');
+                } else {
+                    self.text('完成');
+                }
+            },
+            del: function() {
+                operationObj.delConfirm();
+            },
+            delInvalid: function() {
+                operationObj.delInvalid();
+            },
+            delCancel: function() {
+                operationObj.delCancel();
+            },
+            delOk: function() {
+                operationObj.delOk();
+            },
+            fav: function() {
+
+            },
+            jiesuan: function() {
+                SettleAccounts();
+            },
+            checkShopGood: function(item) {
+                item.List.forEach(a => {
+                    a.Checked = item.Checked;
+                });
+                calculatePrice();
+            },
+            checkGood: function(item) {
+                calculatePrice();
+            },
+            checkAll: function() {
+                var chked = $("#chkAll").attr("checked");
+                if (chked) {
+                    vue.shopList.forEach(a => {
+                        a.Checked = true;
+                        a.List.forEach(b => {
+                            b.Checked = true;
+                        });
+                    });
+                } else {
+                    vue.shopList.forEach(a => {
+                        a.Checked = false;
+                        a.List.forEach(b => {
+                            b.Checked = false;
+                        });
+                    });
+                }
+                calculatePrice();
+            },
+            quantityMinus: function(item) {
+                changeQuantity(item, false);
+            },
+            quantityPlus: function(item) {
+                changeQuantity(item, true);
+            },
+            quantityChange: function(item) {                
+                changeQuantity(item, true);
+            },
+            attrOpen: function(item) {
+                if (this.page.isEdit == false) {
+                    return;
+                }
+                attrObj.addCartClick(item);
+                $('#size-modal').removeClass('hide');
+                $('body').addClass('clock');
+            },
+            attrChangeSku: function(item, type, isDisabled) {
+                attrObj.changeSku(item, type, isDisabled);
+            },
+            attrOk: function() {
+                attrObj.clickSubmit();
+            },
+            attrHide: function() {
+                attrObj.sizeModalHide();
+            },
+            showCoupon: function(shop) {
+                this.coupon.list = shop.CouponList;
+                this.coupon.couponModal = true;
+            },
+            hideCoupon: function() {
+                this.coupon.list = [];
+                this.coupon.couponModal = false;
+            },
+            couponCreate: function (item) {
+                operationObj.couponCreate(item);
+            }
+        }
+    });
+</script> }
+<div class="page" id="box" v-cloak :class="{clock:coupon.couponModal}">
+    <header class="bar bar-nav" id="cartHeader" style="z-index: 999;">
+        @*
+        <a class="icon icon-angle-left pull-left"></a>*@
+        <a id="delcommodityFromCart" v-on:click="edit()" class="btn btn-link pull-right" del="0" href="javascript:void(0);">编辑</a>
+        <h1 id="h1Cart" class="title" style="display:none;">购物车</h1>
+    </header>
+    <nav id="navfoot" class="bar bar-footer bar-footer-secondary-tab f-bottom-50" v-if="shopList.length>0" style="height: 50px;z-index: 999;">
+        <div class="total">
+            <label class="sel">
+                <input type="checkbox" id="chkAll" v-on:click="checkAll" />
+                <div class="check-box-pic"></div>
+            </label>
+            <div class="title" id="divTitle">
+                <div class="total-num">
+                    <em style="padding-right:17px;font-style:normal;">全选</em>合计:
+                    <span>@Jinher.AMP.BTP.UI.Util.MobileCookies.GetCurrency()</span>
+                    <span id="totalPrice" class="total-price">{{totalPrice}}</span>
+                </div>
+            </div>
+            <a id="btnSettleAccounts" v-on:click="jiesuan()" class="pull-right btn btn-primary" :class="{hide:page.isEdit}" href="javascript:void(0);" style="margin-top:0px;" v-if="totalQuantity==0">结算</a>
+            <a id="btnSettleAccounts" v-on:click="jiesuan()" class="pull-right btn btn-primary" :class="{hide:page.isEdit}" href="javascript:void(0);" style="margin-top:0px;" v-if="totalQuantity>0">结算 {{totalQuantity}}件</a>
+            <div class="pull-right" :class="{hide:!page.isEdit}">
+                <a v-on:click="fav()" class="btn btn-primary del hide" href="javascript:void(0);" style="margin-top:0px;">收藏</a>
+                <a v-on:click="del()" class="btn btn-primary del" href="javascript:void(0);" style="margin-top:0px;">删除</a>
+            </div>
+        </div>
+
+    </nav>
+    <div class="content" :class="{'edit-show':page.isEdit}">
+        <div class="u-cart-list" v-for="shop in shopList" :appid="shop.AppId">
+            <div class="shop">
+                <label class="sel">
+                    <input type="checkbox" v-model="shop.Checked" :value="shop.Checked" v-on:change="checkShopGood(shop)" />
+                    <div class="check-box-pic"></div>
+                </label>
+                <div class="title">
+                    <div class="primary"><a :href="`/Mobile/CommodityList?type=undefined&shopId=${shop.AppId}&appId=@Jinher.AMP.BTP.Common.CustomConfig.YJAppId&srctype=36&producttype=webcjzy&source=share`">{{shop.AppName}}</a></div>
+                    <div class="sub" style="display: none;">
+                        <div class="crowd">
+                        </div>
+                        <span>您在本店再购买245元商品就能获得1股，坐等分红啦！</span>
+                    </div>
+                </div>
+                <!--优惠券-->
+                <div class="coupon" :class="{hide:!shop.IsHasCoupon}" v-on:click="showCoupon(shop)">优惠券</div>
+            </div>
+            <div>
+                <div class="goods-lists-wrap" v-for="commodity in shop.List">
+                    <div class="goods" :commodityid="commodity.Id" :commoditystockid="commodity.CommodityStockId" :shopcartitemid="commodity.ShopCartItemId" :size="commodity.Size" :limitBuyEach="commodity.LimitBuyEach" :isJoin="commodity.IsJoin" :stock="commodity.Stock"
+                        style="position: relative">
+                        <label class="sel" style="height: 66px;">
+                            <input type="checkbox" :value="commodity.Checked" :selftake="commodity.IsSelfTake" v-model="commodity.Checked" v-on:change="checkGood(commodity)"
+                            />
+                            <div class="check-box-pic"></div>
+                        </label>
+                        <div class="goods-photo">
+                            <a :href="`/Mobile/CommodityDetail?commodityId=${commodity.Id}&commoditystockid=${commodity.CommodityStockId}`">
+                                <img class="img" :src="commodity.Pic" alt="" />
+                            </a>
+                            <div class="selfTake" :style="{display: commodity.SelfTakeDisplay}">
+                                <img class="selfTakeImg" src="/Images/selftake.png" alt="自提" />
+                            </div>
+                            <div class="state hide"></div>
+                        </div>
+                        <div class="goods-info">
+                            <div class="goods-name">{{commodity.Name}}</div>
+
+                            <div class="goods-size" v-on:click="attrOpen(commodity)" v-if="commodity.SizeAndColorId.length>0">
+                                <span>{{commodity.SizeAndColorId}}
+                                    <i></i>
+                                </span>
+                            </div>
+
+                            <!--商品标识 start-->
+                            <div class="goods-tags" v-if="commodity.Tags.length>0">
+                                <span v-for="tag in commodity.Tags" class="tag">{{tag}}</span>
+                            </div>
+                            <!--商品标识 end-->
+
+                            <div class="goods-bottom">
+                                <div class="goods-price">
+                                    <span style="font-size:11px;">@Jinher.AMP.BTP.UI.Util.MobileCookies.GetCurrency()</span>
+                                    <span class="goods-price1">{{commodity.RealPrice}}</span>
+                                </div>
+                                <div class="goods-quantity">
+                                    <div class="ispinner-box">
+                                        <a v-on:click="quantityMinus(commodity)" href="javascript:void(0)" class="minus">-</a>
+                                        <input type="number" class="ispinner" min="1" max="999" v-on:change="quantityChange(commodity)" v-model.number="commodity.CommodityNumber" maxlength="3" />
+                                        <a v-on:click="quantityPlus(commodity)" href="javascript:void(0)" class="plus">+</a>
+                                    </div>
+
+
+                                    <div class="goods-bottom-tips" v-if="commodity.LimitBuyEach>0">限购{{commodity.LimitBuyEach}}件</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="present-wrap" v-if="commodity.Present.IsHasPresent">
+                        <div class="present" v-for="item in commodity.Present.Items" :limit="item.Limit">
+                            <img class="present-pic" :src="item.Pic">
+                            <div class="present-right">
+                                <div class="present-title">{{item.Name}}</div>
+                                <div class="present-size hide"></div>
+                                <div class="present-tags">
+                                    <span class="tag">赠品</span>
+                                </div>
+                                <div class="present-price">
+                                    <div class="price">
+                                        <span class="number hide">20</span>
+                                        <span class="num">x {{commodity.Present.Number}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                </div>
+            </div>
+
+            <!--凑单 start-->
+            <div class="list-bottom hide">
+                <span class="list-bottom-title">还差19元运费</span>
+                <span class="list-bottom-right">去凑单</span>
+                <img class="angle-right" src="/Content/Mobile/yj-cart-angle-right.png">
+            </div>
+            <!--凑单 end-->
+        </div>
+
+        <!--空消息-->
+        <div v-if="shopList.length==0">
+            <div class="empty ">
+                <img class="em-pic " src="/Content/Mobile/yj-cart-empty.png ">
+                <div class="em-text ">购物车没有商品</div>
+                <a class="em-btn " href="/">去逛逛</a>
+            </div>
+        </div>
+
+        <!--失效商品 需要放到class为 'content' 的标签中-->
+        <div v-if="invalidList.length>0">
+            <div class="goods-disabled">
+                <div class="shop ">
+                    <div class="title ">失效商品</div>
+                    <div class="cancel "><a href="javascript: void(0)" v-on:click="delInvalid()">清空失效商品</a></div>
+                </div>
+                <div class="goods-disabled-list" v-for="item in invalidList">
+                    <div class="list-left ">
+                        <img class="pic" :src="item.Pic">
+                        <span class="tag ">失效</span>
+                    </div>
+                    <div class="list-right ">
+                        <div class="title ">{{item.Name}}</div>
+                        <div class="tips ">商品已下架，不能购买，请联系卖家</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--更多推荐  需要放到class为 'content' 的标签中-->
+        <div v-if="tuijian.isShow">
+            <section class="more-wrap ">
+                <div class="more-wrap-title ">
+                    <span class="line ">更多推荐</span>
+                </div>
+                <div class="more-list ">
+                    <a class="more-list-item " v-for="item in tuijian.list" :href="`/Mobile/CommodityDetail?commodityId=${item.Id}&commoditystockid=${item.CommodityStockId}`">
+                        <img class="pic " :src="item.Pic">
+                        <div class="tags" v-if="item.Tags.length>0">
+                            <span class="tag" v-for="tag in item.Tags">{{tag}}</span>                            
+                        </div>
+                        <div class="title ">{{item.Name}}</div>
+                        <div class="price ">
+                            <em>￥</em>{{item.Price}}</div>
+                    </a>
+                </div>
+            </section>
+        </div>
+
+    </div>
+
+    <!--属性弹窗-->
+    <div id="size-modal" class="size-modal-wrap hide" v-show="attr.modalShow">
+        <div class="size-modal">
+            <div class="size-modal-hd">
+                <img class="pic" :src="attr.Pic">
+                <div class="price-wrap">
+                    <div class="price">￥
+                        <span class="num">{{attr.Price}}</span>
+                    </div>
+                    <div class="info"></div>
+                </div>
+                <img v-on:click="attrHide()" class="close" src="/Content/Mobile/guanbi.png">
+            </div>
+            <div class="size-modal-bd">
+                <section class="sku" v-if="attr.skuColor.length">
+                    <h2 class="sku-title">{{attr.attributeTitle[0]}}</h2>
+                    <div class="sku-content size">
+                        <span class="size-item" v-for=" item in attr.skuColor " :class="{selected:item==attr.selectColor,disabled: attr.hasSKU.indexOf(item)==-
+                            1} " v-on:click="attrChangeSku(item, 'color', attr.hasSKU.indexOf(item)==- 1) ">{{item}}</span>
+                    </div>
+                </section>
+                <section class="sku " v-if="attr.skuSize.length ">
+                    <h2 class="sku-title ">{{attr.attributeTitle[1]}}</h2>
+                    <div class="sku-content size ">
+                        <span class="size-item" v-for="item in attr.skuSize " :class="{selected:item==attr.selectSize,disabled:
+                            attr.hasSKU.indexOf(item)==- 1} " v-on:click="attrChangeSku(item, 'size',attr.hasSKU.indexOf(item)==-
+                            1) ">{{item}}</span>
+                    </div>
+                </section>
+            </div>
+            <div class="size-modal-bt">
+                <div class="modal-btn" v-on:click="attrOk()">确认</div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!--确认删除弹窗-->
+    <div id="modal-del" class="modal-del-wrap hide">
+        <div class="modal-del-body ">
+            <div class="modal-del-text ">
+                <span>请确认删除此选项吗？</span>
+            </div>
+            <div class="modal-del-btns ">
+                <a href="javascript:void(0); " class="button cancel" v-on:click="delCancel()">取消</a>
+                <a href="javascript:void(0); " class="button active  ok" v-on:click="delOk()">确定</a>
+            </div>
+        </div>
+    </div>
+
+    <!--优惠券弹窗-->
+    <div v-show="coupon.couponModal" class="coupon-wrap" v-on:click="hideCoupon()">
+        <div class="coupon-wrap-content" v-on:click.stop="">
+            <div class="coupon-hd">
+                <span class="title">店铺优惠券</span>
+                <img class="close" src="/Content/Mobile/guanbi.png" v-on:click="hideCoupon()">
+            </div>
+            <ul class="coupon-bd">
+                <li class="coupon-list" v-for="item in coupon.list">
+                    <div class="list-left">
+                        <div class="price">￥<span class="num">{{item.Cash}}</span></div>
+                        <div v-show="item.LimitCondition==0" class="tips">无金额门槛<span class="list-freight"></span></div>
+                        <div v-show="item.LimitCondition!=0" class="tips">满{{item.LimitCondition}}元使用<span class="list-freight"></span></div>
+                        <div class="time">有效期至：{{item.EndTimeStr}}</div>
+                    </div>
+                    <div class="list-right">
+                        <span v-show="item.LimitUse-item.UseNum!=0" class="list-right-btn" v-on:click="couponCreate(item)">领取</span>
+
+                        <span v-show="item.LimitUse-item.UseNum==0" class="list-right-btn disabled">已领取</span>
+                    </div>
+                </li>
+            </ul>
+            <div class="coupon-btn" v-on:click="hideCoupon()">确定</div>
+        </div>
+    </div>
+
+</div>
+
+
+<div id="divNotLoginTemplate " style="display: none ">
+    <div class="ui-notice ">
+        <i>
+            <img src="../../Content/Mobile/redredenvelope/fail.png " alt=" " style="margin: auto; width: 160px; ">
+        </i>
+        <p class="loginTitle ">
+            还未登录，请先登录</p>
+        <div class="ui-notice-btn " style="text-align: center ">
+            <a class="btn btn-primary " id="btnLogin ">点此登录</a>
+        </div>
+    </div>
+</div>
+
+<!--套餐失效商品 需要放到class为 'content' 的标签中-->
+<div class="hide ">
+    <div class="goods-disabled ">
+        <div class="shop ">
+            <div class="title ">套餐价已下架，不能购买，请联系卖家</div>
+            <div class="tips ">失效</div>
+        </div>
+        <div class="goods-disabled-list ">
+            <div class="list-left ">
+                <img class="pic " src="http://placehold.it/80x80 ">
+            </div>
+            <div class="list-right ">
+                <div class="title ">商品名称商品名称商品名称商品名称</div>
+                <div class="size ">宇宙黑</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--套餐 需要放到class为 'content' 的标签中-->
+<div class="hide ">
+    <div class="u-cart-list ">
+        <div class="shop ">
+            <label class="sel ">
+                <input type="checkbox ">
+                <div class="check-box-pic "></div>
+            </label>
+            <div class="title ">店铺名</div>
+        </div>
+        <div class="goods-package ">套餐价：
+            <span class="package-price ">￥
+                <em>66.6</em>
+            </span>可省20元</div>
+        <div class="goods-lists-wrap goods-package-list ">
+            <label class="sel " style="height:65px; ">
+                <input type="checkbox ">
+                <div class="check-box-pic "></div>
+            </label>
+            <div class="goods ">
+                <img class="pic " src="http://placehold.it/80x80 ">
+                <div class="list-context ">
+                    <div class="title ">商品名称商品名称商品名称商品名称</div>
+                    <div class="size ">宇宙黑</div>
+                    <div class="tags ">
+                        <span class="tag ">赠</span>
+                        <span class="tag ">油卡29.9元</span>
+                    </div>
+                    <div class="price-wrap ">
+                        <div class="price ">￥
+                            <span class="num ">111</span>
+                        </div>
+                        <span>X1</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

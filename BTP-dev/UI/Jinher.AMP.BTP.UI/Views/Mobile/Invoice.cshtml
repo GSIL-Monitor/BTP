@@ -1,0 +1,78 @@
+﻿@{
+    string Path = Jinher.AMP.BTP.Common.CustomConfig.BtpDomain + "Mobile/DownInvoice?orderCode=" + this.Request["orderCode"];
+}
+<script type="text/javascript" src="/Scripts/pdf.js"></script>
+<script type="text/javascript" src="/Scripts/clipboard.min.js"></script>
+<script type="text/javascript">
+    $(function() {
+        var clipboard = new Clipboard('#kwd');
+        clipboard.on('success', function(e) {
+            console.info('Action:', e.action);
+            console.info('Text:', e.text);
+            console.info('Trigger:', e.trigger);
+            e.clearSelection();
+            alert('复制到剪切板成功');
+        });
+        clipboard.on('error', function(e) {
+            console.error('Action:', e.action);
+            console.error('Trigger:', e.trigger);
+        });
+
+        showPdf();
+    });
+
+    function convertDataURIToBinary(dataUri) { //将encodeBase64解码
+        var raw = window.atob(dataUri); // 进行解码
+        var rawLength = raw.length;
+        //转换成pdf.js能直接解析的Uint8Array类型,见pdf.js-4068
+        var array = new Uint8Array(new ArrayBuffer(rawLength));
+        for (var i = 0; i < rawLength; i++) {
+            array[i] = raw.charCodeAt(i); //charCodeAt() 方法可返回指定位置的字符的 Unicode 编码。
+        }
+        return array;
+    }
+
+    function showPdf() {
+        var container = document.getElementById("container");
+        container.style.display = "block";
+        var url = convertDataURIToBinary($('#pdfContent').val()); //encodeBase64是后台传递的Base64编码的二进制字符串
+        PDFJS.workerSrc = '/Scripts/pdf.worker.js'; //加载核心库
+        PDFJS.getDocument(url).then(function getPdfHelloWorld(pdf) {
+            var $pop = $('#pop');
+            var shownPageCount = pdf.numPages;
+            var getPageAndRender = function(pageNumber) {
+                pdf.getPage(pageNumber).then(function getPageHelloWorld(page) {
+                    var scale = 2;
+                    var viewport = page.getViewport(scale);
+                    var $canvas = $('<canvas></canvas>').attr({
+                        'height': viewport.height,
+                        'width': viewport.width
+                    });
+                    $pop.append($canvas);
+
+                    page.render({
+                        //设置渲染方式
+                        canvasContext: $canvas[0].getContext('2d'), //二维绘图环境
+                        viewport: viewport
+                    });
+                });
+                if (pageNumber < shownPageCount) {
+                    pageNumber++;
+                    getPageAndRender(pageNumber);
+                }
+            };
+            getPageAndRender(1);
+        });
+
+    }
+</script>
+<input hidden="hidden" id="pdfContent" value="@ViewBag.InvoiceInfo"/>
+<div id="container" style="display: none;">
+    <div id="pop" class="pop">
+    </div>
+</div>
+<div>
+    <img src="@ViewBag.InvoicePath"/>
+</div>
+<div> <a id="kwd" data-clipboard-text="@Path" style="color: blue">点击复制链接</a>，请在pc上打开链接并打印发票
+</div>

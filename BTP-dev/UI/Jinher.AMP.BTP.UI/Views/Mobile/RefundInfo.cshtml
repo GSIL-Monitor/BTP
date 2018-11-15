@@ -1,0 +1,1121 @@
+﻿@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+    string tempPic = ViewBag.pic;
+    string tempAppId = ViewBag.appId;
+    string tempOrderId = ViewBag.orderId;
+    string tempState = ViewBag.state;
+    string tempUserId = ViewBag.userId;
+    string tempPay = ViewBag.pay;
+}
+@section TitleHtml
+{
+    <title>退款/退货申请</title>
+}
+@section CssStyles{
+    <link href="../../Content/Mobile/style/app.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="../../Content/style/style.css" />
+    <style type="text/css">
+        .hide
+        {
+            display: none!important;
+         }
+        .border-bottom{
+            border-bottom: 1px solid #e8e8e8;
+        }
+        .refund-header{
+            background: #fff;
+        }
+        .refund-header-hd{
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            min-height: 100px;
+            padding: 0 15px;
+            background-color: #e4393c;
+        } 
+        .refund-header-hd .state{
+            padding-top: 27px;
+            font-size: 15px;
+            color: #fff;
+        }
+        .refund-header-hd .info{
+            margin-top: 12px;
+            font-size: 11px;
+            color: #fff;
+            text-align: left;
+        }
+        .refund-header-bd{
+            padding: 10px 0;
+            line-height: 14px;
+            margin-left: 15px;
+            color: #333;
+            font-size: 12px;
+        }
+        .refund-header-fd{
+            padding-left: 15px;
+            padding-bottom: 8px;
+        }
+        .refund-header-fd >div{
+            padding-top: 8px;
+            color: #999;
+            font-size: 12px;
+        }
+        .content{
+            max-width: 500px;
+            margin: 0 auto;
+            padding:0;
+            background: #eee;
+        }
+        .refund-info{
+            margin-top: 10px;
+            padding-bottom: 10px;
+            background: #fff;
+        }
+        .refund-info .refund-info-title{
+            height: 40px;
+            line-height: 40px;
+            padding-left: 15px;
+            color: #333;
+            font-size: 13px;
+        }
+        .list
+        {
+            max-width: 500px;
+            margin-left: 15px;
+        }
+        .list li
+        {
+            border: 0;
+            border-radius: 0;
+            background-color: #fff;
+        }
+        .list .item{
+            height: 40px;
+            line-height: 40px;
+            font-size:13px;
+            color: #999;
+        }
+        .list .item>span:first-child,
+        .list .item>span:last-child
+        {
+            padding: 0;
+        }
+        .list li:active { background-color: #fff; }
+        .btn_addPic
+        {
+            width: 51px;
+            height: 43px;
+            float: left;
+            position: relative;
+            overflow: hidden;
+            background-color: #F3F3F3;
+            color: #7b7b7b;
+            font-size: 14px;
+            line-height: 48px;
+            cursor: pointer;
+            text-align: center;
+            margin: 10px;
+            border: solid 1px #CCCCCC;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22iso-8859-1%22%3F%3E%3C!DOCTYPE%20svg%20PUBLIC%20%22-%2F%2FW3C%2F%2FDTD%20SVG%201.1%2F%2FEN%22%20%22http%3A%2F%2Fwww.w3.org%2FGraphics%2FSVG%2F1.1%2FDTD%2Fsvg11.dtd%22%3E%3Csvg%20version%3D%221.1%22%20id%3D%22Layer_1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20x%3D%220px%22%20y%3D%220px%22%20%20width%3D%2214px%22%20height%3D%2214px%22%20viewBox%3D%220%200%2014%2014%22%20style%3D%22enable-background%3Anew%200%200%2014%2014%3B%22%20xml%3Aspace%3D%22preserve%22%3E%3Cpolygon%20fill%3D%22%23FFF%22%20points%3D%2214%2C5%209%2C5%209%2C0%205%2C0%205%2C5%200%2C5%200%2C9%205%2C9%205%2C14%209%2C14%209%2C9%2014%2C9%20%22%2F%3E%3Cg%3E%3C%2Fg%3E%3Cg%3E%3C%2Fg%3E%3Cg%3E%3C%2Fg%3E%3Cg%3E%3C%2Fg%3E%3Cg%3E%3C%2Fg%3E%3Cg%3E%3C%2Fg%3E%3Cg%3E%3C%2Fg%3E%3Cg%3E%3C%2Fg%3E%3Cg%3E%3C%2Fg%3E%3Cg%3E%3C%2Fg%3E%3Cg%3E%3C%2Fg%3E%3Cg%3E%3C%2Fg%3E%3Cg%3E%3C%2Fg%3E%3Cg%3E%3C%2Fg%3E%3Cg%3E%3C%2Fg%3E%3C%2Fsvg%3E');
+            background-position: center 18px;
+            background-repeat: no-repeat;
+        }
+        .filePrew
+        {
+            display: block;
+            position: absolute;
+            top: 0px;
+            left: 0;
+            width: 60px;
+            height: 100%;
+            cursor: pointer;
+            opacity: 0;
+            filter: alpha(opacity:1);
+        }
+        .preview
+        {
+            width: 100%;
+        }
+        .preview div
+        {
+            width: 60px;
+            height: 60px;
+            float: left;
+            position: relative;
+            margin: 10px;
+            margin-bottom: 20px;
+            border: solid 1px #CCCCCC;
+        }
+        .preview div a
+        {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 5px;
+            height: 5px;
+            border-radius: 15px;
+            padding: 8px;
+            font-size: .8em;
+            line-height: .4em;
+            background-color: #000;
+            color: #FFF;
+        }
+        .preview div img
+        {
+            width: 100%;
+            height: 100%;
+        }
+        .preview div span
+        {
+            font-size: .6em;
+            width: 60px;
+            text-align: center;
+            color: #06F;
+        }
+        .list li
+        {
+            padding: 0;
+            margin: 0;
+        }
+        .picture-list > li:nth-child(1),
+        .picture-list > li:nth-child(2),
+        .picture-list > li:nth-child(3),
+        .picture-list > li:nth-child(4),
+        .picture-list > li:nth-child(5) {
+            margin-left: 0;
+            margin-right: 0;
+        }
+        .list .picture-list li{
+            position: relative;
+            top: 0 ;
+            left: 0;
+            float: left;
+            width: 25%;
+            padding-top: 25%;
+            height:0;
+            min-height: 0;
+            margin-bottom: 1px;
+            overflow: hidden;
+        }
+        .list .picture-list li img{
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 90%;
+            height: 90%;
+        }
+        .btn
+        {
+            position: relative;
+            display: inline-block;
+            padding: 6px 8px 7px;
+            margin-bottom: 0;
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 1;
+            color: #333;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: top;
+            cursor: pointer;
+            background-color: white;
+            border: 1px solid #333;
+            border-radius: 3px;
+            background-image: none;
+            font-family: 'Microsoft Yahei';
+            text-shadow: none;
+        }
+        .btn:active, .btn.active
+        {
+            color: inherit;
+        }
+        .btn:disabled, .btn.disabled
+        {
+            opacity: .6;
+        }
+        .btn-primary
+        {
+            color: #d92b2f;
+            border-color: #d92b2f;
+        }
+
+        /* 退款申请信息*/
+        .refund-detail-list{
+            position: relative;
+            display: -webkit-box;
+            -webkit-box-flex: 1;
+            padding: 13px 15px;
+            line-height: 14px;
+            border-bottom: 1px solid #e8e8e8;
+            font-size: 14px;
+            color: #999;
+            background: #fff;
+        }
+        .refund-detail-list .name{
+            padding-right: 10px;
+        }
+        .refund-detail-list .text{
+            display: -webkit-box;
+            -webkit-box-flex: 1;
+        }
+        .refund-detail-list .btn{
+            background: #fff;
+            font-size: 11px;
+        }
+        .refund-detail-list .btn.active{
+            position: absolute;
+            right: 15px;
+            top: 5px;
+            border-color:#d92b2f;
+            color:#d92b2f;
+        }
+        .goods-info{
+            display: -webkit-box;
+            -webkit-box-flex: 1;
+            margin-left: 15px;
+            margin-top: 10px;
+            padding-bottom: 10px;
+        }
+        .goods-info .pic{
+            width: 90px;
+            height: 90px;
+            border: 1px solid #e3e3e3;
+            -webkit-border-radius: 4px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .goods-info .info{
+            -webkit-box-flex: 1;
+            padding: 0 10px;
+            text-align: left;
+        }
+        .goods-info .info .goods-info-title{
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp:2;
+            font-size: 13px;
+            color: #333;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .goods-info .info .goods-info-size{
+            margin-top: 5px;
+            font-size: 11px;
+            color: #999;
+        }
+        .goods-info .info .goods-info-size span{
+            padding-right: 5px;
+            font-family: 'Microsoft Yahei';
+        }
+    </style>
+}
+@section ClientScript
+{
+    <script src="/Scripts/ExpressRoute.js" type="text/javascript"></script>
+    <script src="/Scripts/moment.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var tempType = "";
+        //是否是是售后：0不是 1是。
+        var _isAfterSale = 0;
+        // 是否为京东订单
+        var isJdOrder = false;
+        //是否是苏宁订单//*********
+        var isSnOrder=false;
+        var _orderId = "";
+        var _appId = "";
+        //物流公司
+        var _refundExpCo = "";
+        //物流单号
+        var _refundExpNo = "";
+        //退款类型
+        var _refundType = "";
+
+        function ChangeDateFormat(cellval, state) {
+            try {
+                var date = new Date(parseInt(cellval.replace("/Date(", "").replace(")/", ""), 10));
+                var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+                var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+                var hour = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+                var minu = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+                if (state == 1) {
+                    return date.getFullYear() + "-" + month + "-" + currentDate + " " + hour + ":" + minu;
+                } else {
+                    return date.getFullYear() + "-" + month + "-" + currentDate;
+                }
+            } catch (e) {
+                return "";
+            }
+        }
+
+        function getRTime(engTime) {
+            var t = engTime.getTime() - new Date();
+            var d = 0;
+            var h = 0;
+            var m = 0;
+            var s = 0;
+            if (t >= 0) {
+                d = Math.floor(t / 1000 / 60 / 60 / 24);
+                h = Math.floor(t / 1000 / 60 / 60 % 24);
+                m = Math.floor(t / 1000 / 60 % 60);
+                s = Math.floor(t / 1000 % 60);
+            }
+            return d + "天" + h + "小时" + m + "分" + s + "秒";
+        }
+
+
+        $(function() {
+            saveContextDTOByUrl();
+            _isAfterSale = getQueryString("isAfterSale");
+            _isAfterSale = parseInt(_isAfterSale);
+            _orderId = getQueryString('orderId');
+            _appId = getQueryString('shopId');
+            _refundExpCo = unescape(getQueryString('RefundExpCo'));
+            _refundExpNo = unescape(getQueryString('RefundExpNo'));
+
+            var allDisplayBtns = getQueryString("allDisplayBtns");
+            if (!isWeiXin() && sessionStorage.source == "share") {
+                $(".mobile-header").show();
+            } else {
+                $(".mobile-header").hide();
+            }
+            console.log(_isAfterSale);
+            var riUrl = _isAfterSale == 1 ? "/mobile/GetOrderRefundAfterSales" : '/mobile/GetOrderRefund';
+            console.log(riUrl);
+            getDataAjax({
+                url: riUrl,
+                type: 'get',
+                contentType: "application/json",
+                data: { orderId: getQueryString('orderId'), userId: getUserId(), sessionId: getSessionId(), orderItemId: getQueryString('orderItemId') },
+                dataType: 'json',
+                callback: function(data) {
+                    var odata = data;
+                    console.log(data);
+                  
+                    if (data.JdOrderRefundInfo) {
+                        isJdOrder = true;
+                        $("#jdRefundInfo").show();
+                        $("#CustomerContactName").text(data.JdOrderRefundInfo.CustomerContactName);
+                        $("#CustomerTel").text(data.JdOrderRefundInfo.CustomerTel);
+                        $("#PickwareAddress").text(data.JdOrderRefundInfo.PickwareAddress);
+                        var jdServiceId = data.JdOrderRefundInfo.ServiceId;
+                        if (jdServiceId) {
+                            $("#liBtns").show();
+                            $("#btnJdOrderServiceTrackInfo").show().click(function() {
+                                document.location.href = "@Url.Action("JdOrderServiceTrackInfo")/" + jdServiceId;
+                            });
+                        } else {
+                            $("#btnJdOrderServiceTrackInfo").hide();
+                        }
+                    } 
+                    //************苏宁
+                    else  if (data.SnOrderRefundInfo) {
+                        isSnOrder = true;
+                        $("#divBtns").hide();
+                        console.log("aaaaaaaaaaaaaa")
+
+                        //如果是苏宁上门取件，则显示取件地址
+                         if(data.SnOrderRefundInfo.PickwareType == 1)
+                         {
+                            $("#jdRefundInfo").show();
+                            $("#PickwareType").text("上门取件");
+                            $("#CustomerContactName").text(data.SnOrderRefundInfo.CustomerContactName);
+                            $("#CustomerTel").text(data.SnOrderRefundInfo.CustomerTel);
+                            $("#PickwareAddress").text(data.SnOrderRefundInfo.PickwareAddress);
+                            var snServiceId = data.SnOrderRefundInfo.ServiceId;
+                            //******苏宁暂时不提供售后进度查询接口
+    //                        if (snServiceId) {
+    //                            $("#liBtns").show();
+    //                            $("#btnJdOrderServiceTrackInfo").show().click(function() {
+    //                                document.location.href = "@Url.Action("SnOrderServiceTrackInfo")/" + snServiceId;
+    //                            });
+    //                        } else {
+    //                            $("#btnJdOrderServiceTrackInfo").hide();
+    //                        }
+                        }
+                    } 
+                    else {
+                        //*****苏宁
+                        isSnOrder = false;
+
+
+
+                        isJdOrder = false;
+                        if(data.IsJdEclpOrder && data.PickwareType){
+                            $("#jdRefundInfo").show();                            
+                            if(data.PickwareType == 1 && data.Address) { //上门取件
+                                $("#AddressDesc").text("取件地址：");
+                                $("#PickwareType").text("上门取件");
+                                $("#CustomerContactName").text(data.Address.customerContactName);
+                                $("#CustomerTel").text(data.Address.customerTel);
+                                $("#PickwareAddress").text(data.Address.pickwareAddress);
+                            }else if(data.PickwareType == 2) { //快递寄回商家
+                                $("#AddressDesc").text("邮寄地址：");
+                                $("#PickwareType").text("快递寄回商家");
+                                $("#CustomerContactName").parent().hide();
+                                $("#CustomerTel").parent().hide();
+                                $("#PickwareAddress").text("北京市顺义区赵全营镇火寺路后桑园8号（三农研究会公交站北），收货人：中石化B2C退货组，电话：010-57039560");
+                            } 
+                        }
+                    }
+                    isSnOrder = data.IsSNOrder;
+                    if (JsVilaDataNull(data.OrderRefundImgs)) {
+                        var refundPics = data.OrderRefundImgs.split(',');
+                        for (var i = 0; i < refundPics.length; i++) {
+                            if (refundPics[i] != "") {
+                                var pic = document.createElement("li");
+
+                                pic.innerHTML = "<img src='" + refundPics[i] + "' />";
+                                var box_view = document.getElementById('preview');
+                                box_view.appendChild(pic);
+
+                            }
+                        }
+                    } else {
+                        $("#uploadpicli div:first-child").append("<span>无</span>");
+                    }
+                    if (data.RefundType == 1) {
+                        $('#refundType').text('退款/退货');
+                        document.title = '退款/退货申请';
+                        $("#titleDesc").text("退款 / 退货申请");
+                    } else if (data.RefundType == 0) {
+                        $('#refundType').text('仅退款');
+                        document.title = '退款申请'
+                        $("#titleDesc").text("退款申请");
+                    }
+                    $('#SubTime').text(moment(data.SubTime).format("YYYY-MM-DD HH:mm"));
+                    $('#refundReason').text(data.RefundReason);
+                    if (getQueryString('orderItemId') !== null) {
+                        $('#RefundMoney').text((parseFloat(data.RefundMoney) + parseFloat(data.FreightPrice) - parseFloat(data.CouponPrice) - parseFloat(data.ChangeFreightPrice) - parseFloat(data.ChangeRealPrice)).toFixed(2));
+                        if (data.State !== 1) {
+                            $('#RefundMoney').text((parseFloat(data.RefundMoney) + parseFloat(data.RefundScoreMoney) + parseFloat(data.RefundYJBMoney) + parseFloat(data.FreightPrice) - parseFloat(data.CouponPrice) - parseFloat(data.ChangeFreightPrice) - parseFloat(data.ChangeRealPrice)).toFixed(2));
+                        }
+                    } else {
+                        $('#RefundMoney').text((parseFloat(data.RefundMoney) + parseFloat(data.RefundScoreMoney)).toFixed(2));
+                    }
+                    $('#RefundContent').text(data.RefundDesc);
+
+                    if (getQueryString('orderItemId') !== null && data.Pic !== null) {
+                        // var cpic = document.createElement("li");
+                        // cpic.innerHTML = "<img src='" + data.Pic + "' />";
+                        //  var cbox_view = document.getElementById('Pic');
+                        //  cbox_view.appendChild(cpic);
+                        $('#Pic').attr('src', data.Pic);
+                        $('#Name').text(data.Name);
+//                        if (data.CommodityAttributes !== ",") {
+//                            $('#CommodityAttributes').text(data.CommodityAttributes.split(',').join(' '));
+//                        } else {
+//                            $('#CommodityAttributes').text("无");
+//                        }
+                        $('#CommodityAttributes').text(data.CommodityAttributes.split(',').join(' '));
+                        $('#Num').text('数量:' + data.Num);
+                        $('#commodityInfo').show();
+                    } else {
+                        $('#commodityInfo').hide();
+                    }
+
+                    _refundType = data.RefundType;
+                    var state = data.State;
+                    if (data.State == 0) { // 退款中
+                        $('#state').text('等待商家处理');
+
+                        //*****增加苏宁
+                        if (isJdOrder || data.IsThirdECommerce) {
+                            $('#info').text('');
+                        } 
+                        //苏宁
+                        else if(isSnOrder)
+                        {
+                            $('#info').text('');
+                             if(data.SnOrderRefundInfo.PickwareType=="2")
+                            {
+                                $('#state').text('待发货');
+                                $('#refund-header-bd').text('111商家已同意您的退款退货申请，请您协商发货，客服电话：4008516516').removeClass('hide');
+                           
+                            }
+                            else
+                            {
+                                $('#state').text(' 待苏宁上门取件');
+                                $('#refund-header-bd').text('商家已同意您的退款退货申请，请您耐心等待苏宁上门取件').removeClass('hide');
+                            }
+                          
+                        }
+                        else {
+                            var endTime = new Date(moment(data.SubTime).add(10, 'days'));
+                            $('#info').text('还剩 ' + getRTime(endTime));
+                            setInterval(function() {
+                                $('#info').text('还剩 ' + getRTime(endTime));
+                            }, 1000);
+                        }
+                        //
+                        if(!isSnOrder)
+                        {
+                            $('#refund-header-bd').text('您已成功发起退款申请，请耐心等待商家处理。').removeClass('hide');
+                            $('#refund-header-fd').html('<div>商家同意或超时未处理，系统将退款给您。</div><div>如果商家拒绝，您可以再次发起申请。</div>').removeClass('hide');
+                        }
+                    } else if (data.State == 1) { // 已退款
+                        $('#state').text('已退款');
+                        $('#info').text('已完成退款，请到付款账户中确认。');
+                        if (isSnOrder) {
+                            $("#refund-header-bd").hide();
+                        }
+                    } else if (data.State == 2) { // 已退款
+                        $('#state').text('商家拒绝');
+                        // $('#info').text(data.RefuseReason);
+                    } else if (data.State == 12) { // 退款处理中
+                        $('#state').text('处理退款中');
+                        $('#info').text('正在处理打款事宜，请耐心等待~');
+                    } else if (data.State == 11) { // 待商家确认收货
+                        $('#state').text('待商家确认收货');
+                        if (isJdOrder) {
+                            $('#refund-header-bd').text('京东已取货，请耐心等待商家处理。').removeClass('hide');
+                        } 
+                        //*******苏宁
+                        else if(isSnOrder)
+                        {
+                          $('#refund-header-bd').text('苏宁已取货，请耐心等待商家处理。').removeClass('hide');
+                        }
+                        else {
+                            if(!data.IsThirdECommerce) {
+                                var endTime = new Date(moment(data.RefundExpOrderTime).add(9, 'days'));
+                                $('#info').text('还剩 ' + getRTime(endTime));
+                                setInterval(function() {
+                                    $('#info').text('还剩 ' + getRTime(endTime));
+                                }, 1000);
+                            }
+                            $('#refund-header-bd').text('您已成功发出退货，请耐心等待商家确认收货。').removeClass('hide');
+                        }
+                        $('#refund-header-fd').html('<div>商家确认收货或超时未处理，系统将退款给您。</div><div>如果商家拒绝收货，您可重新发起申请。</div>').removeClass('hide');
+                    } else if (data.State == 10) { //买家未发出退货快递之前提醒买家发货。
+                        if (isJdOrder) {
+                            $('#state').text('待京东上门取件');
+                            $('#refund-header-bd').text('商家已同意您的退款退货申请，请您耐心等待京东上门取件，取件信息请注意查收短信~').removeClass('hide');
+                            $('#refund-header-fd').addClass('hide');
+                        } 
+                        //***************苏宁
+                        else if(isSnOrder)
+                        {   //厂送 1  非厂送  2
+                            if(data.SnOrderRefundInfo.PickwareType=="2")
+                            {
+                                $('#state').text('待发货');
+                                $('#refund-header-bd').text('商家已同意您的退款退货申请，请您协商发货，客服电话：4008516516').removeClass('hide');
+                            }
+                            else
+                            {
+                                $('#state').text(' 待苏宁上门取件');
+                                $('#refund-header-bd').text('商家已同意您的退款退货申请，请您耐心等待苏宁上门取件').removeClass('hide');
+                            }
+                            
+                            $('#refund-header-fd').addClass('hide');
+                        }
+                        else {
+                            //转换时间格式 为了计算日期时间差
+                            var myDate = new Date();
+                            var month = myDate.getMonth() + 1 < 10 ? "0" + (myDate.getMonth() + 1) : myDate.getMonth() + 1;
+                            var currentDate = myDate.getDate() < 10 ? "0" + myDate.getDate() : myDate.getDate();
+                            var eDate = myDate.getFullYear() + "-" + month + "-" + currentDate;
+
+                            //计算时间差
+                            var sDate = ChangeDateFormat(data.RefuseTime, 2);
+                            var sArr = sDate.split("-");
+                            var eArr = eDate.split("-");
+                            var sRDate = new Date(sArr[0], sArr[1], sArr[2]);
+                            var eRDate = new Date(eArr[0], eArr[1], eArr[2]);
+                            var result = (sRDate - eRDate) / (24 * 60 * 60 * 1000) + 1;
+
+                            $('#state').text('待发货');
+                            if (!data.IsThirdECommerce) {
+                                var endTime = new Date(moment(data.RefuseTime).add(7, 'days'));
+                                $('#info').text('还剩 ' + getRTime(endTime));
+                                setInterval(function() {
+                                    $('#info').text('还剩 ' + getRTime(endTime));
+                                }, 1000);
+                            }
+                            $('#refund-header-bd').text('商家已同意您的退款退货申请，您需在7天内发出退货。').removeClass('hide');
+                            $('#refund-header-fd').html('<div> 超时未发货，系统将撤销您的申请。</div><div> 如果商家拒绝，你可以再次发起申请。</div>').removeClass('hide');
+                        }
+                    }
+
+                    //订单项状态
+                    var orderItemState = data.OrderItemState;
+                    console.log(orderItemState+"====");
+                    if (orderItemState == 1) { // 退款中
+                        $('#state').text('等待商家处理');
+                        //*******增加苏宁
+                        if (isJdOrder || data.IsThirdECommerce||isSnOrder) {
+                            $('#info').text('');
+                        } else {
+                            var endTime = new Date(moment(data.SubTime).add(10, 'days'));
+                            $('#info').text('还剩 ' + getRTime(endTime));
+                            setInterval(function() {
+                                $('#info').text('还剩 ' + getRTime(endTime));
+                            }, 1000);
+                        }
+                        $('#refund-header-bd').text('您已成功发起退款申请，请耐心等待商家处理。').removeClass('hide');
+                        $('#refund-header-fd').html('<div>商家同意或超时未处理，系统将退款给您。</div><div>如果商家拒绝，您可以再次发起申请。</div>').removeClass('hide');
+                    } else if (orderItemState == 2) { // 已退款
+                        $('#state').text('已退款');
+                        $('#info').text('已完成退款，请到付款账户中确认。');
+                        if (isSnOrder) {
+                            $("#refund-header-bd").hide();
+                        }
+                    } else if (orderItemState == 3) { //买家未发出退货快递之前提醒买家发货。
+                        if (isJdOrder) {
+                            $('#state').text('待京东上门取件');
+                            $('#refund-header-bd').text('商家已同意您的退款退货申请，请您耐心等待京东上门取件，取件信息请注意查收短信~').removeClass('hide');
+                            $('#refund-header-fd').addClass('hide');
+                        } 
+                        //********增加苏宁
+                        else if(isSnOrder)
+                        {
+                            //厂送  非厂送
+                            //data.SnOrderRefundInfo.PickwareType
+
+                             //厂送 1  非厂送  2
+                            if(data.SnOrderRefundInfo.PickwareType=="2")
+                            {
+                                $('#state').text('待发货');
+                                $('#refund-header-bd').text('商家已同意您的退款退货申请，请您协商发货，客服电话：4008516516').removeClass('hide');
+                            }
+                            else
+                            {
+                               $('#state').text('待苏宁上门取件');
+                                $('#refund-header-bd').text('商家已同意您的退款退货申请，请您耐心等待苏宁上门取件').removeClass('hide');
+                            }
+                            $('#refund-header-fd').addClass('hide');
+                        }
+                        else {
+                            //转换时间格式 为了计算日期时间差
+                            var myDate = new Date();
+                            var month = myDate.getMonth() + 1 < 10 ? "0" + (myDate.getMonth() + 1) : myDate.getMonth() + 1;
+                            var currentDate = myDate.getDate() < 10 ? "0" + myDate.getDate() : myDate.getDate();
+                            var eDate = myDate.getFullYear() + "-" + month + "-" + currentDate;
+
+                            //计算时间差
+                            var sDate = ChangeDateFormat(data.RefuseTime, 2);
+                            var sArr = sDate.split("-");
+                            var eArr = eDate.split("-");
+                            var sRDate = new Date(sArr[0], sArr[1], sArr[2]);
+                            var eRDate = new Date(eArr[0], eArr[1], eArr[2]);
+                            var result = (sRDate - eRDate) / (24 * 60 * 60 * 1000) + 1;
+
+                            $('#state').text('待发货');
+                            if(!data.IsThirdECommerce) {
+                                var endTime = new Date(moment(data.RefuseTime).add(7, 'days'));
+                                $('#info').text('还剩 ' + getRTime(endTime));
+                                setInterval(function() {
+                                    $('#info').text('还剩 ' + getRTime(endTime));
+                                }, 1000);
+                            }
+                            $('#refund-header-bd').text('商家已同意您的退款退货申请，您需在7天内发出退货。').removeClass('hide');
+                            $('#refund-header-fd').html('<div> 超时未发货，系统将撤销您的申请。</div><div> 如果商家拒绝，你可以再次发起申请。</div>').removeClass('hide');
+                        }
+                        if (data.RefundExpCo != null && data.RefundExpOrderNo != null && data.RefundExpCo != "" && data.RefundExpOrderNo != "") {
+                            $('#state').text('待商家确认收货');
+                            if (isJdOrder) {
+                                $('#refund-header-bd').text('京东已取货，请耐心等待商家处理。').removeClass('hide');
+                            } 
+                             //******苏宁
+                            else if(isSnOrder)
+                            {
+                                $('#refund-header-bd').text('苏宁已取货，请耐心等待商家处理。').removeClass('hide');
+                            }
+                            else {
+                                if(!data.IsThirdECommerce) {
+                                    var endTime = new Date(moment(data.RefundExpOrderTime).add(9, 'days'));
+                                    $('#info').text('还剩 ' + getRTime(endTime));
+                                    setInterval(function() {
+                                        $('#info').text('还剩 ' + getRTime(endTime));
+                                    }, 1000);
+                                }
+                                $('#refund-header-bd').text('您已成功发出退货，请耐心等待商家确认收货。').removeClass('hide');
+                            }
+                            $('#refund-header-fd').html('<div>商家确认收货或超时未处理，系统将退款给您。</div><div>如果商家拒绝收货，您可重新发起申请。</div>').removeClass('hide');
+                        }
+                    }
+
+                    //
+                    if (_isAfterSale == 1 && JsVilaDataNull(allDisplayBtns)) {
+
+                        $('#RefundExpCo').text(_refundExpCo);
+                        $('#RefundExpNo').text(_refundExpNo);
+
+                        var data1 = new Object();
+                        data1.CommodityOrderId = _orderId;
+                        data1.AppId = _appId;
+                       
+                        var btnHtml = "";
+                        allDisplayBtns = "," + allDisplayBtns + ",";
+                        //已发货
+                        if (allDisplayBtns.indexOf(",24,") > -1) {
+                            if (isJdOrder) {
+                                if (data.JdOrderRefundInfo.Cancel) btnHtml += getOneCommodityButtonHtml(24, data1);
+                            }
+                            //******苏宁
+                            else if(isSnOrder) 
+                            {}
+                            else {
+                                btnHtml += getOneCommodityButtonHtml(24, data1);
+                            }
+                        }
+                        if (!isJdOrder && allDisplayBtns.indexOf(",26,") > -1) {
+                            btnHtml += getOneCommodityButtonHtml(26, data1);
+                        }
+                        $("#divBtns").append(btnHtml);
+
+                        if (allDisplayBtns.indexOf(",24,") > -1
+                            || allDisplayBtns.indexOf(",26,") > -1) {
+                            $("#liBtns").show();
+                        } else {
+                            //$("#liBtns").hide();
+                        }
+
+                        if (!isJdOrder && allDisplayBtns.indexOf(",27,") > -1) {
+                            //btnHtml += getOneCommodityButtonHtml(27, data1);
+                            $("#liLogistics").show();
+                        } else {
+                            $("#liLogistics").hide();
+                        }
+
+                    } else {
+                        $('#RefundExpCo').text(_refundExpCo);
+                        $('#RefundExpNo').text(_refundExpNo);
+
+                        var data2 = new Object();
+                        data2.CommodityOrderId = _orderId;
+                        data2.AppId = _appId;
+
+                        var btnHtml = "";
+                        allDisplayBtns = "," + allDisplayBtns + ",";
+                        //已发货
+                        if (allDisplayBtns.indexOf(",30,") > -1 && data.CanCancel) {
+                        console.log("11111");
+                            btnHtml += getOneCommodityButtonHtml(30, data2);
+                        }
+                        if (!(data.IsJdEclpOrder && data.PickwareType == 1 && data.Address) && allDisplayBtns.indexOf(",32,") > -1) {
+                        console.log("22222");
+                            btnHtml += getOneCommodityButtonHtml(32, data2);
+                        }
+                        $("#divBtns").append(btnHtml);
+
+                        if (allDisplayBtns.indexOf(",30,") > -1
+                            || allDisplayBtns.indexOf(",32,") > -1) {
+                            $("#liBtns").show();
+                        } else {
+                            //$("#liBtns").hide();
+                        }
+
+                       
+                        if (!isJdOrder && odata.RefundExpCo != null && odata.RefundExpOrderNo != null && odata.RefundExpCo != "" && odata.RefundExpOrderNo != "") {
+                            $('#RefundExpCo').text(odata.RefundExpCo);
+                            $('#RefundExpNo').text(odata.RefundExpOrderNo);
+                            _refundExpCo = odata.RefundExpCo;
+                            _refundExpNo = odata.RefundExpOrderNo;
+                            $("#liLogistics").show();
+                            $('#divBtns').hide();
+                        }
+                        //***********增加苏宁
+                        else  if (!isSnOrder && odata.RefundExpCo != null && odata.RefundExpOrderNo != null && odata.RefundExpCo != "" && odata.RefundExpOrderNo != "") {
+                            $('#RefundExpCo').text(odata.RefundExpCo);
+                            $('#RefundExpNo').text(odata.RefundExpOrderNo);
+                            _refundExpCo = odata.RefundExpCo;
+                            _refundExpNo = odata.RefundExpOrderNo;
+                            $("#liLogistics").show();
+                            $('#divBtns').hide();
+                        }
+                         else {
+                            $("#liLogistics").hide();
+                        }
+                    }
+                    if (state == 1) { // 已退款
+                        $('#liBtns').hide();
+                    }
+                }
+            });
+            regeditevent();
+
+
+            $("#liLogistics button").live("click", function() {
+                //var type = ExpressRoute.getKd100Type(_refundExpCo);
+                //if (!JsVilaDataNull(type)) {
+                //    toast("未找到相关信息，请到 " + _refundExpCo + " 官网查询！");
+                //    return;
+                //}
+                //var kd100Url = ExpressRoute.getKd100Url(_refundExpCo, _refundExpNo);
+                //document.location.href = kd100Url;
+                var backUrl = document.location.href;
+                document.location.href = urlAppendCommonParams("/ExpressRoute/Index?shipExpCo=" + _refundExpCo + "&expOrderNo=" + _refundExpNo + "&backUrl=" + encodeURIComponent(backUrl));
+            });
+        });
+
+        function CancelSubmit() {
+            window.location.href = urlAppendCommonParams("/Mobile/MyOrderDetail?shopId=" + getQueryString('shopId') + "&orderId=" + getQueryString('orderId'));
+        }
+
+        //生成一个操作按钮的html.
+        function getOneCommodityButtonHtml(btnType, data) {
+            //可显示的操作按钮：0、支付;1、取消订单;2、退款;3、申请退款/退货;4、确认收货;5、撤销退款申请;6、撤销退款/退货申请;7评价;
+            //23、售后-申请退款/退货;24、售后-撤销退款/退货申请; 25、售后-查看退款详情； 26、售后-退货方式；  27、售后-查看退款方式；
+            var btnTempHtml01 = '<button class="btn btn-primary"  orderId="{orderId}" otag="{otag}" appId="{appId}" selfTakeFlag="{selfTakeFlag}">{btnText}</button>';
+            var btpTempHtml02 = '<a href="javascript:void(0)" class="f-heightlight" orderId="{orderId}" otag="{otag}" appId="{appId}" selfTakeFlag="{selfTakeFlag}" style="margin-right:10px;" >{btnText}</a>';
+
+            var btnText = "";
+            var btnHtml = "";
+
+            switch (btnType) {
+            case 0:
+                btnText = "继续支付";
+                break;
+            case 1:
+                btnText = "取消订单";
+                break;
+            case 2:
+                btnText = "退款";
+                break;
+            case 3:
+                btnText = "申请退款/退货";
+                break;
+            case 4:
+                btnText = "确认收货";
+                break;
+            case 5:
+                if (_refundType == 1) {
+                    btnText = "撤销退款/退货申请";
+                } else {
+                    btnText = "撤销退款申请";
+                }
+                break;
+            case 6:
+                if (_refundType == 1) {
+                    btnText = "撤销退款/退货申请";
+                } else {
+                    btnText = "撤销退款申请";
+                }
+                break;
+            case 7:
+                btnText = "评价";
+                break;
+            case 8:
+                btnText = "查看退款详情";
+                break;
+            case 9:
+                btnText = "删除";
+                break;
+            case 10:
+                btnText = "退货方式";
+                break;
+            case 11:
+                btnText = "延长收货时间(3天)";
+                break;
+            case 12:
+                btnText = "查看退货方式";
+                break;
+            case 23:
+                btnText = "申请售后";
+                break;
+            case 24:
+                if (_refundType == 1) {
+                    btnText = "撤销退款/退货申请";
+                } else {
+                    btnText = "撤销退款申请";
+                }
+                break;
+            case 25:
+                btnText = "退款详情";
+                break;
+            case 26:
+                btnText = "退货方式";
+                break;
+            case 27:
+                btnText = "查看退货方式";
+                break;
+            case 30:
+                if (_refundType == 1) {
+                    btnText = "撤销退款/退货申请";
+                } else {
+                    btnText = "撤销退款申请";
+                }
+                break;
+            case 31:
+                btnText = "退款详情";
+                break;
+
+            case 32:
+                btnText = "退货方式";
+                break;
+            case 33:
+                btnText = "查看退货方式";
+                break;
+            }
+            var fparam = new Object();
+            fparam.btnText = btnText;
+            fparam.orderId = data.CommodityOrderId;
+            fparam.otag = btnType;
+            fparam.appId = data.AppId;
+            fparam.selfTakeFlag = data.SelfTakeFlag;
+            // orderId="{orderId}" otag="{otag}" appId="{appId}"
+            //var btnTempHtml = (btnType == 2 || btnType == 3) ? btnTempHtml01 : btpTempHtml02;
+            var btnTempHtml = btnTempHtml01;
+            btnHtml = btnTempHtml.format(fparam);
+
+            return btnHtml;
+        }
+
+        function regeditevent() {
+            $("#divBtns > button").live("click", function() {
+                var otag = $(this).attr("otag");
+                var selfTakeFlag = $(this).attr("selfTakeFlag");
+                var titleDescrip = _refundType == 1 ? "确定撤销退款/退货申请？" : "确定撤销退款申请？";
+                if (otag == 24 || otag == 30) {
+                    if (confirm(titleDescrip)) {
+
+                        if (_isAfterSale == 1) {
+                            CancelOrderRefundAfterSale();
+                        } else
+                            CancelOrderRefund();
+                    }
+                } else if (otag == 26 || otag == 32) {
+                    //type=26表示售后
+                    window.location.href = urlAppendCommonParams("/Mobile/RefundType?orderItemId=" + getQueryString('orderItemId') + "&shopId=" + _appId + "&orderId=" + _orderId + "&isAfterSale=" + _isAfterSale);
+                }
+                //else if (otag == 27) {
+                //    window.location.href = "/Mobile/RefundTypeInfo?RefundExpCo=" + escape(getQueryString('RefundExpCo')) + "&RefundExpNo=" + escape(getQueryString('RefundExpNo')) + "&orderId=" + _orderId + "&isAfterSale=" + _isAfterSale + psource;
+                //}
+            });
+
+        }
+
+        function CancelOrderRefund() {
+
+            getDataAjax2({
+                url: '/Mobile/CancelOrderRefund/',
+                type: 'post',
+                data: {
+                    orderId: getQueryString('orderId'),
+                    orderItemId: getQueryString('orderItemId'),
+                    state: 9
+                },
+                callback: function(data) {
+                    if (data.ResultCode == 0) {
+                        toast("操作成功！");
+                        var backUrl = document.referrer;
+                        if (!JsVilaDataNull(backUrl)) {
+                            //客户端中使用该页面是document.referrer。
+                            backUrl = urlAppendCommonParams("/Mobile/MyOrderDetail?shopId=" + getQueryString('shopId') + "&orderId=" + getQueryString('orderId'));
+                        }
+                        window.location.href = backUrl;
+
+                        return false;
+                    } else {
+                        toast("不好意思，操作失败，请您重试！");
+                        return false;
+                    }
+                }
+            })
+        }
+
+        function CancelOrderRefundAfterSale() {
+            getDataAjax2({
+                url: '/Mobile/CancelOrderRefundAfterSales',
+                type: 'post',
+                data: {
+                    orderId: _orderId,
+                    orderItemId: getQueryString('orderItemId'),
+                    state: 0
+                },
+                callback: function(data) {
+                    if (data.ResultCode == 0) {
+                        toast("操作成功！");
+                        var backUrl = document.referrer;
+                        if (!JsVilaDataNull(backUrl)) {
+                            //客户端中使用该页面是document.referrer。
+                            backUrl = urlAppendCommonParams("/Mobile/MyOrderDetail?shopId=" + getQueryString('shopId') + "&orderId=" + getQueryString('orderId'));
+                        }
+                        window.location.href = backUrl;
+                        return true;
+                    } else {
+                        toast("不好意思，操作失败，请您重试！");
+                        return false;
+                    }
+                }
+            });
+        }
+    </script>
+}
+<header class="mobile-header" style="display: none">
+    <div class="icon-no" style="left:auto;right:13px;" onclick="CancelSubmit()"></div>
+    <h1 id="titleDesc" class="page-name">退款/退货申请</h1>
+</header>
+<div class="content">
+    <div class="refund-header">
+        <div class="refund-header-hd">
+            <div id="state" class="state"></div>
+            <div id="info" class="info"></div>
+            <!--<input type="button" id="btnJdOrderServiceTrackInfo" value="售后进度详情" style="position: absolute; top: 50px; right: 30px;display:none;" />-->
+        </div>
+        <div id="refund-header-bd" class="refund-header-bd border-bottom hide"></div>
+        <div id="refund-header-fd" class="refund-header-fd hide"></div>
+        <div id="liBtns" class="list" style="display: none;">
+            <div id="divBtns" style="padding: 10px; text-align: right;">
+                <button id="btnJdOrderServiceTrackInfo" class="btn btn-primary" style="display:none;">售后进度详情</button>
+            </div>
+        </div>
+    </div>
+    <div class="refund-info">
+        <div class="refund-info-title border-bottom">退款信息</div>
+        <div id="commodityInfo" class="goods-info border-bottom">
+            <img id="Pic" class="pic" src="">
+            <div class="info">
+                <div id="Name" class="goods-info-title"></div>
+                <div class="goods-info-size">
+                    <span id="CommodityAttributes"></span>
+                    <span id="Num"></span>
+                </div>
+            </div>
+        </div>
+        <ul class="list">
+            <li>
+                <div class="item border-bottom"><span>申请时间：</span><span id="SubTime"></span></div>
+                <div class="item border-bottom"><span>退款方式：</span><span id="refundType"></span></div>
+                <div class="item border-bottom" style="height: auto; line-height: 20px;">
+                    <span style="display: table-cell; line-height: 40px;">退款原因：</span>
+                    <span id="refundReason" style="display: table-cell; word-break: break-all;"></span>
+                </div>
+                <div class="item border-bottom"><span>退款金额：</span><span id="RefundMoney"></span></div>
+                <div class="item border-bottom" style="height: auto; line-height: 20px;">
+                    <span style="display: table-cell; line-height: 40px;">退款说明：</span>
+                    <span id="RefundContent" style="display: table-cell; word-break: break-all;"></span>
+                </div>
+            </li>
+            <li id="uploadpicli" class="list">
+                <div class="item">
+                    <span>退款凭证：</span>
+                </div>
+                <ul class="picture-list fn-clear" id="preview">
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <div class="refund-info" id="jdRefundInfo" style="display:none">
+        <ul class="list">
+            <li>
+                <div class="item border-bottom"><span>退回方式：</span><span id="PickwareType"></span></div>
+                <div class="item border-bottom"><span>联系人：</span><span id="CustomerContactName"></span></div>
+                <div class="item border-bottom"><span>联系方式：</span><span id="CustomerTel"></span></div>
+                <div class="item" style="height: auto; line-height: 20px;">
+                    <span id="AddressDesc" style="display: table-cell; line-height: 40px;">取件地址：</span>
+                    <span id="PickwareAddress" style="display: table-cell; word-break: break-all;"></span>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div id="liLogistics" style="margin-top: 10px;display: none;">
+        <div class="refund-detail-list">
+            <span class="name">物流公司：</span>
+            <span id="RefundExpCo" class="text"></span>
+            <button class="btn font11 active">物流详情</button>
+        </div>
+        <div class="refund-detail-list">
+            <span class="name">物流单号：</span>
+            <span id="RefundExpNo" class="text"></span>
+        </div>
+    </div>
+</div>

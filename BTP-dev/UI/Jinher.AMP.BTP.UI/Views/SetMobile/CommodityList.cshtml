@@ -1,0 +1,355 @@
+﻿@{
+    Layout = "~/Views/Shared/_IndexLayout.cshtml";
+}
+@section CssStyles{
+    <style type="text/css">
+        .yhzknum
+        {
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+            padding: 0 6px;
+            background-color: rgba(230,220, 228,.7);
+            color: #E4393C;
+            font-size: 12px;
+            line-height: 1.5;
+            text-align: center;
+        }
+        .toporder
+        {
+            text-align: center; /*position: fixed;*/
+            top: 0;
+            max-width: 640px;
+            z-index: 999;
+            background-color: #fff;
+            overflow: hidden;
+        }
+        .toporder ul
+        {
+            width: 100%;
+            height: 100%;
+            border-bottom: 1px solid #c8c7cc;
+            overflow: hidden;
+            font-size: .8rem;
+            padding: 8px 0;
+        }
+        .toporder ul li
+        {
+            float: left;
+            border-left: 1px solid #ccc;
+            line-height: 1.2rem;
+            width: 24.6%;
+        }
+        .toporder ul li:first-child
+        {
+            border-left: none;
+        }
+        #cdefault
+        {
+        }
+        #cnewcom
+        {
+        }
+        .topon
+        {
+            color: #ed2b87;
+        }
+        
+        .item_1 .item_title
+        {
+            text-overflow: ellipsis;
+            height: 2.3rem;
+        }
+        .kslider
+        {
+            width: 100%;
+            overflow: hidden;
+            margin: 0 auto;
+            background: #f0f0f0;
+        }
+        
+        .kslider .ks_warp
+        {
+            width: 100%;
+        }
+        
+        .kslider .ks_ts
+        {
+            -webkit-transition: 500ms;
+        }
+        .kslider .ks_dbox
+        {
+            width: 100%;
+            display: -webkit-box;
+            text-align: left;
+        }
+        
+        .kslider .ks_wt
+        {
+            display: -webkit-box;
+            margin: 0px;
+            padding: 0px;
+            -webkit-box-pack: center;
+        }
+        .kslider .ks_wt li
+        {
+            text-align: center;
+            list-style: none;
+            background: -webkit-linear-gradient(top, #AAAAAA 0%,#979797 100%);
+            color: #fff;
+        }
+        
+        .ks_wt_1 .ks_wt li
+        {
+            -webkit-box-flex: 1;
+            height: 35px;
+            line-height: 35px;
+            border-right: solid 1px #BBB;
+        }
+        .ks_wt_2 .ks_wt li
+        {
+            background: -webkit-linear-gradient(top, #e7e7e7 0%,#dfdfdf 100%);
+            text-indent: 20px;
+            height: 10px;
+            width: 10px;
+            overflow: hidden;
+            border-radius: 100%;
+            margin: 5px;
+        }
+        
+        .ks_wt_1 .ks_wt .ks_t2
+        {
+            background: -webkit-linear-gradient(top, #e7e7e7 0%,#dfdfdf 100%);
+            color: #000;
+        }
+        .ks_wt_2 .ks_wt .ks_t2
+        {
+            background: -webkit-linear-gradient(top, #AAAAAA 0%,#979797 100%);
+            -webkit-animation: kt2 500ms linear;
+        }
+        .ks_warp img
+        {
+            width: 100%;
+            height: 200px;
+        }
+        .title
+        {
+            background-color: Black;
+            opacity: 0.6;
+        }
+        .ks_warp
+        {
+            position: relative;
+            z-index: 10;
+        }
+        .zcz
+        {
+            float: right;
+            padding: 1px 4px;
+            font-size: .6rem;
+            background-color: #000;
+            color: #fff;
+            display: none;
+        }
+        .items_wrap
+        {
+            max-width: 720px;
+            padding: 0 20px;
+            margin: 0 auto;
+        }
+        .add_items_wrap
+        {
+            max-width: 640px;
+            margin: 0 auto;
+        }
+    </style>
+}
+@section ClientScript{
+    <script src="../../Content/Mobile/zepto.kslider.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var html = "";
+        var service_type = '0x000b';
+
+        if (getQueryString('isStart') == 0) {
+            alert("亲，活动还未开始哦~");
+        }
+        CommodityList();
+
+        window.onload = function () {
+            
+            $(".footdi").show();
+            footmenu($("#guang"));
+
+            if (!sessionStorage.appId || sessionStorage.appId == "null" || sessionStorage.appId == "undefined") {
+                sessionStorage.appId = sessionStorage.appIdCong;
+            }
+            if (getQueryString('opa') == "search") {
+                var nav = document.getElementById('Commodity_nav'),
+                    $nav = $(nav);
+                $nav.css({ position: "fixed", display: "block", left: "0px", top: "50px", bottom: "0" });
+                navBackground();
+                if (sessionStorage.ProductType == "webcjzy" || sessionStorage.ProductType == "appcjzy") {
+                    footmenu($("#guang"));
+                } else {
+                    footmenu($("#search"));
+                }
+
+            } else {
+                footmenu($("#guang"));
+            }
+            shareAndroid(null, "正品 • 特卖 • O2O轻松到家 ", document.location.origin + "/Content/images/zph_LOGO-72.png", window.location.href, 18);
+        };
+
+        $(function () {
+            saveContextDTOByUrl();
+            var psource = sessionStorage.source == "share" ? "&source=share" : "";
+            switch (getQueryString('fieldSort')) {
+                case '0':
+                    csson($('#cdefault'));
+                    break;
+                case '1':
+                    csson($('#cprice'));
+                    break;
+                case '2':
+                    csson($('#cnum'));
+                    break;
+                case '3':
+                    csson($('#cnewcom'));
+                    break;
+                default:
+                    break;
+            }
+
+            //            if (getQueryString('order') === '1') {
+            //                sessionStorage.PriceState = 0;
+            //                $('#imprior').attr('src', '../../Content/Mobile/sort_price_asc.png');
+            //            } else if (getQueryString('order') === '2') {
+            //                sessionStorage.PriceState = 1;
+            //                $('#imprior').attr('src', '../../Content/Mobile/sort_price_desc.png');
+            //            }
+
+            sessionStorage.ComTypeSearch = 0;
+            $("#cdefault").bind("click", function () {
+                sessionStorage.page = 1;
+                sessionStorage.ComTypeSearch = 1;
+                window.itemIdList = {};
+                location.href = "/SetMobile/CommodityList?pageIndex=1&pageSize=10&fieldSort=0&order=1&setCategoryId=" + getQueryString("setCategoryId") + psource;
+            });
+            //按销量排序
+            $("#cnum").bind("click", function () {
+                sessionStorage.page = 1;
+                sessionStorage.ComTypeSearch = 3;
+                location.href = "/SetMobile/CommodityList?pageIndex=1&pageSize=10&fieldSort=2&order=1&setCategoryId=" + getQueryString("setCategoryId") + psource;
+            });
+            //按新品排序
+            $("#cnewcom").bind("click", function () {
+                sessionStorage.page = 1;
+                sessionStorage.ComTypeSearch = 4;
+                location.href = "/SetMobile/CommodityList?pageIndex=1&pageSize=10&fieldSort=3&order=1&setCategoryId=" + getQueryString("setCategoryId") + psource;
+            });
+            //按价格排序
+            $("#cprice").bind("click", function () {
+                sessionStorage.page = 1;
+                sessionStorage.ComTypeSearch = 2;
+                if (getQueryString("order") === "1") {
+                    location.href = "/SetMobile/CommodityList?pageIndex=1&pageSize=10&fieldSort=1&order=2&setCategoryId=" + getQueryString("setCategoryId") + psource;
+                } else if (getQueryString("order") === "2") {
+                    location.href = "/SetMobile/CommodityList?pageIndex=1&pageSize=10&fieldSort=1&order=1&setCategoryId=" + getQueryString("setCategoryId") + psource;
+                }
+            });
+            $('#footer_loading').show();
+        });
+
+
+        function csson(obj) {
+
+            $(".toporder ul li").each(function (i) {
+                $(this).removeClass("topon");
+            });
+            $(obj).addClass("topon");
+        }
+
+        ;
+    </script>
+}
+<input type="hidden" id="userId" value="@ViewBag.UserId"/>
+<div id="box" class="add_items_wrap">
+    <div id="Commodity_nav" style="top: 50px; bottom: 0">
+        <div class="nav_list">
+            <ul id="nav_list">
+            </ul>
+        </div>
+    </div>
+    <div id="main " style="padding: 0; padding-top: 50px;" class="">
+        <div class="toporder">
+            <ul>
+                <li class="topon" id="cdefault">默认</li>
+                <li id="cnum">销量</li>
+                <li id="cprice" style="position: relative;">价格<span>
+                    <img id="imprior" alt="" width="6" height="10" src="../../Content/Mobile/sort_price_asc.png" />
+                </span></li>
+                <li id="cnewcom">最新</li>
+            </ul>
+        </div>
+        <div class="imgfor">
+        </div>
+        <div class="item_1 noDisplay" id="parent_item" style="background-color: #E6E6EC;
+            max-width: 320px">
+            <div class="item_1_s">
+                <div class="position_r">
+                    <div class="yhzknum">
+                    </div>
+                    <img class='picLazyLoadImg' src='/Content/Mobile/1.png' data-original='' alt='' />
+                    <div class="zk">
+                    </div>
+                    <div class="mb_box noDisplay">
+                        <div class="mb">
+                        </div>
+                        <p class="mb_1">
+                            已售完</p>
+                    </div>
+                </div>
+                <p class="item_title double_row">
+                    {name}</p>
+                <p class="item_price">
+                    <span class="price_1">{price1}</span><span class="price_2">{price2}</span><span class="zcz"
+                        style="display: none">众筹</span></p>
+            </div>
+        </div>
+        <script type="text/javascript">
+            setSessionStorageItemHeightAndImgHeight();
+        </script>
+        <div class="add_items_wrap">
+            <div id="items" class="clearFloat">
+            </div>
+        </div>
+        <div id="footer_loading">
+            <span>获取更多信息</span>
+        </div>
+    </div>
+</div>
+<div class="yingc" style="display: none;">
+    <div class="item_1_s">
+        <div class="position_r">
+            <div class="yhzknum">
+            </div>
+            <img src="" alt="" />
+            <div class="zk">
+            </div>
+            <div class="mb_box noDisplay">
+                <div class="mb">
+                </div>
+                <p class="mb_1">
+                    已售完</p>
+            </div>
+        </div>
+        <p class="item_title">
+            {name}</p>
+        <p class="item_price">
+            <span class="price_1">{price1}</span><span class="price_2">{price2}</span></p>
+    </div>
+</div>
+<a href='#top' class='u-backtop'><span class='u-icon i-backtop'></span></a>
+<script src="../../Content/Mobile/zepto.picLazyLoad.js" type="text/javascript"></script>
+@Html.Raw(@Jinher.AMP.BTP.UI.Util.WebUtil.GetBehaviorRecordJs())

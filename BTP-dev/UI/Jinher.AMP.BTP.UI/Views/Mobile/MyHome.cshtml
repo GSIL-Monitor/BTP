@@ -1,0 +1,495 @@
+﻿@{
+    ViewBag.Title = "我的个人主页";
+    Layout = "~/Views/Shared/_MobileLayout.cshtml";   
+}
+@section MTitleHtml
+{
+    <title>我的</title>
+}
+@section CssStyles{
+<link rel="stylesheet" href="../../Content/Mobile/zphStyle/mobileKit-min.css" />
+<link rel="stylesheet" href="/Content/Mobile/zphStyle/normalize.css" />
+<link rel="stylesheet" href="/Content/Mobile/zphStyle/function.css" />
+<link rel="stylesheet" href="/Content/Mobile/zphStyle/general.css" />
+<link rel="stylesheet" href="/Content/Mobile/zphStyle/font-awesome.css" />
+<link rel="stylesheet" href="/Content/Mobile/zphStyle/skin.css" />
+<link rel="stylesheet" href="/Content/Mobile/zphStyle/icons.css" />
+<link rel="stylesheet" href="/Content/Mobile/zphStyle/myHome.css" />
+<link rel="stylesheet" type="text/css" href="/Content/Mobile/zphStyle/skinGreen.css" />
+<style type="text/css">
+        a
+        {
+            text-decoration: none;
+        }
+        .title
+        {
+            position: static;
+        }
+        .userPhoto
+        {
+            width: 84px;
+            height: 84px;
+            margin-top: 6px;
+            border: 1px solid #dedede;
+            -moz-border-radius: 42px;
+            -webkit-border-radius: 42px;
+            border-radius: 42px;
+        }
+        .u-padding
+        {
+            padding-top: 46px;
+        }
+        
+        .double-row
+        {
+            height: 26px;
+        }
+        body
+        {
+            background-color: #e7e6ec;
+        }
+    </style>
+}
+@section ClientScript
+{
+    <script type="text/javascript" src="/Content/js/mobileKit.js"></script>
+    <script type="text/javascript" src="/Content/Mobile/provinceCity.js"></script>
+    <script type="text/javascript" language="javascript" src="https://webapi.amap.com/maps?v=1.3&key=@Jinher.AMP.BTP.Common.CustomConfig.AmapKey"></script>
+    <script type="text/javascript">
+        //初始化各连接属性。
+        function initLink() {
+            var singlePoint = "userId={0}&sessionId={1}&ChangeOrg=00000000-0000-0000-0000-000000000000&source={2}";
+            singlePoint = singlePoint.format(getUserId(), getSessionId(), sessionStorage.source);
+
+            $("#divOrderStatus a").on("click", function() {
+                var orderState = $(this).attr("orderState");
+                document.location.href = urlAppendCommonParams("/Mobile/MyOrderList?orderState=" + orderState);
+            });
+
+            $("#myOrder").attr("href", "/Mobile/MyOrderList");
+            $("#myAddress").attr("href", "/Mobile/DeliveryAddressList");
+
+            var os = $.os.ios ? "ios" : "android";
+            var par = "?{0}&shopId={1}&os={2}";
+            par = par.format(singlePoint, sessionStorage.appId, os);
+            $("#zxRedPacket").attr("href", "/ShareRedEnvelope/ShareRedEnvelopesList" + par);
+            $("#CrowdfundingRedPacket").attr("href", "/ShareRedEnvelope/CrowdRedEnvelopesList" + par);
+
+
+            var phref = "@Jinher.AMP.BTP.Common.CustomConfig.MyBespeakUrl" + "?btpdomain=btp&" + singlePoint + "&SrcType=" + sessionStorage.SrcType + "&productType=" + sessionStorage.ProductType;
+            if (JsVilaDataNull(sessionStorage.appTypeZPH)) {
+                phref = phref + "&appType=" + sessionStorage.appTypeZPH;
+            }
+
+            $("#MyPresellComdty").attr("href", phref);
+
+            var srcUrl = document.location.href;
+            srcUrl = encodeURIComponent(srcUrl)
+            var vouUrl = "@Jinher.AMP.BTP.Common.CustomConfig.PromotionUrl" + "/MyVouchers/Index?srcApp=btpMyHome&{0}&srcUrl={1}";
+            vouUrl = vouUrl.format(singlePoint, srcUrl);
+            $("#aVoucher").attr("href", vouUrl);
+        }
+
+        //获取用户信息。
+
+        function GetUserInfoCount(userId, sessionId, esAppId) {
+
+            getDataAjax2({
+                type: "POST",
+                url: "/Mobile/GetUserInfoCount",
+                datatype: "json",
+                data: { "userId": userId, "sessionId": sessionId, "esAppId": esAppId },
+                async: true,
+                callback: function (result) {
+                    $("#imgPicUrl").attr("src", result.PicUrl);
+                    $("#divUserName").html(result.UserName);
+
+                    var state0Text = result.OrderTotalState0 > 99 ? "99+" : result.OrderTotalState0;
+                    var state1Text = result.OrderTotalState1 > 99 ? "99+" : result.OrderTotalState1;
+                    var state2Text = result.OrderTotalState2 > 99 ? "99+" : result.OrderTotalState2;
+                    var totalStateTuiText = result.OrderTotalStateTui > 99 ? "99+" : result.OrderTotalStateTui;
+
+                    $("#state0Text").html(state0Text);
+                    $("#state1Text").html(state1Text);
+                    $("#state2Text").html(state2Text);
+                    $("#totalStateTuiText").html(totalStateTuiText);
+                    $("#forespeakCnt").html(result.ForespeakCnt);
+                }
+            });
+        }
+
+    //        //微信相关
+        //        //配置
+        //        wx.config({
+        //            debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+        //            appId: '@Jinher.AMP.BTP.Common.CustomConfig.WeixinAppId', // 必填，公众号的唯一标识
+        //            timestamp: '@ViewBag.wxConfigTimestamp', // 必填，生成签名的时间戳 商户生成从1970年1月1日00:00:00至今的秒数,即当前的时间,且最终需要转换为字符串形式;由商户生成后传入。 
+        //            nonceStr: '@ViewBag.wxConfigNonceStr', // 必填，生成签名的随机串
+        //            signature: '@ViewBag.wxConfigSign',// 必填，签名，见附录1
+        //            jsApiList: ["onMenuShareTimeline","onMenuShareAppMessage","onMenuShareQQ","onMenuShareWeibo"] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+        //        });
+        //        wx.ready(function () {
+        //            toast("wx.ready");
+        //            // config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后，config是一个客户端的异步操作，所以如果需要在页面加载时就调用相关接口，则须把相关接口放在ready函数中调用来确保正确执行。对于用户触发时才调用的接口，则可以直接调用，不需要放在ready函数中。
+
+        //            // 2.1 监听“分享给朋友”，按钮点击、自定义分享内容及分享结果接口
+        //            wx.onMenuShareAppMessage({
+        //                title: '互联网之子',
+        //                desc: '在长大的过程中，我才慢慢发现，我身边的所有事，别人跟我说的所有事，那些所谓本来如此，注定如此的事，它们其实没有非得如此，事情是可以改变的。更重要的是，有些事既然错了，那就该做出改变。',
+        //                link: 'http://movie.douban.com/subject/25785114/',
+        //                imgUrl: 'http://demo.open.weixin.qq.com/jssdk/images/p2166127561.jpg',
+        //                trigger: function (res) {
+        //                    // 不要尝试在trigger中使用ajax异步请求修改本次分享的内容，因为客户端分享操作是一个同步操作，这时候使用ajax的回包会还没有返回
+        //                    toast('用户点击发送给朋友');
+        //                },
+        //                success: function (res) {
+        //                    toast('已分享');
+        //                },
+        //                cancel: function (res) {
+        //                    toast('已取消');
+        //                },
+        //                fail: function (res) {
+        //                    //toast(JSON.stringify(res));
+        //                }
+        //            });
+
+        //            wx.onMenuShareTimeline({
+        //                title: '互联网之子',
+        //                link: 'http://movie.douban.com/subject/25785114/',
+        //                imgUrl: 'http://demo.open.weixin.qq.com/jssdk/images/p2166127561.jpg',
+        //                trigger: function (res) {
+        //                    // 不要尝试在trigger中使用ajax异步请求修改本次分享的内容，因为客户端分享操作是一个同步操作，这时候使用ajax的回包会还没有返回
+        //                    toast('用户点击分享到朋友圈');
+        //                },
+        //                success: function (res) {
+        //                    toast('已分享');
+        //                },
+        //                cancel: function (res) {
+        //                    toast('已取消');
+        //                },
+        //                fail: function (res) {
+        //                    //toast(JSON.stringify(res));
+        //                    toast("wx.onMenuShareTimeline异常！");
+        //                }
+        //            });
+
+        //            wx.onMenuShareQQ({
+        //                title: '互联网之子',
+        //                desc: '在长大的过程中，我才慢慢发现，我身边的所有事，别人跟我说的所有事，那些所谓本来如此，注定如此的事，它们其实没有非得如此，事情是可以改变的。更重要的是，有些事既然错了，那就该做出改变。',
+        //                link: 'http://movie.douban.com/subject/25785114/',
+        //                imgUrl: 'http://img3.douban.com/view/movie_poster_cover/spst/public/p2166127561.jpg',
+        //                trigger: function (res) {
+        //                    toast('用户点击分享到QQ');
+        //                },
+        //                complete: function (res) {
+        //                    toast(JSON.stringify(res));
+        //                },
+        //                success: function (res) {
+        //                    toast('已分享');
+        //                },
+        //                cancel: function (res) {
+        //                    toast('已取消');
+        //                },
+        //                fail: function (res) {
+        //                    //toast(JSON.stringify(res));
+        //                }
+        //            });
+
+        //            wx.onMenuShareWeibo({
+        //                title: '互联网之子',
+        //                desc: '在长大的过程中，我才慢慢发现，我身边的所有事，别人跟我说的所有事，那些所谓本来如此，注定如此的事，它们其实没有非得如此，事情是可以改变的。更重要的是，有些事既然错了，那就该做出改变。',
+        //                link: 'http://movie.douban.com/subject/25785114/',
+        //                imgUrl: 'http://img3.douban.com/view/movie_poster_cover/spst/public/p2166127561.jpg',
+        //                trigger: function (res) {
+        //                    toast('用户点击分享到微博');
+        //                },
+        //                complete: function (res) {
+        //                    toast(JSON.stringify(res));
+        //                },
+        //                success: function (res) {
+        //                    toast('已分享');
+        //                },
+        //                cancel: function (res) {
+        //                    toast('已取消');
+        //                },
+        //                fail: function (res) {
+        //                    //toast(JSON.stringify(res));
+        //                }
+        //            });
+
+        //        });
+         $(function () {
+             saveContextDTOByUrl();
+             //电商馆要分享我的页面分享内容为电商馆应用
+             if (sessionStorage.appTypeZPH == 4 && JsVilaDataNull(getEsAppId())) {
+
+                 if (!JsVilaDataNull(getQueryString('isshowsharebenefitbtn')) && $.os.ios) {
+                     if (window.location.href.indexOf('?') > 0) {
+                         window.location.href = window.location.href + '&isshowsharebenefitbtn=1';
+                     } else {
+                         window.location.href = window.location.href + '?isshowsharebenefitbtn=1';
+                     }
+                 }
+                 if (JsVilaDataNull(sessionStorage.EsShareInfo)) {
+                     var shareEs = JSON.parse(sessionStorage.EsShareInfo);
+                     shareAndroid(shareEs.ShareContent, shareEs.ShareTopic, shareEs.Icon, shareEs.ShareGotoUrl, 5);
+                 } else {
+                     getDataAjax2({
+                         type: "POST",
+                         url: "/Mobile/GetAppShareContent",
+                         datatype: "json",
+                         data: { "appId": getEsAppId() },
+                         async: true,
+                         callback: function (result) {
+                             if (result) {
+                                 sessionStorage.EsShareInfo = JSON.stringify(result);
+                                 shareAndroid(result.ShareContent, result.ShareTopic, result.Icon, result.ShareGotoUrl, 5);
+                             }
+                         }
+                     });
+                 }
+
+             }
+
+             //获取城市名称，赋值到定位位置
+             //var cityName = getCityName();
+             var cityName = getQueryString("cityNameParameter");
+             if (JsVilaDataNull(cityName)) {
+                 setCookie("selectCityName", cityName);
+                 setCookie("selectCityCode", getCityCode(cityName));
+             }
+             if (JsVilaDataNull(getCookie("selectCityName")))
+                 document.getElementById("myLocation").innerText = getCookie("selectCityName");
+             if (!JsVilaDataNull(getCookie("cityCode"))) {
+                 showCityInfo();
+             }
+
+
+             //跳转到选择城市页面
+             $("#myLocation").attr('href', '/Mobile/MyLocation?callBackUrl=' + decodeURI(window.location.href));
+
+             footmenu($("#myhome"));
+             if (DealLoginPartial == undefined) {
+                 return;
+             }
+             //清除用户信息
+             if (!JsVilaDataNull(getUserId())) {
+                 clearUserInfo();
+             }
+             //登陆回调
+             DealLoginPartial.setCallback(function () {
+                 if (sessionStorage.ProductType == "webcjzy" || sessionStorage.ProductType == "appcjzy") {
+                     $("#searchZPH").attr("href", getZphCategoryUrl());
+                     $("#guang").attr("href", getZphIndexUrl());
+                 }
+                 if (isLogin()) {
+                     //显示用户form
+                     $(".user-form").removeClass("hide");
+                     //隐藏登陆form
+                     $(".login-form").addClass("hide");
+
+                     //判断app类型
+                     if (sessionStorage.appTypeZPH != undefined && sessionStorage.appTypeZPH == 4 && sessionStorage.ProductType == "appcjzy") {
+                         //隐藏登陆
+                         $("#btnLogin").hide();
+                         //显示注销
+                         $("#btnLoginOut").show();
+                     }
+                     GetUserInfoCount(getUserId(), getSessionId(), getEsAppId());
+                     initLink();
+                 }
+             });
+             if (isLogin() || JsVilaDataNull(sessionStorage.neeLoginWhenLoad)) {
+                 //登陆跳转
+                 DealLoginPartial.initPartialPage();
+             }
+
+             //登陆
+             $("#btnLogin").click(function () {
+                 login();
+             });
+             //注销
+             $("#btnLoginOut").click(function () {
+                 loginOut();
+             });
+
+         });
+         //手机端调用，注销时使用
+         //清除页面上用户信息
+         function clearUserInfo() {
+             $("#state0Text").html(0);
+             $("#state1Text").html(0);
+             $("#state2Text").html(0);
+             $("#totalStateTuiText").html(0);
+             $("#forespeakCnt").html(0);
+
+             //取消tabs绑定事件
+             $('#divOrderStatus a').unbind("click");
+             //取消链接地址
+             $(".link-item").find("a").attr("href", "javascript:void(0);");
+             //显示登陆form
+             $(".login-form").removeClass("hide");
+             $("#btnLogin").show();
+             //隐藏用户form及信息
+             $(".user-form").addClass("hide");
+             $("#imgPicUrl").attr("src", "");
+             $("#divUserName").html("");
+         }
+
+         //登陆按钮实现：DealLoginPartial.initPartialPage();
+         function login() {
+             DealLoginPartial.initPartialPage();
+         }
+
+         //用户注销 //(dev/test/pre)btp.iuoooo.com
+         function loginOut() {
+             //设置注销参数
+             sessionStorage.userLoginOut = "true";
+             delContextDTO();
+             var host = window.location.host;
+             location.href = "http://" + host + "/mobile/?btploginout=btploginout";
+             return false;
+         }
+
+         function showCityInfo() {  //IP定位
+
+             var mapObj = new AMap.Map('iCenter');
+
+             mapObj.plugin(["AMap.CitySearch"], function () {
+                 //实例化城市查询类
+                 var citysearch = new AMap.CitySearch();
+                 //自动获取用户IP，返回当前城市
+                 citysearch.getLocalCity();
+                 AMap.event.addListener(citysearch, "complete", function (result) {
+                     var locationCityCode = '110000';
+                     var cityinfo = '北京市';
+                     if (result && result.city && result.bounds) {
+                         cityinfo = result.city;
+                         locationCityCode = getCityCode(cityinfo);
+                     }
+                     setSessionCookie("cityName", cityinfo);
+                     setSessionCookie("cityCode", locationCityCode);
+
+                     if (!JsVilaDataNull(getCookie("selectCityName"))) {
+                         setCookie("selectCityName", cityinfo);
+                         setCookie("selectCityCode", locationCityCode);
+                     }
+                     document.getElementById("myLocation").innerText = getCookie("selectCityName");
+                 });
+                 AMap.event.addListener(citysearch, "error", function (result) { toast(result.info); });
+             });
+         }
+         function getCityCode(cityName) {
+             var cityCode;
+             var allCities = [];
+             allCities = getAllCities();
+             for (var i = 0, n = allCities.length; i < n; i++) {
+                 if (cityName == allCities[i].Name) {
+                     cityCode = allCities[i].AreaCode;
+                 }
+             }
+             return cityCode;
+         }
+
+    </script>
+}
+    <div class="page" id="box">
+        <div class="content">
+            <div class="u-user-info">
+                <div class="user user-form">
+                    <div>
+                        <img alt="" id="imgPicUrl" /></div>
+                    <div class="double-row" id="divUserName" style="border: 1px solid transparent;">
+                    </div>
+                    @*注销*@
+                    <img id="btnLoginOut" src="../../Content/Mobile/iconfont-zhuxiao-64-white.png" width="25px;">
+                    </img>
+                </div>
+                <div class="u-login u-padding login-form hide ">
+                    <h3 class="login-form-title">
+                        欢迎来到正品O2O商城!</h3>
+                    @*登录*@
+                    <button id="btnLogin" class="button-caution btn-primary">
+                        点此登录
+                    </button>
+                </div>
+                <div class="u-login  hide">
+                    <h3>
+                        欢迎来到正品O2O!</h3>
+                    <img src="/Images/check_pic.png" class="userPhoto" />
+                </div>
+                <div class="user-pos">
+                    <i class="icon icon-map-marker"></i>当前位置 <a href="javascript:void(0)" id="myLocation">
+                        北京市</a>
+                </div>
+                <div id="divOrderStatus" class="tabs">
+                    <a href="javascript:void(0)" orderstate="0"><span class="msg-number" id="state0Text">
+                        0</span> <span class="msg-name">待付款</span> </a><a href="javascript:void(0)" orderstate="1">
+                            <span class="msg-number" id="state1Text">0</span> <span class="msg-name">待发货</span>
+                        </a><a href="javascript:void(0)" orderstate="2"><span class="msg-number" id="state2Text">
+                            0</span> <span class="msg-name">待收货</span> </a><a href="javascript:void(0)" orderstate="-1">
+                                <span class="msg-number" id="totalStateTuiText">0</span> <span class="msg-name">退款/售后</span></a>
+                </div>
+            </div>
+            <div class="u-user-links" style="top: 4px; width: 98%;">
+                <div class="link-item">
+                    <div class="item">
+                        <a id="myOrder" href="/Mobile/MyOrderList">
+                            <img src="/Content/Mobile/zphStyle/images/icon-order.png" alt="" />
+                            <span class="title">我的订单</span> <span class="sub">查看所有</span> </a>
+                    </div>
+                    <div class="item">
+                        <a id="MyPresellComdty" href="javascript:void(0);">
+                            <img src="/Content/Mobile/zphStyle/images/icon-reserve.png" alt="" />
+                            <span class="title">我的预约</span> <span class="sub"><span id="forespeakCnt"></span>件预约商品</span>
+                        </a>
+                    </div>
+                    <div class="item">
+                        <a id="myAddress" href="/Mobile/DeliveryAddressList">
+                            <img src="/Content/Mobile/zphStyle/images/icon-addr.png" alt="" />
+                            <span class="title">地址管理</span> <span class="sub">收货地址维护</span> </a>
+                    </div>
+                </div>
+                <div id="divzxzc" class="link-item">
+                    <div class="item">
+                        <a id="zxRedPacket" href="javascript:void(0);">
+                            <img src="/Content/Mobile/zphStyle/images/icon-gift.png" alt="" />
+                            <span class="title">众销红包</span> <span class="sub">众销红包</span> </a>
+                    </div>
+                    <div class="item">
+                        <a id="CrowdfundingRedPacket" href="javascript:void(0);">
+                            <img src="/Content/Mobile/zphStyle/images/icon-crowdfunding.png" alt="" />
+                            <span class="title">众筹红包</span> <span class="sub">众筹红包</span> </a>
+                    </div>
+                    <div class="item">
+                        <a id="aVoucher" href="javascript:void(0);">
+                            <img src="/Content/Mobile/zphStyle/images/icon-yh.png" alt="" />
+                            <span class="title">代金券</span> <span class="sub">代金券</span> </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="msgDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        标题</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        这里是内容…</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary">
+                        切换</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        取消</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+   

@@ -1,0 +1,107 @@
+﻿@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+}
+@section TitleHtml
+{
+    <title>活动规则</title>
+}
+@section CssStyles{
+    <link rel="stylesheet" href="/Content/Mobile/mobileKit-min.css"/>
+    <link rel="stylesheet" href="/Content/Mobile/activityRule.css"/>
+}
+@section ClientScript
+{
+    <script type="text/javascript">
+        $(function () {
+            //单点
+            saveContextDTOByUrl();
+        });
+    </script>
+}
+<div class="page">
+    <header class="bar bar-nav hide">
+        <a href="javascript:window.history.back();" class="pull-left fa fa-chevron-left"> 返回</a>
+
+        <h1 class="title">活动规则</h1>
+    </header>
+
+    <div class="content">
+        <div class="activity-rule">
+            <ul>
+                <li>
+                    <div class="mark">
+                        <div class="num">
+                            <div>1</div>
+                        </div>
+                        <div class="line"></div>
+                    </div>
+                    <div class="introduce">
+                        <div class="step-name">选择心仪商品</div>
+                        <div class="step1">
+                            <img src="/Content/Mobile/rule-img-1.png" alt=""/>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="mark">
+                        <div class="num">
+                            <div>2</div>
+                        </div>
+                        <div class="line"></div>
+                    </div>
+                    <div class="introduce">
+                        <div class="step-name">支付参团或开团</div>
+                        <div class="step2">
+                            <img src="/Content/Mobile/rule-img-2.png" alt=""/>
+                            <span>或</span>
+                            <img src="/Content/Mobile/rule-img-3.png" alt=""/>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="mark">
+                        <div class="num">
+                            <div>3</div>
+                        </div>
+                        <div class="line"></div>
+                    </div>
+                    <div class="introduce">
+                        <div class="step-name">等待好友参团支付</div>
+                        <div class="step3">
+                            <img src="/Content/Mobile/rule-img-4.png" alt=""/>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="mark">
+                        <div class="num">
+                            <div>4</div>
+                        </div>
+                        <div class="line"></div>
+                    </div>
+                    <div class="introduce">
+                        <div class="step-name">达到人数组团成功</div>
+                        <div class="step4">
+                            <div class="fail"><b>组团成功：</b>团长开团后，在指定时间内找到相应人数的好友参团，该团购成功，卖家发货。</div>
+                            <img src="/Content/Mobile/rule-img-5.png" alt=""/>
+
+                            <div class="fail"><b>组团失败：</b>在指定时间内未能找到相应人数的好友参团，该团购失败，系统会在1-2个工作日内自动退款至支付账户。若团购过程中团购商品已被抢完，团购订单将自动关闭，款项自动退还。
+                            </div>
+                            <img src="/Content/Mobile/rule-img-6.png" alt=""/>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="mark">
+                        <div class="num">
+                            <div><i class="fa fa-star"></i></div>
+                        </div>
+                    </div>
+                    <div class="introduce">
+                        <div class="step-name">开团或参团成功后,可在订单列表中查询团购速度。</div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

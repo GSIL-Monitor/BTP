@@ -1,0 +1,98 @@
+﻿@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+}
+@section TitleHtml
+{
+    <title>退货方式</title>
+}
+@section CssStyles
+{
+    <link href="/Content/Mobile/mobileKit-min.css" rel="stylesheet" type="text/css" />
+    <link href="/dist/css/RefundType.css" rel="stylesheet" type="text/css" />
+}
+
+<div class="page">
+    <div class="logistics">
+        <span class="name">选择物流公司</span>
+        <span id="SelectExpCo" class="right">请选择</span>
+        <img src="/Content/Mobile/yj-angle-right.png">
+    </div>
+    <div class="logistics-list" id="elseContent">
+        <div class="logistics-list-title">填写物流公司</div>
+        <input class="logistics-list-input" type="text" id="ExpCo">
+    </div>
+    <div class="logistics-list">
+        <div class="logistics-list-title">填写订单编号</div>
+        <input class="logistics-list-input" type="text" id="ExpNo">
+    </div>
+    @if (ViewBag.RefundInfo != null)
+    {
+        <div class="logistics-list">
+            <span class="logistics-list-title">商品寄回方式：</span>
+            <span>快递寄回商家</span>
+        </div>
+
+        <div class="logistics-info">
+            <span class="logistics-info-title">收件人：</span>
+            <span class="logistics-info-text">@ViewBag.RefundInfo.RefundReceiveName</span>
+        </div>
+        <div class="logistics-info">
+            <span class="logistics-info-title">电话：</span>
+            <span class="logistics-info-text">@ViewBag.RefundInfo.RefundReceiveMobile</span>
+        </div>
+        <div class="logistics-info">
+            <span class="logistics-info-title">地址：</span>
+            <span class="logistics-info-text">@ViewBag.RefundInfo.RefundReceiveFullAddress</span>
+        </div>
+    }
+    <div class="logistics-btn" onclick="btnSubmit()">确认</div>
+    <!--物流弹窗-->
+    <div id="modal" class="logistics-modal hide">
+        <div class="logistics-modal-content">
+            <div class="modal-hd">
+                <span class="title">请选择物流公司</span>
+                <img class="close" src="/Content/Mobile/guanbi.png">
+            </div>
+            <div class="modal-bd">
+                <div class="list">顺丰速运</div>
+                <div class="list">申通快递</div>
+                <div class="list">圆通速递</div>
+                <div class="list">EMS快递</div>
+                <div class="list">中通速递</div>
+                <div class="list">韵达快运</div>
+                <div class="list">天天快递</div>
+                <div class="list">中邮物流</div>
+                <div class="list">汇通快运</div>
+                <div class="list">宅急送</div>
+                <div class="list">快捷快递</div>
+                <div class="list">德邦物流</div>
+                <div class="list">优速物流</div>
+                <div class="list">全峰快递</div>
+                <div class="list">信丰物流</div>
+                <div class="list">国通快递</div>
+                <div class="list">港中能达物流</div>
+                <div class="list">联昊通物流</div>
+                <div class="list">全日通快递</div>
+                <div class="list">佳吉物流</div>
+                <div class="list">速尔物流</div>
+                <div class="list">天地华宇</div>
+                <div class="list">佳怡物流</div>
+                <div class="list">如风达</div>
+                <div class="list">新邦物流</div>
+                <div class="list">安捷快递</div>
+                <div class="list">UPS</div>
+                <div class="list">龙邦物流</div>
+                <div class="list">联邦快递（国内）</div>
+                <div class="list">DHL</div>
+                <div class="list">全一快递</div>
+                <div class="list">TNT</div>
+                <div class="list">运通快递</div>
+                <div class="list">京东快递</div>
+                <div class="list">其他</div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/Scripts/zepto.min.js" type="text/javascript" type="text/javascript"></script>
+<script src="/Scripts/h5New/libs/mobileKit/mobileKit.min.js" type="text/javascript"></script>
+<script src="/dist/js/RefundType.js" type="text/javascript"></script>

@@ -1,0 +1,38 @@
+﻿<div class="tel-alert phonealert" style="display:none;">
+    <div>
+        <ul class="tel-list">
+           @* <li><a href="tel:13500000000">13500000000</a></li>
+            <li><a href="tel:13500000000">13500000000</a></li>
+            <li><a href="tel:13500000000">13500000000</a></li>*@
+        </ul>
+        <div class="cancel phonecancel">
+            取消</div>
+    </div>
+</div>
+<script type="text/javascript">
+    document.getElementsByClassName('phonecancel')[0].onclick = function () {
+        document.getElementsByClassName('phonealert')[0].style.display = 'none';
+    }
+    function mulPhone(obj,pstr) {
+        var html = "";
+        if (pstr == "" || pstr == null) return false;
+        if (pstr.indexOf(",") < 0) {
+            window.location.href = "tel:" + pstr;
+            return false;
+        }
+        var ps = pstr.split(",");
+        if (ps && ps != null) {
+            for (var i = 0; i < ps.length; i++) {
+                if (ps[i] && ps[i] != "") {
+                    html += '<li><a href="tel:' + ps[i] + '">' + ps[i] + '</a></li>';
+                }
+            }
+        }
+        if (html != "") {
+            $(".tel-alert").show();
+            $(".tel-list").html(html);
+            return false;
+        }
+        return false;
+    }
+</script>

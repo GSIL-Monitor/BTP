@@ -1,0 +1,412 @@
+﻿@{
+    ViewBag.Title = "AppManageIndex";
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.APPManageDTO> appManageList = ViewBag.appManageList;
+}
+<link href="../../Content/default/jquery.ui.all.css" rel="stylesheet" type="text/css" />
+<link href="../../Content/default/jquery.ui.jhtablebox.css" rel="stylesheet" type="text/css" />
+<link href="../../Content/css/common.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+    td
+    {
+        color: Black;
+    }
+</style>
+<script type="text/javascript">
+
+    // 全局变量上传图片基地址
+
+    $(function () {
+
+        //获取分辨率的高度
+//        var height = window.screen.height;
+//        if (height == "900") {
+//            $("#showDiv").css("height", "520px");
+//        } if (height == "800") {
+
+
+//            $("#showDiv").css("height", "460px");
+//        }
+
+        // 关闭 已审核 弹出对话框
+        $("#checkingClose").click(function () {
+            $("#alertMsgChecking").jhtablebox("hide");
+        });
+
+        // 关闭 已审核 弹出对话框
+        $("#passClose").click(function () {
+            $("#alertMsgPass").jhtablebox("hide");
+        });
+
+        $("#ErrorClose").click(function () {
+            $("#alertErrorMsg").jhtablebox("hide");
+        });
+
+        //添加记录
+        $("#btnSubmit").click(function () {
+            //验证是否为空
+            var appName = $("#AppName").val();
+            var appId = $("#AppId").val();
+            var remark = $("#Remark").val();
+
+            var reg = /^[A-Fa-f\d]{8}\-[A-Fa-f\d]{4}\-[A-Fa-f\d]{4}\-[A-Fa-f\d]{4}\-[A-Fa-f\d]{12}$/;
+
+            //var reg = /^\w{8}-(\w{4}-){3}\w{12}$/;
+            if (!reg.test($.trim(appId))) {
+                alert("appId输入格式不正确");
+                return false;
+            }
+
+            if (appName === "") {
+                alert("请输入APP名称");
+                return false;
+            }
+
+            if (appId === "") {
+                alert("请输入AppId");
+                return false;
+            }
+
+            if (remark.length > 140) {
+
+                alert("备注最多只能输入140个字符");
+                return false;
+            }
+
+            //设置传递数据
+            var data = {
+                "appId": appId,
+                "appName": appName,
+                "remark": remark
+            };
+
+            //异步提交
+            $.ajax({
+                async: true,
+                type: "POST",
+                url: "AddAppManage",
+                data: data,
+                dataType: "json",
+                success: function (data) {
+
+                    //成功
+                    if (data.Success) {
+                        window.location.href = "AppManageIndex";
+
+                    } //失败
+                    else {
+
+                        alert(data.Messages);
+                    }
+                },  //异常
+                error: function (err) {
+                    alert("出现异常！");
+                }
+            });
+        });
+
+        //加载结束
+
+
+    });
+
+
+    //删除选中的消息
+    function DelUserlevelManage(id) {
+
+        $("<div ></div>").jhtablebox({
+            type: "Confirm",
+            title: "提示",
+            content: "您确定要删除吗？",
+            autoOpen: true,
+            confirm: function () {
+
+                deleteMessage(id);
+            }
+        });
+
+        return false;
+    }
+
+
+    //统计删除数量
+    function deleteCheckMessage(checkMessage, length) {
+        var delIds = "";
+        for (var i = 0; i < length; i++) {
+            delIds += $(checkMessage[i]).val() + ",";
+
+        }
+        delIds = delIds.substring(0, delIds.length - 1);
+        deleteMessage(delIds);
+    }
+    //执行删除
+    function deleteMessage(ids) {
+        $.ajax({
+            type: "post",
+            async: true,
+            timeout: 120000,
+            dataType: "json",
+            url: 'DeleteAppManage?r=' + Math.random(),
+            data: $.param({ "Id": ids }, true),
+            success: function (res) {
+                if (res.Success) {
+
+                    window.location.href = "AppManageIndex";
+
+                } else {
+                    alert(res.Messages);
+                }
+            },
+            error: function (msg) {
+                alert(msg);
+            }
+        });
+    }
+
+    // 获取当前行的信息
+    function getAppManage(Id, appId, appName, Remark) {
+
+
+
+        $("#editInfo").jhtablebox({
+            title: "编辑特权",
+            width: 440,
+            height: 380,
+            modal: true,
+            resizable: false,
+            beforeClose: function (e) {
+
+            }
+        });
+
+        $('#txtAppName').val(appName);
+        $('#txtAppId').val(appId);
+        $('#txtRemark').val(Remark);
+        $("#txtId").val(Id);
+
+    }
+    // 修改信息
+    function EditUserLevelManage() {
+
+        var txtappName = $("#txtAppName").val();
+        var txtappId = $("#txtAppId").val();
+        var txtId = $('#txtId').val();
+        var txtRemark = $('#txtRemark').val();
+
+        var reg = /^[A-Fa-f\d]{8}\-[A-Fa-f\d]{4}\-[A-Fa-f\d]{4}\-[A-Fa-f\d]{4}\-[A-Fa-f\d]{12}$/;
+
+        if (!reg.test(txtappId)) {
+            alert("appId输入格式不正确");
+            return false;
+        }
+
+        if (txtappName === "") {
+            alert("请输入App名称");
+            return false;
+        }
+        if (txtappId === "") {
+            alert("请输入AppId");
+            return false;
+        }
+
+        if (txtRemark.length > 140) {
+            alert("备注最多只能输入140个字符");
+            return false;
+        }
+
+        var data = {
+            "Id": txtId,
+            "appId": txtappId,
+            "appName": txtappName,
+            "remark": txtRemark
+        };
+
+        $.ajax({
+            async: true,
+            type: "POST",
+            url: "UpdateAppManage",
+            data: data,
+            dataType: "json",
+            success: function (res) {
+
+                if (res.Success) {
+                    //隐藏editInfo
+                    var mess = res.Messages;
+                    if (mess === "Deled") {
+                        $("#alertMsgPass").jhtablebox({
+                            title: "消息提示",
+                            width: 300,
+                            height: 165,
+                            modal: true,
+                            resizable: false,
+                            beforeClose: function (e) {
+                                window.location.href = "AppManageIndex";
+                            }
+                        });
+                    }
+                    else {
+                        cancelEdit();
+                        window.location.href = "AppManageIndex";
+                    }
+
+                }
+                else {
+
+                    $("#alertErrorMsg").jhtablebox({
+                        title: "消息提示",
+                        width: 300,
+                        height: 165,
+                        modal: true,
+                        resizable: false,
+                        beforeClose: function (e) {
+
+                        }
+                    });
+                }
+            },
+            error: function (err) {
+                alert("出现异常");
+            }
+        });
+    }
+
+    //取消
+    function cancelEdit() {
+
+        $("#editInfo").jhtablebox("hide");
+    }
+ 
+</script>
+<script type="text/javascript">
+    try {
+        document.domain = "iuoooo.com";
+    }
+    catch (err) {
+    }
+</script>
+<div class="tabs-box">
+    <div class="tabs-top">
+        <a href="" class="current">应用管理</a>
+    </div>
+</div>
+<br />
+<div id="showDiv" style="padding-left: 20px; overflow-x: hidden; overflow-y: auto; height:auto;
+    width: 100%;">
+    <table style="border-collapse: collapse;" id="tblUserLeverManage">
+        <tr style="background-color: #f6f6f6; border-bottom: 1px dashed #e4e4e4; height: 40px;">
+            <td style="width: 50px; text-align: center;">
+                &nbsp;
+            </td>
+            <td style="padding-left: 10px; width: 200px; font-size: 15px; font-weight: bold;">
+                APP名称
+            </td>
+            <td style="padding-left: 10px; width: 280px; font-size: 15px; font-weight: bold;">
+                APPID
+            </td>
+            <td style="padding-left: 10px; width: 290px; font-size: 15px; font-weight: bold;">
+                备注
+            </td>
+            <td style="padding-left: 10px; font-size: 15px; font-weight: bold; width: 120px;
+                text-align: center;">
+                操作
+            </td>
+        </tr>
+        @foreach (var appManage in appManageList)
+        {
+
+            <tr style="border-bottom: 1px dashed #e4e4e4; height: 40px;">
+                <td style="width: 50px; text-align: center;">
+                    &nbsp;
+                </td>
+                <td style="padding-left: 10px;">
+                    @appManage.AppName
+                </td>
+                <td style="padding-left: 10px;width: 280px;">
+                    @appManage.AppId
+                </td>
+                <td style="padding-left: 10px; padding-top:5px; padding-bottom:5px;">
+                    <div id="divSellersRemarks" style="width: 280px; overflow-x: hidden; overflow-y: auto;
+                        word-wrap: break-word; word-break: break-all;">
+                        @appManage.Remark</div>
+                </td>
+                <td style="padding-left: 10px; width: 120px; text-align: center;">
+                    <a href="#" onclick="getAppManage('@appManage.Id','@appManage.AppId','@appManage.AppName','@appManage.Remark');" style="text-decoration: none;color:#2366A8; font-size:12px;">
+                        编辑</a> <a href="#" style="text-decoration: none;color:#2366A8; " onclick="DelUserlevelManage('@appManage.Id')">
+                            删除</a>
+                </td>
+            </tr>
+        }
+        <tr id="trAdd" style="border-bottom: 1px dashed #e4e4e4; height: 40px;">
+            <td style="width: 50px; text-align: center;">
+                新增
+            </td>
+            <td style="padding-left: 10px">
+                <input type="text" id="AppName" style=" height: 21px; border: 1px solid #a9a9a9" />
+            </td>
+            <td style="padding-left: 10px">
+                <input type="text" id="AppId" style="width: 250px; height: 21px; border: 1px solid #a9a9a9" />
+            </td>
+            <td style="padding-left: 10px; width: 280px; padding-top:5px;  padding-bottom:5px;">
+                <textarea cols="40" rows="4" id="Remark">
+            </textarea>
+            </td>
+            <td style="padding-left: 10px; text-align: center;">
+                <a href="#nogo" class="btn80 ml10" id="btnSubmit">添加</a>
+            </td>
+        </tr>
+    </table>
+</div>
+@*编辑*@
+<div style="display: none;" id="hiddemess">
+    <div id="editInfo" style="width: 440px;">
+        <form id="EditForm" name="EditForm">
+        <div style="height: 270px;">
+            <div class="item" style="margin-top: 25px;">
+                <span style="padding-left: 30px;">APP名称：</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                <input id="txtAppName" type="text" style="width: 270px;" class="inp-txt w200 mr10" />
+                <input type="hidden" id="txtId" />
+            </div>
+            <div class="item" style="margin: 25px 0;">
+                <span style="padding-left: 45px;">APPId：</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                <input id="txtAppId" type="text" style="width: 270px;" class="inp-txt w200 mr10" />
+            </div>
+            <div class="item" style="margin: 25px 0;">
+                <span style="padding-left: 55px; padding-top: 30px;">备注：</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                <textarea id="txtRemark" style="height: 90px; width: 270px;">
+                </textarea>
+            </div>
+        </div>
+        <div style="height: 40px; text-align: center; margin-top: -20px;">
+            <a href="#nogo" id="EditButton" onclick="EditUserLevelManage();" class="btn120">确定</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a href="#nogo" id="cancelEditButton" onclick="cancelEdit();" class="btn120">取消</a>
+        </div>
+        </form>
+    </div>
+</div>
+@*编辑*@
+<div style="display: none;">
+    <div id="alertMsgChecking" style="padding: 10px 10px 10px 10px; margin: 0 auto;">
+        <div style="height: 73px; line-height: 73px; text-align: center;">
+            修改成功</div>
+        <div style="height: 40px; text-align: center; margin-top: 10px;">
+            <input id="checkingClose" type="button" class="btn90" value="确定" style="cursor: pointer;" />
+        </div>
+    </div>
+</div>
+<div style="display: none;">
+    <div id="alertMsgPass" style="padding: 10px 10px 10px 10px; margin: 0 auto;">
+        <div style="height: 73px; line-height: 73px; text-align: center;">
+            您要修改的应用已经被删除，点击确定按钮刷新页面</div>
+        <div style="height: 40px; text-align: center; margin-top: 10px;">
+            <input id="passClose" type="button" class="btn90" value="确定" style="cursor: pointer;" />
+        </div>
+    </div>
+</div>
+<div style="display: none;">
+    <div id="alertErrorMsg" style="padding: 10px 10px 10px 10px; margin: 0 auto;">
+        <div style="height: 73px; line-height: 73px; text-align: center;" id="errMess">
+            AppId不能重复</div>
+        <div style="height: 40px; text-align: center; margin-top: 10px;">
+            <input id="ErrorClose" type="button" class="btn90" value="确定" style="cursor: pointer;" />
+        </div>
+    </div>
+</div>

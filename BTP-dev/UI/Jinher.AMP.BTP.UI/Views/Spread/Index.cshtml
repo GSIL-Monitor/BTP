@@ -1,0 +1,454 @@
+﻿@{
+    ViewBag.Title = "title";
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+}
+@section TitleHtml
+{
+    <title>加入正品生活</title>
+}
+@section CssStyles{
+    <link href="/Content/Mobile/zphStyle/mobileKit-min.css" rel="stylesheet" type="text/css" />
+    <link href="/Content/Mobile/zphStyle/register.css" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+        .register-info .btn-disabled
+        {
+            background: #ccc;
+            border: 1px solid #ccc;
+        }
+        
+        .register-info .btn-enabled
+        {
+            background: #FF0054;
+            border: 1px solid #FF0054;
+        }
+        .text-center
+        {
+            text-align: center;
+        }
+    </style>
+}
+@section ClientScript
+{
+    <script src="/Content/js/mobileKit.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(function () {
+            SpreadIndex.init();
+        });
+
+        var ajaxLoadingSingle = (function () {
+            function initLoading() {
+                var blind = $('body').find("#ajaxLoadBlind");
+                if (blind.length > 0) {
+                    return;
+                }
+                //蒙版
+                blind = $('<div></div>');
+                //蒙版相关css
+                blind.css({
+                    'position': 'fixed',
+                    'z-index': '10000',
+                    'opacity': 0.2,
+                    'backgroundColor': '#ccc',
+                    'height': '100%',
+                    'width': '100%',
+                    'top': 0,
+                    'left': 0
+                });
+                //蒙版ID值
+                blind.attr('id', 'ajaxLoadBlind');
+
+                //ajaxLoading盒子ID对象
+                var loading = $('#ajaxLoading_img');
+                loading = $('<div></div>');
+                loading.attr('id', 'ajaxLoading_img');
+                loading.css({
+                    'position': 'absolute',
+                    'z-index': '99',
+                    'left': '50%',
+                    'margin-left': '-16px',
+                    'top': '50%',
+                    'margin-top': '-16px'
+                });
+                loading.append('<img src="/Content/images/ajax-loader.gif" />');
+                //blind.css({ 'position': 'relative' });
+                blind.append(loading);
+                $('body').append(blind);
+            }
+
+            function show() {
+                initLoading();
+                var blind = $('body').find("#ajaxLoadBlind");
+                if (blind.length == 0) {
+                    return;
+                }
+                blind.show();
+            }
+            function hide() {
+                var blind = $('body').find("#ajaxLoadBlind");
+                if (blind.length == 0) {
+                    return;
+                }
+                blind.hide();
+            }
+
+            var loadingSingle = new Object();
+            loadingSingle.show = show;
+            loadingSingle.hide = hide;
+            return loadingSingle;
+        } ())
+
+        var SpreadIndex = (function () {
+            //是否注册过。
+            var isReg = false;
+            //手机号验证正则表达式。
+            var regexp = /^1(3[0-9]|4[57]|5[012356789]|7[678]|8[0-9])\d{8}$/;
+
+            //计时器Id.
+            var timerId = 0;
+
+            //初始化
+
+            function init() {
+                $('.tel').on('input paste', function () {
+                    if (regexp.test($(this).val())) {
+                        $('.validation-btn').addClass("btn-enabled").removeClass("btn-disabled");
+                    } else {
+                        $('.validation-btn').addClass("btn-disabled").removeClass("btn-enabled");
+                        $('.validation-btn').html("验证");
+                        $('.validation-btn').show();
+                        $(".submit-btn").addClass("btn-disabled").removeClass("btn-enabled");
+                        isReg = false;
+                        clearInterval(timerId);
+                    }
+                });
+                $("#btnValidTel").on("click", function () {
+                    var enabled = $("#btnValidTel").has(".btn-enabled") ? true : false;
+                    if (!enabled) {
+                        return;
+                    }
+                    var btnText = $.trim($("#btnValidTel").text());
+                    if (btnText == "验证") {
+                        var base64 = new Base64();
+                        var tel = $.trim($("#txtTel").val());
+                        if (!checkMobile(tel)) {
+                            return false;
+                        }
+                        tel = base64.encode(tel);
+                        CheckMobileRegister(tel);
+                    } else if (btnText == "重发") {
+                        var base64 = new Base64();
+                        var tel = $.trim($("#txtTel").val());
+                        tel = base64.encode(tel);
+                        SendMobileCode(tel);
+                    }
+                });
+                $('.password').on('input paste', function () {
+                    judgeValue();
+                });
+                $(".validate-num").on('input paste', function () {
+                    judgeValue();
+                });
+
+                $('.submit-btn').on("click", function () {
+                    if (!$(this).has("btn-enabled")) {
+                        return;
+                    }
+                    spreadBind();
+                });
+            }
+
+
+            //检查手机
+
+            function checkMobile(value) {
+                var mob_preg = /^1[3|4|5|7|8][0-9]{9}$/;
+
+                if (!mob_preg.test(value)) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+
+            //重发验证码倒计时。
+
+            function resend() {
+                var time = 60; //重新发送倒计时
+                timerId = setInterval(function () {
+                    if (time == 0) {
+                        clearInterval(timerId);
+                        $('.validation-btn').html("重发");
+                    } else {
+                        $('.validation-btn').html('重发(' + time + ')');
+                        time--;
+                    }
+
+                }, 1000);
+            }
+
+            //控制提交按钮样式。
+
+            function judgeValue() {
+                var tel = $('.tel').val();
+                var validateNum = $('.validate-num').val();
+                var password = $('input[type="password"]').val();
+
+                if (tel != '' && regexp.test(tel)
+                    && ((isReg == false && validateNum != '') || isReg == true)
+                    && password != '') {
+                    $('.submit-btn').addClass("btn-enabled").removeClass("btn-disabled");
+                } else {
+                    $('.submit-btn').addClass("btn-disabled").removeClass("btn-enabled");
+                }
+            }
+
+            //封装ajax方法 get
+
+            function getDataAjax(obj) {
+                return $.ajax({
+                    url: obj.url,
+                    type: 'get',
+                    contentType: "application/json",
+                    data: obj.data,
+                    success: obj.callback,
+                    beforeSend: obj.beforeSend,
+                    error: obj.error,
+                    dataType: 'json'
+                })
+            }
+
+
+            //检查手机号是否已注册。
+
+            function CheckMobileRegister(tel) {
+                //start  ajax
+                getDataAjax({
+                    url: '/Mobile/CheckMobileRegister',
+                    data: { LoginId: tel },
+                    callback: function (data) {
+                        ajaxLoadingSingle.hide();
+                        //没注册过
+                        if (data.IsSuccess) {
+                            SendMobileCode(tel);
+                        } else { //注册过
+                            isReg = true;
+
+                            toast("你的号码已注册,请输入密码!");
+                            //$(".tel").attr("disabled", true);
+                            $(".validate-num").hide();
+                            $("#btnValidTel").hide();
+                            $('input[type="password"]').attr("placeholder", "请输入登录密码");
+                            judgeValue();
+                        }
+
+                    },
+                    beforeSend: function () {
+                        ajaxLoadingSingle.show();
+                    },
+                    error: function () {
+                        ajaxLoadingSingle.hide();
+                    }
+                });
+                //end  ajax
+            }
+
+            //向手机发送验证码。
+
+            function SendMobileCode(tel) {
+                getDataAjax({
+                    url: '/Mobile/SendMobileCode',
+                    data: { LoginId: tel },
+                    callback: function (data) {
+                        ajaxLoadingSingle.hide();
+                        if (!data.IsSuccess) {
+                            if (data.Message != "") {
+                                toast(data.Message);
+                            } else {
+                                //获取验证码失败
+                                toast("获取验证码失败!");
+                            }
+                        } else {
+                            //$(".tel").attr("disabled", true);
+                            //显示手机验证码输入框
+                            $(".validate-num").show();
+                            $("#btnValidTel").show();
+                            $('input[type="password"]').attr("placeholder", "设置您的登录密码");
+                            toast("已发送验证码到你的手机!");
+
+                            //开始重发到计时。
+                            if ($("#btnValidTel").has(".btn-enabled")) {
+                                resend();
+                            }
+                            judgeValue();
+                        }
+
+                    },
+                    beforeSend: function () {
+                        ajaxLoadingSingle.show();
+                    },
+                    error: function () {
+                        ajaxLoadingSingle.hide();
+                    }
+                });
+            }
+
+            //登录或注册。
+
+            function spreadBind() {
+                var base64 = new Base64();
+
+                var tel = $.trim($(".tel").val());
+                if (!checkMobile(tel)) {
+                    toast("请输入正确的手机号码!");
+                    return false;
+                }
+
+                var pwd = $.trim($('input[type="password"]').val());
+                var pwdExp = /^[A-Za-z0-9]{6,16}$/;
+                if (!pwdExp.test(pwd)) {
+                    toast("密码必须为6-16位英文字母或数字!");
+                    return false;
+                    ;
+                }
+                pwd = base64.encode(pwd);
+
+
+                //手机验证码
+                var code = $.trim($(".validate-num").val());
+                if (code == "" && isReg == false) {
+                    return false;
+                }
+                tel = base64.encode(tel);
+                var obj = { LoginId: tel, Password: pwd, Code: code, spreadCode: "@ViewBag.speader" };
+
+                //操作(登录并绑定；注册、登录并绑定)完成后跳转到应用详情。
+                var fnCallback = function () {
+                    document.location.href = "/Spread/AppDetail?appId=@ViewBag.AppId" + "&speader=@ViewBag.speader";
+                }
+                if (isReg) {
+                    LoginAndBind(obj, fnCallback);
+                } else {
+                    RegisterAndLoginAndBind(obj, fnCallback);
+                }
+            }
+
+
+            //注册并登录。
+
+            function RegisterAndLoginAndBind(data, fnCallback) {
+                getDataAjax({
+                    url: '/Spread/RegisterAndLoginAndBind',
+                    data: data,
+                    callback: function (res) {
+                        if (!res.Success) {
+                            if (res.Message != null && res.Message != "") {
+                                toast(res.Message);
+                            }
+                        } else if (!res.RegReturnInfo.IsSuccess) {
+                            if (res.RegReturnInfo.Message != null && res.RegReturnInfo.Message != "") {
+                                toast(res.RegReturnInfo.Message);
+                            }
+                        } else if (!res.LoginReturnInfo.IsSuccess) {
+                            if (res.LoginReturnInfo.Message != null && res.LoginReturnInfo.Message != "") {
+                                toast(res.LoginReturnInfo.Message);
+                            }
+                        } else if (res.Success && res.RegReturnInfo.IsSuccess && res.LoginReturnInfo.IsSuccess) {
+                            //注册并登录成功
+                            saveContextDTO(res.LoginReturnInfo.ContextDTO.LoginUserID, res.SessionID, getQueryString('changeOrg') || Guid.NewGuid().ToString());
+                            //登录成功回调。
+                            fnCallback && fnCallback();
+                        }
+
+                        ajaxLoadingSingle.hide();
+                    },
+                    beforeSend: function () {
+                        ajaxLoadingSingle.show();
+                    },
+                    error: function () {
+                        ajaxLoadingSingle.hide();
+                    }
+                });
+            }
+
+            //手机端登录。
+
+            function LoginAndBind(data, fnCallback) {
+                getDataAjax({
+                    url: '/Spread/LoginAndBind',
+                    data: data,
+                    callback: function (data) {
+                        //登录成功
+                        if (data.ret.IsSuccess) {
+                            //登录成功回调。
+                            saveContextDTO(data.SubId, data.SessionID, getQueryString('changeOrg') || Guid.NewGuid().ToString());
+                            fnCallback && fnCallback();
+                        } else {
+                            toast(data.ret.Message);
+                        }
+                        ajaxLoadingSingle.hide();
+                    },
+                    beforeSend: function () {
+                        ajaxLoadingSingle.show();
+                    },
+                    error: function () {
+                        ajaxLoadingSingle.hide();
+                    }
+                });
+            }
+
+            var spIndex = {};
+            spIndex.init = init;
+            return spIndex;
+        } ());
+    </script>
+}
+<div class="page">
+    <header class="bar bar-nav hide">
+        <a class="fa fa-times pull-left" href="javascript:void(0);"></a>
+        <a class="fa fa-ellipsis-v pull-right" href="javascript:void(0);"></a>
+        <h1 class="title">注册赢好礼</h1>
+    </header>
+    <div class="content">
+        <div class="register text-center">
+            <div class="title">
+                <img src="@ViewBag.AppIco" />
+                <h2>@ViewBag.AppName</h2>
+                <h2>
+                    【选择正品，过品质生活】</h2>
+            </div>
+            <div class="register-info">
+                <div>
+                    <div class="ui-form">
+                        <div class="form-group">
+                            <div class="form-control">
+                                <input id="txtTel" class="tel" type="tel" placeholder="请输入手机号" maxlength="11">
+                                <button id="btnValidTel" class="btn validation-btn text-center" style="width: 60px;">
+                                    验证</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-form">
+                        <div class="form-group">
+                            <div class="form-control">
+                                <input class="validate-num" type="text" placeholder="请输入收到的验证码">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-form password">
+                        <div class="form-group">
+                            <div class="form-control">
+                                <input type="password" placeholder="请设置登录密码" maxlength="16">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <button class="btn submit-btn">
+                        验证手机，加入正品生活</button>
+                </div>
+                <div style="height: 30px;">
+                    &nbsp;&nbsp;&nbsp;</div>
+            </div>
+        </div>
+    </div>
+</div>

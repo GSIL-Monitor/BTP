@@ -1,0 +1,63 @@
+﻿@{
+    Layout = null;
+   
+List<Jinher.AMP.BTP.Deploy.CustomDTO.CategorySDTO> categorylist = ViewBag.CategoryList;
+}
+
+<script>
+    $("#SearchtcategoryUl input[type='checkbox']").change(function () {
+        toSearchCheckSelected(this);
+    });
+</script>
+
+ <h1>
+            <a href="javascript:;" class="close" onclick="CloseSearchCate(this)"></a><span>选择类目信息</span>
+        </h1>
+        <div style="overflow-y: auto; height: 190px; margin-top: 6px;">
+            <ul class="first" id="SearchtcategoryUl">
+                @foreach (var cate in categorylist)
+                {
+                    <li class="firs">
+                        <label>
+                          @if (cate.SecondCategory == null || cate.SecondCategory.Count==0)
+                          {
+                                <input name="cateogryClassLevel1" type="checkbox" value="@cate.Id"/>
+                             }<span>@cate.Name</span>
+                        </label>
+                        <ul class="second">
+                            @if (cate.SecondCategory == null) { cate.SecondCategory = new List<Jinher.AMP.BTP.Deploy.CustomDTO.SCategorySDTO>(); }
+                            @foreach (var scate in cate.SecondCategory)
+                            {
+                                <li class="firs firs1">
+                                    <label>
+                                     @if (scate.ThirdCategory == null || scate.ThirdCategory.Count == 0)
+                                     {
+                                        <input name="cateogryClassLevel2" type="checkbox" value="@scate.Id"/>
+                                     }<span>@scate.Name</span>
+                                    </label>
+                                    <ul class="third">
+                                        @if (scate.ThirdCategory == null) { scate.ThirdCategory = new List<Jinher.AMP.BTP.Deploy.CustomDTO.TCategorySDTO>(); }
+                                        @foreach (var tcate in scate.ThirdCategory)
+                                        {
+                                            <li>
+                                                <label>
+                                                    <input name="cateogryClassLevel3" type="checkbox"
+								       value="@tcate.Id"/><span>@tcate.Name</span>
+                                                </label>
+                                            </li>
+                                        }
+                                    </ul>
+                                </li>
+                            }
+                        </ul>
+                    </li>
+                }
+            </ul>
+        </div>
+        <div class="bbtn" style="text-align: center;">
+            <h1>
+            </h1>
+            <a href="javascript:;" id="searchcate1" onclick="CloseSearchCate(this)" class="btn120"
+                style="margin-top: 6px;">确定</a>
+        </div>
+

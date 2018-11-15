@@ -1,0 +1,48 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>修改厂家结算</title>
+    <link rel="stylesheet" href="/Content/css/style.css" />
+    <link rel="stylesheet" href="/content/css/common.css" />
+     <script src="/Scripts/DatePicker/jquery.ui.datepicker.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhdatetime.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhstartandenddate.js" type="text/javascript"></script>
+</head>
+<script type="text/javascript">
+    $('#StartTime').datepicker({
+
+        changeMonth: true,
+
+        changeYear: true,
+
+        showOtherMonths: true,
+
+        selectOtherMonths: true
+    });
+</script>
+<script type="text/javascript">
+    try {
+        document.domain = "iuoooo.com";
+    }
+    catch (err) {
+    }
+</script>
+<body class="clearfix">
+    <div class="box">
+        <div>
+            <ul>
+                <li><span>厂家结算价格：</span>
+                    <input type="text" id="manufacturerClearingPrice"  value="" />
+                </li>
+                <li class="three"><span>生效时间：</span>
+                    <input type="text" id="effectiveTime" value="" class="one inp-txt"  />
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

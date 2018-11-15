@@ -1,0 +1,204 @@
+body{
+    font-family: 'Microsoft Yahei';
+    text-align: left;
+    padding: 10px;
+}
+/*无订单情况*/
+.no-order{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    text-align: center;
+}
+.no-order img{
+    width: 70px;
+    height: 70px;
+    margin-bottom: 20px;
+}
+.no-order span{
+   display: block;
+    font-size: 18px;
+    color: #000;
+    line-height: 18px;
+}
+/*有数据情况*/
+.order-detail{
+    width: 220px;
+    box-shadow: #393939 0 0 18px;
+    border-radius: 10px;
+    margin: 10px;
+    display: inline-block;
+}
+.order-detail .header{
+    width: 220px;
+    background: #fff;
+}
+.order-detail .header .title{
+    width: 220px;
+    margin-top: 10px;
+    padding-bottom: 6px;
+    font-size: 16px;
+    line-height: 16px;
+    color: #000;
+    text-align: center;
+}
+.order-detail .header .sub-title{
+    color: #000;
+    font-size: 14px;
+    padding-bottom: 10px;
+    line-height: 14px;
+    text-align: center;
+}
+.order-detail .one-three{
+    height: 380px;
+}
+
+.order-address{
+    padding-left: 20px;
+    padding-right: 20px;
+    color: #000;
+}
+.order-address .order-num{
+    margin-bottom: 10px;
+    line-height: 12px;
+}
+.order-address .order-num .num{
+     font-size: 12px;
+ }
+.order-address .order-num .detail{
+    font-size: 14px;
+}
+.order-address .order-receiver .receiver{
+    font-size: 12px;
+    line-height: 12px;
+    float: left;
+}
+.order-address .order-receiver .phone{
+    font-size: 12px;
+    line-height: 12px;
+    float: right;
+}
+
+.order-detail .order-receiver .address{
+    font-size: 12px;
+    float: right;
+    margin-top: 8px;
+    line-height: 16px;
+    width: 132px;
+    margin-bottom: 8px;
+}
+.order-detail .two{
+    width: 220px;
+    color: #000;
+    border-bottom: dashed 1px  #757575;
+    border-top: dashed 1px  #757575;
+}
+.order-detail .two .order-list{
+    padding: 8px 20px 0px 20px;
+}
+.order-detail .two .order-list .com-detail{
+    position: relative;
+    display: -webkit-box;
+    -webkit-box-flex: 1;
+    margin-bottom: 12px;
+}
+.order-detail .two .order-list .com-detail .com-detail-wb{
+    width: 180px;
+}
+.order-detail .two .order-list .com-detail .com-detail-wb .com-two{
+    width: 140px;
+    vertical-align: middle;
+}
+.order-detail .two .order-list .com-detail .com-detail-wb .com-two .com-name{
+    width: 96px;
+    float: left;
+    box-sizing: border-box;
+    position: relative;
+}
+.order-detail .two .order-list .com-detail .com-detail-wb .com-two .com-name .com-change .com-name-one{
+    font-size: 12px;
+    line-height: 12px;
+}
+.order-detail .two .order-list .com-detail .com-detail-wb .com-two .com-name .com-change .com-name-one .dish{
+    -webkit-line-clamp:2;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow : hidden;
+    line-height: 13px;
+}
+.order-detail .two .order-list .com-detail .com-detail-wb .com-two .com-name .com-change .com-name-two{
+    font-size: 10px;
+    line-height: 10px;
+    margin-top: 4px;
+}
+
+.order-detail .two .order-list .com-detail .com-detail-wb .com-two .com-number{
+    width: 40px;
+    float: left;
+    font-size: 12px;
+    position: absolute;
+    top: 50%;
+    left: 96px;
+    transform: translateY(-50%);
+}
+.order-detail .two .order-list .com-detail .com-detail-wb .total-price-finish{
+    font-size: 12px;
+    -webkit-box-flex: 1;
+    text-align: right;
+    transform: translateY(-50%);
+    position: absolute;
+    top: 50%;
+    right: 0;
+    line-height: 12px;
+}
+.order-detail .three{
+    width: 220px;
+    color: #000;
+    padding: 10px 20px 0px 20px;
+}
+.order-detail .three .total-num{
+    font-size: 14px;
+    line-height: 14px;
+    margin-bottom: 10px;
+}
+.order-detail .three .total-num .total,.order-detail .three .total-num .coupon,.order-detail .three .total-num .deliver,.order-detail .three .total-num .commodity{
+    float: left;
+}
+.order-detail .three .total-num .num,.order-detail .three .total-num  .coupon-num,.order-detail .three .total-num .deliver-num,.order-detail .three .total-num .commodity-num{
+    float: right;
+}
+.order-detail .three .remark{
+    font-size: 14px;
+    line-height: 12px;
+    margin-bottom: 14px;
+}
+.order-detail .three .remark .remark-title{
+    float: left;
+    width: 42px;
+}
+
+.order-detail .three .remark .remark-con{
+    float: right;
+    width: 138px;
+    font-size: 12px;
+}
+.nav{
+    width: 220px;
+  }
+.nav .print{
+    text-align: center;
+}
+.nav .print .print-btn{
+    display: block;
+    width: 180px;
+    height: 30px;
+    color: #fff;
+    background: #294b6e;
+    font-size: 18px;
+    border-radius: 10px;
+    line-height: 30px;
+    margin-left: 20px;
+    margin-bottom: 20px;
+}

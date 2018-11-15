@@ -1,0 +1,308 @@
+﻿@{
+    ViewBag.Title = "分销订单";    
+}
+<head>
+    <script src="/Scripts/CommLib.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.datepicker.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhdatetime.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhstartandenddate.js" type="text/javascript"></script> 
+    <style type="text/css">
+        input.inp-txt
+        {
+            height: 14px;
+            line-height: 16px;
+            border: 1px solid #B6C0CD;
+            padding: 4px 5px;
+            vertical-align: middle;
+            border-radius: 3px;
+            box-shadow: inset 1px 1px 2px #DBDBDB;
+        }
+        .btn120
+        {
+            display: inline-block;
+            width: 120px;
+            height: 28px;
+            line-height: 28px;
+            background: url(../Content/default/images/btn120.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+        }
+        td, th
+        {
+            border: 1px solid #ccc;
+        }
+        #DataGrid td
+        {
+            font-size: 14px;
+            line-height: 26px;
+        }
+        #DataGrid .SortId
+        {
+            text-align: center;
+        }
+        #DataGrid .Code
+        {
+            text-align: center;
+        }
+        #DataGrid .Price
+        {
+            text-align: right;
+        }
+        #DataGrid .DistributeMoney
+        {
+            text-align: right;
+        }
+        #DataGrid .EndTime
+        {
+            text-align: center;
+        }
+    </style>
+    <script type="text/javascript">
+        var _sortId = 1;
+        var _pageSize = 50;
+        var _pageIndex = 1;
+        var addTemplete = '';
+        var _distributorId = "";
+        var _searchType = "";
+        var _noResult = '<tr><td colspan="5" id="Default" style="height:200px; text-align:center;">暂无数据</td></tr>';
+
+        $(function () {
+            addTemplete = $("#divTableTemplete table tbody").html();
+            _pageIndex = 1;
+            _pageSize = 50;
+            $("#seeMore").hide();
+            initData();
+
+            $('#FinishTimeEndSearch').datepicker({
+                changeMonth: true,
+                changeYear: true,
+                showOtherMonths: true,
+                selectOtherMonths: true
+            }).change(function () {
+            });
+
+            $('#FinishTimeStartSearch').datepicker({
+                changeMonth: true,
+                changeYear: true,
+                showOtherMonths: true,
+                selectOtherMonths: true
+            }).change(function () {
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        //初始化
+        function initData() {
+            _sortId = 1;
+            _pageSize = 50;
+            _pageIndex = 1;
+            _distributorId = $("#DistributorIdHid").val();
+            _searchType = $("#SearchTypeHid").val();
+            AddData();
+        }
+
+        //查询
+        function Search() {
+            _sortId = 1;
+            _pageSize = 50;
+            _pageIndex = 1;
+            AddData();
+        }
+
+        //导出
+        function ShowExportData() {
+            ExportData();
+        }
+    </script>
+    <script type="text/javascript">
+
+        //获取数据
+        function AddData() {
+            var orderCode = $("#OrderCodeSearch").val();
+            var finishTimeEnd = $("#FinishTimeEndSearch").val();
+            var finishTimeStart = $("#FinishTimeStartSearch").val();
+            var subData = {};
+            subData.DistributorId = _distributorId;
+            subData.FinishTimeEnd = finishTimeEnd;
+            subData.FinishTimeStart = finishTimeStart;
+            subData.OrderCode = orderCode;
+            subData.PageIndex = _pageIndex;
+            subData.PageSize = _pageSize;
+            subData.SearchType = _searchType;
+            var subDataJson = CommLib.ObjToString(subData);
+
+            $.ajax({
+                url: '/Distribute/GetDistributeOrderList',
+                type: 'post',
+                dataType: "json",
+                contentType: "application/json",
+                data: subDataJson,
+                error: function () {
+                    alert("请求错误，请稍后刷新进行操作.");
+                },
+                success: function (msg) {
+                    if (msg == null || msg.Count < 1 || msg.CommodityOrderDistributionInfoList == null || msg.CommodityOrderDistributionInfoList.length < 1) {
+                        if (_pageIndex == 1) {
+                            $("#DataGrid tbody").html(_noResult);
+                        }
+                        return;
+                    }
+                    var resultData = msg.CommodityOrderDistributionInfoList;
+                    //第一页需要清空之前数据
+                    if (_pageIndex == 1) {
+                        $("#DataGrid tbody").html("");
+                        _sortId = 1;
+                    }
+                    //是否显示更多
+                    if (resultData.length == _pageSize) {
+                        $("#seeMore").show();
+                    }
+                    else {
+                        $("#seeMore").hide();
+                    }
+                    for (var i = 0; i < resultData.length; i++) {
+                        resultData[i].SortId = _sortId;
+                        resultData[i].EndTimeString = ChangeDateFormat(resultData[i].EndTime, 2);
+                        var tmpHtml = addTemplete.format(resultData[i]);
+                        $("#DataGrid tbody").append(tmpHtml);
+                        _sortId++;
+                    }
+                    regeditEvents();
+                    _pageIndex++;
+                }
+            });
+        }
+
+        //导出数据
+        function ExportData() {
+            var orderCode = $("#OrderCodeSearch").val();
+            var finishTimeEnd = $("#FinishTimeEndSearch").val();
+            var finishTimeStart = $("#FinishTimeStartSearch").val();
+            $("#DistributorId").val(_distributorId);
+            $("#FinishTimeEnd").val(finishTimeEnd);
+            $("#FinishTimeStart").val(finishTimeStart);
+            $("#OrderCode").val(orderCode);
+            $("#PageIndex").val(1);
+            $("#PageSize").val(65535);
+            $("#SearchType").val(_searchType);
+            $("#FormExcel").submit();
+        }
+
+        function ChangeDateFormat(cellval, state) {
+            try {
+                var date = new Date(parseInt(cellval.replace("/Date(", "").replace(")/", ""), 10));
+                var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+                var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+                var hour = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+                var minu = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+                var second = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+                if (state == 1) {
+                    return date.getFullYear() + "-" + month + "-" + currentDate + " " + hour + ":" + minu;
+                }
+                else if (state == 2) {
+                    return date.getFullYear() + "-" + month + "-" + currentDate + " " + hour + ":" + minu + ":" + second;
+                }
+                else {
+                    return date.getFullYear() + "-" + month + "-" + currentDate;
+                }
+            } catch (e) {
+                return "";
+            }
+        }
+
+        function regeditEvents() {
+            $('a[tag="orderCode"]').off("click", "**");
+            $('a[tag="orderCode"]').on("click", function (e) {
+                var orderId = $(e.currentTarget).attr("orderId");
+                window.parent.showOrderDetail && window.parent.showOrderDetail(orderId);
+            });
+        }
+    </script>
+</head>
+<form id="FormExcel" action="/Distribute/ExportDistributeOrderListData" method="post">
+<input type="hidden" name="DistributorId" id="DistributorId" />
+<input type="hidden" name="FinishTimeEnd" id="FinishTimeEnd" />
+<input type="hidden" name="FinishTimeStart" id="FinishTimeStart" />
+<input type="hidden" name="OrderCode" id="OrderCode" />
+<input type="hidden" name="PageIndex" id="PageIndex" />
+<input type="hidden" name="PageSize" id="PageSize" />
+<input type="hidden" name="SearchType" id="SearchType" />
+</form>
+<div class="content" style="padding-top: 2px; width: 841px; text-align: left;">
+    <input type="hidden" id="DistributorIdHid" value="@Request["distributorId"]" />
+    <input type="hidden" id="SearchTypeHid" value="@Request["searchType"]" />
+    <div>
+        <div>
+            <span>订单编号：</span><input type="text" id="OrderCodeSearch" style="width: 100px;" class="inp-txt" />
+            <span style="margin-left: 30px;">订单完成时间：</span><input type="text" id="FinishTimeStartSearch"
+                style="width: 100px;" class="inp-txt" /><input type="text" id="FinishTimeEndSearch"
+                    style="width: 100px; margin-left: 20px;" class="inp-txt" />
+            <a class="btn120" href="#" onclick="Search()" style="margin: 10px;">查询</a>
+        </div>
+        <div style="margin-top: 1px;">
+            <a class="btn120" href="#" onclick="ShowExportData()" style="float: right;">导出</a>
+        </div>
+    </div>
+    <div style="clear: both;">
+    </div>
+    <div style="margin-top: 16px;">
+        <table id="DataGrid" cellpadding="0" cellspacing="0" class="dgl_bot" style="color: #8C94A9;
+            table-layout: fixed;">
+            <thead>
+                <tr class="t_tr1" style="color: #8C94A9;">
+                    <th style="width: 50px;">
+                        序号
+                    </th>
+                    <th style="width: 130px;">
+                        订单编号
+                    </th>
+                    <th style="width: 100px;">
+                        金额
+                    </th>
+                    <th style="width: 100px;">
+                        佣金
+                    </th>
+                    <th style="width: 130px;">
+                        订单完成时间
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="5" id="Default" style="height: 200px; text-align: center;">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div style="margin-top: 30px; text-align: center; display: none;" id="seeMore">
+        <a class="btn120" href="#" onclick="AddData()" style="">点击查看更多</a>
+    </div>
+</div>
+<div id="divTableTemplete" style="display: none">
+    <table>
+        <thead>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="SortId">
+                    {SortId}
+                </td>
+                <td class="Code">
+                    <a tag="orderCode" href="javascript:void(0);" orderid="{Id}">{Code}</a>
+                </td>
+                <td class="Price">
+                    {Price}
+                </td>
+                <td class="DistributeMoney">
+                    {DistributeMoney}
+                </td>
+                <td class="EndTime">
+                    {EndTimeString}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

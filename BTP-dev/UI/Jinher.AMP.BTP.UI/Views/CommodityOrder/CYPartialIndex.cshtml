@@ -1,0 +1,114 @@
+﻿@{
+    Layout = null;
+    long lastTicks = 0;
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.CommodityOrderVM> commodityOrderList = ViewBag.commodityOrderList;
+
+    string isShowChangeExp = "0";
+    if ((ViewBag.IsOrg == null) || (ViewBag.IsOrg != null && ViewBag.BTPOrderStateUpd != null && ViewBag.IsOrg && ViewBag.BTPOrderStateUpd))
+    {
+        isShowChangeExp = "1";
+    }
+    if (commodityOrderList != null && commodityOrderList.Any() && commodityOrderList[0].PaymentTime.HasValue)
+    {
+        lastTicks = commodityOrderList[0].PaymentTime.Value.Ticks;
+    }
+     
+}
+@helper getTotalNum(Jinher.AMP.BTP.Deploy.CustomDTO.CommodityOrderVM covm)
+{
+    decimal covmPrice = (decimal)covm.Price;
+    decimal lastPrice = covmPrice - covm.CouponValue + covm.Freight;
+    <span class="num">¥@lastPrice</span>
+}
+@helper getCouponNum(Jinher.AMP.BTP.Deploy.CustomDTO.CommodityOrderVM covm)
+{
+    int couponValue = (int)covm.CouponValue;
+    switch (couponValue)
+    {
+        case 0:
+            <span class="coupon-num">¥@covm.CouponValue</span>
+            break;
+        default:
+            <span class="coupon-num">-¥@covm.CouponValue</span>
+            break;
+    }
+}
+@helper getRemark(Jinher.AMP.BTP.Deploy.CustomDTO.CommodityOrderVM covm)
+{
+    if(!string.IsNullOrEmpty(covm.Details))
+    {
+        <span class="remark-title">备注：</span><span class="remark-con">@covm.Details</span>
+	}
+}
+@helper getObjectTypes(Jinher.AMP.BTP.Deploy.CustomDTO.CommodityOrderVM covm){
+    
+}
+<input type="hidden" id="rowcounts" value="@ViewBag.Count"/>
+<input type="hidden" id="cylastPayTicks" value="@lastTicks"/>
+<input type="hidden" id="storeName" value="@ViewBag.StoreName"/>
+<div id="noOrder" class="no-order hide">
+    <img src="/Content/style/images/dingdan.png" alt="" />
+    <span>暂无订单哦~</span>
+</div>
+<div class="page">
+@foreach (Jinher.AMP.BTP.Deploy.CustomDTO.CommodityOrderVM covm in commodityOrderList)
+{
+    <div id="@covm.CommodityOrderId" class="order-detail">
+        <div class="header">
+            <div class="title"><span>@ViewBag.StoreName</span></div>
+            <div class="sub-title"><span>外卖</span></div>
+        </div>
+        <div class="one-three">
+            <div class="one">
+                <div class="order-address">
+                    <div class="order-num clearfix"><span class="num">订单号：</span><span class="detail">@covm.Batch</span></div>
+                    <div class="order-receiver clearfix"><span class="receiver">收货人：@covm.ReceiptUserName</span><span class="phone">@covm.ReceiptPhone</span>
+                        <span class="address">@covm.Province@covm.District@covm.ReceiptAddress</span>
+                    </div>
+                </div>
+            </div>
+            <div class="two">
+                <div class="order-list">
+                @foreach (Jinher.AMP.BTP.Deploy.CustomDTO.OrderItemsVM oivm in covm.OrderItems)
+                {
+                    <div class="com-detail">
+                        <div class="com-detail-wb">
+                            <div class="com-two clearfix">
+                                <div class="com-name">
+                                    <div class="com-change">
+                                        <div class="com-name-one">
+                                            <span class="dish">@oivm.CommodityIdName</span>
+                                        </div>
+                                        <div class="com-name-two">
+                                        @if (!string.IsNullOrWhiteSpace(oivm.SizeAndColorId) && oivm.SizeAndColorId != ",")
+                                        {
+                                            <span class="taste">@oivm.SizeAndColorId.Split(',')[0]</span>
+                                            <span class="size">@oivm.SizeAndColorId.Split(',')[1]</span>
+                                        }
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="com-number"><span>×@oivm.Number</span></div>
+                            </div>
+                            <div class="total-price-finish"><span>¥@oivm.Price</span></div>
+                        </div>
+                    </div>
+                }
+                </div>
+            </div>
+            <div class="three">
+                <div class="total-num clearfix"><span class="commodity">商品金额：</span><span class="commodity-num">¥@covm.Price</span></div>
+                <div class="total-num clearfix">@getObjectTypes(covm)</div>
+                <div class="total-num clearfix"><span class="deliver">配送费：</span><span class="deliver-num">¥@covm.Freight</span></div>
+                <div class="total-num clearfix">@getObjectTypes(covm)</div>
+                <div class="total-num clearfix"><span class="coupon">优惠券：</span>@getCouponNum(covm)</div>
+                <div class="total-num clearfix"><span class="total">合计：</span>@getTotalNum(covm)</div>
+                <div class="remark clearfix">@getRemark(covm)</div>
+            </div>
+        </div>
+        <div class="nav">
+            <div class="print"><a href="javascript:void(0)"><span id="@covm.CommodityOrderId" class="print-btn">接单并打印</span></a></div>
+        </div>
+        </div>
+}
+</div>

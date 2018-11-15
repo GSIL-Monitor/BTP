@@ -1,0 +1,257 @@
+﻿@{
+    Layout = null;
+    ViewBag.Title = "订单详情"; 
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>订单详情</title>
+    <link rel="stylesheet" href="/Content/css/style.css" />
+    <link rel="stylesheet" href="/content/css/common.css" />
+    <style type="text/css">
+        a:link, a:visited
+        {
+            color: inherit;
+        }
+        .dxq_con
+        {
+            height: auto;
+        }
+        .dcon_con div, .dxq_con .dcon_con li
+        {
+            color: #8C94A9;
+            font-size: 12px;
+        }
+        .brunw
+        {
+            width: 150px;
+            text-align: right;
+            height: 40px;
+            float: left;
+            line-height: 40px;
+            text-align: left;
+        }
+        .spfb_t_l table tr
+        {
+            height: 40px;
+        }
+        .a_ship_modify
+        {
+            width: 30px;
+            height: 20px;
+            line-height: 20px;
+            background: #97bd40;
+            border-radius: 5px;
+            display: inline-block;
+            color: #fff;
+            text-align: center;
+            margin-left: 7px;
+        }
+        
+        input.inp-txt
+        {
+            height: 18px;
+            line-height: 18px;
+            border: 1px solid #B6C0CD;
+            padding: 4px 5px;
+            vertical-align: middle;
+            border-radius: 3px;
+            box-shadow: inset 1px 1px 2px #DBDBDB;
+        }
+        
+        .btn120
+        {
+            display: inline-block;
+            width: 120px;
+            height: 28px;
+            line-height: 28px;
+            background: url(../Content/default/images/btn120.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+        }
+    </style>
+    <script type="text/javascript" src="/Scripts/jquery.js"></script>
+    <script type="text/javascript">
+        var rootPath = "/";
+        document.domain = "iuoooo.com";
+        //try { document.domain = "iuoooo.com"; } catch (e) { }
+        //调用父窗口方法，更新布局。
+
+        //setTimeout(function () { window.top.refreshLayout && window.top.refreshLayout() }, 100);
+
+        $(function () {
+            $("#btnSearch").on("click", function () {
+                loadOrderFull();
+            });
+        });
+
+        function loadOrderFull() {
+            var orderId = $("#txtOrderId").val();
+            if ($.trim(orderId).length == 0) {
+                return;
+            }
+            $.ajax({
+                url: '/CommodityOrder/GetOrderFullInfo',
+                data: { orderId: orderId },
+                type: 'post',
+                beforeSend: function () {
+                    //ajaxLoading(1, '');
+                },
+                complete: function () {
+                    //ajaxLoading(1, '');
+                },
+                success: function (data) {
+                    //alert(data.Messages);
+                    showOrderDetail(data.OrderVM);
+
+                },
+                error: function (date, text) {
+                    alert("操作失败");
+                }
+            });
+        }
+
+        function showOrderDetail(orderInfo) {
+            if (orderInfo == null) {
+                orderInfo = {};
+            }
+            $("#CommodityOrderCode").text(orderInfo.CommodityOrderCode);
+            $("#CommodityOrderId").text(orderInfo.CommodityOrderId);
+            $("#SubTime").text(orderInfo.SubTime);
+            $("#PaymentTime").text(orderInfo.PaymentTime);
+
+            $("#ReceiptUserName").text(orderInfo.ReceiptUserName);
+            $("#ReceiptPhone").text(orderInfo.ReceiptPhone);
+            $("#ReceiptAddress").text(orderInfo.ReceiptAddress);
+            $("#RecipientsZipCode").text(orderInfo.RecipientsZipCode);
+            $("#Details").text(orderInfo.Details);
+            $("#SelfTakeAddress").text(orderInfo.SelfTakeAddress);
+
+            $("#ShipExpCo").text(orderInfo.ShipExpCo);
+            $("#ExpOrderNo").text(orderInfo.ExpOrderNo);
+
+            $("#InvoiceTitle").text(orderInfo.InvoiceTitle);
+        }  
+   
+    </script>
+</head>
+<body class="clearfix">
+    <div style="margin-top: 10px;">
+        订单编号或订单Id:
+        <input type="text" id="txtOrderId" class="inp-txt" />
+        <button id="btnSearch" class="btn120">
+            查询</button>
+    </div>
+    <div class="dxq_con" style="border: 0px;">
+        <div class="dcon_con">
+            <ul>
+                <li>----------订单信息----------------------------------------------</li>
+                <li><span>订单编号：</span><span id="CommodityOrderCode"></span> </li>
+                <li><span>订单 ID：</span><span id="CommodityOrderId"></span> </li>
+                <li><span>下单时间: </span><span id="SubTime"></span></li>
+                <li><span>付款时间: </span><span id="PaymentTime"></span></li>
+                <li>----------收货人信息----------------------------------------------</li>
+                <li><span>收货人：</span><span id="ReceiptUserName"></span> </li>
+                <li><span>收货电话：</span><span id="ReceiptPhone"></span> </li>
+                <li><span>收货地址：</span><span id="ReceiptAddress"></span> </li>
+                <li><span>买家邮编：</span><span id="RecipientsZipCode"></span> </li>
+                <li><span>买家备注：</span><span id="Details"></span> </li>
+                <li><span>自提点：</span><span id="SelfTakeAddress"></span> </li>
+                <li>----------物流信息----------------------------------------------</li>
+                <li><span>物流公司：</span><span id="ShipExpCo"></span> </li>
+                <li><span>物流单号：</span> <span id="ExpOrderNo"></span></li>
+                <li>----------发票信息----------------------------------------------</li>
+                <li><span>发票抬头：</span><span id="InvoiceTitle"></span> </li>
+                <li>
+                    <p>
+                        发票内容：明细</p>
+                </li>
+                <li>----------售后服务----------------------------------------------</li>
+                <li><span>售后状态：</span><span id="StateAfterSale"></span> </li>
+                <li><span>售后终结时间：</span><span id="EndTime"></span> </li>
+                <li><span>买家是否延迟收货时间：</span><span id="IsDelayConfirmTimeAfterSales"></span> <span>(1:延长，0：未延长)</span>
+                </li>
+            </ul>
+            <div class="manag_bot" style="width: 100%;">
+                <span style="font-size: 20px;">订单项列表：</span>
+                <table id="dataTable" border="0" cellspacing="0" cellpadding="0" class="m_talbe m_talbe2"
+                    style="margin-top: 10px;">
+                    <thead>
+                        <tr class="t_tr1">
+                            <td class="one">
+                                序号
+                            </td>
+                            <td class="two">
+                                商品ID
+                            </td>
+                            <td class="three">
+                                商品名称
+                            </td>
+                            <td class="four">
+                                商品图片
+                            </td>
+                            <td class="five">
+                                商品原价格
+                            </td>
+                            <td class="eight">
+                                商品实际卖出价格
+                            </td>
+                            <td class="eight">
+                                商品数量
+                            </td>
+                            <td class="eight">
+                                商品尺寸颜色ID
+                            </td>
+                            <td class="eight">
+                                已选商品属性列表
+                            </td>
+                            <td class="eight">
+                                是否支持自提
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyOrderItems">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <table id="tableTemp" style="display: none;">
+        <tr class="t_tr1">
+            <td class="one">
+                {No}
+            </td>
+            <td class="two">
+                {CommodityId}
+            </td>
+            <td class="three">
+                {CommodityIdName}
+            </td>
+            <td class="four">
+                {PicturesPath}
+            </td>
+            <td class="five">
+                {Price}
+            </td>
+            <td class="eight">
+                {RealPrice}
+            </td>
+            <td class="eight">
+                {Number}
+            </td>
+            <td class="eight">
+                {SizeAndColorId}
+            </td>
+            <td class="eight">
+                {SelectedComAttibutes}
+            </td>
+            <td class="eight">
+                {IsEnableSelfTake}
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

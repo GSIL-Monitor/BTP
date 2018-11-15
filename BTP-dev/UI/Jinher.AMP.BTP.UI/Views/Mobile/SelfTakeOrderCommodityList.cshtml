@@ -1,0 +1,168 @@
+﻿@using System
+@using System.Collections.Generic
+@using System.Web
+@using Jinher.AMP.BTP.Deploy.CustomDTO
+@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+
+    ResultDTO<CommodityOrderSDTO> result = this.Model as ResultDTO<CommodityOrderSDTO>;
+    CommodityOrderSDTO coModel = result.Data;
+
+    //string stateTEXT = Jinher.AMP.BTP.Common.OrderHelper.GetOrderStateText(coModel.State);
+
+    int totalCount = 0;
+    decimal totalPrice = 0;
+
+    if (result.ResultCode == 0)
+    {
+        result.Message = "";
+    }
+
+
+    string commodityDisplay = "block";
+    string noDisplay = "none";
+
+    if (result.ResultCode == 0
+       || result.ResultCode == -5
+          || result.ResultCode == -6
+          || result.ResultCode == -7
+        || result.ResultCode == -10)
+    {
+        commodityDisplay = "block";
+        noDisplay = "none";
+    }
+    else
+    {
+        commodityDisplay = "none";
+        noDisplay = "block";
+    }
+
+}
+@helper Currency()
+    {
+    @Jinher.AMP.BTP.UI.Util.MobileCookies.GetCurrency();
+}
+@section TitleHtml
+{
+    <title>提货商品清单</title>
+}
+@section CssStyles{
+    <link rel="stylesheet" href="/Content/Mobile/zphStyle/normalize.css" />
+    <link rel="stylesheet" href="/Content/Mobile/zphStyle/function.css" />
+    <link rel="stylesheet" href="/Content/Mobile/zphStyle/general.css" />
+    <link rel="stylesheet" href="/Content/Mobile/zphStyle/font-awesome.css" />
+    <link rel="stylesheet" href="/Content/Mobile/zphStyle/skin.css" />
+    <link rel="stylesheet" href="/Content/Mobile/zphStyle/goodsLists.css" />
+}
+@section ClientScript
+{
+<script src="/Content/Mobile/zeptodialog/js/zepto.js" type="text/javascript"></script>
+}
+    <div class="page">
+        @*class="bar bar-nav"*@
+        <header class="bar hide">
+        <a class="icon icon-angle-left pull-left" href="javascript:void(0);"><span>关闭</span></a>
+        <h1 class="title">提货商品清单</h1>
+    </header>
+        <div class="content">
+            <div class="goodsList-wrap"  style="display:@commodityDisplay">
+                <div class="goodsList-title clearfix">
+                    <span class="goodsList-title-num">订单号：@coModel.Code </span>
+                    <!--该状态分为三种情况：已提货、退款中、以退款 @result.Message-->
+                    <span class="goodsList-title-state">@result.Message</span>
+                </div>
+                <div class="goodsList-content">
+                    <ul>
+                        @{
+                            List<Jinher.AMP.BTP.Deploy.CustomDTO.OrderListItemCDTO> oiList = coModel.ShoppingCartItemSDTO;
+                            if (oiList != null && oiList.Count > 0)
+                            {
+                                foreach (var oi in oiList)
+                                {
+                                    totalCount += oi.CommodityNumber;
+                                    totalPrice += oi.CommodityNumber * oi.Price;
+
+                                    bool s01 = false;
+                                    bool s02 = false;
+
+                                    string s01Text = "";
+                                    string s02Text = "";
+
+                                    if (oi.Size != null && oi.Size.Length > 1)
+                                    {
+                                        string[] splitR = oi.Size.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+
+                                        if (splitR.Length == 1)
+                                        {
+                                            if (splitR[0] != null && splitR[0].Length > 0 && splitR[0] != "null")
+                                            {
+                                                s01 = true;
+                                            }
+                                        }
+                                        else if (splitR.Length >= 1)
+                                        {
+                                            if (splitR[0] != null && splitR[0].Length > 0 && splitR[0] != "null")
+                                            {
+                                                s01 = true;
+                                            }
+                                            if (splitR[1] != null && splitR[1].Length > 0 && splitR[1] != "null")
+                                            {
+                                                s02 = true;
+                                            }
+                                        }
+                                        if (s01)
+                                        {
+                                            s01Text = splitR[0];
+                                        }
+                                        if (s02)
+                                        {
+                                            s02Text = splitR[1];
+                                        }
+                                    }
+                                    
+                            <li class="goodsList-list">
+                                <div class="goodsList-content-pic">
+                                    <div>
+                                        <img src="@oi.Pic" style="width:80px;height:90px;">
+                                    </div>
+                                </div>
+                                <div class="goodsList-content-context">
+                                    <div class="text">@oi.Name</div>
+                                    <div class="type">
+                                        @{
+                                    if (s01)
+                                    {
+                                            <span>颜色：<span>@s01Text</span></span>
+                                    }
+                                    if (s01 && s02)
+                                    {
+                                            <span>&nbsp;&nbsp;</span>
+                                    }
+                                    if (s02)
+                                    {
+                                            <span>尺寸：<span>@s02Text</span></span>
+                                    }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="goodsList-content-money">
+                                    <span class="money">@Currency() @oi.Price</span> <span class="number">x @oi.CommodityNumber</span>
+                                </div>
+                            </li>
+                                }
+                            }
+                        }
+                    </ul>
+                    <div class="total">
+                        共<span>@totalCount</span>件商品 合计@Currency()<span>@totalPrice.ToString("f2")</span>
+                    </div>
+                </div>
+            </div>
+            <div  style="margin-left:auto;margin-right:auto;margin-top:45px;width:170px;display:@noDisplay;">
+                <img src="../../Content/Mobile/redredenvelope/fail.png" alt="" style="margin: auto;" />
+                <h4 style="color: #a1a1a1; text-align: center; font-size: 1em; margin-top: 6px;">
+                    @result.Message </h4>
+            </div>
+        </div>
+    </div>
+

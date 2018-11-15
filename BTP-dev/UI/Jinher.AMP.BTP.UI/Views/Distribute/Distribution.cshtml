@@ -1,0 +1,31 @@
+﻿@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+}
+@section TitleHtml
+{
+    <title>我的分销</title>
+}
+@section CssStyles{
+    <link rel="stylesheet" type="text/css" href="/Content/Mobile/distribute/distribution_message.css">
+}
+@section ClientScript
+{
+    <script type="text/javascript">
+        function goRulePage() {
+            document.location.href = "ShowRuleDescription?appId=" + getQueryString("appId");
+        }
+    </script>
+}
+<div class="container">
+    <div class="message">
+        <p class="info">
+            @ViewBag.info
+        </p>
+        <div class="discription">
+            <a href="javascript:void(0)" onclick="goRulePage();">分销商说明</a>
+        </div>
+        <div class="applay_btn">
+            <a id="active" href="@ViewBag.url" class="btn active">@ViewBag.active</a>
+        </div>
+    </div>
+</div>

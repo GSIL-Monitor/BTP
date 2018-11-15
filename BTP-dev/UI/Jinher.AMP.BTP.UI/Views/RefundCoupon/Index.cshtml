@@ -1,0 +1,226 @@
+﻿@{
+    ViewBag.Title = "抵用券退款明细";
+    Layout = "~/Views/Shared/_Vue2Layout.cshtml";
+}
+<div class="content">
+    <div id="listWithFiltersPage">
+        <div class="content-inner">
+            <div class="filters">
+                <el-form :inline="true" :model="searchForm" ref="searchForm">
+                    <el-form-item label="订单编号：" prop="OrderNo">
+                        <el-input v-model="searchForm.OrderNo"></el-input>
+                    </el-form-item>
+                    <el-form-item label="收款账号（登录账户）：" prop="ReceiveAccount">
+                        <el-input v-model="searchForm.ReceiveAccount"></el-input>
+                    </el-form-item>
+                    <el-form-item label="收款人姓名/昵称：" prop="ReceiveName">
+                        <el-input v-model="searchForm.ReceiveName"></el-input>
+                    </el-form-item>
+                    <el-form-item label="退款时间：" prop="RefundTime">
+                        <el-date-picker v-model="searchForm.RefundStartTime" type="date" placeholder="开始日期"> </el-date-picker> <span style="padding: 10px;">--</span>
+                        <el-date-picker v-model="searchForm.RefundEndTime" type="date" placeholder="结束日期"> </el-date-picker>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="success" @@click="handleSearch()">查询</el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
+            <el-table :data="tableData" class="scrollbar" max-height="1200" element-loading-text="拼命加载中" v-loading="loading" border stripe>
+                <el-table-column type="index" prop="index" label="序号" min-width="50"></el-table-column>
+                <el-table-column prop="RefundTime" :formatter="dateFormat" label="退款时间" min-width="85"></el-table-column>
+                <el-table-column prop="ReceiveAccount" label="收款账号（登录账户）" min-width="150"></el-table-column>
+                <el-table-column prop="ReceiveName" label="收款人姓名/昵称" min-width="120"></el-table-column>
+                <el-table-column prop="CommodityCouponMoney" label="商品退款抵用券金额" min-width="150"></el-table-column>
+                <el-table-column prop="FreightCouponMoney" label="运费退款抵用券金额" min-width="130"></el-table-column>
+                <el-table-column prop="CommodityRefundMoney" label="商品退款金额" min-width="100"></el-table-column>
+                <el-table-column prop="FreightRefundMoney" label="运费退款金额" min-width="100"></el-table-column>
+                <el-table-column prop="RefundTotalMoney" label="退款金额合计" min-width="100"></el-table-column>
+                <el-table-column prop="ShopName" label="店铺名称" min-width="100"></el-table-column>
+                <el-table-column prop="OrderNo" label="订单编号" min-width="150" v-on:click="gotoorderno">
+                    <template scope="scope">
+                        <div style="color:blue;text-decoration:underline;cursor:pointer;" @@click="gotoorderno(scope.row)">{{ scope.row.OrderNo }}</div>
+                        <el-dialog :visible.sync="visible" title="订单详情">
+                            <iframe id="orderdetailurl" :src="iframesrc" height="100%" width="100%" style="margin-bottom: 20px;border: 0px;"></iframe>
+                        </el-dialog>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="CommoidtyName" label="商品名称" min-width="100"></el-table-column>
+                <el-table-column prop="ReceivePhone" label="收货人手机号" min-width="100"></el-table-column>
+                <el-table-column prop="ConsigneeName" label="收货人姓名" min-width="100"></el-table-column>
+                <el-table-column prop="Remark" label="备注" min-width="100">
+                    <template scope="scope">
+                        <el-input size="small" v-model="scope.row.Remark"></el-input>
+                    </template>
+                </el-table-column>
+                <el-table-column label="操作">
+                    <template slot-scope="scope">
+                        <el-button size="mini"
+                                   @@click="handleEdit(scope.$index, scope.row)">保存</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <div class="pagination-wrapper" v-show="!loading">
+                <el-pagination layout="total, sizes, prev, pager, next, jumper" @@size-change="handleSizeChange" @@current-change="handleCurrentChange" :total="total" :current-page="page" :page-sizes="[10, 20, 50, 100]" :page-size="pageSize">
+                </el-pagination>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Script{
+    <style>
+        .el-form-item__label {
+            text-align: right;
+            float: left;
+            font-size: 10px;
+            color: #606266;
+            line-height: 40px;
+            padding: 0 12px 0 0;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+
+        .el-form-item__content {
+            line-height: 40px;
+            position: relative;
+            font-size: 12px;
+        }
+
+        .messageboxclass {
+            width: 930px;
+        }
+
+        .el-dialog .el-dialog__header {
+            width: 800px;
+        }
+
+        .el-dialog .el-dialog__body {
+            height: 500px;
+            width: 800px;
+        }
+     
+    </style>
+    <script type="text/javascript">
+var defaultVue = new Vue({
+        el: '#app',
+        data: {
+         searchForm: {
+                OrderNo:'',
+                ReceiveAccount:'',
+                ReceiveName:'',
+                RefundStartTime:'',
+                RefundEndTime:''
+            },
+            options5: [],
+            loading: true,
+            tableData: [],
+            total: 0,
+            page: 1,
+            pageSize: 10,
+            currentRow: {},
+            Ids: [],
+            CreatingVisible:false,
+            ImportDialogVisible:false,
+            radio:'',
+            options:[],
+            selectedOptions2:[],
+            fileList: [],
+            ErrorDataVisible: false,
+            commodityorderid: '',
+            visible: false,
+            iframesrc:''
+        },
+    methods: {
+        handleSearch: function () {
+            this.$refs['searchForm'].validate(function (valid) {
+                if (valid) {
+                    defaultVue.handleCurrentChange(1);
+                }
+            });
+        },
+        handleSizeChange: function (val) {
+            this.pageSize = val;
+            this.handleCurrentChange(1);
+        },
+        handleCurrentChange: function (page) {
+            this.page = page || this.page;
+            this.fetchData();
+        },
+        fetchData: function () {
+            this.loading = true;
+            var postData = {
+                OrderNo: this.searchForm.OrderNo,
+                ReceiveAccount: this.searchForm.ReceiveAccount,
+                ReceiveName: this.searchForm.ReceiveName,
+                RefundStartTime: this.searchForm.RefundStartTime,
+                RefundEndTime: this.searchForm.RefundEndTime,
+                PageSize: this.pageSize,
+                PageIndex: this.page
+            };
+            this.$http.post('@Url.Action("GetData")', postData).
+                then(function (res) {
+                    defaultVue.loading = false;
+                    if (res.body.isSuccess) {
+                        defaultVue.tableData = res.body.Data.List;
+                        defaultVue.total = res.body.Data.Count;
+                    } else {
+                        defaultVue.$message.error(res.body.Message);
+                    }
+                });
+        },
+        dateFormat: function (row, column) {
+            var date = row[column.property];
+            if (date == undefined) {
+                return "";
+            }
+            return moment(date).format("YYYY-MM-DD HH:mm:ss");
+        },
+        gotoorderno: function (row) {
+            this.visible = true;
+            var postData = {
+                OrderCode: row.OrderNo
+            }
+            this.$http.post('@Url.Action("GetOrderId")', postData).
+                then(function (res) {
+                    defaultVue.commodityorderid = res.body;
+                });
+            this.iframesrc = '/CommodityOrder/CommodityOrderDetail?commodityOrderId=' + defaultVue.commodityorderid + '&isShowChangeExp=1';
+            //document.getElementById("orderdetailurl").setAttribute("src", src);
+        },
+        handleEdit: function (index, row) {
+            var postData = {
+                Id: row.Id,
+                Remark: row.Remark
+            } 
+             this.$http.post('@Url.Action("SaveRemark")', postData).
+                 then(function (res) {
+                     if (res.body) {
+                         defaultVue.$message({
+                             type: 'success',
+                             message: "保存成功!"
+                         });
+                     }
+                     else {
+                         defaultVue.$message.warning("保存失败，请重试！");
+                     }
+                });
+           
+        }
+    },
+        mounted: function () {
+            this.fetchData();
+        }
+        })
+
+        function timestampToTime(timestamp) {
+            var date = new Date(timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+            var Y = date.getFullYear() + '-';
+            var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+            var D = date.getDate() + ' ';
+            var h = date.getHours() + ':';
+            var m = date.getMinutes() + ':';
+            var s = date.getSeconds();
+            return Y + M + D + h + m + s;
+        }
+    </script>
+}

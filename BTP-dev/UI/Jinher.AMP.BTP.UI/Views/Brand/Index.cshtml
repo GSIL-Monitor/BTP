@@ -1,0 +1,399 @@
+﻿@{
+    ViewBag.Title = "品牌墙列表";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>品牌墙列表</title>
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.jhtablebox.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/ui.jqgrid.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/css/common.css" />
+    <link rel="stylesheet" type="text/css" href="/Scripts/uploadify/uploadify.css" />
+    <script type="text/javascript" src="/Scripts/jquery.nicescroll.min.js"></script>
+    <script type="text/javascript" src="/Scripts/Grid/jquery.grid.base.js"></script>
+    <script type="text/javascript" src="/Scripts/uploadify/jquery.uploadify.min.js"></script>
+    <style type="text/css">
+        .content
+        {
+            float: left;
+            width: 80.5%;
+        }
+        .content .title
+        {
+            height: 98px;
+            color: #4E7093;
+            line-height: 50px;
+            background-color: #EFF1F4;
+            padding-left: 10px;
+            min-width: 600px;
+        }
+        select
+        {
+            width: 70px;
+            height: 27px;
+            line-height: 27px;
+            padding: 3px;
+            border: 1px solid #B8BFCF;
+            border-radius: 3px;
+            text-align: center;
+            margin-bottom: 10px;
+            color: #8c94a9;
+        }
+    </style>
+    <script language="javascript" type="text/javascript">
+        //表格相关全局变量
+        var Grid = {
+            PageSize: 20,
+            IsScroll: false,
+            LastScrollTop: 0
+        };
+        $(document).ready(function () {
+            initGrid();
+        });
+        function initGrid() {
+            var brandName = $.trim($("#stxtBrandName").val());
+            var brandStatus = $.trim($("#State").val());
+            var data = {
+                "brandName": brandName,
+                "brandStatus": brandStatus,
+                "PageNo": 1,
+                "PageSize": Grid.PageSize
+            };
+            $("#BrandGrid").jqGrid({
+                datatype: "json",
+                postData: data,
+                url: "/Brand/GetBrandPageList",
+                mtype: 'POST',
+                colNames: ['品牌名称', '品牌logo', '操作'],
+                colModel: [
+                        { name: 'BrandName', index: 'BrandName', width: 60, align: "center", sortable: false },
+                        { name: 'BrandLogo', index: 'BrandLogo', width: 60, align: "center", sortable: false, formatter: FormatePic },
+                        { name: 'BrandStatu', index: 'BrandStatu', width: 20, align: "center", sortable: false, formatter: FormatterProcess }
+
+   	            ],
+                rowNum: Grid.PageSize,
+                pager: 'page',
+                pagerAlone: true,
+                height: 420,
+                autowidth: true,
+                multiselect: false,
+                forceFit: true,
+                scroll: false,
+                shrinkToFit: true,
+                rownumbers: true
+            });
+            jQuery("#BrandGrid").jqGrid('setLabel', 0, '序号', 'labelstyle');
+        }
+
+        function FormatePic(callvalue, opts, rowdata) {
+            return "<img src='" + callvalue + "' style='width:45px;height:auto;' />";
+        }
+        function FormatterProcess(callvalue, opts, rowdata) {
+            if (callvalue == 1) {
+                return "<a href='javascript:EditRow(1,\"" + opts.rowId + "\")'>编辑</a> <a href='javascript:UpdateStatus(\"" + opts.rowId + "\"," + callvalue + ")' >停用</a>";
+            }
+            else {
+                return "<a href='javascript:EditRow(1,\"" + opts.rowId + "\")'>编辑</a> <a href='javascript:UpdateStatus(\"" + opts.rowId + "\"," + callvalue + ")' >启用</a>";
+            }
+        }
+
+        //查询
+        function SearchList() {
+            var brandName = $.trim($("#stxtBrandName").val());
+            var brandStatus = $.trim($("#State").val());
+            var data = {
+                "brandName": brandName,
+                "brandStatus": brandStatus,
+                "PageNo": 1,
+                "PageSize": Grid.PageSize
+            };
+            $('#BrandGrid').jqGrid('setGridParam', { url: "/Brand/GetBrandPageList", postData: data, page: 1 });
+            $('#BrandGrid').trigger("reloadGrid");
+        }
+        //更新状态
+        function UpdateStatus(id, status) {
+            var msg = status == 1 ? confirm("您确认要停用此品牌吗？") : confirm("您确认要启用此品牌吗？");
+            if (msg) {
+                $.ajax({
+                    url: '/Brand/UpdateBrandStatus',
+                    type: 'post',
+                    dataType: 'json',
+                    data: { ID: id, BrandStatus: status },
+                    error: function () {
+                        alert("更新状态错误");
+                    },
+                    success: function () {
+                        SearchList();
+                    }
+
+                });
+            }
+        }
+        //关闭弹层
+        function CloseN() {
+            var oWin = document.getElementById("win");
+            var oLay = document.getElementById("overlay");
+
+            oLay.style.display = "none";
+            oWin.style.display = "none";
+            $("#hidId").val("");
+        }
+        function SaveN() {
+            if (checkIsValid()) {
+                AddOrUpdateBrand();
+            }
+        }
+        //添加或修改
+        function AddOrUpdateBrand() {
+            var name = $("#txtBrandName").val();
+            var icno = $("#hidBrandPic").val();
+            var isuse = $("input[name='useType']:checked").val();
+            var id = $("#hidId").val();
+            if ($("#hidId").val() != "") {
+                $.ajax({
+                    url: '/Brand/UpdateBrand',
+                    type: 'post',
+                    data: { BrandName: name, BrandLogo: icno, BrandStatu: isuse, ID: id },
+                    success: function (data) {
+                        if (data.Result) {
+                            alert(data.Messages);
+                            CloseN();
+                            SearchList();
+                        }
+                    },
+                    error: function () {
+                        alert("请稍候再试");
+                    }
+                });
+            } else {
+                $.ajax({
+                    url: '/Brand/AddBrand',
+                    type: 'post',
+                    data: { BrandName: name, BrandLogo: icno, BrandStatu: isuse },
+                    success: function (data) {
+                        if (data.Result) {
+                            alert(data.Messages);
+                            CloseN();
+                            SearchList();
+                        } else {
+                            $("#ReleaseClick").attr("onclick", "SaveN()");
+                            alert(data.Messages);
+                        }
+                    },
+                    error: function () {
+                        alert("请稍候再试");
+                    }
+                });
+
+            }
+        }
+        //检查
+        function checkIsValid() {
+            if ($.trim($("#txtBrandName").val()) === "") {
+                alert("请输入品牌名称");
+                return false;
+            }
+            if ($("#hidBrandPic").val() === "") {
+                alert("请上传品牌logo！");
+                return false;
+            }
+            return true;
+        }
+        //0添加 1修改
+        function EditRow(isAdd, id) {
+            //弹出DIV
+            var oWin = document.getElementById("win");
+            var oLay = document.getElementById("overlay");
+            var oClose = document.getElementById("close");
+            var oH2 = oWin.getElementsByTagName("h2")[0];
+            var bDrag = false;
+            var disX = disY = 0;
+
+            oWin.style.display = "block";
+            oLay.style.display = "block";
+
+            oClose.onclick = function () {
+                oLay.style.display = "none";
+                oWin.style.display = "none";
+            };
+            oClose.onmousedown = function (event) {
+                (event || window.event).cancelBubble = true;
+            };
+            oH2.onmousedown = function (event) {
+                var event = event || window.event;
+                bDrag = true;
+                disX = event.clientX - oWin.offsetLeft;
+                disY = event.clientY - oWin.offsetTop;
+                this.setCapture && this.setCapture();
+                return false
+            };
+            document.onmousemove = function (event) {
+                if (!bDrag) return;
+                var event = event || window.event;
+                var iL = event.clientX - disX;
+                var iT = event.clientY - disY;
+                var maxL = document.documentElement.clientWidth - oWin.offsetWidth;
+                var maxT = document.documentElement.clientHeight - oWin.offsetHeight;
+                iL = iL < 0 ? 0 : iL;
+                iL = iL > maxL ? maxL : iL;
+                iT = iT < 0 ? 0 : iT;
+                iT = iT > maxT ? maxT : iT;
+
+                oWin.style.marginTop = oWin.style.marginLeft = 0;
+                oWin.style.left = iL + "px";
+                oWin.style.top = iT + "px";
+                return false
+            };
+            document.onmouseup = window.onblur = oH2.onlosecapture = function () {
+                bDrag = false;
+                oH2.releaseCapture && oH2.releaseCapture();
+            };
+            if (isAdd === 0) {
+                $("#txtBrandName").val("");
+                $("#BrandImg").attr('src', "/Images/comment_pic5.png");
+                $("#hidBrandPic").val("");
+                $("#hidId").val("");
+            } else {
+                $("#hidId").val(id);
+                $.ajax({
+                    async: false,
+                    type: "POST",
+                    data: { id: id },
+                    url: '/Brand/GetBrandDetail',
+                    dataType: "json",
+                    success: function (res) {
+                        if (res.Result) {
+                            $("#txtBrandName").val(res.BrandName);
+                            if (res.BrandLogo != "") {
+                                $("#BrandImg").attr('src', res.BrandLogo);
+                            }
+                            $("#hidBrandPic").val(res.BrandLogo);
+                            if (res.BrandStatus == 1) {
+                                $("input[name='useType'][value='1']").attr("checked", true);
+                            }
+                            else {
+                                $("input[name='useType'][value='2']").attr("checked", true);
+                            }
+                        }
+                    },
+                    error: function () {
+                        alert("请稍候再试");
+                        return false;
+                    }
+                });
+            }
+        };
+        //上传图片
+        $(function () {
+            $('#BrandImg').click(function () {
+                var self = this;
+                upImageCallback.callback_1 = function (data) {
+                    self.src = data;
+                    $('#hidBrandPic').val(data);
+                    dialogImgClosed();
+                };
+                ShowUpImg({
+                    imgPath: '',
+                    width: '160',
+                    height: '160',
+                    windowTitle: '上传图片',
+                    callback: 'callback_1'
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <div>
+        <div  class="SearchArea ml10" id="storycontent">
+            <div class="title">
+                <div>
+                    <label class="label">
+                        品牌名称：
+                    </label>
+                    <input type="text" class="inp-txt" id="stxtBrandName" maxlength="20" /> 
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <label class="label">
+                        品牌状态：
+                    </label>
+                    <select id="State" class="select">
+                        <option value="0">全部</option>
+                        <option value="1">启用</option>
+                        <option value="2">停用</option>
+                    </select>
+                    <a href="#Nogo" class="btn80 ml10" onclick="SearchList();">查询</a>
+                </div>
+                <div>
+                    <a id="btnAddBrand" href="javascript:EditRow(0,'')" class="btn80 ml10">新增品牌</a>
+                </div>
+                <div style="clear: both">
+                </div>
+            </div>
+            <div class="GridArea mt10 ml10">
+                <table id="BrandGrid">
+                </table>
+                <div id="page">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--层遮罩部分-->
+    <div id="overlay">
+    </div>
+    <!--层遮罩部分结束-->
+    <div id="win" class="ui-jhtablebox ui-widget ui-draggable ui-jhtablebox-top" tabindex="-1"
+        role="jhtablebox" aria-labelledby="ui-dialog-title-checkNoPass" style="z-index: 1002;
+        outline: 0px; height: auto; width: 550px; top: 209px; left: 445px; display: none;
+        background-color: White;">
+        <div>
+            <div class="ui-jhsingletablebox-leftcorner">
+            </div>
+            <div class="ui-jhsingletablebox-rightcorner">
+            </div>
+            <h2 class="ui-jhsingletablebox-titlebar ui-helper-clearfix">
+                <span class="ui-dialog-title" id="ui-dialog-title-checkNoPass" style="margin-bottom: 4px;">
+                    新增/编辑品牌</span><a href="#" class="ui-dialog-titlebar-button" role="button"><span id="close"
+                        class="ui-icon ui-tabbox-icon ui-tabbox-icon-close" title="关闭">关闭</span></a>
+            </h2>
+        </div>
+        <div id="checkNoPass" style="padding: 10px; margin: 0px auto; width: auto; min-height: 0px;"
+            class="ui-jhtablebox-element ui-jhtablebox-content ui-corner-bottom">
+            <div class=" formList">
+                <div class="item">
+                    <span class="tabCell tabCellWth"><span class="required">*</span><label>品牌名称：</label></span>
+                    <span class="tabCell">
+                        <input type="text" id="txtBrandName" placeholder="请输入品牌名称" class="inp-txt w200" maxlength="20" value="" />
+                    </span>
+                </div>
+                <div class="item">
+                    <span class="tabCell tabCellWth"><span class="required">*</span><label>品牌Logo：</label></span>
+                    上传图片 建议图片尺寸：160*160, 小于50K
+                    <br />
+                    <div id="divBrandPic" style="width: 204px; height: auto; display: inline-block; margin: 10px 0;
+                        padding-left: 80px;">
+                        <img class="tut" style="margin-top: 5px; cursor: pointer;" alt="" src="/Images/comment_pic5.png"
+                            width="80" height="80" id="BrandImg" />
+                    </div>
+                </div>
+                <div class="item">
+                    <span class="tabCell tabCellWth"><span class="required">*</span><label>是否启用：</label></span>
+                    <span class="tabCell">
+                        <input type="radio" name="useType" value="1" checked="checked" />启用
+                        <input type="radio" name="useType" value="2" />停用 </span>
+                </div>
+                <div class="item" style="text-align: center">
+                    <a id="ReleaseClick" onclick="SaveN()" class="btn60" style="cursor: pointer">确定</a>
+                    <a onclick="CloseN()" class="btn60" style="cursor: pointer">取消</a>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" id="hidBrandPic" value="" />
+        <input type="hidden" id="hidId" value="" />
+    </div>
+    <div id="loadImgDiv" style="overflow: hidden; width: auto; min-height: 0; height: 470px;
+        display: none;">
+        <iframe id="contentFrame" name="contentFrame" scrolling="no" src="" height="480"
+            width="630" frameborder="0" style="border: 0; overflow: hidden;"></iframe>
+    </div>
+</body>
+</html>

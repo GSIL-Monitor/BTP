@@ -1,0 +1,553 @@
+﻿@{
+    Layout = null;
+    var UserId = ViewBag.UserId;
+    var AppId = ViewBag.AppId;
+    var Score = ViewBag.Score;
+    var ReScore = ViewBag.ReScore;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>卡券</title>
+    <link href="/Content/common.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/ui.jqgrid.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.all.css" />
+    <script type="text/javascript" src="/Scripts/jquery.js"></script>
+    <script type="text/javascript" src="/Scripts/jquery.extend.js"></script>
+    <script type="text/javascript" src="/Scripts/jquery.ui.base.js"></script>
+    <script type="text/javascript" src="/Scripts/i18n/jquery.ui-zh.js"></script>
+    <script type="text/javascript" src="/Scripts/Grid/jquery.grid.base.js"></script>
+    <script type="text/javascript" src="/Scripts/Pager/jquery.ui.jhpager.js"></script>
+    <script src="/Content/Business/BusinessAllEvent.js" type="text/javascript"></script>
+    <script src="/Scripts/TableBox/jquery.ui.jhtablebox.js" type="text/javascript"></script>
+    <script src="/Scripts/moment.min.js"></script>
+    <style type="text/css">
+        .tip4 {
+            width: 100px;
+            height: 40px;
+            float: left;
+            margin: 13px;
+            padding-top: 19px;
+            padding-bottom: 17px;
+            padding-left: 27px;
+            padding-right: 20px;
+            border: 1px solid #000;
+        }
+
+        .tip2 {
+            padding-top: 29px;
+            padding-bottom: 7px;
+            padding-left: 47px;
+            padding-right: 0px;
+            border: 1px solid #000;
+            width: 100px;
+            height: 40px;
+            float: left;
+            margin: 13px;
+        }
+
+        .currenttip {
+            background: gainsboro;
+        }
+    </style>
+</head>
+<body>
+    <div class="tabs-box">
+        <div style="background-color:blue;height:30px; font-size:24px; text-align:center; color:chocolate">  客服服务后台 </div>
+        <div class="tabs-top" style="left: 0px;position:absolute;padding-top:12px;">
+            <a href="javascript:;" class="tabzph" status="-1">我的订单</a>
+            <a href="javascript:;" class="tabzph current" status="0">卡券</a>
+            <a href="javascript:;" class="tabzph" status="1">订单查询</a>
+        </div>
+    </div>
+    <div style="margin-top: 20px;margin-left: 20px;margin-bottom: 130px; cursor:pointer">
+        <div class="tip2 currenttip" id="divCoupon">优惠券</div>
+        <div class="tip2" id="divVoucher">易捷抵用券</div>
+
+        <div class="tip4" id="divCurrency">
+            <p style="width:120px">易捷币（<span id="yjb-count">0</span>）</p>
+            <p style="width:120px">即将过期（<span id="yjb-expired-count">0</span>）</p>
+        </div>
+        <div class="tip2">
+            <p style="margin-left: -10px;margin-top:-10px">积分（@Score）</p>
+            <p style="margin-left: -35px;">即将过期积分（@ReScore）</p>
+        </div>
+    </div>
+    @* 优惠券*@
+    <div class="GridArea mt10 ml10" id="tableCoupon">
+        <div>
+            <span> App名称: </span><input type="text" id="txtAppName"/>
+            <input type="button" value="查询" onclick="reLoadJqGride()"/>
+        </div>
+        <table id="jqGridCoupon"></table>
+        <div id="pageCoupon">
+        </div>
+    </div>
+    @*抵用券*@
+    <div class="GridArea mt10 ml10" id="tableVoucher">
+        <table id="jqGridVoucher"></table>
+        <div id="pageVoucher">
+        </div>
+    </div>
+    @* 易捷币*@
+    <div class="GridArea mt10 ml10" id="tableCurrency">
+        <div>
+            <span>易捷币类型</span>
+            <select id="selCouState">
+                <option value="0">全部</option>
+                <option value="1">赠送易捷币</option>
+                <option value="2">易捷币抵现</option>
+                <option value="3">退货返回易捷币</option>
+            </select>
+            <input type="button" value="查询" onclick="reLoadCurrencyGride()"/>
+        </div>
+        <table id="jqGridCurrency"></table>
+        <div id="pageCurrency">
+        </div>
+    </div>
+    <div id="OrderDetail" style="margin: 0 auto;">
+        <iframe id="orderdetailurl" src="" width="100%;" height="100%" style="margin-bottom: 20px;
+            border: 0px;"></iframe>
+    </div>
+</body>
+</html>
+@*优惠券点击事件*@
+<script type="text/javascript">
+
+    var isloadCoupon = false;//优惠券是否加载过数据
+    var isloadVoucher = false;//抵用券是否加载过数据
+    var isloadCurrency = false;//易捷币是否加载过数据
+    var statetype = 1; //全局变量，1：展示优惠券，1：展示抵用券，3：展示易捷币，4：展示积分
+
+    Date.prototype.Format = function (fmt) { //author: meizz 
+        var o = {
+            "M+": this.getMonth() + 1, //月份 
+            "d+": this.getDate(), //日 
+            "h+": this.getHours(), //小时 
+            "m+": this.getMinutes(), //分 
+            "s+": this.getSeconds(), //秒 
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度 
+            "S": this.getMilliseconds() //毫秒 
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+
+    // 标签切换
+    $(".tabzph").click(function () {
+        if ($(this).hasClass("current")) {
+            return false;
+        }
+        // 改编标签样式
+        $(this).addClass("current").siblings().removeClass("current");
+        status = $(this).attr("status");
+        if (status == -1) {
+            window.location.href = '/CustomerService/MyOrderInfo?UserId=@UserId&AppId=@AppId';
+        }
+        else if (status == 1) {
+            window.location.href = '/CustomerService/SearchOrderInfo?UserId=@UserId&AppId=@AppId';
+        }
+    });
+
+    $('#divCoupon').on('click', function () {
+        $('#divCoupon').addClass("currenttip");
+        $('#divCurrency').removeClass("currenttip");
+        $('#divVoucher').removeClass("currenttip");
+        if (statetype != 1) {
+            $('#tableCoupon').show();
+            $('#tableVoucher').hide();
+            $('#tableCurrency').hide();
+            statetype = 1;
+            if (isloadCoupon) {
+                $("#jqGridCoupon").trigger("reloadGrid");
+            }
+            else {
+                InitGrid();
+            }
+        }
+    });
+
+    $(function () {
+        $.get("/CardVoucher/GetMyYJB?UserId=@UserId", function (d) {
+            if (d.IsSuccess) {
+                $("#yjb-count").text(d.Data.Money);
+                if (d.Data.ExpiredCountAfter60Days) {
+                    $("#yjb-expired-count").text(d.Data.ExpiredCountAfter60DaysAmount);
+                }
+            } else {
+                toast(d.Message);
+            }
+        });
+        InitGrid();
+        isloadCoupon = true;
+    });
+
+    function reLoadJqGride() {
+        var UserId = '@UserId';
+       var AppId = '@AppId';
+        var data = {
+            "UserId": UserId,
+            "AppId": AppId,
+            "Pagesize": 20,
+            "PageNo": 1,
+            "AppName": $("#txtAppName").val()
+        };
+
+        $("#jqGridCoupon").jqGrid('clearGridData');  //清空表格
+        $("#jqGridCoupon").jqGrid('setGridParam', {
+            datatype: "json",
+            postData: data,
+            url: "/CardVoucher/GetCoupon",
+            mtype: 'POST'
+        }).trigger("reloadGrid", { page: 1 });
+    }
+
+    function InitGrid() {
+        $('#tableVoucher').hide();
+        $('#tableCurrency').hide();
+
+       var UserId = '@UserId';
+       var AppId = '@AppId';
+        var data = {
+            "UserId": UserId,
+            "AppId": AppId,
+            "Pagesize": 20,
+            "PageNo": 1,
+            "AppName": $("#txtAppName").val()
+        };
+
+        $("#jqGridCoupon").jqGrid({
+            datatype: "json",
+            postData: data,
+            url: "/CardVoucher/GetCoupon",
+            mtype: 'POST',
+            rownumbers: true,
+            colNames: ['App名称', '名称', '优惠券类型', '面值', '状态', '领用时间', '使用时间', '有效期', '使用记录'],
+            colModel: [
+                { sortable: false, name: 'AppName', index: 'AppName', align: "center" },
+                { sortable: false, name: 'Name', index: 'Name', align: "center" },
+                { sortable: false, name: 'CouponType', index: 'CouponType', align: "center", formatter: FormatterType },
+                { sortable: false, name: 'Cash', index: 'Cash', align: "center" },
+                { sortable: false, name: 'CouponState', index: 'CouponState', align: "center", formatter: FormatterState },
+                { sortable: false, name: 'BindTime', index: 'BindTime', align: "center", formatter: FormatterBindTime },
+                { sortable: false, name: 'ModifiedOn', index: 'ModifiedOn', align: "center", formatter: FormatterModifyOn },
+                { sortable: false, name: 'BeginTime', index: 'BeginTime', align: "center", width: 300, formatter: FormatterBeginTime },
+                { sortable: false, name: 'OrderId', index: 'OrderId', align: "center", formatter: FormatterOpeart }
+            ],
+            rowNum: 20,
+            pager: 'pageCoupon',
+            height: 441,
+            autowidth: true
+        });
+    }
+
+    function FormatterType(callvalue, opts, rowdata) {
+        switch (rowdata[2]) {
+            case "BeInCommon": return "店铺优惠券";
+            case "SpecifyGoods": return "商品优惠券";
+            case "SpecifyStore": return "跨店铺满减券"
+        }
+    }
+
+    function FormatterState(callvalue, opts, rowdata) {
+        switch (callvalue) {
+            case "Bind":
+                return "未使用";
+            case "Used":
+                return "已使用";
+            case "Expired":
+                return "已过期";
+        }
+    }
+
+    function FormatterBindTime(callvalue, opts, rowdata) {
+        return new Date(callvalue).Format("yyyy-MM-dd hh:mm");
+    }
+
+    function FormatterModifyOn(callvalue, opts, rowdata) {
+        if (rowdata[4] != "Bind") {
+            return new Date(callvalue).Format("yyyy-MM-dd hh:mm");
+        }
+        else {
+            return '---';
+        }
+    }
+
+    function FormatterBeginTime(callvalue, opts, rowdata) {
+        return new Date(callvalue).Format("yyyy-MM-dd") + "至" + new Date(rowdata[9]).Format("yyyy-MM-dd");
+    }
+
+
+    function FormatterOpeart(callvalue, opts, rowdata) {
+        if (rowdata[4] == "Used") {
+            if (rowdata[10] != undefined && rowdata[10] != null && rowdata[10] != "") {
+                var jsonData = JSON.parse(rowdata[10]);
+                listString = "";
+                for (var j = 0; j < jsonData.length; j++) {
+                    listString += "<a id=\"tzinfor\" href=\"javascript:void(0)\" target=\"_self\" tzinfors=\"/CustomerService/CommodityOrderDetail?commodityOrderId=" + jsonData[j].key + "\"> " + jsonData[j].value + "</a> \n\r";
+                }
+                return listString;
+            }           
+            else {
+                return '---';
+            }
+        }
+        else {
+            return '---';
+        }
+        
+    }
+
+    $("#tzinfor").live("click", function () {
+        var hre = $(this).attr("tzinfors");
+        ShowOrderDetail();
+        $("#orderdetailurl").attr("src", hre);
+        if (window.parent) { //在iframe页面打开时，纠正top
+
+            $(".ui-jhtablebox-top").css("top", 50 + $(window.parent.document).scrollTop());
+        }
+    });
+
+    function ShowOrderDetail() {
+        var hght = parseInt(window.innerWidth * 0.6);
+        $("#OrderDetail").jhtablebox({
+            title: "订单详情",
+            width: '80%',
+            height: hght,
+            draggable: true,
+            modal: true,
+            resizable: false,
+            beforeClose: function (e) {
+            }
+        });
+    }
+</script>
+
+@*抵用券点击事件*@
+<script type="text/javascript">
+    $('#divVoucher').on('click', function () {
+        $('#divCoupon').removeClass("currenttip");
+        $('#divCurrency').removeClass("currenttip");
+        $('#divVoucher').addClass("currenttip");
+        if (statetype != 2) {
+            $('#tableCoupon').hide();
+            $('#tableVoucher').show();
+            $('#tableCurrency').hide();
+            statetype = 2;
+            if (isloadVoucher) {
+                $("#jqGridVoucher").trigger("reloadGrid");
+            }
+            else {
+                InitVoucherGrid();
+            }
+        }
+    });
+
+    function InitVoucherGrid() {
+        isloadVoucher = true;
+        var UserId = '@UserId';
+        var AppId = '@AppId';
+        var data = {
+            "UserId": UserId,
+            "AppId": AppId,
+            "Pagesize": 20,
+            "PageNo": 1
+        };
+
+        $("#jqGridVoucher").jqGrid({
+            datatype: "json",
+            postData: data,
+            url: "/CardVoucher/GetVoucher",
+            mtype: 'POST',
+            rownumbers: true,
+            colNames: ['名称', '面值', '状态', '领用时间', '使用时间', '有效期', '使用记录'],
+            colModel: [
+                { sortable: false, name: 'Name', index: 'Name', align: "center" },
+                { sortable: false, name: 'Price', index: 'Price', align: "center" },
+                { sortable: false, name: 'Status', index: 'Status', align: "center", formatter: FormatterVoucherState },
+                { sortable: false, name: 'SubTime', index: 'SubTime', align: "center" ,formatter: FormatterVoucherSubTime },
+                { sortable: false, name: 'UseTime', index: 'UseTime', align: "center", formatter: FormatterVoucherModifyOn },
+                { sortable: false, name: 'BeginTime', index: 'BeginTime', align: "center", width: 300, formatter: FormatterVoucherBeginTime },
+                { sortable: false, name: 'OrderId', index: 'OrderId', align: "center", formatter: FormatterVoucherOpeart }
+            ],
+            rowNum: 20,
+            pager: 'pageVoucher',
+            height: 441,
+            autowidth: true
+        });
+    }
+
+    function FormatterVoucherState(callvalue, opts, rowdata) {
+        switch (callvalue) {
+            case "0":
+                return "未使用";
+            case "1":
+                return "已使用";
+            case "2":
+                return "已过期";
+        }
+
+    }
+
+    function FormatterVoucherModifyOn(callvalue, opts, rowdata) {
+        if (rowdata[2] == "1") {
+            return new Date(callvalue).Format("yyyy-MM-dd hh:mm");
+        }
+        else {
+            return '---';
+        }
+    }
+
+    function FormatterVoucherSubTime(callvalue, opts, rowdata) {
+        return new Date(callvalue).Format("yyyy-MM-dd hh:mm");
+    }
+
+
+    function FormatterVoucherBeginTime(callvalue, opts, rowdata) {
+        return new Date(callvalue).Format("yyyy-MM-dd") + "至" + new Date(rowdata[7]).Format("yyyy-MM-dd");
+    }
+
+    function FormatterVoucherOpeart(callvalue, opts, rowdata) {
+        var listString = "";
+        if (rowdata[2] == "1") {
+            if (rowdata[8]) {
+                var jsonData = JSON.parse(rowdata[8]);
+                    for (var j = 0; j < jsonData.length; j++) {
+                        listString += "<a id=\"tzinfor\" href=\"javascript:void(0)\" target=\"_self\" tzinfors=\"/CustomerService/CommodityOrderDetail?commodityOrderId=" + jsonData[j].key + "\"> " + jsonData[j].value + "</a> \n\r";
+                    }
+            }
+            else {
+                return '---';
+            }
+            return listString;
+            //return "<a id=\"tzinfor\" href=\"javascript:void(0)\" target=\"_self\" tzinfors=\"/CustomerService/CommodityOrderDetail?commodityOrderId=" + callvalue + "\">查看</a>";
+        }
+        else {
+            return '---';
+        }
+    }
+
+</script>
+
+@*易捷币点击事件*@
+<script type="text/javascript">
+    $('#divCurrency').on('click', function () {
+        $('#divCoupon').removeClass("currenttip");
+        $('#divCurrency').addClass("currenttip");
+        $('#divVoucher').removeClass("currenttip");
+        if (statetype != 3) {
+            $('#tableCoupon').hide();
+            $('#tableVoucher').hide();
+            $('#tableCurrency').show();
+            statetype = 3;
+            if (isloadCurrency) {
+                $("#jqGridCurrency").trigger("reloadGrid");
+            }
+            else {
+                InitCurrencyGrid();
+            }
+        }
+    });
+
+    function reLoadCurrencyGride() {
+        var UserId = '@UserId';
+        var AppId = '@AppId';
+        var data = {
+            "UserId": UserId,
+            "AppId": AppId,
+            "Pagesize": 20,
+            "PageNo": 1,
+            "state": $("#selCouState").val()
+        };
+
+        $("#jqGridCurrency").jqGrid('clearGridData');  //清空表格
+        $("#jqGridCurrency").jqGrid('setGridParam', {
+            datatype: "json",
+            postData: data,
+            url: "/CardVoucher/GetCurrency",
+            mtype: 'POST'
+        }).trigger("reloadGrid", { page: 1 });
+    }
+
+    
+
+    function InitCurrencyGrid() {
+        isloadCurrency = true;
+        var UserId = '@UserId';
+        var AppId = '@AppId';
+        var data = {
+            "UserId": UserId,
+            "AppId": AppId,
+            "Pagesize": 20,
+            "PageNo": 1,
+            "state": $("#selCouState").val()
+        };
+
+        $("#jqGridCurrency").jqGrid({
+            datatype: "json",
+            postData: data,
+            url: "/CardVoucher/GetCurrency",
+            mtype: 'POST',
+            rownumbers: true,
+            colNames: ['易捷币类型','数量', '日期','到期日期','使用记录'],
+            colModel: [
+                { sortable: false, name: 'Type', index: 'Type', align: "center", formatter: FormatterName },
+                { sortable: false, name: 'Amount', index: 'Amount', align: "center", formatter: FormatterCurrencyOpeart},
+                { sortable: false, name: 'CreationTime', index: 'CreationTime', align: "center", formatter: FormatterCurrencyState },
+                { sortable: false, name: 'ValidUntil', index: 'ValidUntil', align: "center", formatter: FormatterUntilState },
+                { sortable: false, name: 'OrderIdNumber', index: 'OrderIdNumber', align: "center", formatter: FormatterOrderInfo },
+            ],
+            rowNum: 20,
+            pager: 'pageCurrency',
+            height: 441,
+            autowidth: true
+        });
+    }
+
+    function FormatterCurrencyState(callvalue, opts, rowdata) {
+        return moment(rowdata[4]).format("YYYY-MM-DD");
+    }
+
+    function FormatterUntilState(callvalue, opts, rowdata) {
+        if (rowdata[5]) {
+            return moment(rowdata[5]).format("YYYY-MM-DD");
+        }
+        else {
+            return "----"
+        }
+    }
+
+    function FormatterCurrencyOpeart(callvalue, opts, rowdata) {
+        if (rowdata[2] == "赠送易捷币") {
+            return "+" + rowdata[1];
+        }
+        else if (rowdata[2] == "新人大礼包") {
+            return "+" + rowdata[1];
+        }
+        else if (rowdata[2] == "退货退易捷币") {
+            return "+" + rowdata[1];
+        }
+        else {
+            return "-" + rowdata[1];
+        }
+    }
+
+    function FormatterOrderInfo(callvalue, opts, rowdata) {
+        if (rowdata[6] != undefined && rowdata[6] != null && rowdata[6] != "") {
+            var jsonData = JSON.parse(rowdata[6]);
+            return "<a id=\"tzinfor\" href=\"javascript:void(0)\" target=\"_self\" tzinfors=\"/CustomerService/CommodityOrderDetail?commodityOrderId=" + jsonData.key + "\"> " + jsonData.value + "</a> \n\r";            
+        }
+        else {
+            return '---';
+        }
+    }
+
+    function FormatterName(callvalue, opts, rowdata) {        
+       return rowdata[2];
+    }
+
+</script>

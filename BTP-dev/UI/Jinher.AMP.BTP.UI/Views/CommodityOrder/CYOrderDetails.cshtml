@@ -1,0 +1,61 @@
+﻿@{
+    ViewBag.Title = "订单详情";
+    Jinher.AMP.BTP.Deploy.CustomDTO.CommodityOrderVM commodityOrderVM = ViewBag.CommodityOrder;
+    Jinher.AMP.BTP.Deploy.CustomDTO.CommodityOrderSDTO cosDto = ViewBag.orderFullInfo;
+}
+
+@section CssStyles{
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/orderDetail.css")" />
+}
+<div class="order-detail">
+    <!--<header>订单详情</header>-->
+    <!--收货人信息-->
+    <div class="detail-info">
+        <div class="title">收货人信息</div>
+        <div class="info-detail">
+            <p>@cosDto.ReceiptUserName</p>
+            <p>@cosDto.ReceiptPhone</p>
+            <p>@cosDto.Province@cosDto.District@cosDto.City@cosDto.ReceiptAddress</p>
+            <p>@cosDto.Details</p>
+        </div>
+    </div>
+    <!--订单信息-->
+    <div class="detail-info">
+        <div class="title">订单信息</div>
+        <div class="info-detail">
+            <p style="color:#000;">流水号：<span style="color:#000; font-size:14px;">@cosDto.Batch</span></p>
+            <p>订单编码：<span>@cosDto.Code</span></p>
+            <p>订单ID：<span>@cosDto.CommodityOrderId</span></p>
+            <p>下单时间：<span>@cosDto.SubTime</span></p>
+            <p>付款时间：<span>@commodityOrderVM.PaymentTime</span></p>
+            <p>下单账号：<span>@commodityOrderVM.UserName</span></p>
+            <p>下单昵称:<span>@commodityOrderVM.Uname</span></p>
+        </div>
+    </div>
+    <!--商品信息-->
+    <div class="detail-info">
+        <div class="title">商品信息</div>
+        <div class="info-detail">
+        @foreach (var item in cosDto.ShoppingCartItemSDTO)
+        {
+            <div>
+                <img src="@item.Pic" alt="" width="90" height="90" />
+                <span class="method">@item.Name</span>
+                <span><i class="price">@item.RealPrice</i> X <i>@item.CommodityNumber</i></span>
+            </div>
+        }
+            <div class="cost">
+                <div class="branch-price">
+                    <p>配送费：<span style="color:#000;">￥@cosDto.Freight</span></p>
+                    <p>配送费优惠：<span style="color:#000;">￥@cosDto.FreeAmount</span></p>
+                    <p>餐盒费：<span style="color:#000;">￥@cosDto.MealBoxFee</span></p>
+                </div>
+                <div class="total-price"><span>实付款：@commodityOrderVM.CurrentPrice</span>(<span>@cosDto.PaymentName：@commodityOrderVM.CurrentPrice</span>)</div>
+            </div>
+        </div>
+    </div>
+</div>
+@section ClientScript
+{
+
+}

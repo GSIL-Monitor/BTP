@@ -1,0 +1,389 @@
+﻿@using System.Web.Script.Serialization
+@using Jinher.AMP.BTP.Deploy.CustomDTO
+@model dynamic
+@{
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.CategorySDTO> categorylist = ViewBag.CategoryList;
+}
+<head>
+    <script src="../../Scripts/CommLib.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.datepicker.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhdatetime.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhstartandenddate.js" type="text/javascript"></script>
+    
+    <link rel="stylesheet" type="text/css" href="/Content/css/common.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.all.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/ui.jqgrid.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.jhtablebox.css" />
+    <script src="/Scripts/CommLib.js" type="text/javascript"></script>
+    <script src="/Scripts/i18n/jquery.ui-zh.js" type="text/javascript"></script>
+    <script src="/Scripts/jquery.ui.base.js" type="text/javascript"></script>
+    <script src="/Scripts/Grid/jquery.grid.base.js" type="text/javascript"></script>
+    <script src="/Scripts/TableBox/jquery.ui.jhtablebox.js" type="text/javascript"></script>
+    <script src="/Scripts/Pager/jquery.ui.jhpager.js" type="text/javascript"></script>
+    <script type="text/javascript" src="/Scripts/TableBox/jquery.ui.jhtablebox.js"></script>
+    <script type="text/javascript" src="/Scripts/Grid/jquery.grid.base.js"></script>
+
+    <script type="text/javascript">
+        //原始数组
+        var comOriginalArry = [];
+        var tempComArray = [];
+        var _pageSize = 65535;
+        $(document).ready(function () {
+             //选择商品类目
+            $("#commoditycategory").focus(function () {
+                if ("@ViewBag.IsShowCategoryTree".toLowerCase() == "false") {
+                    return;
+                }
+                var top = $('#commoditycategory').offset().top;
+                var left = $('#commoditycategory').offset().left;
+                var height = $('#commoditycategory').height();
+                $("#SearchcategoryDiv").css({ "top": top + height, "left": left }).show();
+            });
+             //选择商品目录
+            $("#SearchtcategoryUl input[type='checkbox']").change(function () {
+                toSearchCheckSelected(this);
+            });
+            var commodityname = $("#CommodityName").val();
+            if ($.trim($("#commoditycategory").val()) == "") {
+                searchcateogryIdList = "";
+            }
+            var commodityCategory = searchcateogryIdList;
+            var appId = getQueryString('appId');
+            var data = {
+                "AppId": appId,
+                "CommodityName": commodityname,
+                "CommodityCategory": commodityCategory,
+                "PageIndex": 1,
+                "PageSize": 66365
+            };
+
+            $("#dataTable").jqGrid({
+                datatype: "json",
+                postData: data,
+                url: "@Url.Action("SelectCommodityGridData")",
+                mtype: 'POST',
+                colNames: ["商品图片", "商品名称", "商品价格(元)", "库存"],
+                colModel: [
+                    { name: 'Pic', index: 'Pic', width: 100, align: "center", sortable: false, title: false, formatter: FormatterPic },
+                    { name: 'Name', index: 'Name', width: 260, align: "center", sortable: false, title: false },
+                    { name: 'Price', index: 'Price', width: 116, align: "center", sortable: false, title: false, formatter: FormatterPrice },
+                    { name: 'Stock', index: 'Stock', width: 116, align: "center", sortable: false, title: false }
+                ],
+                rowNum: _pageSize,
+                rownumbers: true,
+                pager: 'page',
+                pagerAlone: true,
+                height: '470',
+                multiselect: true,
+                autowidth: true,
+                multiboxonly: false,
+                forceFit: true,
+                jsonReader: { repeatitems: true },
+                scroll: false,
+                shrinkToFit: false
+            });
+           
+        });
+        var searchcateogryIdList = "";
+        var searchcategoryNameList = "";
+        function toSearchCheckSelected(obj) {
+            searchcateogryIdList = "";
+            searchcategoryNameList = "";
+            $("#SearchtcategoryUl input:checkbox:checked").each(function () {
+                searchcateogryIdList = searchcateogryIdList + "," + $(this).val();
+                searchcategoryNameList = searchcategoryNameList + "," + $(this).next().text();
+            });
+            if (searchcateogryIdList.length > 0) {
+                searchcateogryIdList = searchcateogryIdList.substring(1, searchcateogryIdList.length);
+                searchcategoryNameList = searchcategoryNameList.substring(1, searchcategoryNameList.length);
+            }
+            $("#commoditycategory").val(searchcategoryNameList);
+        }
+        function getComFromCache(id) {
+            if (!id || !tempComArray || tempComArray.length <= 0) {
+                return null;
+            }
+            for (var i = 0; i < tempComArray.length; i++) {
+                if (tempComArray[i].Id == id)
+                    return tempComArray[i];
+            }
+            return null;
+        }
+        
+        function FormatterPrice(callvalue, opts, rowdata) {
+            if(callvalue>0){
+                return getCurrency()+(parseFloat(callvalue)).toFixed(2);
+            }
+            else{
+                return "0";
+            }
+        }
+
+        function FormatterPic(callvalue, opts, rowdata) {
+            return '<img class="img" src="' + callvalue + '" width="50" height="50" />';
+        }
+
+        //选择完商品名称，搜索符合条件的商品
+        function Search() {
+            var commodityname = $("#CommodityName").val();
+            if ($.trim($("#commoditycategory").val()) == "") {
+                searchcateogryIdList = "";
+            }
+            var commodityCategory = searchcateogryIdList;
+            var appId = getQueryString('appId');
+            var data = {
+                "AppId": appId,
+                "CommodityName": commodityname,
+                "CommodityCategory":commodityCategory,
+                "PageIndex":1,
+                "PageSize":66365
+            };
+            var a = new Array();
+            a.push(data);
+
+            $('#dataTable').jqGrid(
+                'setGridParam', {
+                    postData: data,
+                });
+            $('#dataTable').trigger("reloadGrid", [{ page: 1}]);
+
+        }
+       
+        //勾选了商品，传给父级页面
+        function updateCommodity() {
+            var obj = $("#dataTable").jqGrid('getGridParam', 'selarrrow');
+           if (obj.length == 0) {
+                alert("请至少选择一个");
+                return false;
+            }
+           //获取数组的值
+
+            for (var i = 0; i < obj.length; i++) {
+                var comViewdata = {};
+                var rowData = $("#dataTable").jqGrid('getRowData', obj[i]);
+                comViewdata.Id = obj[i];
+                comViewdata.Pic = $(rowData.Pic).attr('src');
+                comViewdata.Name = rowData.Name;
+                comViewdata.Price = rowData.Price.substring(1);
+                comViewdata.Stock = rowData.Stock;
+                comOriginalArry.push(comViewdata);
+            }
+            
+            //传值给父级页面
+            if (parent && parent.SaveDividendComSelect)
+                parent.SaveDividendComSelect(comOriginalArry);
+        }
+        //关闭选择商品页面，回到父级页面
+        function btnCan() {
+            if (parent && parent.CloseDividendComSelect)
+                parent.CloseDividendComSelect();
+        }
+       
+        function closeCategoryDiv() {
+            $("#SearchcategoryDiv").hide();
+        }
+
+        function CloseSearchCate(obj) {
+            $("#SearchcategoryDiv").hide();
+        }
+       
+    </script>
+    <style type="text/css">
+    .btn60
+    {
+        display: inline-block;
+        width: 60px;
+        height: 28px;
+        line-height: 28px;
+        background: url(../Content/default/images/btn60.png) no-repeat;
+        text-align: center;
+        vertical-align: middle;
+        color: #5F7392;
+        box-shadow: 1px 1px 2px #DBDBDB;
+    }
+    .btn120
+    {
+        display: inline-block;
+        width: 120px;
+        height: 28px;
+        line-height: 28px;
+        background: url(../Content/default/images/btn120.png) no-repeat;
+        text-align: center;
+        vertical-align: middle;
+        color: #5F7392;
+        box-shadow: 1px 1px 2px #DBDBDB;
+    }
+    input.inp-txt
+    {
+        height: 18px;
+        line-height: 18px;
+        border: 1px solid #B6C0CD;
+        padding: 4px 5px;
+        vertical-align: middle;
+        border-radius: 3px;
+        box-shadow: inset 1px 1px 2px #DBDBDB;
+    }
+    .box_5
+    {
+        width: 800px;
+        text-align: center;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .manag_bot .m_talbe
+    {
+        width: 750px;
+        border-collapse: collapse;
+    }
+    .manag_bot .m_talbe tr.t_tr2
+    {
+        height: 60px;
+    }
+    
+    .manag_bot .m_talbe tr td.one
+    {
+        width: 40px;
+    }
+    
+    .manag_bot .m_talbe tr td.two
+    {
+        width: 50px;
+    }
+    
+    .manag_bot .m_talbe tr td.four
+    {
+        width: 60px;
+    }
+    
+    .manag_bot .m_talbe tr td.five
+    {
+        width: 200px;
+    }
+    .manag_bot .m_talbe tr td.six
+    {
+        width: 130px;
+    }
+    
+    .manag_bot .m_talbe tr td.seven
+    {
+        width: 80px;
+    }
+    .inp-txt
+    {
+        width: 82px;
+    }
+    .floa2 h1,
+		.bbtn h1{
+			font-size: 14px;
+			color: #8c94a9;
+			padding-bottom: 5px;
+			border-bottom: 1px solid #DDDDDD;	
+		}
+    .close{
+			margin-top: 10px;
+			float: right;
+			display: inline-block;
+			*zoom:1;
+			*display: inline;
+			width: 7px;
+			height: 7px;
+			color:transparent;
+			background: url(/Images/shut.png) center no-repeat;
+		}
+		.floa2 ul {
+			padding: 0px 0 10px 10px;
+		}
+		
+		.floa2 ul li{
+			margin-top: 5px;
+			color:#8c94a9;
+		}
+		.addfloa2{
+			display: none; 
+			z-index: 3;
+			padding: 5px 10px;
+			height:auto;
+			border:1px solid #B8BFCF;
+			
+			-webkit-border-radius: 3px;
+			-moz-border-radius: 3px;
+			border-radius: 3px;
+		}
+    
+</style>
+</head>
+<div class="box_5">
+    <div style="margin-bottom: 0; font-size: 14px; height: 40px; line-height: 40px; margin-top: 15px;">
+        <span style="float: left; margin-left: 30px; line-height: 28px;">商品名称：</span>
+        <input style="float: left; margin-left: 6px;" type="text" id="CommodityName" class="inp-txt" />
+        <span style="float: left; margin-left: 14px; line-height: 28px;">商品类目：</span>
+        <input style="float: left; margin-left: 6px;" type="text" id="commoditycategory"
+            class="inp-txt" readonly="readonly" />
+        <a style="float: left; margin-left: 14px;" class="btn60" id="search" onclick="Search()">
+            查 询</a>
+    </div>
+    <div class="manag_bot" style="margin-top: 5px;overflow-y: auto;">
+        <table id="dataTable" >
+        </table>
+        <div id="pager">
+        </div>
+    </div>
+    <div class="floa2 addfloa2" id="SearchcategoryDiv" style="display: none; left: 800px;
+        width: 306px; height: 273px; top: 38px; text-align: left;">
+        <h1>
+            <a href="javascript:;" class="close" onclick="closeCategoryDiv()"></a><span>选择类目信息</span>
+        </h1>
+        <div style="overflow-y: auto; height: 190px; margin-top: 6px;">
+            <ul class="first" id="SearchtcategoryUl">
+                @foreach (var cate in categorylist)
+                {
+                    <li class="firs">
+                        <label>
+                            @if (cate.SecondCategory == null || cate.SecondCategory.Count == 0)
+                            {
+                                <input name="cateogryClassLevel1" type="checkbox" value="@cate.Id"/>
+                            }<span>@cate.Name</span>
+                        </label>
+                        <ul class="second">
+                            @if (cate.SecondCategory == null) { cate.SecondCategory = new List<Jinher.AMP.BTP.Deploy.CustomDTO.SCategorySDTO>(); }
+                            @foreach (var scate in cate.SecondCategory)
+                            {
+                                <li class="firs firs1">
+                                    <label>
+                                        @if (scate.ThirdCategory == null || scate.ThirdCategory.Count == 0)
+                                        {
+                                            <input name="cateogryClassLevel2" type="checkbox" value="@scate.Id"/>
+                                        }<span>@scate.Name</span>
+                                    </label>
+                                    <ul class="third">
+                                        @if (scate.ThirdCategory == null) { scate.ThirdCategory = new List<Jinher.AMP.BTP.Deploy.CustomDTO.TCategorySDTO>(); }
+                                        @foreach (var tcate in scate.ThirdCategory)
+                                        {
+                                            <li>
+                                                <label>
+                                                    <input name="cateogryClassLevel3" type="checkbox"
+								       value="@tcate.Id"/><span>@tcate.Name</span>
+                                                </label>
+                                            </li>
+                                        }
+                                    </ul>
+                                </li>
+                            }
+                        </ul>
+                    </li>
+                }
+            </ul>
+        </div>
+        <div class="bbtn" style="text-align: center;">
+            <h1>
+            </h1>
+            <a href="javascript:;" id="searchcate1" onclick="CloseSearchCate(this)" class="btn120"
+                style="margin-top: 6px;">确定</a>
+        </div>
+    </div>
+    <div style="margin-bottom: 0; font-size: 14px; height: 40px; line-height: 40px; margin-top: 10px;
+        text-align: center">
+        <a class="btn120" id="btnSubmit" onclick="updateCommodity();">确 定</a> <a style="margin-left: 16px;"
+            class="btn120" id="btnCancel" onclick="btnCan()">取 消</a>
+    </div>
+</div>

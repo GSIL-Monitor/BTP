@@ -1,0 +1,302 @@
+/*商品描述*/
+.goods-introduce {
+    padding-top: 15px;
+    font-size: .9rem;
+    line-height: 1.4;
+    text-align: justify;
+    color: #999;
+}
+
+/*价格和参团人数*/
+.group-price, .group-price div, .group-price del, .group-price span {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.group-price {
+    padding-top: 15px;
+    color: #999;
+}
+
+.group-price .now-price {
+    color: #e4393c;
+    padding-right: 4px;
+}
+.group-price .now-price i{
+    font-style: normal;
+    font-size: .7rem;
+}
+
+.group-price del {
+    font-size: .7rem;
+    color: #999;
+}
+
+.group-price .people-num {
+    float: right;
+    font-size: .8rem;
+    position: relative;
+    top: 3px;
+}
+
+.group-price .people-num span {
+    color: #e4393c;
+}
+
+/*活动说明*/
+.activity-instruction, .activity-instruction div, .activity-instruction a {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.activity-instruction {
+    padding: 0 15px;
+    margin-top: 10px;
+    background: #fff;
+}
+
+.activity-instruction .instruction-head {
+    height: 34px;
+    line-height: 34px;
+}
+
+.activity-instruction .instruction-head:after {
+    content: '';
+    display: block;
+    clear: both;
+}
+
+.activity-instruction .instruction-head span {
+    font-size: .875rem;
+}
+
+.activity-instruction .instruction-head a {
+    float: right;
+    font-size: .8rem;
+    color: #565555;
+    line-height: 1.2;
+    padding: 10px 0 9px;
+    text-decoration: none;
+}
+
+.activity-instruction .instruction-head a:active {
+    opacity: .8;
+}
+
+.activity-instruction .steps {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+}
+
+.activity-instruction .steps .step, .activity-instruction .steps .step > div {
+    width: 69px;
+    height: 46px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.activity-instruction .steps .step {
+    font-size: .75rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.activity-instruction .steps .step > div {
+    border: 1px dashed #999;
+    color: #666;
+}
+
+.activity-instruction .steps .step.active > div {
+    border: 1px dashed #ff7800;
+    color: #ff7800;
+}
+
+.activity-instruction .steps .step .triangle {
+    width: 30px;
+    height: 30px;
+    background: #999;
+    -webkit-transform: rotate(45deg);
+    position: absolute;
+    top: -15px;
+    left: -15px;
+}
+
+.activity-instruction .steps .step.active .triangle {
+    background: #ff7800;
+}
+
+.activity-instruction .steps .step .step-text {
+    margin: 8px 0 0 10px;
+}
+
+.activity-instruction .steps .step .step-num {
+    color: #fff;
+    position: absolute;
+    top: 0;
+    left: 4px;
+}
+
+.activity-instruction .steps span {
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+    flex: 1;
+    color: #999;
+    height: 46px;
+    line-height: 46px;
+    text-align: center;
+}
+
+.activity-instruction .activity-tip {
+    color: #ff7800;
+    font-size: .75rem;
+    line-height: 18px;
+    padding: 10px 0;
+}
+
+.activity-instruction .activity-tip img {
+    width: 16px;
+    vertical-align: bottom;
+    margin-right: 5px;
+}
+
+/*拼团订单提示*/
+.footer, .footer div {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+
+}
+
+.footer {
+    background-color: #efefef;
+    padding: 6px;
+    font-size: .8rem;
+    height: 36px;
+    line-height: 26px;
+}
+
+.footer .time {
+    float: left;
+    color: #b0b0b0;
+}
+
+.footer .group-state {
+    float: right;
+    color: #ff0054;
+}
+
+/*底部按钮*/
+.footer-btn, .footer-btn div, .footer-btn span {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.footer-btn {
+    display: -webkit-box;
+    -webkit-box-flex: 1;
+    position: fixed;
+    width: 100%;
+    padding: 0;
+    bottom: 0;
+    height: 44px;
+    border-top: 1px solid #e5e5e5;
+    background: #fff;
+}
+
+.footer-btn > div {
+    -webkit-box-flex: 1;
+    padding-top:3px;
+    text-align: center;
+    font-size: .875rem;
+}
+
+.footer-btn > div:active {
+    opacity: .8;
+}
+
+.footer-btn .alone-buy {
+    background: #e96163;
+    color: #fff;
+}
+
+.footer-btn .open-group {
+    background: #e4393c;
+    color: #fff;
+}
+.disabled{opacity: .4;}
+
+/*团购列表*/
+.groupon-wrap{
+    padding: 0 15px;
+    margin-top: 10px;
+    font-size: 11px;
+    color: #333;
+    background-color:#fff;
+}
+.groupon-wrap .groupon-title{
+    height: 40px;
+    line-height: 40px;
+    border-bottom: 1px solid #e8e8e8;
+    font-size: 12px;
+}
+.groupon-lists{
+    margin: 0!important;
+    padding: 0;
+    background: #fff;
+}
+.groupon-lists>li{
+    border-bottom: 1px solid #e8e8e8;
+    padding: 5px 0;
+}
+.groupon-lists>li:last-child{
+    border: 0;
+}
+.groupon-lists .item{
+    position: relative;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+}
+.groupon-lists .item .pic{
+    width: 30px;
+    height: 30px;
+    border-radius:50%;
+}
+.groupon-lists .item>span{
+    display: inline-block;
+    /*width: 50px;*/
+    line-height: 30px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.groupon-lists .item .context{
+    -webkit-box-flex: 1;
+    -webkit-flex:1;
+    flex: 1;
+    padding-right: 10px;
+}
+.groupon-lists .item .context>div{
+    height:13px;
+    line-height: 13px;
+    font-size: 10px;
+    text-align:right;
+}
+.groupon-lists .item .context .num{
+    color: #e4393c;
+    margin-top: 2px;
+}
+.groupon-lists .item .context .time{
+    margin-top: 3px;
+    color: #999;
+}
+.groupon-lists .item>a{
+    width: 50px;
+    height: 22px;
+    line-height: 22px;
+    color: #e4393c!important;
+    border: 1px solid #e4393c;
+    border-radius: 5px;
+    font-size: 12px;
+    margin-top: 3px;
+}

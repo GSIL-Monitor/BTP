@@ -1,0 +1,420 @@
+﻿@{
+Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="x5-orientation" content="portrait">
+    <meta name="full-screen" content="yes">
+    <meta name="x5-fullscreen" content="true">
+    <meta name="browsermode" content="application">
+    <meta name="x5-page-mode" content="app">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="black" name="apple-mobile-web-app-status-bar-style">
+    <meta content="telephone=no" name="format-detection">
+    <title>详情页</title>
+    <link rel="stylesheet" href="/Scripts/h5New/libs/swiper/swiper.css"/>
+    <link rel="stylesheet" href="/Scripts/h5New/libs/mobileKit/mobileKit-min.css"/>
+    <link rel="stylesheet" href="/Content/Mobile/zphStyle/applicationDownloadBanner.css"/>
+    <link rel="stylesheet" href="/Content/h5New/detail.css"/>
+</head>
+<body>
+<div class="detailPage">
+    <!--加入购物车失败吐司-->
+    <div class="tips hide">加入购物车失败，请重试</div>
+    <!--底部导航-->
+    <nav id="nav" class="nav">
+        <div class="nav-left">
+            <a class="nav-item borderline customer" href="javascript:void(0);"><img src="/Content/Mobile/service.png"><span>客服</span></a>
+            <a class="nav-item borderline" href="javascript:void(0);"><img src="/Content/Mobile/collection.png"><span style="color:#999;cursor: default;">收藏</span></a>
+            <a id="shopCart" class="nav-item" href="javascript:void(0);">
+                <div style="position:relative">
+                    <img src="/Content/Mobile/shop.png">
+                    <span id="shoppingCount" class="shopping hide">0</span>
+                </div>
+                <span>购物车</span>
+            </a>
+        </div>
+        <div id="nav-btn" class="nav-right">
+            <a id="add" class="btn add" href="javascript:void(0);">加入购物车</a>
+            <a id="buyBtn" class="btn buy" href="javascript:void(0);">立即购买<span class="active"></span></a>
+            <a id="seckill" class="btn seckill hide" href="javascript:void(0);">
+                <span class="seckill-text">距离开抢时间</span>
+                <span id="seckill-time" class="seckill-time"></span>
+            </a>
+            <a id="remind" class="btn remind hide"><span>即将开抢</span ><span class="active"></span></a>
+            <a id="appointment" class="btn appointment hide" href="javascript:void(0);"><span>立即预约</span ><span class="active"></span></a>
+            <a id="reserver" class="btn appointment reserver hide" href="javascript:void(0);"><span></span ><span class="active"></span></a>
+        </div>
+    </nav>
+    <!--第二页header-->
+    <header class="page2-header">
+        <a href="javascript:DETAIL.backDetail()" class="icon left"><img src="/Content/Mobile/back1.png"></a>
+        <span class="title">图文详情</span>
+    </header>
+    <!--第二页tab导航-->
+    <nav class="page2-nav hide">
+        <div class="nav-list selected">商品介绍</div>
+        <div class="nav-list">参数规格</div>
+        <div class="nav-list">包装售后</div>
+    </nav>
+    <!--返回到顶部-->
+    <a onclick="DETAIL.backTop()" href="javascript:void(0);" class="backtotop-btn">
+        <img src="/Content/Mobile/fanhuidingbu.png">
+    </a>
+    <!--滚动区域-->
+    <div id="content" style="overflow:hidden;padding-bottom:45px;">
+        <!--商品不存在的情况-->
+        <div id="noCommodity" class="no-commodity hide">
+            <div class="options">
+                <a href="javascript:window.history.back();" class="icon left"><img src="/Content/Mobile/back.png"></a>
+            </div>
+            <div class="no-commodity-text">商品不存在或已删除</div>
+        </div>
+        <div id="summary" style="overflow: hidden;transition: transform 1s cubic-bezier(0, 0, 0.25, 1) 0ms;">
+            <!--第一屏页面-->
+            <div id="page1" class="page1">
+                <!--下载APP-->
+                <div id="dwEsAppId" class="application-download-banner" style="display: none;">
+                    <div class="intro">
+                        <img id="esAppLogo" alt="" src=""/>
+                        <div class="con" id="esAppDesc">
+                            下载原生APP<br/>
+                            体验更多功能吧！
+                        </div>
+                        <a href="javascript:void(0)" class="banner-download-btn">
+                            <img src="/Content/Mobile/zphStyle/images/banner-phone.png" alt="">
+                            <ul class="btn-font" id="dolEsAppId">
+                                <li>免费下载</li>
+                                <li>DOWNLOAD</li>
+                            </ul>
+                            <div class="triangle">
+                            </div>
+                        </a>
+                    </div>
+                    <div id="closeDwEsAppId" class="banner-close" style="cursor:pointer;">×</div>
+                </div>
+                <!--下载APP 三级分销-->
+                <div id="divRegOrDownloadTip" style="position: relative;display: none;">
+                    <p id="pDownload" class="swiper-notice">
+                        点击此处下载 <span id="spanAppName"></span>App,管理佣金和下级分销商
+                    </p>
+                    <a href="javascript:void(0);">×</a>
+                </div>
+                <!--轮播-->
+                <div class="detail-swiper">
+                    <div class="options">
+                        <a href="javascript:window.history.back();" class="icon left"><img src="/Content/Mobile/back.png"></a>
+                    </div>
+                    <div class="swiper-container" id="swiper">
+                        <div id="swiper-wrapper" class="swiper-wrapper">
+                            <div class="swiper-slide"><a class="swiper-slide-pic" href="javascript:void(0);"><img src="/Content/Mobile/com_default.png"/></a></div>
+                        </div>
+                        <div class="swiper-pagination"></div>
+                        <div id="robbed" class="robbed hide"></div>
+                    </div>
+                </div>
+                <!--预约/预售活动-->
+                <div id="appointment-wrap" class="appointment-wrap hide">
+                    <div class="appointment-content">
+                        <span class="new-price"><span style="font-size:14px;">￥</span><span id="appointment-price"></span></span>
+						<span class="old-price-wrap">
+							<span id="appointment-older-price" class="old-price" style="margin-top:8px;"></span>
+							<span id="preselled-num"></span>
+						</span>
+                    </div>
+                    <div class="appointment-time">
+                        <div id="appointment-text" style="margin-top:8px;"></div>
+                        <div id="appointment-day"></div>
+                    </div>
+                </div>
+                <!--预售发货时间-->
+                <div id="reserver-wrap" class="reserver-wrap hide"></div>
+                <!--商品信息-->
+                <div class="detail-container">
+                    <div id="title" class="d-title"></div>
+                    <div id="d-price" class="d-price">
+                        <span class="d-price-new"><i class="d-price-rmb">￥</i><span id="price"></span></span>
+                        <del id="olderPrice" class="d-price-origin"></del>
+                        <a id="showRule" href="javascript:void(0)" class="share-app hide">分享有礼</a>
+                    </div>
+                    <div id="d-adds" class="d-adds clearfix">
+
+                    </div>
+                </div>
+                <!--关税-->
+                <div id="duty" class="duty-wrap clearfix hide">
+                    <div class="duty-title">关税<span id="duty-value" class="duty-value"></span></div>
+                </div>
+                <!--优惠券-->
+                <div class="coupon-wrap hide">
+                    <div id="coupon-text" class="coupon-content"></div>
+                </div>
+                <!-- 赠品 优惠套装 促销 易捷币 油卡券 -->
+                <div id="coupon-wrap" class="coupon-wrap hide">
+                    <div id="present" class="present-content hide">购买指定型号送超值赠品（赠完即止）</div>
+                    <div id="package" class="package-content hide">最高省200元</div>
+                    <div id="discount-wrap" class="discount-content hide"></div>
+                    <div id="yjb-text" class="yjb-content hide"></div>
+                    <div id="oil-coupon" class="oil-coupon hide"></div>
+                    <div id="extra-text" class="hide" style="padding-left:63px;color: #555;"></div>
+                </div>
+                <!--服务权益-->
+                <div id="d-info" class="d-info-wrap hide clearfix">
+                </div>
+                <!--分销-->
+                <div id="distribution-wrap" class="distribution-wrap hide">
+                    <a href="javascript:void(0)" class="distribution-content"><span class="title">我要分销</span></a>
+                </div>
+                <!--商品评价-->
+                <div id="detail-evaluate" class="detail-evaluate hide">
+                    <div class="evaluated">
+                        <div class="header clearfix">
+                            <span class="title">商品评价（<span id="reviewCount"></span>）</span>
+                            <span class="approval-rate right"><b id="recevied"></b>好评</span>
+                        </div>
+                        <div class="comments">
+                            <div class="comment-start clearfix">
+                                <span id="comment-name" class="name right"></span>
+                            </div>
+                            <div id="comment-content" class="comment-content"></div>
+                        </div>
+                    </div>
+                    <div class="more">
+                        <a id="more" href="javascript:void(0)" class="btn">查看更多</a>
+                    </div>
+                </div>
+                <div id="unevaluate" class="unevaluate hide">暂无评价</div>
+                <!--店铺信息-->
+                <div class="store-info-wrap">
+                    <a href="javascript:void(0)" class="store-info-message clearfix">
+                        <img id="store-logo" src="" class="store-info-logo">
+                        <span id="store-name" class="title"></span>
+                    </a>
+                    <div id="store-info" class="store-info-btns">
+                        <a href="javascript:void(0)" class="btn customer">联系客服</a>
+                        <a id="shop" href="javascript:void(0)" class="btn">进店逛逛</a>
+                    </div>
+                </div>
+                <!--上拉查看详情-->
+                <div class="pull-detail">
+                    <div class="line"><img src="/Content/Mobile/line1.png" style="top: -3px;position: relative;"></div>
+                    <span id="scrolltips" class="title">上拉查看详情</span>
+                    <div class="line"><img src="/Content/Mobile/line2.png" style="top: -3px;position: relative;"></div>
+                </div>
+            </div>
+            <!--第二屏页面-->
+            <div id="page2" class="page2 hide">
+                <div class="down-detail">
+                    <span id="pullDown"></span>
+                </div>
+                <!--视频区域-->
+                <div id="vedio-wrap" class="vedio-wrap hide">
+                    <video id="vedio" src="" controls="controls"></video>
+                </div>
+                <!--内容区-->
+                <div class="shoppingInfo">
+                    <!--商品介绍-->
+                    <div id="shoppingInfo"></div>
+                    <!--规格参数-->
+                    <div id="techSpecs" class="hide"></div>
+                    <!--包装售后-->
+                    <div id="saleService" class="hide"></div>
+                </div>
+                <!--商品推荐-->
+                <div id="comdty-wrap" class="recommendPortraitTwo hide">
+                    <div class="recommendPortraitTwo-tips">
+                        <span class="line"></span>
+                        <span class="text">为您推荐</span>
+                    </div>
+                    <div id="comdty-list" class="recommendPortraitTwo-lists clearfix">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--属性弹窗-->
+    <div id="modal-wrap" class="modal-wrap hide">
+        <div class="modal-content">
+            <div class="modal-content-hd">
+                <a href="javascript:void(0);" class="modal-content-close"></a>
+                <img id="pic" class="pic" src="">
+                <span class="money">￥<span id="money" class="money-text"></span></span>
+                <span id="modal-duty" class="modal-duty"></span>
+            </div>
+            <div class="modal-content-bd">
+                <div id="attribute" class="modal-content-bd-attribute">
+
+                </div>
+                <div id="Specifications" class="modal-content-bd-attribute">
+                    
+                </div>
+                <div class="modal-content-bd-count">
+                    <div class="modal-content-bd-title left" >数量</div>
+                    <div class="quantity-wrapper">
+                        <a id="modal-wrap-decrease"  class="quantity-decrease right-border">-</a>
+                        <input id="modal-wrap-count" type="number" value="1">
+                        <a id="modal-wrap-increase" class="quantity-increase left-border">+</a>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-content-btn">确定</div>
+        </div>
+    </div>
+    <!--验证码弹窗-->
+    <div id="identify-modal" class="identify-modal-wrap hide">
+        <div class="identify-modal-content">
+            <div class="identify-modal-content-hd">需要输入验证码</div>
+            <div class="identify-modal-content-bd">
+                <input id="identify-val" type="text">
+                <img id="identify-img" src="">
+            </div>
+            <div class="identify-modal-content-bt">
+                <a href="javascript:void(0);" class="identify-btn identify-btn-cancel">取消</a>
+                <a href="javascript:void(0);" class="identify-btn identify-btn-submit">提交</a>
+            </div>
+        </div>
+    </div>
+    <!--预约弹窗-->
+    <div id="appointment-modal" class="appointment-modal-wrap hide">
+        <div class="appointment-modal-content">
+            <div id="appointment-modal-text" class="appointment-modal-content-bd"></div>
+            <div class="appointment-modal-content-bt">
+                <a href="javascript:void(0);" class="appointment-btn appointment-btn-cancel">知道了</a>
+                <a href="javascript:void(0);" class="appointment-btn appointment-btn-submit">我的预约</a>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="myModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div id="modal-body" class="modal-body" style="overflow-y:hidden;text-align:center;">
+
+                </div>
+                <div id="modal-footer" class="modal-footer">
+                    <a class="btn btn-default">取消</a>
+                    <a class="btn btn-primary">确定</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--优惠券弹窗-->
+<div id="modal-coupon-wrap" class="modal-coupon hide">
+    <div class="modal-coupon-content-hd">
+        领取优惠券
+        <a href="javascript:void(0);" class="modal-coupon-content-close"></a>
+    </div>
+    <div class="modal-coupon-content">
+        <div class="modal-coupon-content-bd" id="coupon-list-content">
+
+        </div>
+    </div>
+</div>
+<!--服务权益弹窗-->
+<div id="server-wrap" class="modal-server hide">
+    <div class="modal-server-content-hd">
+        服务说明
+        <a href="javascript:void(0);" class="modal-server-content-close"></a>
+    </div>
+    <div class="modal-server-content">
+        <div id="server-list-content" class="modal-server-content-bd">
+        </div>
+        <div class="modal-server-content-bt">确定</div>
+    </div>
+</div>
+<!--赠品-->
+<div id="present-wrap" class="modal-present hide">
+    <div class="modal-present-content-hd" style="border-bottom:1px solid #e8e8e8;">
+        赠品
+        <a href="javascript:void(0);" class="modal-present-content-close"></a>
+        <div class="present-tips" id="present-tips"></div>
+        <div class="present-tips"><span class="present-time" id="startTime"></span> 至 <span class="present-time" id="endTime"></span></div>
+    </div>
+    <div class="modal-present-content">
+        <div class="modal-present-content-bd">
+            <div id="present-list-content" class="present-list-wrap">
+
+            </div>
+        </div>
+        <div class="modal-present-content-bt">确定</div>
+    </div>
+</div>
+<!--优惠套餐弹窗-->
+<div id="package-wrap" class="modal-server hide">
+    <div class="modal-server-content-hd" style="border-bottom:1px solid #e8e8e8;">
+        优惠套餐
+        <a href="javascript:void(0);" class="modal-server-content-close"></a>
+        <div class="package-tips hide">[ 限制 ]<span id="tip">优惠券、易捷币、加油卡兑换券不与套餐优惠同时享受</span></div>
+    </div>
+    <div class="modal-server-content">
+        <div class="modal-server-content-bd">
+            <div class="package-all">
+                <span class="title">优惠套装</span>
+                <span class="price">最高省<em id="package-price">76.00</em></span>
+                <span class="num">共<em id="package-num">5</em>款</span>
+            </div>
+            <div id="package-list-content" class="packgae-list" onclick="rMealItems(0)">
+            </div>
+        </div>
+@*        <div class="modal-package-content-bt">确定</div>*@
+    </div>
+</div>
+<div id="mask" class="mask hide">
+    <div class="ui-loading-block">
+        <div class="ui-loading-cnt">
+            <i class="fa fa-spinner fa-spin fa-2x"></i>
+            <p>正在加载...</p>
+        </div>
+    </div>
+</div>
+
+
+<div id="Zhiliquan" style="position:fixed;top:0;left:0;bottom:0;right:0;max-width: 500px;margin:0 auto;background:rgba(0,0,0,.5);display:none;z-index:2;">
+    <div style="position:absolute;top:50%;left: 50%;width: 280px;height:300px;margin-top:-150px;margin-left: -140px;background:#fff;text-align: center;border-radius:5px;-webkit-border-radius:5px;">
+       <a href="javascript:void(0)" style="position: absolute;top: 0;right: 0;display: inline-block;padding: 10px;line-height: 12px;color: #000;" onclick="Zhiliquanyicang()">x</a>
+        <img src="../../Images/kevin.png" style="width: 270px;height:280px"/>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var _pageId = "1";
+</script>
+<script src="/Scripts/base64.js" type="text/javascript"></script>
+<script src="/Scripts/h5New/libs/zepto.min.js"></script>
+<script src="/Scripts/h5New/libs/mobileKit/mobileKit.min.js"></script>
+<script src="/Scripts/h5New/libs/swiper/swiper.min.js"></script>
+<script src="/Content/Mobile/fastclick.min.js"></script>
+<script src="http://dss.iuoooo.com/Scripts/bury/mercury.js"></script>
+<script src="/Scripts/h5New/common/Common.js"></script>
+<script src="/Scripts/h5New/common/login.js"></script>
+<script type="text/javascript" language="javascript" src="https://webapi.amap.com/maps?v=1.3&key=c0d798fe31257ef4b30987221f01a625&plugin=AMap.CitySearch"></script>
+<script type="text/javascript" src="@HttpContext.Current.Request.Url.Scheme://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+<script src="/Scripts/h5New/wxshare.js"></script>
+<script src="/Scripts/h5New/detail.js"></script>
+<script src="/Scripts/CookieContextDTO.js"></script>
+<script type="text/javascript">
+    var zphUrl = "@ViewBag.ZPHUrl";
+    var SNSUrl = "@Jinher.AMP.BTP.Common.CustomConfig.SNSUrl";
+    var BTPAppresUrl = "@ViewBag.BTPAppresUrl";
+    var webImUrl = "@Html.Raw(Jinher.AMP.BTP.Common.CustomConfig.WebImUrl)";
+    function rMealItems(index) {
+        window.location.href = urlAppendCommonParams("/Mobile/MealItemsDetail?commodityId=" + getQueryString('commodityId') + "&index=" + index + "");
+    }
+    $(function () {
+      if (getQueryString('share') != null) {
+          SetCookie('shareId', getQueryString('share'));
+        }
+        log("yjs003", "yjp003", "yjo002", getQueryString('commodityId'), "商品详情");
+    });
+
+  function Zhiliquanyicang() {
+      $("#Zhiliquan").hide();
+  }
+</script>
+</body>
+</html>

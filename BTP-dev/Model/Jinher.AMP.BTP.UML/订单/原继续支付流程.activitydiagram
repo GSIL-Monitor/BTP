@@ -1,0 +1,589 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<activityRootModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm4="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm5="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" xmlns:dm9="http://schemas.microsoft.com/dsltools/SimpleShapesModel" xmlns:dm10="http://schemas.microsoft.com/VisualStudio/TeamArchitect/ComponentDesigner" dslVersion="1.0.0.0" Id="54e19c9b-e279-406f-9897-cbe7bfdb9da4" name="继续支付签名安全" linkedPackageId="fbf90c77-ce42-42f9-851e-aaf3e214069b" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/ActivityDesigner">
+  <description>111</description>
+  <ownedCommentsInternal>
+    <comment Id="de9dd5b2-3f89-4929-897d-212c00f3cbf7">
+      <elementDefinition Id="537736f4-6227-41ef-be68-ba324c11cad1" />
+      <body>原流程</body>
+    </comment>
+    <comment Id="555c0f7d-cba7-42b7-a22a-55dcb876a51c">
+      <elementDefinition Id="f6f7ed4d-552f-4e73-8cd2-c07f67b74ff9" />
+      <body>将订单直接更新成已支付状态</body>
+    </comment>
+    <comment Id="9b5aee58-9eb0-45ac-835b-15865d356d30">
+      <elementDefinition Id="eed4393d-05a5-42c7-ab51-49b53eae6a2f" />
+      <body>将订单更新成已支付</body>
+    </comment>
+    <comment Id="bf42c0b2-12c9-4079-bc58-64dec9e65bf4">
+      <elementDefinition Id="a5cf0f42-1c94-4bcc-8ae8-2d80e0a64594" />
+      <body>支付金额为0，即金币与代金代券全抵了订单要支付的金额</body>
+    </comment>
+    <comment Id="f1d5632e-2b2b-43bf-9473-8ceeb21aa37a">
+      <elementDefinition Id="332a69a0-fa36-4421-9315-2428a5676101" />
+      <body>金币与代金券支付</body>
+    </comment>
+    <comment Id="7677af82-1226-4aa1-b956-679165e6edbb">
+      <elementDefinition Id="771a3298-9e32-42d3-ae5d-a61a5706a605" />
+      <body>改进：
+1  改进SV中 ConfirmPayPrice 接口
+    输入参数把各金额以及生成payUrl的参数传入
+    输出参数加入payUrl
+2  当要走jinherPay时，直接用1中返回的地址跳转到FSP页</body>
+    </comment>
+    <comment Id="4f096ff7-6261-45c8-8a68-b5f906896690">
+      <elementDefinition Id="d91e6827-982e-4378-ad78-63d07231a89f" />
+      <body>生成payUrl，并跳转到fsp页</body>
+    </comment>
+  </ownedCommentsInternal>
+  <packagedElements>
+    <activityRootModelHasActivity>
+      <activity Id="1c1e184f-f475-4713-95eb-de42e6f0906a" name="继续支付签名安全" isAbstract="false" isLeaf="false" isActiveClass="false" isReentrant="false" isReadOnly="false" isSingleExecution="false">
+        <elementDefinition Id="68fba5d2-3807-4883-9a33-16f1cef99807" />
+        <nodes>
+          <initialNode Id="4e032621-696d-4747-b2f4-961fc03e4b2f" name="Initial1" isLeaf="false">
+            <elementDefinition Id="41d3e410-12ad-4eee-942d-be18e7b07c9b" />
+            <flowNodeTargets>
+              <controlFlow Id="92c0a1ab-ae1c-41de-b1e7-f0be224c9f95" isLeaf="false">
+                <opaqueActionMoniker Id="bc4b83aa-e56d-4193-9a0e-1045d383c57e" LastKnownName="继续支付" />
+                <elementDefinition Id="b6b858ea-ea5c-415b-9aad-d203aaa006bf" />
+              </controlFlow>
+            </flowNodeTargets>
+          </initialNode>
+          <opaqueAction Id="bc4b83aa-e56d-4193-9a0e-1045d383c57e" name="继续支付" isLeaf="false">
+            <elementDefinition Id="69c60124-e90c-44e0-93f2-f97a2aea4377" />
+            <objectFlowTargets>
+              <objectFlow Id="5fa1ce64-4f4d-4399-b371-6cf167963339" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="72646ad7-438b-419c-9e8a-633b361415a0" LastKnownName="orderPay()" />
+                <elementDefinition Id="5fb37ea6-e31c-4201-8e3d-a8365b3a8273" />
+              </objectFlow>
+            </objectFlowTargets>
+          </opaqueAction>
+          <objectNode Id="72646ad7-438b-419c-9e8a-633b361415a0" name="orderPay()" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="49da5711-f824-479a-9b2e-6bb7a0cdefe2" />
+            <objectFlowTargets>
+              <objectFlow Id="6bd3c51d-c4a1-470e-9d4e-fcfc72643e7b" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <opaqueActionMoniker Id="1b6ab344-6415-4661-832f-bdbcd8df2b1d" LastKnownName="调用SV中 ConfirmPayPrice 接口" />
+                <elementDefinition Id="d4275aa0-ccd8-4111-8e05-7082b4f02d42" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="67309799-0df6-45fe-92db-eab3212ac374" name="2147483647" value="2147483647">
+                <elementDefinition Id="3c029428-374d-473b-b95b-4ac83d7b8cce" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <opaqueAction Id="1b6ab344-6415-4661-832f-bdbcd8df2b1d" name="调用SV中 ConfirmPayPrice 接口" isLeaf="false">
+            <elementDefinition Id="beb42ed9-dac1-4509-b92b-aba53f68ab51" />
+            <flowNodeTargets>
+              <controlFlow Id="4f2fcecb-8b8a-41e3-81ab-938f4e1a2819" isLeaf="false">
+                <forkNodeMoniker Id="f7a1663b-11bb-4519-98c2-d284d7c993a5" LastKnownName="Fork1" />
+                <elementDefinition Id="453340fc-6a32-4f85-9025-5301f524aa59" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <forkNode Id="f7a1663b-11bb-4519-98c2-d284d7c993a5" name="Fork1" isLeaf="false">
+            <elementDefinition Id="fc5946e4-f8dd-483d-a757-13ff6e2ecf4f" />
+            <objectFlowTargets>
+              <objectFlow Id="06e1c3b7-83c7-45d3-a165-c621e643ad31" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="5880acc5-6bfc-4688-96ed-f82556f0f4ca" LastKnownName="0：成功" />
+                <elementDefinition Id="f277663f-7beb-41ea-b0fe-a7fb553cd374" />
+              </objectFlow>
+              <objectFlow Id="3e8d82c3-e367-4956-ad26-942c88dc2242" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="15c1e3f8-9d00-4a8e-b285-f4ffadaf9376" LastKnownName="1：出错" />
+                <elementDefinition Id="abbcf0d7-fa56-44fe-9bf6-53b166aff91d" />
+              </objectFlow>
+              <objectFlow Id="61839bce-a538-41d7-9854-772685e907be" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="40ba8f46-b2c8-4ee7-9446-0b011c8935e0" LastKnownName="2：商品价格已发生变化" />
+                <elementDefinition Id="6642f280-add3-45d2-aad2-4a3a827df560" />
+              </objectFlow>
+              <objectFlow Id="ace2414b-d365-454d-b3c3-a6e2a6334d58" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="57eff9fb-3527-4aa2-94d4-2bb68bc0b080" LastKnownName="6：超时未支付" />
+                <elementDefinition Id="659718a3-85f0-46b0-b53b-ddeeee47f3f7" />
+              </objectFlow>
+            </objectFlowTargets>
+          </forkNode>
+          <objectNode Id="15c1e3f8-9d00-4a8e-b285-f4ffadaf9376" name="1：出错" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="f6151855-decd-4f78-a79c-0bfc26c54152" />
+            <objectFlowTargets>
+              <objectFlow Id="5087a87e-a1e5-4272-8c8a-6eb13227ccd6" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <activityFinalNodeMoniker Id="8f7101d8-0fa8-4668-88cf-37994c27f197" LastKnownName="ActivityFinal4" />
+                <elementDefinition Id="4f10318f-5e75-4c8f-a6ce-b76d01bb1675" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="c3d4d398-41e0-44b0-8ccb-e81d72d59928" name="2147483647" value="2147483647">
+                <elementDefinition Id="fd24a71a-8ab2-458f-8de1-e75f8cc162a9" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <objectNode Id="40ba8f46-b2c8-4ee7-9446-0b011c8935e0" name="2：商品价格已发生变化" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="c15f6a43-18d1-4968-8efe-750276471135" />
+            <objectFlowTargets>
+              <objectFlow Id="b8762f61-a022-4e26-933a-3ec047dd1235" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <activityFinalNodeMoniker Id="a67a60ed-d4b8-497b-8d20-d2d29cb54100" LastKnownName="ActivityFinal5" />
+                <elementDefinition Id="c316e998-1cb9-448d-80a5-9bb9e777b150" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="c5101076-65c8-4d99-9396-10916ca5c651" name="2147483647" value="2147483647">
+                <elementDefinition Id="868ffca6-df0e-47cd-9668-4934d4af04bf" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <objectNode Id="57eff9fb-3527-4aa2-94d4-2bb68bc0b080" name="6：超时未支付" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="a13710da-e45b-4e40-9a7f-945ec6aa963c" />
+            <objectFlowTargets>
+              <objectFlow Id="9382835e-3182-4eb4-a045-da0703414366" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <activityFinalNodeMoniker Id="b2d00e2e-fada-4362-88d4-d980c5a35dd0" LastKnownName="ActivityFinal6" />
+                <elementDefinition Id="541a1fc1-d370-4d7e-a4ad-925abcecb5a3" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="a4b896ab-cfaa-4e83-84dd-cc2dc0eb1c40" name="2147483647" value="2147483647">
+                <elementDefinition Id="96a2527a-7ed0-4119-bbeb-2f57cf8eae74" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <objectNode Id="5880acc5-6bfc-4688-96ed-f82556f0f4ca" name="0：成功" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="b7470273-0808-4ade-9d0f-d78aff2c68b1" />
+            <objectFlowTargets>
+              <objectFlow Id="f28290c0-1b99-4fc0-9938-595d00acac1f" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <forkNodeMoniker Id="04c0c9f9-7bef-4479-b16d-e6f195e3dc4f" LastKnownName="Fork2" />
+                <elementDefinition Id="ad1f7c7d-3840-4924-8585-dbda2dea50eb" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="618d9aed-2275-462c-a639-51dd6d9540e0" name="2147483647" value="2147483647">
+                <elementDefinition Id="690806f8-0d0f-4b4a-af02-a91b1fbede24" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <forkNode Id="04c0c9f9-7bef-4479-b16d-e6f195e3dc4f" name="Fork2" isLeaf="false">
+            <elementDefinition Id="b466c512-7b72-47be-bba7-287e6530f177" />
+            <objectFlowTargets>
+              <objectFlow Id="1450dd9a-d085-4f2f-8d40-22bff115ea49" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="8dc3f8c8-484a-4cb4-ba3e-98e8d1bb9872" LastKnownName="货到付款" />
+                <elementDefinition Id="11069207-4763-40e8-93d9-687cb84aa1b4" />
+              </objectFlow>
+              <objectFlow Id="911dc391-b1dd-4a41-b965-e128bb1ce9e0" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="a21dbc98-0548-405d-846e-170465713d2b" LastKnownName="非货到付款" />
+                <elementDefinition Id="caaf64a4-aa22-4697-9d1c-b50e3c6f54b2" />
+              </objectFlow>
+            </objectFlowTargets>
+          </forkNode>
+          <objectNode Id="8dc3f8c8-484a-4cb4-ba3e-98e8d1bb9872" name="货到付款" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="9b601126-ff28-45af-b6e9-7d4bd5ec1616" />
+            <objectFlowTargets>
+              <objectFlow Id="f023f2cd-4807-40ac-aa10-6eb976327da5" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="6c6cca16-9534-4cca-b7e8-2c00df8ed9b6" LastKnownName="hdfkPay()" />
+                <elementDefinition Id="f5122bec-77d7-4a1a-87bb-3f6bc28a73ef" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="d7e1525d-4e45-4a03-92a4-1ea7c0bd4b0d" name="2147483647" value="2147483647">
+                <elementDefinition Id="e51188cc-458f-4bb3-b366-991ab09db7fb" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <objectNode Id="a21dbc98-0548-405d-846e-170465713d2b" name="非货到付款" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="1153be6a-47bd-46b8-b14f-99c63d37e89b" />
+            <objectFlowTargets>
+              <objectFlow Id="383d7f86-8646-492b-8585-c60b906fe399" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="f3ebdfc5-04a6-44a2-a4f3-3fc33df30646" LastKnownName="jinherWebPay()" />
+                <elementDefinition Id="fca8c70c-b807-4107-beeb-196550064d72" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="2a54b632-1c57-4b0f-afd4-c9df0d705303" name="2147483647" value="2147483647">
+                <elementDefinition Id="25f188e3-e7b9-481e-afdc-18425740b109" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <objectNode Id="6c6cca16-9534-4cca-b7e8-2c00df8ed9b6" name="hdfkPay()" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="ac371d62-ed28-4f29-af17-4d06bac36cea" />
+            <objectFlowTargets>
+              <objectFlow Id="f7d23a18-4f56-4961-b830-8de26fc83454" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <callOperationActionMoniker Id="32981b1c-6865-4666-b174-5acc23192a65" LastKnownName="/Mobile/UpdateCommodityOrder" />
+                <elementDefinition Id="8b9300df-fea1-4da8-b529-a6ad7e61ffa5" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="3539031a-d767-4097-836b-a2632a875327" name="2147483647" value="2147483647">
+                <elementDefinition Id="2367773a-4aee-40ef-8417-ecec41d1013d" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <objectNode Id="f3ebdfc5-04a6-44a2-a4f3-3fc33df30646" name="jinherWebPay()" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="4417d101-60d4-4763-a907-801bad9d1cf1" />
+            <objectFlowTargets>
+              <objectFlow Id="679af833-2bd5-4cdf-9070-826ab5cfaaad" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <forkNodeMoniker Id="198561a2-e14e-410c-b030-23cc5ee8aca7" LastKnownName="Fork21" />
+                <elementDefinition Id="c18ba506-c3f4-41e2-a17c-bcb890843011" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="e81e1939-9c90-4a32-8de7-6cf5abc6333f" name="2147483647" value="2147483647">
+                <elementDefinition Id="9ed78add-37f8-4447-bbd7-648b1d34bfc6" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <forkNode Id="198561a2-e14e-410c-b030-23cc5ee8aca7" name="Fork21" isLeaf="false">
+            <elementDefinition Id="ef567071-b55e-48fe-8191-ca1af831af8d" />
+            <objectFlowTargets>
+              <objectFlow Id="c325c620-1b10-4327-83d3-7ab3165a2daf" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="8d0410e4-2465-43a4-8094-d4554269b406" LastKnownName="订单的付款为0" />
+                <elementDefinition Id="02d59a35-d094-4440-96eb-1459875526d7" />
+              </objectFlow>
+              <objectFlow Id="7c5f3e85-2971-4933-b66a-12b166ea66d7" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="e3b33a02-3a53-4857-bb42-7a6843216e81" LastKnownName="金币打开了" />
+                <elementDefinition Id="0a46c4e1-d67e-4316-994f-a03365f1d3d2" />
+              </objectFlow>
+              <objectFlow Id="6dec31cb-d84c-4a05-9e6b-85db25e0a092" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="f400235d-0e4b-466f-86e1-141f4cc815fb" LastKnownName="Others" />
+                <elementDefinition Id="c35795f0-880b-4b36-b045-f1955d78903b" />
+              </objectFlow>
+            </objectFlowTargets>
+          </forkNode>
+          <objectNode Id="8d0410e4-2465-43a4-8094-d4554269b406" name="订单的付款为0" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="89779e75-a323-4972-9fe3-8da94ee3bcd3" />
+            <objectFlowTargets>
+              <objectFlow Id="c824beb6-52ad-48c4-b0a9-2a7e4ca150b7" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="8554ccc2-00b2-4327-b3cb-e65a601258a1" LastKnownName="UpdateCommodityOrderStatus" />
+                <elementDefinition Id="19efc3df-1acf-406c-8316-61f623060957" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="ee6cc315-fdcb-42d8-a5e7-4931774a8198" name="2147483647" value="2147483647">
+                <elementDefinition Id="facfcdc6-bf97-413e-a1e6-b2e20363ed04" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <objectNode Id="e3b33a02-3a53-4857-bb42-7a6843216e81" name="金币打开了" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="11ebd437-861a-4c4b-ba29-8c0ddbf11f04" />
+            <objectFlowTargets>
+              <objectFlow Id="6d194b07-bb15-42aa-8107-cb0ecb752e37" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="aae6b87a-2dc1-4d3d-b511-19aeee2b5f81" LastKnownName="checkgoldpwd" />
+                <elementDefinition Id="dd8986a5-4a0d-472f-84b7-705eaeaa3173" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="3d3fb48b-33ab-4135-9688-02e62be0bd70" name="2147483647" value="2147483647">
+                <elementDefinition Id="7ec18216-9ad4-416e-8778-3e22ece07648" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <objectNode Id="aae6b87a-2dc1-4d3d-b511-19aeee2b5f81" name="checkgoldpwd" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="b25dd66c-74a7-4da5-879a-e34668358dc6" />
+            <objectFlowTargets>
+              <objectFlow Id="df4d91df-980b-4dbd-b731-e0e0aa7c5546" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <callBehaviorActionMoniker Id="b90a2b58-6b9b-41ba-b29e-cc8b8d6ebafb" LastKnownName="/Mobile/CheckGoldPwd" />
+                <elementDefinition Id="a384fb31-a0de-4a94-8091-ce8863117318" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="fcf0e7fa-20bf-4fe7-b632-1ea318f2279f" name="2147483647" value="2147483647">
+                <elementDefinition Id="a27cf938-6630-469f-a7e6-836ee37b2a00" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <objectNode Id="2c325d9b-0209-4281-a0cd-0bf404e0a20a" name="payconfirm" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="a4d7a09a-225f-47a0-85e4-2587ae136cdf" />
+            <objectFlowTargets>
+              <objectFlow Id="210d9113-2782-4cfd-b3c0-be5f38df44b0" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <forkNodeMoniker Id="33c5ddfb-a0e9-4fa0-b773-d0877ec220e4" LastKnownName="Fork3" />
+                <elementDefinition Id="35591339-a768-4ed7-9db3-0adbef69b2e8" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="6a44b86d-2fac-4f98-a27f-cc4c7fd19a0c" name="2147483647" value="2147483647">
+                <elementDefinition Id="9f4e274c-052c-4117-9cff-f5d184933e55" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <objectNode Id="f400235d-0e4b-466f-86e1-141f4cc815fb" name="Others" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="d794bf1b-8733-4b54-b96d-e2482c669cec" />
+            <objectFlowTargets>
+              <objectFlow Id="df8d2b85-0b97-4330-af3a-994aa7ff99ed" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="2c325d9b-0209-4281-a0cd-0bf404e0a20a" LastKnownName="payconfirm" />
+                <elementDefinition Id="beed5bba-99f9-4b54-9c88-ffdd9fbf760e" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="7ceab13b-37b5-4135-9b22-67e73d8bd9e6" name="2147483647" value="2147483647">
+                <elementDefinition Id="fc5dea10-8feb-4146-a516-ab0e2d2db9f7" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <objectNode Id="8554ccc2-00b2-4327-b3cb-e65a601258a1" name="UpdateCommodityOrderStatus" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="144f2eaf-c9bf-49ab-a2e7-18f5dec41728" />
+            <objectFlowTargets>
+              <objectFlow Id="e2b04c37-8a85-4744-9a76-c207d3e28fd8" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <callOperationActionMoniker Id="5d523b70-730e-4303-9514-9f76e6ed69b0" LastKnownName="/PaymentNotify/UpdateCommodityOrderStatus" />
+                <elementDefinition Id="68c777f3-e339-4846-b108-07e9d92eadfd" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="372b3818-bc9c-4a2c-b023-135a3522b7a3" name="2147483647" value="2147483647">
+                <elementDefinition Id="98d7500f-52b0-4c1e-9115-1ef11e36b708" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <callOperationAction Id="32981b1c-6865-4666-b174-5acc23192a65" name="/Mobile/UpdateCommodityOrder" isLeaf="false">
+            <elementDefinition Id="0e636f4b-c39e-4f71-8f31-f95dda021c9e" />
+            <flowNodeTargets>
+              <controlFlow Id="0ebe8514-e0d7-4762-a5e0-06ef5a18b3b1" isLeaf="false">
+                <callOperationActionMoniker Id="921b0c5c-830b-4580-bb56-eb5decfd7494" LastKnownName="SV中UpdateCommodityOrde 1" />
+                <elementDefinition Id="f478043a-de5e-4ae2-9242-f2329882939c" />
+              </controlFlow>
+            </flowNodeTargets>
+          </callOperationAction>
+          <callOperationAction Id="5d523b70-730e-4303-9514-9f76e6ed69b0" name="/PaymentNotify/UpdateCommodityOrderStatus" isLeaf="false">
+            <elementDefinition Id="92f0b6f2-1a44-40d5-bf53-9b198561d291" />
+            <flowNodeTargets>
+              <controlFlow Id="0e5be2b2-fb48-4457-888b-07370dc7c063" isLeaf="false">
+                <callOperationActionMoniker Id="08e67394-9fae-4002-88bf-6fab12a59436" LastKnownName="SV中PayUpdateCommodityOrder" />
+                <elementDefinition Id="17092112-6b3e-400d-aa57-62d9479ab769" />
+              </controlFlow>
+            </flowNodeTargets>
+          </callOperationAction>
+          <objectNode Id="087adee3-0890-40dc-a239-e3d5f3baf64b" name="showOrderDetails重新加载页面" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="9bfd39fa-4e36-4843-93f1-a259e5b50936" />
+            <objectFlowTargets>
+              <objectFlow Id="b425a3a2-0618-4a52-ad4b-7ad25cd6e488" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <activityFinalNodeMoniker Id="3521c5a2-94c9-4953-8b93-0292b1d78456" LastKnownName="ActivityFinal2" />
+                <elementDefinition Id="fc6eb9f8-1218-4d02-8e70-0b81db8ef1a6" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="7a882783-dda8-4778-98e4-fb0462d69951" name="2147483647" value="2147483647">
+                <elementDefinition Id="9460f171-ac7f-46af-bb0b-45cd064c16a7" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <callBehaviorAction Id="b90a2b58-6b9b-41ba-b29e-cc8b8d6ebafb" name="/Mobile/CheckGoldPwd" isLeaf="false">
+            <elementDefinition Id="8d123912-4197-4538-9349-f3b485ce6ccc" />
+            <objectFlowTargets>
+              <objectFlow Id="dd1839e3-b576-473b-b8e9-721db08c9348" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="47dbea35-8e6c-4a37-a6a0-025a1ca09991" LastKnownName="弹出金币密码确认框" />
+                <elementDefinition Id="f0117c43-968a-4e1a-b7bd-10f5ec68a461" />
+              </objectFlow>
+            </objectFlowTargets>
+          </callBehaviorAction>
+          <objectNode Id="47dbea35-8e6c-4a37-a6a0-025a1ca09991" name="弹出金币密码确认框" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="9ac851a7-9b18-4689-bfa5-30ed07cd7487" />
+            <objectFlowTargets>
+              <objectFlow Id="9d970ff4-8dea-414a-9c4f-0ce3bb79e19b" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="005e1687-5542-4a54-9a38-e0ea11870783" LastKnownName="checkGoldPayPwdVal" />
+                <elementDefinition Id="42c721d9-80b7-4502-80fa-f570803b0d0d" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="31e51237-4129-49a0-a3a9-28dd6b89fba2" name="2147483647" value="2147483647">
+                <elementDefinition Id="8c9b4554-e999-429d-bf17-d548e160ec5d" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <callOperationAction Id="8bd20947-c9b1-4b58-a3ef-3e57a8e482ed" name="/Mobile/CheckGoldPayPwdVal" isLeaf="false">
+            <elementDefinition Id="7d89a9af-6b86-4415-b3f5-a9d111142652" />
+            <flowNodeTargets>
+              <controlFlow Id="ef55dc32-352d-439f-bf76-ad30a4082f1d" isLeaf="false">
+                <callOperationActionMoniker Id="aef32423-6603-4c38-b145-b3ea18e22d70" LastKnownName="FSP中CheckPassword" />
+                <elementDefinition Id="06223ced-28b3-40d0-b95a-3694f7c583b9" />
+              </controlFlow>
+            </flowNodeTargets>
+          </callOperationAction>
+          <objectNode Id="005e1687-5542-4a54-9a38-e0ea11870783" name="checkGoldPayPwdVal" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="25cb3f9e-c8f3-48a4-90e8-ed0be2feb72c" />
+            <objectFlowTargets>
+              <objectFlow Id="33ed840c-7401-469d-9265-b7d55e32a329" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <callOperationActionMoniker Id="8bd20947-c9b1-4b58-a3ef-3e57a8e482ed" LastKnownName="/Mobile/CheckGoldPayPwdVal" />
+                <elementDefinition Id="20fe8947-d747-452d-8066-3651eed4bb60" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="f6f82c04-11b0-462f-952f-4a72b89e1361" name="2147483647" value="2147483647">
+                <elementDefinition Id="03c5a9ce-95f2-4b57-8b35-284fa650dc6f" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <objectNode Id="be4646e8-52cc-4a8a-8622-6a4bf8d9980a" name="密码正确后" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="dcfc002f-d394-435e-b0d1-83c9b51fb6b8" />
+            <objectFlowTargets>
+              <objectFlow Id="42564410-06e5-4861-a8a1-82e9a00fd59e" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <forkNodeMoniker Id="22fe14dd-2256-44b3-9042-0b3c7a24e3c9" LastKnownName="Fork4" />
+                <elementDefinition Id="ab4c09f4-d7ce-456f-962e-7e53fd38bf09" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="ccb1dd60-31a1-467e-bd0f-e4d1c4f1756c" name="2147483647" value="2147483647">
+                <elementDefinition Id="ac8a20a7-3d84-4f3e-8bfc-b9c6b14c94a3" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <forkNode Id="33c5ddfb-a0e9-4fa0-b773-d0877ec220e4" name="Fork3" isLeaf="false">
+            <elementDefinition Id="fbeb2134-3dc3-4b2b-b12b-b0c75889d5de" />
+            <objectFlowTargets>
+              <objectFlow Id="f5d84211-39e8-4b27-be68-ae7becc2a96f" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="087ed45d-35ae-4984-bb62-b02cf795b5c6" LastKnownName="实付款为0，直接调接口的全金币/代金券支付" />
+                <elementDefinition Id="58937ebf-df4e-44fe-8695-02202b0286db" />
+              </objectFlow>
+              <objectFlow Id="538cea21-bf00-4304-9dbf-7ec4b0c06775" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="a695f2ce-cb35-4e0b-94be-c1f22f6dd270" LastKnownName="jinherPay" />
+                <elementDefinition Id="a123e8f7-b155-4134-aca3-6a2cab2021fb" />
+              </objectFlow>
+            </objectFlowTargets>
+          </forkNode>
+          <callBehaviorAction Id="c7e2227a-28f9-45cd-94df-e8265e10fe3f" name="/Mobile/GoldPayCommodityOrder" isLeaf="false">
+            <elementDefinition Id="c85ff386-8ce9-4935-8b16-379ad3b2a8c4" />
+            <flowNodeTargets>
+              <controlFlow Id="d4347241-7b66-4ba9-a525-6d4ccda87e8f" isLeaf="false">
+                <callOperationActionMoniker Id="ad89c1d0-0f81-43b2-a24b-dee41b9b9208" LastKnownName="FSP中PayByPayeeIdBatch" />
+                <elementDefinition Id="73c48ac1-6660-4be2-93b3-703d589e5f46" />
+              </controlFlow>
+            </flowNodeTargets>
+          </callBehaviorAction>
+          <objectNode Id="087ed45d-35ae-4984-bb62-b02cf795b5c6" name="实付款为0，直接调接口的全金币/代金券支付" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="ce954200-55f4-459a-9262-c723a16337d1" />
+            <objectFlowTargets>
+              <objectFlow Id="0652e2df-53bb-4715-ad85-cae81d151549" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <callBehaviorActionMoniker Id="c7e2227a-28f9-45cd-94df-e8265e10fe3f" LastKnownName="/Mobile/GoldPayCommodityOrder" />
+                <elementDefinition Id="5c57f254-0639-4db3-8d00-a83ba309d4ff" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="9d57afe2-24c3-4161-a6e7-5905d8bd49a1" name="2147483647" value="2147483647">
+                <elementDefinition Id="13f84074-fefe-4322-9b9a-63e0943019bc" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <callOperationAction Id="921b0c5c-830b-4580-bb56-eb5decfd7494" name="SV中UpdateCommodityOrde 1" isLeaf="false">
+            <elementDefinition Id="b7be1474-77fc-4483-b54c-9aded249c30e" />
+            <objectFlowTargets>
+              <objectFlow Id="c38051b8-7f84-40c1-bcbb-d5de1db83a71" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="087adee3-0890-40dc-a239-e3d5f3baf64b" LastKnownName="showOrderDetails重新加载页面" />
+                <elementDefinition Id="f67c87c1-9a52-4e5b-87cd-9bf5b8a93ddf" />
+              </objectFlow>
+            </objectFlowTargets>
+          </callOperationAction>
+          <callOperationAction Id="08e67394-9fae-4002-88bf-6fab12a59436" name="SV中PayUpdateCommodityOrder" isLeaf="false">
+            <elementDefinition Id="dcf1c092-5a7a-438f-9fbe-31a6d6421bcf" />
+            <objectFlowTargets>
+              <objectFlow Id="8bd81c13-8b83-4fe1-bf5e-f64a2182ad3b" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="087adee3-0890-40dc-a239-e3d5f3baf64b" LastKnownName="showOrderDetails重新加载页面" />
+                <elementDefinition Id="ec7684bd-c5cd-4faa-892b-78ba61850e18" />
+              </objectFlow>
+            </objectFlowTargets>
+          </callOperationAction>
+          <callOperationAction Id="aef32423-6603-4c38-b145-b3ea18e22d70" name="FSP中CheckPassword" isLeaf="false">
+            <elementDefinition Id="563a9102-fe94-47a3-81b9-5025c96b7e79" />
+            <objectFlowTargets>
+              <objectFlow Id="becea15c-feb2-4ccd-b440-403fa745e40f" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="be4646e8-52cc-4a8a-8622-6a4bf8d9980a" LastKnownName="密码正确后" />
+                <elementDefinition Id="13bb0ee3-823d-481f-9fbe-739b49da5dad" />
+              </objectFlow>
+            </objectFlowTargets>
+          </callOperationAction>
+          <callOperationAction Id="ad89c1d0-0f81-43b2-a24b-dee41b9b9208" name="FSP中PayByPayeeIdBatch" isLeaf="false">
+            <elementDefinition Id="e485ad96-b239-4dea-9e40-17a832f4b530" />
+            <objectFlowTargets>
+              <objectFlow Id="f1438855-e3de-4d6b-9d53-0aad2f5d71a2" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="087adee3-0890-40dc-a239-e3d5f3baf64b" LastKnownName="showOrderDetails重新加载页面" />
+                <elementDefinition Id="eb4045e0-f194-4c2d-9e93-b59f4d7594eb" />
+              </objectFlow>
+            </objectFlowTargets>
+          </callOperationAction>
+          <activityFinalNode Id="0749206a-5370-437d-835a-fb14bfaf8ed0" name="ActivityFinal1" isLeaf="false">
+            <elementDefinition Id="9a685fe4-6269-4294-b964-98f2e13127e1" />
+          </activityFinalNode>
+          <activityFinalNode Id="3521c5a2-94c9-4953-8b93-0292b1d78456" name="ActivityFinal2" isLeaf="false">
+            <elementDefinition Id="3d25b85c-21ef-48fe-8475-a53feb544c74" />
+          </activityFinalNode>
+          <objectNode Id="a695f2ce-cb35-4e0b-94be-c1f22f6dd270" name="jinherPay" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="923b47ea-8f54-40da-8228-2c3336c466dc" />
+            <objectFlowTargets>
+              <objectFlow Id="5f7a4c89-dba6-424f-af29-2fb6eb8bfab3" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <activityFinalNodeMoniker Id="0749206a-5370-437d-835a-fb14bfaf8ed0" LastKnownName="ActivityFinal1" />
+                <elementDefinition Id="908d2346-750a-4289-ae45-b35d7911edc0" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="d7820fc0-d4f4-481d-b648-6868a836962b" name="2147483647" value="2147483647">
+                <elementDefinition Id="0af4e513-6da0-4ab1-b375-5dc1d0897134" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <forkNode Id="22fe14dd-2256-44b3-9042-0b3c7a24e3c9" name="Fork4" isLeaf="false">
+            <elementDefinition Id="219e0690-b8c3-4fe2-9ed2-7317b4cb3ea7" />
+            <objectFlowTargets>
+              <objectFlow Id="5a197f19-32d9-49cd-8247-fc2120ea4b7e" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="c5b2c293-d722-43dc-b532-8d97ee0cf838" LastKnownName="未支付" />
+                <elementDefinition Id="e239b5d3-ec83-457c-bcc4-d433609c9ca5" />
+              </objectFlow>
+              <objectFlow Id="023d2a81-3390-4d45-8547-434d331467f5" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="839111ac-4fc5-40ef-b882-5d036e90cc69" LastKnownName="已支付则确认收货" />
+                <elementDefinition Id="bacd636d-5e2e-4692-a0e3-3b46ab0807e6" />
+              </objectFlow>
+            </objectFlowTargets>
+          </forkNode>
+          <objectNode Id="c5b2c293-d722-43dc-b532-8d97ee0cf838" name="未支付" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="6bd9ebf4-0cd3-43f2-8da2-a7d741d7de10" />
+            <objectFlowTargets>
+              <objectFlow Id="20cd6837-7144-4406-b9dc-859504288866" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="2c325d9b-0209-4281-a0cd-0bf404e0a20a" LastKnownName="payconfirm" />
+                <elementDefinition Id="9edf9f4b-4f13-4644-8222-f130a1a9df58" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="8c458a3e-9f0c-46b4-8550-b3f73cfcaf90" name="2147483647" value="2147483647">
+                <elementDefinition Id="4e3944dc-b14d-43cf-839e-ea1ba035ccc6" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <objectNode Id="839111ac-4fc5-40ef-b882-5d036e90cc69" name="已支付则确认收货" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="827301f9-29c5-4633-b444-23d8e769f48a" />
+            <objectFlowTargets>
+              <objectFlow Id="280a4840-0ccf-4a33-99ae-b79d33f75bfb" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <activityFinalNodeMoniker Id="314a2d0c-5ee3-4f3b-9ba9-8df93929512e" LastKnownName="ActivityFinal3" />
+                <elementDefinition Id="40cb69f3-b83a-48bd-bb98-4b026b938449" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="4fa96eff-696d-4772-9dad-e0a1f0bf8a45" name="2147483647" value="2147483647">
+                <elementDefinition Id="4bb662d0-a61d-47cb-95ad-f65068b758e0" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <activityFinalNode Id="314a2d0c-5ee3-4f3b-9ba9-8df93929512e" name="ActivityFinal3" isLeaf="false">
+            <elementDefinition Id="6b7410b5-bd9c-4e02-a138-cec985208582" />
+          </activityFinalNode>
+          <activityFinalNode Id="8f7101d8-0fa8-4668-88cf-37994c27f197" name="ActivityFinal4" isLeaf="false">
+            <elementDefinition Id="16a3f5f7-e28d-4a75-8b67-02c0648dcf61" />
+          </activityFinalNode>
+          <activityFinalNode Id="a67a60ed-d4b8-497b-8d20-d2d29cb54100" name="ActivityFinal5" isLeaf="false">
+            <elementDefinition Id="871dd442-efde-4400-8ce1-637dc17f194f" />
+          </activityFinalNode>
+          <activityFinalNode Id="b2d00e2e-fada-4362-88d4-d980c5a35dd0" name="ActivityFinal6" isLeaf="false">
+            <elementDefinition Id="021d940a-507c-47ab-8192-b3338827b704" />
+          </activityFinalNode>
+        </nodes>
+      </activity>
+    </activityRootModelHasActivity>
+  </packagedElements>
+  <package Id="fbf90c77-ce42-42f9-851e-aaf3e214069b" name="Jinher.AMP.BTP.UML">
+    <elementDefinition Id="f2301d4e-995c-471f-a03f-000aca214d35" />
+    <profileInstances>
+      <packageHasProfileInstances Id="db418b16-2b69-4219-9347-cb99f9bdc0bd">
+        <profileInstance Id="ac91a8dd-c23d-49f5-b16f-9b01c9dc879d" name="StandardProfileL2">
+          <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+        </profileInstance>
+        <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+      </packageHasProfileInstances>
+      <packageHasProfileInstances Id="3e44211e-0680-4fec-a4da-5055106cc510">
+        <profileInstance Id="e166940a-cc7d-4391-81fc-ab45d924a26a" name="StandardProfileL3">
+          <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+        </profileInstance>
+        <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+      </packageHasProfileInstances>
+    </profileInstances>
+  </package>
+</activityRootModel>

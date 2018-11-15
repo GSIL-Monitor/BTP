@@ -1,0 +1,21 @@
+﻿@{
+    Layout = null;
+    List<Jinher.AMP.CBC.Deploy.CityDTO> tempList = ViewBag.tempList;
+    string selectedCityCode = ViewBag.tempCode;
+}
+<select id="citySelect" onchange="toSelectZone(this)">
+    @{
+        foreach (Jinher.AMP.CBC.Deploy.CityDTO tempObject in tempList)
+        {
+            if (tempObject.Code.Equals(selectedCityCode))
+            {
+                <option value="@tempObject.Code" selected="selected">@tempObject.Name</option>
+            }
+            else
+            {
+                <option value="@tempObject.Code">@tempObject.Name</option>
+            }
+        }
+
+    }
+</select>

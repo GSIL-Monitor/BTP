@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewBag.Title</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet"  href="/Scripts/element-ui/lib/theme-default/index.css" />
+    <link rel="stylesheet" href="/Content/app.css" />
+    @RenderSection("Css", required: false)
+    @RenderSection("CssStyles", required: false)
+    <script>
+		try{
+			var rootPath = "@Url.Content("~")";
+		    var arr = window.location.host.split('.');
+		    if (arr.length > 0) {
+		        document.domain =  arr[arr.length - 2] +"."+ arr[arr.length - 1];
+		    }
+		} catch(err) { }
+		function getCurrency() {
+		    return "@Jinher.AMP.BTP.UI.Util.WebUtil.GetCurrency()";
+		}
+    </script>
+</head>
+<body>
+    <div id="app">
+        @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+        {
+            <el-alert title="@ViewBag.ErrorMessage" type="error"></el-alert>
+            <br />
+        }
+        <div class="preloader" v-if="false"></div>
+        <div id="content" v-cloak>
+        @RenderBody()
+        </div>
+    </div>
+</body>
+<script src="/Scripts/vue.min.js"></script>
+<script src="/Scripts/vue-resource.min.js"></script>
+<script src="/Scripts/moment.min.js"></script>
+<script src="/Scripts/element-ui/lib/index.js"></script>
+<script src="/Scripts/app.js"></script>
+<script>
+    //重新设置iframe高度.
+    function newSetIframeHeight(h) {
+        if (typeof (h) == "undefined") {
+            h = 600;
+        }
+        if (window.parent != window) {
+            var body = document.body;
+            var body_height = body.clientHeight + h;
+            var oriHeight = window.parent.document.body.clientHeight - window.parent.document.getElementById("header").clientHeight - window.parent.document.getElementsByClassName("footer")[0].clientHeight;
+            var setHeight = body_height > oriHeight ? body_height : oriHeight - 5;
+            window.parent.document.getElementById("mainframe").style.height = setHeight + "px";
+            body.style.height = setHeight + "px";
+        }
+    }
+
+    //重新设置iframe宽度.
+    function newSetIframeWidth() {
+        var parentWindow = $(window.parent.document);
+        parentWindow.find('#mainframe').removeAttr('style');
+        var body = $("body").removeAttr('style');
+        var body_width = body.width() + 20;
+        parentWindow.find('#mainframe').width(body_width);
+        body.width(body_width);
+    }
+
+    Vue.http.interceptors.push(function (request, next) {
+        next(function (response) {
+            if (window.defaultVue) {
+                defaultVue.loading = false;
+                defaultVue.fullscreenLoading = false;
+                if (response.status === 500) {
+                    Vue.prototype.$message({ message: '请求异常，请重试。', type: 'error' });
+                }
+            }
+        });
+    });
+</script>
+@RenderSection("ClientScript", required: false)
+@RenderSection("Script", required: false)
+</html>

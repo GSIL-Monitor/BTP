@@ -1,0 +1,456 @@
+﻿@using System
+@using System.Collections.Generic
+@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+    Jinher.AMP.BTP.Deploy.CustomDTO.InvoiceSettingDTO invSetting = ViewBag.InvoiceSetting;
+    string appid = ViewBag.appId;
+    string ordinaryChked = "";
+    string electronicChked = "";
+    string vatChked = "";
+    string wuChked = "";
+    if (invSetting.IsOrdinaryInvoice == true)
+    {
+        ordinaryChked = " checked='checked' ";
+    }
+    if (invSetting.IsElectronicInvoice == true)
+    {
+        electronicChked = " checked='checked' ";
+    }
+    if (invSetting.IsVATInvoice == true)
+    {
+        vatChked = " checked='checked' ";
+    }
+    Jinher.AMP.BTP.Deploy.OrderFieldDTO orderset = ViewBag.OrderSet;
+    List<string> appids = new List<string>();
+    if (orderset.AppId != Guid.Empty)
+    {
+        appids.Add(orderset.AppId.ToString());
+    }
+}
+@section TitleHtml
+{
+    <title>设置发票信息</title>
+}
+@section CssStyles{
+    <link href="/Content/Mobile/zphStyle/mobileKit-min.css" rel="stylesheet" type="text/css" />
+    <link href="/Content/Mobile/zphStyle/icons.css" rel="stylesheet" type="text/css" />
+    <link href="/Content/Mobile/zphStyle/skin.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="/Content/Mobile/zphStyle/InvoiceInfo.css?v=1" />
+    <style type="text/css">
+        .btn.disabled, .btn:disabled
+        {
+            opacity: .6;
+            filter: alpha(opacity=60);
+            border: 0;
+            background-color: #424854;
+            pointer-events: none;
+        }
+        .btn.disabled:active, .btn:disabled
+        {
+            opacity: .6;
+            filter: alpha(opacity=60);
+            border: 0;
+            background-color: #ccc;
+            pointer-events: none;
+        }
+    </style>
+}
+@section ClientScript
+{
+    @Html.Raw(@Jinher.AMP.BTP.UI.Util.WebUtil.GetBehaviorRecordJs())
+    <script type="text/javascript">
+        //JS验证 不是有效的值
+        var service_type = "0x0021";
+        var logOrderId = 'orderid:' + getQueryString("orderId") + '|';
+
+        function JsVilaDataNull(obj) {
+            if (obj != undefined && obj != "" && obj != "null" && obj != null && obj != "undefined" && obj) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        var guidEmpty = "00000000-0000-0000-0000-000000000000";
+        var InvoiceDTO =
+        {
+            Id: guidEmpty,
+            CommodityOrderId: guidEmpty,
+            InvoiceTitle: "",
+            InvoiceContent: "明细",
+            InvoiceType: "",
+            ReceiptPhone: "",
+            ReceiptEmail: "",
+            Remark: "",
+            Category: "1",
+            SubId: guidEmpty
+        };
+
+        //检查手机
+        function checkMobile(value) {
+            var mob_preg = /^1[3|4|5|7|8][0-9]{9}$/;
+
+            if (!mob_preg.test(value)) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        //检查邮箱
+        function checkEmail(email) {
+            var reg = /^\w+((-\w+)|(\.\w+))*\@@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/;
+            var isok = reg.test(email);
+            if (!isok) {
+                return false;
+            }
+            return true;
+        }
+
+        // 检查纳税人
+        function Code(value) {
+            var reg = /^(\d|\w){15,20}$/;
+            var isok = reg.test(value);
+            if (!isok) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+
+        //验证数据合法性。
+        function validData(InvoiceDTO) {
+            if (InvoiceDTO.InvoiceType == 1 && !JsVilaDataNull(InvoiceDTO.InvoiceTitle)) {
+                toast("请填写发票抬头!");
+                return false;
+            }
+            if (InvoiceDTO.Category == 1) {
+                var invoiceType = $('input[name="InvoiceType"]:checked').val();
+                if (invoiceType == 2 && !JsVilaDataNull(InvoiceDTO.InvoiceTitle)) {
+                    toast("请填写单位名称!");
+                    return false;
+                } else if (invoiceType == 2 && !JsVilaDataNull(InvoiceDTO.Code)) {
+                    toast("请填写纳税人识别号!");
+                    return false;
+                } else if (invoiceType == 2 && !Code(InvoiceDTO.Code)) {
+                    toast("请填写有效的纳税人识别号");
+                    return false;
+               }
+            } else if (InvoiceDTO.Category == 2) {
+                var invoiceType = $('input[name="InvoiceType"]:checked').val();
+                if (invoiceType == 2 && !JsVilaDataNull(InvoiceDTO.InvoiceTitle)) {
+                    toast("请填写单位名称!");
+                    return false;
+                } else if (invoiceType == 2 && !JsVilaDataNull(InvoiceDTO.Code)) {
+                    toast("请填写纳税人识别号!");
+                    return false;
+                } else if (invoiceType == 2 && !Code(InvoiceDTO.Code)) {
+                    toast("请填写有效的纳税人识别号");
+                    return false;
+                } else if (!JsVilaDataNull(InvoiceDTO.ReceiptPhone)) {
+                    toast("请填写收票人手机!");
+                    return false;
+                } else if (!checkMobile(InvoiceDTO.ReceiptPhone)) {
+                    toast("请填写有效的收票人手机!"); 
+                    return false;
+                } else if (!JsVilaDataNull(InvoiceDTO.ReceiptEmail)) {
+                    toast("请填写收票人邮箱!");
+                    return false;
+                } else if (!checkEmail(InvoiceDTO.ReceiptEmail)) {
+                    toast("请填写有效的收票人邮箱!");
+                    return false;
+                }
+            } else if (InvoiceDTO.Category == 4) {
+                return true;
+            }
+            return true;
+        }
+
+        $(function() {
+            $("#switch").switch("on");//默认开启
+            $("#switch").on("click",function(){
+                var state = $("#switch").switch();
+                if(state){
+                    // 关闭
+                    sessionStorage._useInvoice = '';
+                    $('#btnInvoiceCancel').removeClass('hide');
+                    $('#btnInvoiceOK').addClass('hide');
+                }else{
+                    // 开启
+                    sessionStorage._useInvoice = 1;
+                    $('#btnInvoiceCancel').addClass('hide');
+                    $('#btnInvoiceOK').removeClass('hide');
+                }
+            });
+            if (!isWeiXin() && sessionStorage.source == "share") { //在应用内
+                $("#header").removeClass("hide");
+            }
+
+            if (document.referrer.indexOf("/Mobile/CreateOrder") > -1) {
+                sessionStorage.backUrl = document.referrer;
+            } 
+
+            $('#chooseType>li>label').on('click', function() {
+                $('#infoList').addClass('hide');
+                var invoiceCategory = $(this).find("input").val();
+                var tt = $(this).find('input').prop('disabled');
+                if (tt == true) {
+                    return false;
+                }
+                if (invoiceCategory == 4) {
+                    $('.table-view>li:not(.one)').addClass('hide');
+                    //是否有增票资质
+                    if ('@invSetting.IsVatInvoiceProof'.toLowerCase() == 'true') {
+                        $('.notice').addClass('hide');
+                        $('#btnInvoiceOK').removeClass('disabled');
+                    } else {
+                        $('.top5').addClass('hide');
+                        $('.border-bottom').addClass('hide');
+                        $('.notice').removeClass('hide');
+                        $('#btnInvoiceOK').addClass('disabled');
+                        $('#invoice-company').addClass('hide');
+                        $('#invoice-context').addClass('hide');
+                    }
+                } else {
+                    $('.table-view>li:not(.one)').removeClass('hide');
+                    $('.top5').removeClass('hide');
+                    $('.border-bottom').removeClass('hide');
+                    $('.notice').addClass('hide');
+                    $('.border-bottom').addClass('hide');
+                    $('#btnInvoiceOK').removeClass('disabled');
+                    $('#invoice-company').addClass('hide');
+                    $('#invoice-context').removeClass('hide');
+
+                    //$("input[name='InvoiceType'][value='1']").prop("checked", "checked");
+
+                    if (invoiceCategory == 2) {
+                    } else {
+                        $('#top5').addClass('hide');
+                    }
+                }
+            });
+
+            $('#unit').on('click', 'input[type=radio]', function() {
+                if ($(this).attr('id') == "addunit" && $(this).prop('checked')) {
+                    $('#invoice-company').removeClass('hide');
+                    $('#infoList').removeClass('hide');
+                    $('#invoice-context').addClass('hide');
+                    //$('.border-bottom').removeClass('hide');
+                } else {
+                    $('#invoice-company').addClass('hide');
+                    $('#invoice-context').removeClass('hide');
+                    $('#infoList').addClass('hide');
+                   // $('.border-bottom').addClass('hide');
+                }
+            });
+
+            
+            //将数据显示到页面。
+            if (JsVilaDataNull(sessionStorage.InvoiceDTO)) {
+                InvoiceDTO = $.parseJSON(sessionStorage.InvoiceDTO);
+                $('input[name="InvoiceCategory"][value="' + InvoiceDTO.Category + '"]').attr("checked", "checked").click();
+                if(InvoiceDTO.InvoiceType == "1") {
+                    // 个人
+                    $('.border-bottom').addClass('hide');
+                    $("#invoice-context").val(InvoiceDTO.InvoiceTitle);
+                    $("input[name='InvoiceType'][value='0']").prop("checked", "checked");
+
+                    $('#invoice-company').addClass('hide');
+                    $('#invoice-context').removeClass('hide');
+                    $('#infoList').addClass('hide');
+                } else {
+                    // 单位
+                    $('.border-bottom').removeClass('hide');
+                    $("#txtInvoiceTitle").val(InvoiceDTO.InvoiceTitle);
+                    $("#txtCode").val(InvoiceDTO.Code);
+                    $("input[name='InvoiceType'][value='1']").prop("checked", "checked");
+
+                    $('#invoice-company').removeClass('hide');
+                    $('#invoice-context').addClass('hide');
+                    $('#infoList').removeClass('hide');
+                }
+                $('input[name="InvoiceType"][value="' + InvoiceDTO.InvoiceType + '"]').attr("checked", "checked");
+                $("#txtReceiptPhone").val(InvoiceDTO.ReceiptPhone);
+                $("#txtReceiptEmail").val(InvoiceDTO.ReceiptEmail);
+            } else {
+                $('#chooseType>li>label input:checked').click();
+            }
+
+            $("#infoList").on("click", function () {
+                window.location.href = "/Mobile/InvoiceInfoList?category=" + $('input[name="InvoiceCategory"]:checked').val() + "&appId=" + getQueryString('appId');
+            });
+
+            if (getQueryString('category') != null) {
+                var category = getQueryString('category');
+                $('input[name="InvoiceCategory"][value="' + category + '"]').attr("checked", "checked").click();
+                $('input[name="InvoiceType"][value="2"]').attr("checked", "checked").click();
+                $("#txtInvoiceTitle").val(getQueryString('invoiceTitle'));
+                $("#txtCode").val(getQueryString('code'));
+            }
+        });
+
+
+
+        function  btnInvoiceOK() {
+
+             logBTP(sessionStorage.SrcType, service_type, "0x0028", '', logOrderId);
+                if ($("#btnInvoiceOK").is(".disabled")) {
+                    return;
+                }
+                InvoiceDTO.InvoiceContent = "明细";
+                InvoiceDTO.InvoiceType = $('input[name="InvoiceType"]:checked').val();
+                if (InvoiceDTO.InvoiceType == 2) {
+                    InvoiceDTO.InvoiceTitle = $("#txtInvoiceTitle").val();
+                } else {
+                    InvoiceDTO.InvoiceTitle = $("#invoice-context").val();
+                }
+
+                InvoiceDTO.Category = $('input[name="InvoiceCategory"]:checked').val();
+                if (InvoiceDTO.Category == 2) {
+                    InvoiceDTO.ReceiptPhone = $("#txtReceiptPhone").val();
+                    InvoiceDTO.ReceiptEmail = $("#txtReceiptEmail").val();
+                } else {
+                    InvoiceDTO.ReceiptPhone = "";
+                    InvoiceDTO.ReceiptEmail = "";
+                }
+                InvoiceDTO.Code = $("#txtCode").val();
+                if (!validData(InvoiceDTO)) {
+                    return;
+                }
+
+                sessionStorage.InvoiceDTO = JSON.stringify(InvoiceDTO);
+
+                if (!JsVilaDataNull(sessionStorage.backUrl)) {
+                    sessionStorage.backUrl = "/Mobile/CreateOrder";
+                }
+                if (sessionStorage.backUrl.indexOf("?") > -1) {
+                    sessionStorage.backUrl += "&";
+                } else {
+                    sessionStorage.backUrl += "?"
+                }
+                sessionStorage.backUrl = sessionStorage.backUrl.replace(/&back=[^&]*/g, "");
+                sessionStorage.backUrl = sessionStorage.backUrl.replace(/\?back=[^&]*&/g, "\?");
+                sessionStorage.backUrl += "back=InvoiceInfo";
+                sessionStorage._useInvoice = true;
+                document.location.href = sessionStorage.backUrl;
+            
+        }
+
+    </script>
+}
+<div class="page">
+    <div class="content">
+        <div class="info">请认真核对开票信息，因个人原因造成的开票错误不予退票</div>
+        <!--是否开发票-->
+        <div class="header">
+            <div class="header-content">
+                <span class="title">开具发票</span>
+                <div class="switch" id="switch">
+                    <div class="switch-handle"></div>
+                    <input type="checkbox"/>
+                </div>
+            </div>
+            <div class="tips">您也可以在收货后到“订单详情”申请电子发票，或联系客服开具增值税发票</div>
+        </div>
+        <!--发票类型-->
+        <div class="invoice-type" style="margin-top:10px">
+            <div class="title">
+                发票类型</div>
+            <ul class="invoice-type-list" id="chooseType">
+                @if (invSetting.IsOrdinaryInvoice)
+                {
+                    <li>
+                        <label class="ui-radio">
+                            <input type="radio" name="InvoiceCategory" @ordinaryChked value="1"/>
+                            <span class="icon-checked">增值税普通发票</span>
+                        </label>
+                    </li>
+                }
+                @if (invSetting.IsElectronicInvoice)
+                {
+                    <li>
+                        <label class="ui-radio">
+                            <input type="radio" name="InvoiceCategory" @electronicChked value="2"/>
+                            <span class="icon-checked">电子发票</span>
+                        </label>
+                    </li>
+                }
+                @if (invSetting.IsVATInvoice)
+                {
+                    <li>
+                        <label class="ui-radio">
+                            <input type="radio" name="InvoiceCategory" @vatChked value="4"/>
+                            <span class="icon-checked">增值税专用发票</span>
+                        </label>
+                    </li>
+                }
+                @if (appids.Contains(appid))
+                {
+                    <li>
+                        <label class="ui-radio">
+                            <input type="radio" name="InvoiceCategory" @wuChked value="3"/>
+                            <span class="icon-checked">不要发票</span>
+                        </label>
+                    </li>
+                }
+            </ul>
+        </div>
+        <!--发票抬头-->
+        <div class="invoice-type top5" style="display:-webkit-box;display:-webkit-flex;display: flex;align-items: center;">
+            <!--<div class="title">发票抬头</div>-->
+            <ul class="invoice-type-list" id="unit">
+                <li>
+                    <label class="ui-radio">
+                        <input type="radio" name="InvoiceType" checked="checked" value="1" />
+                        <span class="icon-checked">个人</span>
+                    </label>
+                </li>
+                <li>
+                    <label class="ui-radio">
+                        <input type="radio" name="InvoiceType" id="addunit" value="2" />
+                        <span class="icon-checked">单位</span>
+                    </label>
+                </li>
+            </ul>
+            <img id="infoList" class="right hide" src="/Content/Mobile/yj-angle-right.png" style="width: 8px;height: 12px;">
+        </div>
+        <input id="invoice-context" type="text" placeholder="发票抬头" class="invoice-input border-top" />
+
+        <!--公司信息-->
+        <div id="invoice-company" class="invoice-company hide">
+            <div class="invoice-content" style="border-top: 1px solid #e8e8e8;">
+                <input id="txtInvoiceTitle" type="text" value="" placeholder="单位名称" maxlength="30"/>
+                <input id="txtCode" type="text" value="" placeholder="纳税人识别号">
+            </div>
+            <!--<a id="infoList"></a>-->
+        </div>
+        <!--收票人信息-->
+        <div id="top5" class="top5">
+            <div class="invoice-company-title">
+                收票人信息</div>
+            <div class="invoice-company">
+                <div class="invoice-content">
+                    <input id="txtReceiptPhone" type="text" placeholder="收票人手机号">
+                    <input id="txtReceiptEmail" type="text" placeholder="收票人邮箱">
+                </div>
+            </div>
+        </div>
+        <!--发票内容-->
+       <!-- <div class="invoice-type top5">
+            <div class="title">
+                发票内容</div>
+            <ul class="invoice-type-list">
+                <label class="ui-radio">
+                    <input type="radio" name="InvoiceContent" checked="checked" />
+                    <span class="icon-checked">明细</span>
+                </label>
+            </ul>
+        </div>-->
+        <!-- <p class="notice hide">增值税发票的开据需开通增票资质。请登录金和IU平台（appmfl.com）在账户信息——增票资质中填写资料开通资质后，方可在移动端开据增值税发票。</p> -->
+    </div>
+    <footer class="footer">
+        <a id="btnInvoiceOK" href="javascript:btnInvoiceOK()" class="btn">使用</a>
+        <a id="btnInvoiceCancel" href="javascript:void(0)" class="btn unabled hide">使用</a>
+    </footer>
+</div>

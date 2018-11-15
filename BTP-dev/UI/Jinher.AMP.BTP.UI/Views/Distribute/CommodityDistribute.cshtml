@@ -1,0 +1,168 @@
+﻿@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+}
+@section TitleHtml
+{
+    <title>我要分销</title>
+}
+@section CssStyles{
+    @*    <link href="/Content/Mobile/zphStyle/mobileKit-min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="/Content/style/icons.css" />
+    <link rel="stylesheet" href="/Content/style/skin.css" />
+    <link rel="stylesheet" href="/Content/Mobile/thinkChange.css" />*@
+    <link rel="stylesheet" type="text/css" href="/Content/Mobile/distribute/distribution_own.css">
+}
+@section ClientScript
+{
+    <script type="text/javascript">
+        var distributeUrl = "@Html.Raw(ViewBag.distributeUrl)";
+        var shareImage = "@Html.Raw(ViewBag.shareImage)";
+        var shareTitle = "@ViewBag.shareTitle";
+        var shareUrl = "@Html.Raw(ViewBag.Url)";
+
+        if (!sessionStorage.source || sessionStorage.source == "null" || sessionStorage.source == "undefined") {
+            sessionStorage.source = getQueryString("source");
+        }
+        function encodeUTF8(str) {
+            var temp = "", rs = "";
+            for (var i = 0, len = str.length; i < len; i++) {
+                temp = str.charCodeAt(i).toString(16);
+                rs += "\\u" + new Array(5 - temp.length).join("0") + temp;
+            }
+            return rs;
+        }
+        $(function () {
+            if (sessionStorage.source == "share") {
+                $("#link-btn").hide();
+            }
+            else {
+                $("#link-btn").show();
+            }
+            $("#btnShare").click(function () {
+                if (sessionStorage.source == "share") {
+                } else {
+                    var base64 = new Base64();
+                    var para = "{\"businessJson\":\"{\\\"Title\\\":\\\"" + shareTitle + "\\\",\\\"content\\\":\\\"" + "众多优质低价商品等你来抢，注册成为分销商， 还能拿佣金呢！还等什么，快来参与吧~" + "\\\",\\\"ShareUrl\\\":\\\"" + distributeUrl + "\\\",\\\"ImageUrl\\\":\\\"" + shareImage + "\\\",\\\"ShareType\\\":\\\"0\\\"}\"}";
+                    window.location.href = "jhoabrowser://share?args=" + base64.encode(para) + "&tag=" + base64.encode(_pageId);
+                }
+            });
+            $("#btnShareMs").click(function () {
+                var url = "@ViewBag.Logo";
+                if (sessionStorage.source == "share") {
+                } else {
+                    var base64 = new Base64();
+                    var para = "{\"businessJson\":\"{\\\"Title\\\":\\\"" + shareTitle + "\\\",\\\"content\\\":\\\"" + "欢迎光临我的微信小店~" + "\\\",\\\"ShareUrl\\\":\\\"" + shareUrl + "\\\",\\\"ImageUrl\\\":\\\"" + url + "\\\",\\\"ShareType\\\":\\\"0\\\"}\"}";
+                    window.location.href = "jhoabrowser://share?args=" + base64.encode(para) + "&tag=" + base64.encode(_pageId);
+                }
+            });
+            $("#deCode").live("touchstart", function () {
+                timeout = setTimeout(function () {
+                    var url = "@ViewBag.distributeQrCodeurl";
+//                    if (sessionStorage.source == "share") {
+//                        document.location.href = url;
+//                    } else {
+                        var agrsUrl = "{\"businessJson\":\"{\\\"url\\\":\\\"" + encodeUTF8(url) + "\\\"}\",\"businessType\":2}";
+                        var agrsUrlBase64 = new Base64().encode(agrsUrl);
+                        var tag = new Base64().encode(rand);
+                        //businessType = 1时url传复制链接按钮的地址  businessType = 2时url传二维码url地址
+                        window.location.href = "jhoabrowser://copyDistributeUrl?args=" + agrsUrlBase64 + "&tag=" + tag;
+                    //}
+                }, 2000);
+            });
+            $("#deCode").live("touchend", function () {
+                clearTimeout(timeout);
+            });
+        });
+
+        function uuid() {
+            var s = [];
+            var hexDigits = "0123456789abcdef";
+            for (var i = 0; i < 36; i++) {
+                s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+            }
+            s[14] = "4"; // bits 12-15 of the time_hi_and_version field to 0010
+            s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1); // bits 6-7 of the clock_seq_hi_and_reserved to 01
+            s[8] = s[13] = s[18] = s[23] = "-";
+
+            var uuid = s.join("");
+            return uuid;
+        }
+        var rand = uuid();
+        function copy_code(copyText) {
+            if (window.clipboardData) {
+                window.clipboardData.setData("Text", copyText)
+            }
+            else {
+                var flashcopier = 'flashcopier';
+                if (!document.getElementById(flashcopier)) {
+                    var divholder = document.createElement('div');
+                    divholder.id = flashcopier;
+                    document.body.appendChild(divholder);
+                }
+                document.getElementById(flashcopier).innerHTML = '';
+                var divinfo = '<embed src="/Content/Mobile/_clipboard.swf" FlashVars="clipboard=' + encodeURIComponent(copyText) + '" width="0" height="0" type="application/x-shockwave-flash"></embed>';
+                document.getElementById(flashcopier).innerHTML = divinfo;
+            }
+            toast('复制成功！');
+        }
+
+        function goRulePage() {
+            document.location.href = "ShowRuleDescription?appId=" + getQueryString("appId");
+        }
+
+        function goDistributeDetailPage() {
+            document.location.href = "DistributeDetail?appId=" + getQueryString("appId") + "&source=share";
+        }
+    </script>
+}
+<div class="container">
+    <div class="distribution_succ_info margB-10">
+        <p class="succ_info">
+            恭喜您，正式成为分销商啦，可以通过以下方法进行分销哦~
+        </p>
+        <div class="discription">
+            <a href="javascript:void(0)" onclick="goRulePage();">分销商说明</a>
+        </div>
+    </div>
+    <div class="distribution_succ_way margB-10">
+        <div class="way_step">
+            <p class="way_text">
+                方法一：分销商品链接
+            </p>
+            <p class="way_to">
+                复制链接到朋友圈或点击一键分销按钮直接分销</p>
+        </div>
+        <div class="way_step">
+            <p class="way_info">
+                众多优质低价商品等你抢，注册成为分销商，还能拿佣金！
+            </p>
+            <p class="way_info">
+                还等什么，快来参与吧~</p>
+            <p class="way_info">
+                @ViewBag.distributeShortUrl
+            </p>
+        </div>
+        <div id="btnShare" class="way_step center">
+            <a href="javascript:void(0)" class="btn active">一键分销商品 </a>
+        </div>
+    </div>
+    <div class="distribution_succ_way margB-10">
+        <div class="way_step way_padding">
+            <p class="way_text share">
+                方法二：分销专属你自己的微小店
+            </p>
+            <a href="javascript:void(0)" class="shop" onclick="goDistributeDetailPage();">管理我的微小店 </a>
+        </div>
+        <div class="way_step">
+            <div class="qrcode">
+                <img id="deCode" src="@ViewBag.distributeQrCodeurl" alt="@ViewBag.distributeShortUrl"/>
+            </div>
+            <div class="qrcode_save">
+                <span class="qrcode_save_text">长按二维码保存到相册 </span>
+            </div>
+        </div>
+        <div id="btnShareMs" class="way_step center">
+            <a href="javascript:void(0)" class="btn active">一键分销我的微小店 </a>
+        </div>
+    </div>
+</div>

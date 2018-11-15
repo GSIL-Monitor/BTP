@@ -1,0 +1,355 @@
+﻿@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+}
+<style>
+    html, body {
+        max-width: 500px;
+        margin: 0 auto;
+        font-family: 'Microsoft YaHei';
+        word-break: break-all;
+        font-size: 16px;
+        background-color: rgba(0,0,0,.5);
+    }
+
+    img {
+        border: 0;
+    }
+
+    ul, li {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+    }
+
+    .toast-content {
+        font-size: 14px !important;
+    }
+
+    .page {
+        width: 100%;
+        height: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+        background-color: rgba(0,0,0,.5);
+    }
+
+    .content {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        max-width: 500px;
+        background-color: #fff;
+    }
+
+        .content .order-header {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            height: 1rem;
+            align-items: center;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+            .content .order-header .order-header-title {
+                -webkit-flex: 1;
+                flex: 1;
+                text-align: center;
+                font-size: .3rem;
+                color: #333;
+            }
+
+            .content .order-header .order-header-close {
+                width: .8rem;
+                height: 100%;
+            }
+
+                .content .order-header .order-header-close > img {
+                    width: .5rem;
+                    height: auto;
+                    margin-top: .23rem;
+                }
+
+    .order-lists {
+        height: 6rem;
+        padding-left: .2rem;
+        overflow-y: auto;
+    }
+
+        .order-lists .order-list-item {
+            border-bottom: 1px solid #e8e8e8;
+            padding: .3rem .4rem .2rem .2rem;
+        }
+
+            .order-lists .order-list-item .item-hd {
+                display: -webkit-box;
+                display: -webkit-flex;
+                display: flex;
+                align-items: center;
+                line-height: 1;
+                margin-bottom: .15rem;
+            }
+
+                .order-lists .order-list-item .item-hd .order-code {
+                    -webkit-flex: 1;
+                    flex: 1;
+                    font-size: .22rem;
+                    color: #333;
+                }
+
+                .order-lists .order-list-item .item-hd .order-time {
+                    font-size: .22rem;
+                    color: #999;
+                }
+
+            .order-lists .order-list-item .item-bd {
+                display: -webkit-box;
+                display: -webkit-flex;
+                display: flex;
+            }
+
+                .order-lists .order-list-item .item-bd .pic {
+                    width: 1.4rem;
+                    height: 1.4rem;
+                    margin-right: .2rem;
+                }
+
+                .order-lists .order-list-item .item-bd .item-bd-right {
+                    position: relative;
+                    top: 0;
+                    left: 0;
+                    -webkit-flex: 1;
+                    flex: 1;
+                }
+
+                    .order-lists .order-list-item .item-bd .item-bd-right .title {
+                        display: -webkit-box;
+                        -webkit-box-orient: vertical;
+                        -webkit-line-clamp: 2;
+                        font-size: .3rem;
+                        color: #333;
+                        overflow: hidden;
+                    }
+
+                    .order-lists .order-list-item .item-bd .item-bd-right .bottom {
+                        position: absolute;
+                        bottom: 0;
+                        left: 0;
+                        right: 0;
+                        display: -webkit-box;
+                        display: -webkit-flex;
+                        display: flex;
+                        align-items: center;
+                    }
+
+                    .order-lists .order-list-item .item-bd .item-bd-right .price {
+                        -webkit-flex: 1;
+                        flex: 1;
+                        font-size: .2rem;
+                        color: #333;
+                    }
+
+                        .order-lists .order-list-item .item-bd .item-bd-right .price .num {
+                            line-height: 1;
+                            font-size: .3rem;
+                        }
+
+                    .order-lists .order-list-item .item-bd .item-bd-right .state {
+                        padding: 1px 3px;
+                        border-radius: 3px;
+                        color: #fff;
+                        font-size: .18rem;
+                        background-color: #dc2828;
+                    }
+
+                        .order-lists .order-list-item .item-bd .item-bd-right .state.gray {
+                            background-color: #babab3;
+                        }
+</style>
+<script type="text/javascript">
+    var flex = function () {
+        var deviceWidth = document.documentElement.clientWidth > 500 ? 500 : document.documentElement.clientWidth;
+        document.documentElement.style.fontSize = deviceWidth / 7.5 + 'px';
+    };
+    flex();
+    window.onresize = function () {
+        flex();
+    };
+    $(function () {
+        if (!isLogin()) {
+            DealLoginPartial.initPartialPage();
+        }
+    });
+</script>
+<div class="page" id="app" v-cloak>
+    <div class="content">
+        <header class="order-header">
+            <span class="order-header-title">我的订单</span>
+            <span class="order-header-close"> <img src="/Images/guanbi.png" onclick="closeWindow()" style="cursor:pointer"/> </span>
+        </header>
+        <ul id="ullist" class="order-lists">
+            <template v-for="(list,index) in orderList">
+                <template v-for="goodsInfo in list.ShoppingCartItemSDTO">
+                    <li class="order-list-item" v-on:click="paretnEventCall(list.CommodityOrderId)">
+                        <div class="item-hd">
+                            <span class="order-code">订单号: {{list.OrderCode}}</span>
+                            <span class="order-time">{{list.SubTime | filtersDate}}</span>
+                        </div>
+                        <div class="item-bd">
+                            <img class="pic" v-bind:src="goodsInfo.Pic" />
+                            <div class="item-bd-right">
+                                <div class="title" v-if="goodsInfo.Name">{{goodsInfo.Name | nameFilter}}</div>
+                                <div class="bottom">
+                                    <div class="price">￥<span class="num">{{goodsInfo.Price}}</span></div>
+                                    <span class="state">{{orderListState[index]}}</span>
+                                </div>
+
+                            </div>
+                        </div>
+                    </li>
+                </template>
+            </template>
+        </ul>
+    </div>
+</div>
+<script src="/dist/lib/vue.min.js"></script>
+<script src="/dist/lib/vue-resource.min.js"></script>
+<script src="/dist/lib/vue-mobileKit.js"></script>
+<script src="/dist/lib/Common.js"></script>
+<script>
+    var vm = new Vue({
+        el: '#app',
+        created: function () {
+            this.orderState = getQueryString('orderState') || null;
+        },
+        mounted: function () {
+            this.$nextTick(function () {
+                this.loadDate();
+                document.getElementById('ullist').addEventListener('scroll',this.handleEvent, false);
+            });
+        },
+        data: function () {
+            return {
+                clocked: false,
+                headerShow: true,
+                orderState: null, //订单状态 null：全部 0:待付款 1：待发货 2：待收货 3：待评价
+                pageIndex: 1, //页码
+                pageSize: 10, //每页数量
+                isEndPage: false, //是否是最后一页
+                allowScroll: true,
+                orderList: [],
+                orderListState: [],
+                tips: false,
+                empty: false
+            }
+        },
+        methods: {
+            loadDate: function () {
+                this.$http({
+                    url: '/Mobile/GetCustomOrder',
+                    method: 'GET',
+                    params: {
+                        userId: getUserId(),
+                        pageIndex: this.pageIndex,
+                        pageSize: this.pageSize,
+                        state: this.orderState,
+                        esAppId: getEsAppId()
+                    },
+                    before: function () {
+                        this.$loading.open();
+                    }
+                }).then(function (response) {
+                    this.$loading.close();
+                    var data = response.data;
+                    if (data.length) {
+                        this.isEndPage = data.length - this.pageSize < 0 ? true : false;
+                        if (this.isEndPage) {
+                            this.tips = true;
+                        }
+                        this.orderList = this.orderList.concat(data);
+                        this.getorderListState(data);
+                    } else {
+                        if (this.pageIndex == 1) {
+                            this.orderList = [];
+                            this.orderListState = [];
+                            this.empty = true;
+                        } else {
+                            this.tips = true;
+                        }
+                    }
+                }, function (response) {
+                    this.$loading.close();
+                    this.$toast('服务器繁忙，请稍后再试');
+                });
+            },
+            //滚动条滚动到底部加载数据
+            handleEvent: function () {
+                var scrollHeight = document.getElementById('ullist').scrollHeight;
+                var scrollTope = document.getElementById('ullist').scrollTop;
+                var clientHeight = document.getElementById('ullist').clientHeight;
+                if (scrollHeight - scrollTope - clientHeight <= 10) {
+                    if (!this.isEndPage) {
+                        this.pageIndex++;
+                        this.loadDate();
+                    }
+                }
+            },
+            //获取所有订单的状态
+            getorderListState: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    this.orderListState.push(getOrderStateTextForList(data[i].State, data[i].StateAfterSales));
+                }
+            },
+            paretnEventCall: function (orderId) {
+
+                if (parent) {
+                    parent.postMessage("{\"orderId\":\"" + orderId + "\"}","*");
+                }
+            }
+        },
+
+        filters: {
+            filtersDate: function (time) {
+                var date = new Date(parseInt(time.replace("/Date(", "").replace(")/", ""), 10));
+                return formatDate(date, 'yyyy-MM-dd hh:mm:ss');
+            },
+            nameFilter: function (value) {
+                if (!value) return;
+                value = value.toString();
+                if (value.length > 33)
+                    return value.substr(0, 33) + "...";
+                else
+                    return value;
+            }
+        }
+    });
+    
+    function formatDate(date, fmt) {
+        if (/(y+)/.test(fmt)) {
+            fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length));
+        }
+        let o = {
+            'M+': date.getMonth() + 1,
+            'd+': date.getDate(),
+            'h+': date.getHours(),
+            'm+': date.getMinutes(),
+            's+': date.getSeconds()
+        };
+        for (let k in o) {
+            if (new RegExp(`(${k})`).test(fmt)) {
+                let str = o[k] + '';
+                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? str : padLeftZero(str));
+            }
+        }
+        return fmt;
+    };
+
+    function padLeftZero(str) {
+        return ('00' + str).substr(str.length);
+    };
+
+    function closeWindow() {
+        parent.postMessage("close", "*");
+    }
+</script>

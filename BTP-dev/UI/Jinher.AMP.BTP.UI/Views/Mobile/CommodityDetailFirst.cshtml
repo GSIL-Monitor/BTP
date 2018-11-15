@@ -1,0 +1,482 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta content="width=device-width,minimum-scale=1.0,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"
+        name="viewport">
+    <link rel="stylesheet" href="/Content/Mobile/css.css" />
+    <title>金和</title>
+    <script src="/Scripts/CookieContextDTO.js" type="text/javascript"></script>
+    <script src="/Content/Mobile/Common.js" type="text/javascript"></script>
+    <script src="/Content/Mobile/allEvent.js" type="text/javascript"></script>
+    <script src="/Scripts/first-js.js" type="text/javascript"></script>
+</head>
+<body>
+    <div id="header">
+        <span class="header_span_1_2"></span><span class="header_span_2">商品详情</span>
+    </div>
+    <div id="main" style="padding: 0">
+        <p style="text-align: center; font-size: 1.2em; line-height: 2em;">
+            更多功能体验，请下载独立<a href="javascript:;" id="dol">电商APP</a></p>
+        @*<p style="text-align: center;font-size: 1.2em;line-height: 2em;">
+		也可以<a href="http://testbac.iuoooo.com/phone/app-business.html" id="">点击此处</a>生成拥有自己的APP哦～</p>*@
+        <div id="img" class="clearFloat">
+            <div id="make">
+            </div>
+            <img src="/Content/Mobile/2.jpg" class="noDisplay" alt="" id="clone_img_element" />
+            <ul class="img_item">
+            </ul>
+            <div class="title">
+                <div class="title_bg">
+                </div>
+                <p>
+                </p>
+            </div>
+        </div>
+        <div id="property">
+            <ul>
+                <li style="text-align: right"><span class="color_2 noDisplay">价格: </span><span class="color_1 type_1">
+                </span></li>
+                <li><span class="color_2"></span><span class="type_2"></span></li>
+                <li><span class="color_2"></span><span class="type_3"></span></li>
+                <li class="parting clearFloat"><span class="color_2">数量<b class="type_4"></b>件</span>
+                    <span class="color_2">已售<b class="type_5"></b>笔</span> <span class="color_2"><b class="type_6">
+                    </b>人收藏</span> </li>
+            </ul>
+        </div>
+        <div id="content">
+            <div id="nav">
+                <span class="focus" data-key="0">商品详情</span> <span data-key="1">评价 ( <b class="color_1"
+                    id="reviewCount"></b>) </span>
+            </div>
+            <div id="content_box">
+                <div class="content_ content_1">
+                </div>
+                <div class="content_ content_2">
+                </div>
+                <div id="content_2_clone" class="content_2_clones clearFloat noDisplay">
+                    <div class="float_l left_2">
+                        <img class="replays_8" src="/Content/Mobile/pic_1.png" alt="" />
+                    </div>
+                    <div class="float_l left_3">
+                        <ul class="replays_">
+                            <li class="replays_1"></li>
+                            <li class="replays_2"></li>
+                            <li><span class="replays_3"></span><span class="replays_4"></span></li>
+                        </ul>
+                    </div>
+                    <ul class="replays__ noDisplay">
+                        <li><span class="replays_5"></span><span class="replays_6"></span></li>
+                        <li class="replays_7"><span></span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div id="img_show_box">
+            <div class="mask">
+            </div>
+            <div class="insert_img">
+            </div>
+        </div>
+        <div id="footer">
+            <div class="footer_2">
+                购买</div>
+            <div class="footer_3">
+            </div>
+        </div>
+        <div id="addCommodity" style="min-height: 600px">
+            <div class="addCommodity_1">
+            </div>
+            <div class="addCommodity_2">
+                <div class="addCommodity_3" id="clearAddCommodity">
+                    <img src="/Content/Mobile/b_6.png" alt="" />
+                </div>
+                <ul class="addCommodity_2_ul_1 clearFloat">
+                    <li class="clearFloat size"><span>请选择：</span>
+                        <ul>
+                            <li class="li_focus_1"></li>
+                        </ul>
+                    </li>
+                    <li class="clearFloat color"><span>请选择：</span>
+                        <ul>
+                            <li class="li_focus_1"></li>
+                        </ul>
+                    </li>
+                    <li class="clearFloat"><span>购买数量：</span> <span class="span_1" id="number"><span
+                        class="span_2"></span><span class="span_number">1</span> <span class="span_3"></span>
+                    </span></li>
+                    <li class="clearFloat">
+                        <div class="box_2" id="upCommodity">
+                            确定
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div id="addCommodity_3" class="addCommodity">
+            <div class="addCommodity_1 clear">
+            </div>
+            <div class="addCommodity_5">
+                <h2>
+                    抱歉，您需要升级新版本才能使用！</h2>
+                <p>
+                    <span class="footer_2 clear" style="margin-right: 0.5em">取消</span> <span class="footer_2"
+                        id="update">立即升级</span></p>
+            </div>
+        </div>
+    </div>
+    <div style="height: 100px;">
+        <br />
+        <br />
+    </div>
+    <script type="text/javascript">
+        var zphUrl = "@ViewBag.ZPHUrl";
+    </script>
+    <script src="/Content/Mobile/zepto.min.js"></script>
+    <script src="/Content/Mobile/allEvent.js"></script>
+    <script>
+        $(function () {
+            saveContextDTOByUrl();
+            if (navigator.userAgent.indexOf("Android") != -1) {
+
+            }
+            else {
+                $("#footer").css("bottom", "120px");
+                $(".addCommodity_2").css("bottom", "120px");
+            }
+
+            getCommodityInfo($(document), function () {
+                new ImgItem();
+                navEvent();
+                var img = $('#img');
+                var footer = $('#footer');
+                //		img.find('.title').css({
+                //			Height: img.find('.title').find('p').height()
+                //		});
+                footer.find('.footer_3').css({
+                    height: footer.height()
+                });
+                footer.on("click", '.footer_2', function () {
+                    var $addCommodity = $('#addCommodity');
+                    var $clearAddCommodityParent = $('#clearAddCommodity').parent();
+
+                    $addCommodity.height($(document).height()).show();
+
+                    if ($clearAddCommodityParent.height() > $(document).height()) {
+                        $addCommodity.height($clearAddCommodityParent.height());
+                    }
+
+                    if (sessionStorage.Stock == '已售完') {
+                        $addCommodity.find('.span_number').text('已售完');
+                    }
+                });
+
+                $('#upCommodity').on("click", function () {
+                    ajaxLoading('22', '');
+                    var data = {
+                        appId: sessionStorage.appId || getQueryString('appId'),
+                        commodityId: sessionStorage.commodityId_2 || getQueryString('commodityId'),
+                        userId: getUserId()
+                    };
+                    //获取数据.
+                    getDataAjax({
+                        url: '/Mobile/GetCommodityDetails',
+                        data: data,
+                        callback: function (data) {
+                            ajaxLoading('22', '');
+                            var span_number = $('.span_number').text();
+                            if (data.Stock <= 0 || span_number > data.Stock) {
+                                toast('数量不足.不能购买');
+                            } else if (data.State == 1) {
+                                toast('商品已下架.不能购买');
+                            } else if (data.State == 3) {
+                                toast('商品已删除.不能购买');
+                            } else {
+                                var psource = sessionStorage.source == "share" ? "?source=share" : "";
+                                window.location.href = '/Mobile/CreateOrder' + psource;
+                            }
+                        },
+                        beforeSend: function () {
+                        }
+                    });
+                });
+
+                $('#clearAddCommodity').click(function () {
+                    $('#addCommodity').hide();
+                });
+
+                $('#addCommodity_3').height($(window).height()).find('.clear').on("click", function () {
+                    $('#addCommodity_3').hide();
+                });
+                $('#buttonLogin').on("click", function (e) {
+                    var data = {};
+                    data.username = $('#username').val();
+                    data.password = $('#userPassword').val();
+
+                    $.get('/mobile/Login', data, function (data) {
+                        if (data.IsSuccess) {
+                            sessionStorage.loginUser = data.ContextDTO.LoginUserID;
+                            var psource = sessionStorage.source == "share" ? "?source=share" : "";
+                            window.location.href = '/Mobile/CreateOrder' + psource;
+                        } else {
+                            toast(data.Message);
+                        }
+                    }, 'json');
+                });
+
+                $('#update').on("click", function () {
+
+                    //window.UpdateApp.update();
+                    window.location.href = "@ViewBag.BTPAppresUrl" + '/app/GetAppDetail?appId=' +
+                					sessionStorage.appId;
+                });
+
+                $('#dol').on("click", function () {
+                    window.location.href = "@ViewBag.BTPAppresUrl" + '/app/GetAppDetail?appId=' + sessionStorage.appId;
+                });
+                sessionStorage.appId = "@ViewBag.AppId";
+                sessionStorage.IsHYL = "@ViewBag.IsHYL";
+                var price = '@ViewBag.Price';
+                if (sessionStorage.IsHYL && price) {
+                    sessionStorage.Stock = 1;
+                    var commodityInfo = JSON.parse(sessionStorage.commodityUpInfo);
+                    commodityInfo.realPrice = price;
+                    sessionStorage.commodityUpInfo = JSON.stringify(commodityInfo);
+                    $('.type_1').text(getCurrency() + price);
+                    sessionStorage.SrcTagId = getQueryString('PromotionId');
+                }
+            });
+
+
+        });
+
+    function navEvent() {
+        var nav = document.getElementById('nav');
+        $(nav).on("click",'span', function (e) {
+            var key = e.getAttribute('data-key');
+            var click_box = nav.getElementsByTagName('span');
+            var content_box = document.getElementById('content_box').getElementsByClassName('content_');
+
+            if (key == 1 && !$(click_box[key]).hasClass('lock')) {
+                getCommodityInfoReplays({ type: true });
+            }
+
+            for (var i = 0; i < content_box.length; i++) {
+                content_box[i].style.display = 'none';
+                click_box[i].className = '';
+            }
+
+            content_box[key].style.display = 'block';
+            click_box[key].className = 'focus lock';
+        });
+    }
+
+    /**
+    * 声明图片相关事件类
+    */
+    function ImgItem() {
+        var min_width = document.getElementsByTagName('body')[0].clientWidth; //获取浏览器窗口宽度
+        var min_height = document.getElementsByTagName('body')[0].clientHeight; //获取浏览器窗口高度
+        var img_box = document.getElementById('img'); //获取页面中图片标签
+        var img = img_box.getElementsByClassName('img_item')[0].getElementsByTagName('img'); //获取图片标签内所有img对象
+        var img_item = img_box.getElementsByClassName('img_item')[0]; //第一个img对象
+        var img_length = img.length; //容器内img对象数量
+        var item_width = min_width * img_length; //图片容器队列宽度
+        var img_height; //单个图片高度
+        var img_width; //单个图片宽度
+
+        /**
+        * 创建头部当前图片位置标签
+        *
+        * 标记内容为中文符号下的 · 符号(波浪线按钮)通过修改字体大小达到效果
+        *
+        * 如出现bug.将修改为英文标点的句号.
+        */
+        function createMakeImage() {
+            //获取插入标签容器对象
+            var make = document.getElementById('make');
+            //创建一个span对象
+            var makeBox = document.createElement('span');
+            //插入内容
+            makeBox.innerHTML = '·';
+            //遍历图片个数,生成同个数的标记
+            for (var i = 0; i < img_length; i++) {
+                //克隆对象.
+                var clone = makeBox.cloneNode(true);
+                //第一位添加选中颜色
+                if (!i) {
+                    clone.style.color = '#95040D';
+                }
+                //将标记对象插入容器对象内.
+                make.appendChild(clone);
+            }
+            //获取当期标签对象的宽度,并除以2,得到的值将是居中偏移量的值.
+            make.style.cssText = 'margin-left:' + -(make.clientWidth / 2) + 'px;';
+        }
+
+        /**
+        * 设置单个图片宽度.
+        *
+        */
+        function setImgItemWidth() {
+            //遍历图片个数.对每个图片进行宽度设置.
+            //将宽度设置为当期窗口大小.
+            for (var i = 0; i < img_length; i++) {
+                img[i].style.maxWidth = min_width + 'px';
+                img[i].style.cssText = 'max-width:' + min_width + 'px;min-width:' + min_width + 'px';
+            }
+            var clone_img_element = document.getElementById('clone_img_element');
+            //初始化单个图片高度
+            img_height = min_width / clone_img_element.width * clone_img_element.height;
+            //初始化单个图片宽度
+            img_width = min_width;
+            //设置图片列表最大宽度.并设置边距
+            img_item.style.cssText = 'width:' + item_width + 'px;left:0';
+            //设置图片容器高度.该容器下部分的内容错位
+            img_box.style.height = img_height + 'px';
+        }
+
+        /**
+        * 图片拖动事件
+        */
+        function setImgItemEvent() {
+            var pageX; //按下时的X坐标
+            var pageY; //按下时Y坐标
+            var move; //移动偏移量
+            var moveX; //将要移动的值
+            var boxLeft; //当前容器列表left值
+            var coordinate = []; //保存图片坐标值
+            var item_number = 0; //图片移动标记.
+            var make_item = document.getElementById('make').getElementsByTagName('span'); //当前图片位置标记对象.
+            //遍历图片个数.将图片坐标插入数组内
+            for (var i = 0; i < img_length; i++) {
+                coordinate.push(img[i].offsetLeft);
+            }
+
+            img_box.addEventListener('click', function (e) {
+                var element = $(e.target);
+                var img = element.clone();
+                img.css({
+                //					maxWidth: '98%',
+                //					minWidth: '98%'
+            });
+
+            $('#img_show_box').show().find('.insert_img').append(img).css({
+                top: img.height() / 2,
+                left: (function () {
+                    var width = img.width();
+                    if (width <= $(window).width()) {
+                        return 0;
+                    } else {
+                        return img.width() / 2
+                    }
+                })()
+            });
+        });
+
+        $('#img_show_box').on('click', function (e) {
+            $(this).hide().find('.insert_img').empty();
+        });
+
+        //按下时事件.
+        img_box.addEventListener('touchstart', function (e) {
+            //			e.preventDefault();
+            var touch = e.changedTouches[0];
+            //获取当前容器列表的left值
+            boxLeft = parseInt(img_item.style.left);
+            //获取当前按下时x值
+            pageX = touch.pageX;
+        });
+        //移动时事件
+        img_box.addEventListener('touchmove', function (e) {
+            e.preventDefault();
+            var touch = e.changedTouches[0];
+            //移动偏移量
+            move = touch.pageX - pageX;
+            //将要移动的值
+            moveX = boxLeft + move;
+            //给容器移动
+            img_item.style.left = moveX + 'px';
+        });
+        //抬起时
+        img_box.addEventListener('touchend', function (e) {
+            //			e.preventDefault();
+            var minLeft = 0; //最左边距
+            var maxRight = item_width - img_width; //最右边距
+            //当移动量大于最左边距时,将图片列表容器归位
+            if (moveX > minLeft) {
+                img_item.style.left = minLeft;
+            } else if (Math.abs(moveX) > maxRight) {//当最右边距超出时,重新归位
+                img_item.style.left = -maxRight + 'px';
+            }
+
+            //设置相关事件
+            //1为向左移动
+            //2为向右移动.
+            function moveEvent(type) {
+                switch (type) {
+                    case 1:
+                        moveFun(1);
+                        break;
+                    case 2:
+                        moveFun(0);
+                        break;
+                }
+                //相关事件函数.
+                //number为坐标跳转值
+                function moveFun(number) {
+                    for (var i = 0; i < img_length; i++) {
+                        var moveNumber = i + number;
+                        if (moveNumber < img_length && moveNumber >= 0) {
+                            if (Math.abs(moveX) > coordinate[i] && Math.abs(moveX) < coordinate[i + 1]) {
+                                item_number = moveNumber;
+                                img_item.style.left = -coordinate[moveNumber] + 'px'
+                            }
+                        }
+                    }
+                }
+
+                //遍历标记容器内容.将颜色重置.
+                for (var i = 0; i < make_item.length; i++) {
+                    make_item[i].style.color = '#fff';
+                }
+                //对当前图片标签进行上色.
+                make_item[item_number].style.color = '#95040D';
+            }
+
+            //判断是向右移动还是向左移动.
+            //正数为向左移动.
+            //负数为向右移动.
+            if (move < 0) {
+                if (Math.abs(move) > 60) {
+                    moveEvent(1);
+                } else {
+                    img_item.style.left = -coordinate[item_number] + 'px'
+                }
+            } else {
+                if (Math.abs(move) > 60) {
+                    moveEvent(2);
+                } else {
+                    img_item.style.left = -coordinate[item_number] + 'px'
+                }
+            }
+        });
+    }
+
+    //初始化对象方法.
+    (function () {
+        setImgItemWidth();
+        setImgItemEvent();
+        createMakeImage();
+    })();
+
+
+}
+
+
+    </script>
+</body>
+</html>

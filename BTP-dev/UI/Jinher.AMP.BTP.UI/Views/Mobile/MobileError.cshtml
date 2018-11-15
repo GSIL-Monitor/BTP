@@ -1,0 +1,58 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewBag.Title</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta content="width=device-width,minimum-scale=1.0,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"
+        name="viewport" />
+    <style type="text/css">
+        .ui-notice
+        {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            max-width: 500px;
+            width: 100%;
+            margin: auto;
+            overflow: hidden;
+            -webkit-transform: translate(-50%,-50%);
+            transform: translate(-50%,-50%);
+        }
+        .ui-notice p
+        {
+            margin: 20px auto 40px;
+            text-align: center;
+            color: #999;
+        }
+        .ui-notice i
+        {
+            display: block;
+            text-align: center;
+            font-size: 100px;
+            color: #ddd;
+        }
+        
+        .loginTitle
+        {
+            color: #a1a1a1;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div id="main" style="padding: 0">
+        <div class="ui-notice">
+            <i>
+                <img src="../../Content/Mobile/redredenvelope/fail.png" alt="" style="margin: auto;
+                    width: 160px;">
+            </i>
+            <p class="loginTitle">
+                @ViewBag.Message
+            </p>
+        </div>
+    </div>
+</body>
+</html>

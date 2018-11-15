@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ExceptionHandlers>
+  <!--异常日志记录 -->
+  <Handler name="ExceptionLogHandler" handlerOrder="1"
+           type="Jinher.JAP.Exception.BP.ExceptionHandlers.ExceptionLogHandler,Jinher.JAP.Exception.BP,Version=1.0.0.0, Culture=neutral, PublicKeyToken=a91443bc8e8f1c34" />
+  <!--异常替换处理-->
+  <Handler name="ExceptionReplaceHandler" handlerOrder="2"
+           type="Jinher.JAP.Exception.BP.ExceptionHandlers.ExceptionReplaceHandler,Jinher.JAP.Exception.BP,Version=1.0.0.0, Culture=neutral, PublicKeyToken=a91443bc8e8f1c34" />
+  <!--异常包装处理-->
+  <Handler name="ExceptionWrapHandler" handlerOrder="3"
+           type="Jinher.JAP.Exception.BP.ExceptionHandlers.ExceptionWrapHandler,Jinher.JAP.Exception.BP,Version=1.0.0.0, Culture=neutral, PublicKeyToken=a91443bc8e8f1c34" />
+  <!--异常信息格式化处理-->
+  <Handler name="ExceptionMessageFormatHandler"  handlerOrder="4"
+           type="Jinher.JAP.Exception.BP.ExceptionHandlers.ExceptionMessageFormatHandler,Jinher.JAP.Exception.BP,Version=1.0.0.0, Culture=neutral, PublicKeyToken=a91443bc8e8f1c34" />
+</ExceptionHandlers>

@@ -1,0 +1,313 @@
+﻿@{
+    Layout = null;
+    ViewBag.Title = "AttributeIndex";
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.ColorAndSizeAttributeVM> attributeList = ViewBag.AttributeList;
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.ColorAndSizeAttributeVM> attributeValueList = ViewBag.AttributeValueList;
+    Guid AttributeId = ViewBag.AttributeId;
+    int addAttr = Request.Url.PathAndQuery.Split('?')[1].IndexOf("&addAttr=1");
+    int n = 1;
+}
+@helper getUrlParam()
+    { 
+        try
+        {
+            string url = Request.Url.PathAndQuery.Split('?')[1];
+    @url;
+        }
+        catch { }    
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>颜色设置</title>
+    <link rel="stylesheet" href="/Content/css/style.css" />
+    <script src="/Scripts/jquery.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var AttributeId = '@ViewBag.AttributeId';
+
+        function getQueryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]); return null;
+        }
+
+        var cfrom = getQueryString("cfrom");
+
+        $(document).ready(function () {
+            var flag = getQueryString("flag");            
+            if (flag == "add") {
+                $("#btnBack").click(function () {                    
+                    var url = cfrom && cfrom == "cy" ? "/Commodity/CYAddCommodity" : "/Commodity/AddCommodity"
+                    if (getQueryString("state")) {
+                        url = url + "?state=" + getQueryString("state");
+                        if (getQueryString("appId")) {
+                            url = url + "&appId=" + getQueryString("appId");
+                        }
+                    }
+                    else if (getQueryString("appId")) {
+                        url = url + "?appId=" + getQueryString("appId");
+                    }
+                    window.location.href = url + (url.indexOf('?') > -1 ? "&" : "?") + "cfrom=" + cfrom;
+                });
+            }
+            else if (flag == "edit") {
+                $("#btnBack").click(function () {                    
+                    var urlfrom = cfrom && cfrom == "cy" ? "/Commodity/CYUpdateCommodity" : "/Commodity/UpdateCommodity"
+                    var url = urlfrom+"?commodityId=" + getQueryString("commodityId");
+                    if (getQueryString("state")) {
+                        url = url + "&state=" + getQueryString("state");
+                    }
+                    window.location.href = url + (url.indexOf('?') > -1 ? "&" : "?") + "cfrom=" + cfrom;
+                });
+            }
+            else {
+                $("#btnBack").css("display", "none");
+            }
+
+            $("#btnSubmit").bind("click", function () {
+                var attributeName = $("span[name='attrName']").eq(0).html();
+                var attrs = $.trim($("#ColorList").val());
+                if (attrs != "" && attrs != '可添加多个,以逗号分隔.例 红,黄,蓝') {
+                    var isError = false;
+                    var tmpAttry = attrs.split(/,|，/);
+                    for (var i = 0; i < tmpAttry.length; i++) {
+                        if (tmpAttry[i].length > 20) {
+                            isError = true;
+                            break;
+                        }
+                    }
+                    if (isError) {
+                        alert("属性最多20个字");
+                        return;
+                    }
+                    $.ajax({
+                        url: '/SecondAttribute/AddAttribute',
+                        type: 'post',
+                        data: { attrs: attrs, attributeId: AttributeId, attributeName: attributeName },
+                        success: function (data) {
+                            if (data.Result == true) {
+                                alert(data.Messages);
+
+                                var strings = '?flag=' + getQueryString("flag");
+                                if (getQueryString("state")) {
+                                    strings = strings + "&state=" + getQueryString("state");
+                                }
+                                if (getQueryString("commodityId")) {
+                                    strings = strings + "&commodityId=" + getQueryString("commodityId");
+                                }
+                                if (getQueryString("appId")) {
+                                    strings = strings + "&appId=" + getQueryString("appId");
+                                }
+                                strings = strings + "&AttributeId=" + AttributeId + "&cfrom=" + cfrom;
+                                window.location.href = '/SecondAttribute/AttributeIndex' + strings;
+                            } else {
+                                alert(data.Messages);
+                            }
+                        },
+                        error: function () {
+                            alert("请稍候再试");
+                        }
+                    })
+                }
+            });
+
+            $("#ColorList").val('可添加多个,以逗号分隔.例 红,黄,蓝').css('color', '#ccc').focus(function () {
+                if (this.value == '可添加多个,以逗号分隔.例 红,黄,蓝') {
+                    this.value = '';
+                    this.style.color = '#000';
+                }
+            }).blur(function () {
+                if (this.value == '' || this.value == '可添加多个,以逗号分隔.例 红,黄,蓝') {
+                    this.value = '可添加多个,以逗号分隔.例 红,黄,蓝';
+                    this.style.color = '#ccc';
+                }
+            });
+
+
+
+            $("#listUL li").css("position", "relative");
+            $("#listUL li").hover(function () {
+                $(this).find("img").show();
+            }, function () {
+                $(this).find("img").hide();
+            });
+        });
+
+        function toDeleteColor(attrid) {
+            $.ajax({
+                url: '/SecondAttribute/DeleteAttribute',
+                type: 'post',
+                data: { attrid: attrid },
+                success: function (data) {
+                    if (data.Result == true) {
+                        alert(data.Messages);
+
+                        var strings = '?flag=' + getQueryString("flag");
+                        if (getQueryString("state")) {
+                            strings = strings + "&state=" + getQueryString("state");
+                        }
+                        if (getQueryString("commodityId")) {
+                            strings = strings + "&commodityId=" + getQueryString("commodityId");
+                        }
+                        if (getQueryString("appId")) {
+                            strings = strings + "&appId=" + getQueryString("appId");
+                        }
+                        strings = strings + "&AttributeId=" + AttributeId + "&cfrom=" + cfrom;
+                        window.location.href = '/SecondAttribute/AttributeIndex' + strings;
+                    } else {
+                        alert(data.Messages);
+                    }
+                },
+                error: function () {
+                    alert("请稍候再试");
+                }
+            });
+        }
+
+        function SelectAttribute(attributeID) {
+            if (attributeID == 0) {  //是不是在添加新的属性 如果是 就不能在添加属性了
+                var addAttr = getQueryString("addAttr");
+                if (addAttr && addAttr != null && addAttr == 1) {
+                    return;
+                }
+            }
+
+            var strings = '?flag=' + getQueryString("flag");
+            if (getQueryString("state")) {
+                strings = strings + "&state=" + getQueryString("state");
+            }
+            if (getQueryString("commodityId")) {
+                strings = strings + "&commodityId=" + getQueryString("commodityId");
+            }
+            if (getQueryString("appId")) {
+                strings = strings + "&appId=" + getQueryString("appId");
+            }
+            if (attributeID != 0) {
+                strings = strings + "&AttributeId=" + attributeID;
+            }
+            else {
+                strings = strings + "&addAttr=1";
+            }
+
+            window.location.href = '/SecondAttribute/AttributeIndex' + strings + "&cfrom=" + cfrom;
+        }
+
+        function EditAttributeName(n) {
+           // $("#editName" + n).val($("#displayName" + n).html());
+            $("#displayName" + n).hide()
+            $("#editimg" + n).hide()
+            $("#editName" + n).show();
+            $("#editName" + n).focus().val($("#displayName" + n).html());
+        }
+
+        function SaveAttributeName(n, _attributeId) {
+            var value = $.trim($("#editName" + n).val());
+            if (value == "" || value == "输入设置项名称") {
+                alert("属性名称不能为空");
+                return;
+            }
+            $.ajax({
+                url: '/SecondAttribute/EidtAttributeName',
+                type: 'post',
+                data: { attributeId: _attributeId, attributeName: value },
+                success: function (data) {
+                    if (data.Result == true) {
+//                        $("#displayName" + n).html(value);
+//                        $("#displayName" + n).show()
+//                        $("#editimg" + n).show()
+//                        $("#editName" + n).hide();
+//                        AttributeId = data.AttributeId;
+                        SelectAttribute(data.AttributeId);
+
+                    } else {
+                        alert(data.Messages);
+                    }
+                },
+                error: function () {
+                    alert("请稍候再试");
+                }
+            });
+        }
+
+        try { document.domain = "iuoooo.com" } catch (e) { }
+
+        function ChangeImg(type, obj) {
+            if (type == 0) {
+                $("#editimg" + obj).attr("src", "/Content/images/eA.png");
+            }
+            else {
+                $("#editimg" + obj).attr("src", "/Content/images/eN.png");
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="box" style="width: 1080px; overflow: auto;">
+        <div class="content">
+            <div class="right" style="width: 1000px;">
+                <div class="set_top" style=" overflow:hidden; height:auto;">
+                    <ul>
+                        @*<li><a href="/Category/Index?@getUrlParam()">类目设置</a></li>*@
+                        @foreach (Jinher.AMP.BTP.Deploy.CustomDTO.ColorAndSizeAttributeVM item in attributeList)
+                        {
+                            if (item.AttributeId == AttributeId)
+                            {
+                             <li class="new">
+                                 <a  style=" float:left;"  href="javascript:void(0)">
+                                 <span name="attrName" id="@("displayName"+n)" style=" float:left; margin-left:10px;">@item.AttributeName</span>
+                                 <img  style="float:left;margin:8px 4px; visibility:@(item.AttributeName != "颜色" && item.AttributeName != "尺寸" ? "visible" : "hidden");" id="@("editimg"+n)" src="/Content/images/eA.png" onclick="EditAttributeName(@n)">
+                                 <input type="text" id="@("editName"+n)" placeholder="输入设置项名称"  style="width:80px; display: none;" onblur="SaveAttributeName(@n,'@item.AttributeId')" maxlength="6" />
+                                </a>
+                             </li>
+                          
+                            }
+                            else
+                            {
+                              <li>
+                               <a  onmousemove="ChangeImg(0,@n);" onmouseout="ChangeImg(1,@n);" style=" float:left" href="javascript:void(0)">
+                                 <span id="@("displayName" + n)"   onclick="SelectAttribute('@item.AttributeId');return false;"  style=" float:left; margin-left:10px;">@item.AttributeName</span>
+                                 <img  style=" float:left;margin:8px 4px; visibility:@(item.AttributeName != "颜色" && item.AttributeName != "尺寸" ? "visible" : "hidden");" id="@("editimg" + n)" src="/Content/images/eN.png" onclick="EditAttributeName(@n)">
+                                 <input type="text" id="@("editName" + n)" placeholder="输入设置项名称" style="width:80px; display: none;"
+                                    onblur="SaveAttributeName(@n,'@item.AttributeId')" maxlength="6" />
+                               </a>
+                              </li>
+                            }
+
+                            n++;
+                        }
+                        @if (AttributeId == Guid.Empty && addAttr>-1)
+                        {
+                            <li class="new">
+                            <a  onmousemove="ChangeImg(0,0);" onmouseout="ChangeImg(1,0);"   style=" float:left"  style="display: none;">
+                               <span id="displayName0" style=" float:left; margin-left:10px;" ></span>
+                               <img style=" float:left;display: none;margin:8px 4px;" id="editimg0" src="/Content/images/eN.png" onclick="EditAttributeName(0)">
+                               <input onblur="SaveAttributeName(0,'')" type="text" id="editName0" placeholder="输入设置项名称" maxlength="6" style="width:80px;" />  
+                           </a> 
+                            </li>
+                        }
+                        <li><a style=" float:left"  href="javascript:void(0)" id="btnAddNewAttribute" onclick="SelectAttribute(0);return false;">
+                            <img style=" float:left;margin:8px 4px;" src="/Content/images/addAttr001.png"> 添加商品属性项</a></li>
+                        <li><a href="javascript:void(0);" id="btnBack">返回</a></li>
+                    </ul>
+                </div>
+                <div class="set_bot1">
+                    <h1>
+                        请在下面文本框中输入属性值</h1>
+                    <p>
+                        <input type="text" id="ColorList" placeholder="可添加多个,以逗号分隔.例 红,黄,蓝" style="width: 600px;" />
+                        <span id="btnSubmit">保存</span>
+                    </p>
+                    <ul id="listUL" style="max-width: 1000px; overflow: hidden;">
+                        @foreach (Jinher.AMP.BTP.Deploy.CustomDTO.ColorAndSizeAttributeVM item in attributeValueList)
+                        {
+                            <li style="padding-right: 10px; word-break: break-all; "><span>@item.SecondAttributeName</span><span><a href="javascript:void(0)" onclick="toDeleteColor('@item.SecondAttributeId')" >
+                                <img src="/images/close.jpg" style="display: none"></a></span></li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

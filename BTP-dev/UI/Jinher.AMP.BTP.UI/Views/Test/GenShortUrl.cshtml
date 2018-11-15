@@ -1,0 +1,51 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>获取短地址</title>
+        <script type="text/javascript" src="/Scripts/ueditor_mini/umeditor.config.js"></script>
+    <script type="text/javascript" src="/Scripts/ueditor_mini/umeditor.min.js"></script>
+    <script type="text/javascript" src="/Scripts/ueditor_mini/lang/zh-cn/zh-cn.js"></script>
+    <script type="text/javascript" src="/Scripts/ueditor_mini/dialogs/link/link.js"></script>
+    <script type="text/javascript" src="/Scripts/ueditor_mini/dialogs/image/image.js"></script>
+    <script src="../../Scripts/Validator/JValidator.js" type="text/javascript"></script>
+    <script src="../../Scripts/FunctionJS.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.datepicker.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhdatetime.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhstartandenddate.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(function() {
+            $("#getShortUrl").click(function () {
+                var promotion = document.getElementById("longUrl");
+                var value = promotion.value;
+                if (value == '')
+                    var r = confirm("长地址为空，请填写！");
+                if (r == false) {
+                    return;
+                }
+                $.ajax({
+                    url: '/Test/GetShortUrl',
+                    type: 'post',
+                    data: { longUrl: $.trim($("#longUrl").val()) },
+                    success: function (data) {
+                        if (data) {
+                            $('#shortUrl').text(data);
+                        }
+                    }
+                });
+            });
+        });
+
+</script>
+</head>
+<body>
+<div>
+    请输入长地址：<input type="text" id="longUrl"/>
+    <br/>
+    <input type="button" id="getShortUrl"/>
+    <label id="shortUrl"></label>
+</div>
+</body>
+</html>

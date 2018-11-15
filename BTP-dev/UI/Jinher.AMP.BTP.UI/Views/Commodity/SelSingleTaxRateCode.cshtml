@@ -1,0 +1,222 @@
+﻿@using Jinher.JAP.MVC.UIJquery
+@using Jinher.JAP.MVC.UIJquery.Validate
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "选择税收编码";
+}
+@section Css{
+@*@{Html.jQuery().StyleSheetRegistrar().DefaultGroup(group => group.Add("common.css").Add("default/ui.jqgrid.css").Add("default/jquery.ui.jhtablebox.css"));}*@
+<link href="/Content/common.css" rel="stylesheet" type="text/css" />
+<link href="/Content/default/ui.jqgrid.css" rel="stylesheet" type="text/css" />
+<link href="/Content/default/jquery.ui.jhtablebox.css" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+        body
+        {
+            height: 700px;
+        }
+         body, th, td
+         {
+             font-size: 12px;
+         }
+        .input
+        {
+            border: 1px solid #B8BFCF;
+        }
+        .ui-jqgrid tr.jqgrow
+        {
+            height: 50px;
+        }
+        .sAppUL li
+        {
+            padding: 5px 0;
+            cursor: pointer;    
+        }
+        .sAppUL li a
+        {
+            float: right;
+        }
+        .sAppUL li img
+        {
+            width: 20px;
+            height: 20px;
+        }
+        .radioLabel
+        {
+            width: 120px;
+            display: inline-block;
+            line-height: 30px;
+        }
+        .curApp
+        {
+            background-color: #ccc;
+        }
+    </style>
+}
+<div id="outer" class="formList" style="padding: 5px;">
+    <div id="divMyApp" class="item" style="text-align: center; font-weight: bold; font-size: 15px;">
+        选择税收编码
+    </div>
+    <div class="bor-top" style="margin: 10px 0; clear: both;">
+    </div>
+    <div style="padding-top: 5px; width: 98%;">
+        <div>
+            <div class="item" style="padding-left: 10px;">
+                <label for="txtName" style="cursor: pointer;">
+                    商品和服务名称：</label>
+                <input class="inp-txt mr10" id="txtName" maxlength="30" />&nbsp;&nbsp;
+                <label for="txtTaxRate" style="cursor: pointer;">
+                    增值税税率：</label>
+                <select id="txtTaxRate" class="inp-txt mr10" style="width:100px">
+                    <option value="-1">全部</option>
+                    <option value="0">0%</option>
+                    <option value="0.06">6%</option>
+                    <option value="0.10">10%</option>
+                    <option value="0.16">16%</option>
+                </select>
+                <a id="search" href="javascript:void(0);" type="button" class="btn60">查 询</a>
+            </div>
+            <table id="codeGrid">
+            </table>
+            <div id="codePager">
+            </div>
+        </div>
+    </div>
+    <div style="clear: both;">
+    </div>
+    <div class="btn-center" style="padding: 5px 0 5px 0;">
+        <a id="confirmSelect" href="javascript:void(0)" class="btn120">确定</a> <a id="consoleClick"
+            href="javascript:void(0)" class="btn120">取消</a>
+    </div>
+</div>
+@section ClientScript{
+    <script type="text/javascript" src="/Content/Mobile/allEvent.js"></script>
+    <script type="text/javascript" src="/Scripts/i18n/jquery.ui-zh.js"></script>
+    <script type="text/javascript" src="/Scripts/Grid/jquery.grid.base.js"></script>
+    <script type="text/javascript" src="/Scripts/TableBox/jquery.ui.jhtablebox.js"></script>
+    <script type="text/javascript" src="/Scripts/jquery.ui.base.js"></script>
+    <script type="text/javascript" src="/Scripts/jquery.nicescroll.min.js"></script>
+    <script type="text/javascript" src="/Scripts/Pager/jquery.ui.jhpager.js"></script>
+    <script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.jhdatetime.js"></script>
+    <script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.datepicker.js"></script>
+    <script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.jhstartandenddate.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var comdtySendData = { "name": $.trim($("#txtName").val()) };
+
+            initGoodsGrid();
+
+            initSelSingleComdtyEvent(comdtySendData);
+
+            $("body").height(700);
+        });
+
+        // 初始化 绑定事件
+        function initSelSingleComdtyEvent(sendData) {
+            // 查询商品列表
+            function selectGoodsGrid(sendData, curLi) {
+                if (!sendData && typeof sendData !== "object") {
+                    return;
+                }
+                $('#codeGrid').jqGrid('setGridParam', {
+                    url: "/Commodity/SearchSingleCode",
+                    postData: sendData,
+                    datatype: "json",
+                    mtype: 'POST',
+                    gridComplete: function() {
+                        // 表格加载完成之后，改变左侧选中的值
+                        if (curLi) {
+                            curLi.addClass("curApp").siblings("li").removeClass("curApp");
+                        }
+                    }
+                });
+
+                $("#codeGrid").trigger("reloadGrid", [{ page: 1 }]);
+            }
+
+            // 查询
+            $("#search").click(function() {
+                var name = $.trim($("#txtName").val());
+                var taxrate = $.trim($("#txtTaxRate").val());
+                sendData.name = name;
+                sendData.taxrate = taxrate;
+                selectGoodsGrid(sendData);
+            });
+
+            // 选中某行
+            $("#codeGrid").on("click", "input", function(e) {
+                var $input = $(e.currentTarget) || $(this),
+                    $thiGrid = $(e.delegateTarget) || $("#codeGrid");
+
+                if (!$input.hasClass("radioComdty")) {
+                    return;
+                }
+                // 参数为 id
+                $thiGrid.setSelection($input.attr("id").replace("r_", ""));
+            });
+
+           // 确定
+            $("#confirmSelect").click(function() {
+                var cmdyGrid = $('#codeGrid'),
+                    id = cmdyGrid.jqGrid('getGridParam', 'selrow');
+
+                if (typeof id != "string") {
+                    alert("请选择一条税收编码");
+                    return false;
+                }
+                var rowData = $("#codeGrid").jqGrid('getRowData',id);
+                if (window.parent) {
+                    window.parent.setCodeData(rowData);
+                    window.parent.closeTbBox();
+                } else {
+                    alert("请刷新后重试！");
+                }
+            });
+            // 取消
+            $("#consoleClick").click(function() {
+                if (window.parent) {
+                    window.parent.closeTbBox();
+                } else {
+                    alert("请刷新后重试！");
+                }
+            });
+        }
+
+        // 初始化商品列表
+        function initGoodsGrid() {
+            $("#codeGrid").jqGrid({
+                datatype: "json",
+                mtype: 'POST',
+                postData: { "name": $.trim($("#txtName").val()), "txtTaxRate": $.trim($("#txtTaxRate").val()) },
+                url: "/Commodity/SearchSingleCode",
+                colNames: ['商品和服务名称', '税收编码', '增值税税率', ''],
+                colModel: [
+                    { name: 'Name', index: 'Name', align: "center", sortable: false },
+                    { name: 'Code', index: 'Code', align: "center", sortable: false },
+                    { name: 'TaxRate', index: 'TaxRate', align: "center", sortable: false },
+                    {
+                        name: 'Radio',
+                        index: 'Radio',
+                        align: "center",
+                        sortable: false,
+                        formatter: function(name, opts) {
+                            return '<input type="radio" id="r_' + opts.rowId + '" class="radioComdty" name="radioComdty"/>';
+                        }
+                    }
+                ],
+                rowNum: 20,
+                pager: 'codePager',
+                height: 420,
+                pagerAlone: true,
+                autowidth: false,
+                forceFit: true,
+                rownumbers: true,
+                scroll: false,
+                shrinkToFit: true,
+                onSelectRow: function(rowid, status) {
+                    $("#r_" + rowid).attr("checked", "checked");
+                }
+            });
+        }
+    </script>
+}

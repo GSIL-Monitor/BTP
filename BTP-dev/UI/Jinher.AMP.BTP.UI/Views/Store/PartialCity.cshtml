@@ -1,0 +1,21 @@
+﻿@{
+    Layout = null;
+    List<Jinher.AMP.CBC.Deploy.CountyDTO> tempList = ViewBag.tempList;
+    string selectCountyCode = ViewBag.tempCode;
+}
+<select id="zoneSelect">
+    @{
+        foreach (Jinher.AMP.CBC.Deploy.CountyDTO tempObject in tempList)
+        {
+            if (tempObject.Code.Equals(selectCountyCode))
+            {
+                <option value="@tempObject.Code" selected="selected">@tempObject.Name</option>
+            }
+            else
+            {
+                <option value="@tempObject.Code">@tempObject.Name</option>
+            }
+        }
+
+    }
+</select></li> 

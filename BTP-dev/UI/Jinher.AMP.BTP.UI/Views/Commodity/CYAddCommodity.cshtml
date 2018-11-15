@@ -1,0 +1,2812 @@
+﻿@using System.Web
+@using System.Web.Script.Serialization
+@{
+    Layout = "~/Views/Shared/_CYLayout.cshtml";
+    ViewBag.Title = "商品发布";
+    List<Jinher.AMP.BTP.Deploy.SecondAttributeDTO> Colorlist = ViewBag.Colorlist;
+    List<Jinher.AMP.BTP.Deploy.SecondAttributeDTO> Sizelist = ViewBag.Sizelist;
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.CategorySDTO> categorylist = ViewBag.CategoryList;
+    Jinher.AMP.BTP.Deploy.CustomDTO.CommodityCookie commodityCookie = ViewBag.Cookie;
+
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.ColorAndSizeAttributeVM> AttributeList = ViewBag.AttributeList;
+    bool isCustomES = ViewBag.isCustomES;
+
+    string selfTakeChk = "";
+    if (commodityCookie != null)
+    {
+        selfTakeChk = commodityCookie.IsEnableSelfTake == 0 ? "" : "checked='checked'";
+    }
+
+    bool isShowCategoryTree = ViewBag.IsShowCategoryTree;
+    string ctreeDisplay = isShowCategoryTree ? "block" : "none";
+    if (!isShowCategoryTree && commodityCookie != null)
+    {
+        commodityCookie.CommoditCategoryName = "";
+        commodityCookie.CommoditCategory = null;
+    }
+}
+@helper getUrlParam()
+    {
+        string url = "flag=add&cfrom=cy";
+        if (Request.QueryString["state"] != null)
+        {
+            url = url + "&state=" + Request.QueryString["state"].ToString();
+        }
+        if (Request.QueryString["appId"] != null)
+        {
+            url = url + "&appId=" + Request.QueryString["appId"].ToString();
+        }
+
+        @Html.Raw(url);
+}
+<head>
+    <!--<link href="/Scripts/ueditor_mini/dialogs/video/video.css" type="text/css" rel="stylesheet" />-->
+    <!--富文本使用-->
+    <link href="/Scripts/ueditor_mini/themes/default/css/umeditor.min.css" type="text/css"
+        rel="stylesheet" />
+    <link href="/Scripts/ueditor_mini/dialogs/image/image.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="/Scripts/ueditor_mini/umeditor.config.js"></script>
+    <script type="text/javascript" src="/Scripts/uploadify/jquery.uploadify.min.js"></script>
+    <script type="text/javascript" src="/Scripts/ueditor_mini/umeditor.min.js"></script>
+    <script type="text/javascript" src="/Scripts/ueditor_mini/lang/zh-cn/zh-cn.js"></script>
+    <script type="text/javascript" src="/Scripts/ueditor_mini/dialogs/link/link.js"></script>
+    <script type="text/javascript" src="/Scripts/ueditor_mini/dialogs/image/image.js"></script>
+    <script type="text/javascript" src="/Scripts/Validator/JValidator.js"></script>
+    <!--弹出选择框使用-->
+    <script type="text/javascript" src="/Scripts/jquery.watermark.js"></script>
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.jhtablebox.css" />
+<script type="text/javascript" src="/Scripts/TableBox/jquery.ui.jhtablebox.js"></script>
+
+    <style type="text/css">
+        .input input{vertical-align: -2px;_vertical-align: -1px;margin-right: 2px;}
+	.txtColor {
+		color: #8c94a9;
+	}
+
+	.floa2 h1,
+	.floa1 h1,
+	.floa11 h1,
+	.bbtn h1 {
+		font-size: 14px;
+		color: #8c94a9;
+		padding-bottom: 5px;
+		border-bottom: 1px solid #DDDDDD;
+	}
+
+	.close {
+		margin-top: 10px;
+		float: right;
+		display: inline-block;
+		*zoom: 1;
+		*display: inline;
+		width: 7px;
+		height: 7px;
+		color: transparent;
+		background: url('/Images/shut.png') center no-repeat;
+	}
+
+	.floa11 ul,
+	.floa1 ul,
+	.floa2 ul {
+		padding: 0 0 10px 10px;
+	}
+
+	.floa11 ul li,
+	.floa1 ul li
+	.floa2 ul li {
+		margin-top: 5px;
+		color: #8c94a9;
+	}
+
+	.addfloa2 {
+		display: none;
+		padding: 5px 10px;
+		height: auto;
+		border: 1px solid #B8BFCF;
+
+		-webkit-border-radius: 3px;
+		-moz-border-radius: 3px;
+		border-radius: 3px;
+	}
+
+	.btn120 {
+		display: inline-block;
+		width: 120px;
+		height: 28px;
+		line-height: 28px;
+		background: url('/Content/default/images/btn120.png') no-repeat;
+		text-align: center;
+		vertical-align: middle;
+		color: #5F7392;
+		box-shadow: 1px 1px 2px #DBDBDB;
+	}
+	
+	 .createtable {  
+            border: 1px solid #B1CDE3;  
+            padding:0;   
+            margin:0 auto;  
+            border-collapse: collapse;  
+            width:100%;
+        }  
+          
+     .createtable td {  
+            border: 1px solid #B1CDE3;  
+            background: #fff;  
+            font-size:12px;  
+            padding: 3px 3px 3px 8px;  
+            color: #4f6b72;  
+        }  
+        #batchUploadA:hover
+        {
+            color:#007fff;
+            text-decoration:underline;
+        }
+         #batchUploadA
+        {
+            color:#2f94ff;
+             text-decoration:underline;
+        }
+        .uploadify {
+    box-shadow: 1px 1px 2px #dbdbdb;
+    color: #5f7392;
+    display: inline-block;
+    height: 28px;
+    line-height: 28px;
+    text-align: center;
+    vertical-align: middle;
+    width: 120px;
+}
+.uploadify-button, .uploadify-button-text {
+    text-indent: 0 !important;
+}
+.spa span{
+    margin: 0;
+}
+
+</style>
+    <script type="text/javascript">
+        var UnLimit = parseInt("@(int.MaxValue)");
+        var freightList = JSON.parse('@Html.Raw(ViewBag.FreightList)');
+        function getQueryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]);
+            return null;
+        }
+        document.ondragstart = function () { return true; }
+
+        $(function () {
+            $("#comdtyPicBtn").hide();
+            initUplodaImg();
+            if ($("#VideoName").html()) {
+                $("#deleVideo").show();
+            }
+            $('#changecategory').attr('href', '/Category/EsNetIndex?callBack=' + encodeURIComponent(window.location.href));
+            var OrgUrl = "@ViewBag.OrgUrl";
+
+            if (OrgUrl != "") {
+                $("#div3").OpenDiv();
+                if (window.parent) { //在iframe页面打开时，纠正top
+                    $("#div3").css("top", 200 + $(window.parent.document).scrollTop());
+                }
+            }
+            if (!getQueryString("state")) {
+                $("#btnCancel").css("display", "none");
+            }
+            if (getQueryString("state") == 1 || getQueryString("state") == 2) {
+                $("#btnSubmit").text("保存");
+            }
+
+            $(".an1").bind("click", function () {
+                window.parent.openMenu("publisherInfo");
+            });
+            $("#commoditycategory,#commoditysize,#commoditycolor").focus(function () {
+                if (this.value == '请选择') {
+                    this.value = '';
+                    $(this).removeClass("txtColor");
+                }
+            }).blur(function () {
+                if (this.value == '') {
+                    this.value = '请选择';
+                    $(this).addClass("txtColor");
+                }
+            }).each(function () {
+                if (this.value == '请选择') {
+                    $(this).addClass("txtColor");
+                }
+            });
+            $("#commoditycode").focus(function () {
+                var noCode = this.value;
+                var $span = $(this).next();
+                if (noCode.length >= 15) {
+                    $span.html("最多可输入15位字符");
+                } else {
+                    $span.html("");
+                }
+            }).keyup(function () {
+                var noCode = this.value;
+                var $span = $(this).next();
+                if (noCode.length >= 15) {
+                    $span.html("最多可输入15位字符");
+                } else {
+                    $span.html("");
+                }
+            }).blur(function () {
+                var noCode = this.value;
+                var $span = $(this).next();
+                $span.html("");
+                if (noCode != '') {
+                    $.ajax({
+                        url: '/Commodity/IsExistsNoCode',
+                        type: 'post',
+                        async: true,
+                        dataType: "json",
+                        data: { noCode: noCode, appId: getQueryString('appId') },
+                        error: function () {
+                            $("#ajaxLoadBlind").remove();
+                            alert("请求错误，请稍后刷新进行操作.");
+                        },
+                        success: function (msg) {
+                            $("#ajaxLoadBlind").remove();
+                            if (msg.ResultCode == 1) {
+                                $span.html("商品编号不能重复，该编号已存在");
+                                return;
+                            }
+                            $span.html("");
+                        },
+                        beforeSend: function () {
+                            ajaxLoading('1', '');
+                        }
+                    });
+                }
+            });
+            if ('@isCustomES'.toLowerCase() == 'false') {
+                $("#commodityname").focus(function () {
+
+                    if (this.value == '最多30个字') {
+                        this.value = '';
+                        $(this).removeClass("txtColor");
+                    }
+                }).blur(function () {
+                    if (this.value == '') {
+                        this.value = '最多30个字';
+                        $(this).addClass("txtColor");
+                    }
+                    updateRight();
+                }).each(function () {
+                    if (this.value == '最多30个字') {
+                        $(this).addClass("txtColor");
+                    }
+                });
+            } else {
+                $("#commodityname").focus(function () {
+
+                    if (this.value == '最多60个字') {
+                        this.value = '';
+                        $(this).removeClass("txtColor");
+                    }
+                }).blur(function () {
+                    if (this.value == '') {
+                        this.value = '最多60个字';
+                        $(this).addClass("txtColor");
+                    }
+                    updateRight();
+                }).each(function () {
+                    if (this.value == '最多60个字') {
+                        $(this).addClass("txtColor");
+                    }
+                });
+            }
+            $("#commoditymarketprice").focus(function () {
+                if (this.value == '请输入正数最多两位小数') {
+                    this.value = '';
+                    $(this).removeClass("txtColor");
+                }
+            }).blur(function () {
+                if (this.value == '') {
+                    this.value = '请输入正数最多两位小数';
+                    $(this).addClass("txtColor");
+                }
+            }).each(function () {
+                if (this.value == '请输入正数，最多两位小数') {
+                    $(this).addClass("txtColor");
+                }
+            });
+            $("#commodityprice").focus(function () {
+                if (this.value == '请输入正数最多两位小数') {
+                    this.value = '';
+                    $(this).removeClass("txtColor");
+                }
+            }).blur(function () {
+                if (this.value == '') {
+                    this.value = '请输入正数最多两位小数';
+                    $(this).addClass("txtColor");
+                }
+            }).each(function () {
+                if (this.value == '请输入正数，最多两位小数') {
+                    $(this).addClass("txtColor");
+                }
+            });
+            $("#commoditystock").focus(function () {
+                if (this.value == '不限') {
+                    this.value = '';
+                    $(this).removeClass("txtColor");
+                }
+            }).blur(function () {
+                if (this.value == '') {
+                    this.value = '不限';
+                    $(this).addClass("txtColor");
+                }
+            }).each(function () {
+                if (this.value == '不限') {
+                    $(this).addClass("txtColor");
+                }
+            });
+            $("#commodityWeight").focus(function () {
+                if (this.value == '请输入正数') {
+                    this.value = '';
+                    $(this).removeClass("txtColor");
+                }
+            }).blur(function () {
+                if (this.value == '') {
+                    this.value = '请输入正数';
+                    $(this).addClass("txtColor");
+                }
+            }).each(function () {
+                if (this.value == '请输入正数') {
+                    $(this).addClass("txtColor");
+                }
+            });
+            //            if ("@ViewBag.hasVideoFunction".toLowerCase() == "false") {
+            //                $("#VideoFunc").hide();
+            //            }
+            //            else {
+            //                $("#VideoFunc").show();
+            //            }
+
+            function listUpEvent(callback) {
+                var htmlContent = $('<div class="img1">' +
+                    '<img src="" name="" width="80" height="80" class="one">' +
+                    '<img src="/Images/finished.png" class="two" style="display: none">' +
+                    '<div class="diwein" style="position: absolute; top: 40px; left: 5px; display: none;">' +
+                    '<a href="javascript:void(0)" class="reUpImage">重新上传</a>' +
+                    '<a href="javascript:void(0)" class="deleteImage">删除</a></div>' +
+                    '</div>');
+                upImageCallback.callback_1 = function (data) {
+                    var clone = htmlContent.clone();
+                    clone.find('.one').attr('src', data).attr('name', data);
+                    callback();
+                    sortable.find('img:last').before(clone);
+                    //更新右部手机图
+                    updateRight();
+                    dialogImgClosed();
+                    //保存数据到 cookie.
+                    ajaxSaveInfo();
+                };
+                new ShowUpImg({
+                    imgPath: '',
+                    width: '640',
+                    height: '480',
+                    windowTitle: '商品详情页图样',
+                    callback: 'callback_1'
+                });
+            }
+
+            var sortable = $("#sortable");
+            var CommodityListPic = $("#CommodityListPic");
+
+            sortable.on('click', '.deleteImage', function () {
+                $(this).parents('.img1').remove();
+            });
+            sortable.on('click', '.reUpImage', function () {
+                var self = this;
+                listUpEvent(function () {
+                    $(self).parents('.img1').remove();
+                });
+            });
+            sortable.on('mouseenter', '.img1', function () {
+                $(this).find("div.diwein").show();
+            });
+            sortable.on('mouseleave', '.img1', function () {
+                $(this).find("div.diwein").hide();
+            });
+
+            CommodityListPic.click(function () {
+                if (sortable.find('.one').length < 5) {
+                    listUpEvent(function () {
+                    });
+                } else {
+                    alert('最多只能上传5张图片');
+                }
+            });
+            $("input[name=rdoPriceMethod]").change(function () {
+                switch ($("input[name=rdoPriceMethod]:checked").attr("value")) {
+                    case "0":
+                        $("#liWeight").hide();
+                        $("#commodityWeight").val('请输入正数').next().html("kg").css('color', '');
+                        $("#commodityWeight").addClass("txtColor");
+                        break;
+                    case "1":
+                        $("#liWeight").show();
+                        break;
+                    default:
+                        break;
+                }
+                resetFreight();
+            });
+            if ($("input[name=rdoPriceMethod]:checked").attr("value") == 1) {
+                $("#liWeight").show();
+            }
+
+            resetFreight();
+        });
+        //重置运费
+        function resetFreight() {
+            $("#commodityFreight").empty().append($("<option>").val("-1").text("请选择物流模板"));
+            if (freightList && freightList.length > 0) {
+                for (var i = 0; i < freightList.length; i++) {
+                    if (freightList[i].ExpressType == 1 || freightList[i].PricingMethod == $("input[name=rdoPriceMethod]:checked").attr("value"))
+                        $("#commodityFreight").append($("<option>").val(freightList[i].Id).text(freightList[i].Name));
+                }
+            }
+        }
+
+        function loadListImg() {
+            //listImgSrcString = "commodityCookie.ImgList";
+
+            var listImgSrcString = $("#listImgShowSrcString").val()
+                .replace(/_*http:\/\//g, 'http://');
+
+            //listImgShowSrcString = "commodityCookie.listImgShowSrcString";
+            var listImgShowSrcString = $("#listImgShowSrcString").val();
+            var listImgSrc = $.trim(listImgSrcString) ? listImgSrcString.split(',') : '';
+            var listImgShowSrc = listImgShowSrcString.split(',');
+            for (var i = 0; i < listImgSrc.length; i++) {
+                if (listImgSrc[i] != "") {
+                    var htmlContent = $('<div class="img1">' +
+                        '<img src="" name="" width="80" height="80" class="one">' +
+                        '<img src="/Images/finished.png" class="two" style="display: none">' +
+                        '<div class="diwein" style="position: absolute; top: 40px; left: 5px; display: none;">' +
+                        '<a href="javascript:void(0)" class="reUpImage">重新上传</a>' +
+                        '<a href="javascript:void(0)" class="deleteImage">删除</a></div>' +
+                        '</div>');
+                    var clone = htmlContent.clone();
+                    clone.find('.one').attr('src', listImgSrc[i]).attr('name', listImgSrc[i]);
+                    $("#sortable").find('img:last').before(clone);
+                }
+            }
+        }
+
+
+
+        function setCommodityCategory() {
+            var id = [];
+            var text = [];
+            $('#tcategoryUl').find('input:checked').each(function () {
+                id.push(this.value);
+                text.push($(this).nextAll('span').text());
+            });
+
+            $('#commoditycategory').val(text);
+
+            $('#cateogryIdList').val(id);
+        }
+
+        function toCheckSelected() {
+            var cateogryIdList = "";
+            var categoryNameList = "";
+            $("#tcategoryUl input:checkbox:checked").each(function () {
+                cateogryIdList = cateogryIdList + "," + $(this).val();
+                categoryNameList = categoryNameList + "," + $(this).next().text();
+            });
+            if (cateogryIdList.length > 0) {
+                cateogryIdList = cateogryIdList.substring(1, cateogryIdList.length);
+                categoryNameList = categoryNameList.substring(1, categoryNameList.length);
+            }
+            $("#commoditycategory").val(categoryNameList);
+            $("#cateogryIdList").val(cateogryIdList);
+            $("#commoditycategory").removeClass("txtColor");
+        }
+
+
+        function toCheckSizeSelected() {
+            var sizeIdList = "";
+            var sizeNameList = "";
+            $("#sizeUl input:checkbox:checked").each(function () {
+                sizeIdList = sizeIdList + "," + $(this).val();
+                sizeNameList = sizeNameList + "," + $(this).next().text();
+            });
+            if (sizeIdList.length > 0) {
+                sizeIdList = sizeIdList.substring(1, sizeIdList.length);
+                sizeNameList = sizeNameList.substring(1, sizeNameList.length);
+            }
+            $("#commoditysize").val(sizeNameList);
+            $("#commoditysize").removeClass("txtColor");
+            $("#sizeIdList").val(sizeIdList);
+            updateRight();
+        }
+
+        function toCheckColorSelected() {
+            var colorIdList = "";
+            var colorNameList = "";
+            $("#colorUl input:checkbox:checked").each(function () {
+                colorIdList = colorIdList + "," + $(this).val();
+                colorNameList = colorNameList + "," + $(this).next().text();
+            });
+            if (colorIdList.length > 0) {
+                colorIdList = colorIdList.substring(1, colorIdList.length);
+                colorNameList = colorNameList.substring(1, colorNameList.length);
+            }
+            $("#commoditycolor").val(colorNameList);
+            $("#commoditycolor").removeClass("txtColor");
+            $("#colorIdList").val(colorIdList);
+            updateRight();
+        }
+
+        function closeCategoryDiv() {
+            $("#categoryDiv").hide();
+            ajaxSaveInfo();
+        }
+        function closeSzieDIV() {
+            $("#sizeDIV").hide();
+            ajaxSaveInfo();
+        }
+        function closeColorDIV() {
+            $("#colorDIV").hide();
+            ajaxSaveInfo();
+        }
+
+        function getListImgSrcString() {
+            var src = [];
+            $("#sortable").find('.one').each(function () {
+                src.push($(this).attr("src"));
+            });
+            if (src.length == 0) src.push($("#picture").val());
+            return src.join(',');
+        }
+
+
+        $(document).ready(function () {
+            //默认滚动到页面的顶部。
+            $(window.top).scrollTop(0);
+
+            //	window.iID = setInterval(function () {ajaxSaveInfo();}, 500);
+
+            $('.spfb_t_l').find('input').change(function () {
+                ajaxSaveInfo();
+            });
+
+            //设置类目、尺寸、颜色复选框的选中状态 begin
+            //	var attrValues = $.trim($("#cateogryIdList").val()) + "," + $.trim($("#sizeIdList").val()) + "," + $.trim($("#colorIdList").val());
+            //	var attrArray = attrValues.split(",");
+            var attrArray = [];
+            attrArray = attrArray.concat($.trim($("#cateogryIdList").val()).split(','),
+                $.trim($("#commoditysize").val()).split(','),
+                $.trim($("#commoditycolor").val()).split(','));
+            var attrLen = attrArray.length;
+            var sourceObj = $("#categoryDiv input[type='checkbox'],#sizeDIV input[type='checkbox'],#colorDIV input[type='checkbox']");
+            for (var i = 0; i < attrLen; i++) {
+                var val = attrArray[i];
+                if (val != "") {
+                    sourceObj.each(function () {
+                        if (this.value == val || $(this).nextAll('span').text().toLocaleLowerCase() == val.toLocaleLowerCase()) {
+                            this.checked = true;
+                        } else if (this.innerHTML == val) {
+                            this.checked = true;
+                        }
+                    });
+                }
+            } //end
+            $("#commoditymarketprice").blur(function () {
+                var $span = $(this).next();
+                var val = $.trim(this.value);
+                $span.css("color", "red");
+                if (val == "" || val == "请输入正数最多两位小数") {
+                    $span.html(getCurrency());
+                    $span.css("color", "");
+                    return;
+                }
+                if (!/^\d+(\.\d{2})?$/.test(val)) {
+                    if (!/^\d+(\.\d{1})?$/.test(val)) {
+                        $span.html("请填写正确的市场价最多保留2位小数");
+                        return;
+                    }
+                }
+                if (val < 0) {
+                    $span.html("市场价必须大于等于0");
+                    return;
+                }
+                if (parseFloat(val) < parseFloat($.trim($("#commodityprice").val()))) {
+                    $span.html("市场价不得小于商品现价");
+                    return;
+                }
+                $span.html(getCurrency());
+                $span.css("color", "");
+            });
+            $("#commodityprice").blur(function () {
+                var $span = $(this).next();
+                var val = $.trim(this.value);
+                $span.css("color", "red");
+                if (val == "") {
+                    $span.html("商品价格不能为空");
+                    return;
+                }
+                if (!/^\d+(\.\d{2})?$/.test(val)) {
+                    if (!/^\d+(\.\d{1})?$/.test(val)) {
+                        $span.html("请填写正确的价格最多保留2位小数");
+                        return;
+                    }
+                }
+                if (val < 0) {
+                    $span.html("价格必须大于等于0");
+                    return;
+                }
+                if (parseFloat(val) > parseFloat($.trim($("#commoditymarketprice").val()))) {
+                    $("#commoditymarketprice").next().css("color", "red").html("市场价不得小于商品现价");
+                } else {
+                    $("#commoditymarketprice").next().css("color", "").html(getCurrency());
+                }
+                $span.html(getCurrency());
+                $span.css("color", "");
+            });
+
+            $("#commoditystock").blur(function () {
+                var $span = $(this).next();
+                var val = $.trim(this.value);
+                $span.css("color", "red");
+                if (val == "") {
+                    $span.html("商品数量不能为空");
+                    return;
+                }
+
+                if (val != "不限" && !/^\d+?$/.test(val)) {
+                    $span.html("请填写正确的数量");
+                    return;
+                }
+                if (val < 0) {
+                    $span.html("商品数量不能小于0");
+                    return;
+                }
+                $span.html("件");
+                $span.css("color", "");
+            });
+            $("#commodityWeight").blur(function () {
+                var $span = $(this).next();
+                var val = $.trim(this.value);
+                $span.css("color", "red");
+                if (val == "" || val == "请输入正数最多五位小数") {
+                    $span.html("kg");
+                    $span.css("color", "");
+                    return;
+                }
+
+                if (!/^\d+(\.\d{1,5})?$/.test(val)) {
+                    $span.html("请填写正确的重量参数最多保留5位小数");
+                    return;
+                }
+
+                if (val <= 0) {
+                    $span.html("重量参数必须大于0");
+                    return;
+                }
+                $span.html("kg");
+                $span.css("color", "");
+            });
+            $('#tcategoryUl').on('click', 'input', function () {
+                var self = $(this);
+                var input = self.parents('ul').prevAll().find('input');
+                if (input.length) {
+                    if (self.prop('checked')) {
+                        input.prop('checked', true);
+                    } else {
+                        //				input.prop('checked', false);
+                        self.parent().nextAll('ul').find('input').prop('checked', false);
+                    }
+                } else {
+                    self.parent().nextAll('ul').find('input').prop('checked', false);
+                }
+                setCommodityCategory();
+            });
+
+            $("#commoditycategory").focus(function () {
+                var top = $('#commoditycategory').offset().top;
+                var left = $('#commoditycategory').offset().left;
+                var height = $('#commoditycategory').height();
+                $("#categoryDiv").css({ "top": top + height, "left": left }).show();
+                $("#sizeDIV").hide();
+                $("#colorDIV").hide();
+                $("#attributeDIV").hide();
+                $("#attrDIV2").hide();
+                $("#attrDIV1").hide();
+                $("#freightDIV").hide();
+            });
+
+            $("#commoditysize").focus(function () {
+                var top = $('#commoditysize').offset().top;
+                var left = $('#commoditysize').offset().left;
+                var height = $('#commoditysize').height();
+                $("#sizeDIV").css({ "top": top + height, "left": left }).show();
+                $("#categoryDiv").hide();
+                $("#colorDIV").hide();
+            });
+
+            $("#commoditycolor").focus(function () {
+                var top = $('#commoditycolor').offset().top;
+                var left = $('#commoditycolor').offset().left;
+                var height = $('#commoditycolor').height();
+                $("#colorDIV").css({ "top": top + height, "left": left }).show();
+                $("#categoryDiv").hide();
+                $("#sizeDIV").hide();
+            });
+
+
+
+            //	$("#tcategoryUl input[type='checkbox']").change(function () {
+            //		toCheckSelected();
+            //	});
+
+            $("#sizeUl input[type='checkbox']").change(function () {
+                toCheckSizeSelected();
+            });
+
+            $("#colorUl input[type='checkbox']").change(function () {
+                toCheckColorSelected();
+            });
+
+
+            $("#showPrev").click(function () {
+                rotateImg("prev");
+            });
+            $("#showNext").click(function () {
+                rotateImg("next");
+            });
+
+            //详情页图片初始化显示
+            loadListImg();
+            //页面初始化后更新手机预览效果
+            updateRight();
+        });
+
+        function rotateImg(direction) {
+            var img = $("#showImg")[0];
+            var imgList = $("#sortable div.img1 img.one");
+            if (imgList.length > 0) {
+                for (var i = 0; i < imgList.length; i++) {
+                    var newImg = imgList.get(i);
+                    if (newImg.src == img.src) {
+                        if (direction == 'prev') {
+                            if (i == 0) {
+                                img.src = imgList.get(imgList.length - 1).src;
+                            }
+                            else {
+                                img.src = imgList.get(i - 1).src;
+                            }
+                            break;
+                        }
+                        else {
+                            if (i == imgList.length - 1) {
+                                img.src = imgList.get(0).src;
+                            }
+                            else {
+                                img.src = imgList.get(i + 1).src;
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            else {
+                img.src = "/Images/comment_pic5.png";
+            }
+        }
+
+
+        function toSave() {
+            var postData = {};
+            postData.CommodityId = $.trim($("#commodityId").val());
+            postData.CommoditCategory = $.trim($("#cateogryIdList").val());
+            postData.CategoryName = $('#commoditycategory').val();
+            postData.CommodityCode = $.trim($("#commoditycode").val());
+            postData.CommodityName = $.trim($("#commodityname").val());
+            postData.CommodityMarketPrice = $.trim($("#commoditymarketprice").val()) == '请输入正数最多两位小数' ? '' : $.trim($("#commoditymarketprice").val());
+            postData.CommodityPrice = $.trim($("#commodityprice").val());
+            var _commoditystock = $.trim($("#commoditystock").val());
+            postData.CommodityStock = _commoditystock == "不限" ? UnLimit : _commoditystock;
+            postData.CommoditySize = $.trim($("#sizeIdList").val());
+            postData.CommodityImgList = getListImgSrcString();
+            postData.CommodityColor = $.trim($("#colorIdList").val());
+            postData.RelaCommodityList = $.trim($("#CommodityIds").val());
+
+            var $commodityColor = $.trim($("#commoditycolor").val());
+            var $commoditySize = $.trim($("#commoditysize").val());
+
+            postData.ColorNames = $commodityColor == '请选择' ? '' : $commodityColor;
+            postData.SizeNames = $commoditySize == '请选择' ? '' : $commoditySize;
+            postData.Picture = $("#picture").val();
+            postData.CommodityDetails = encodeURIComponent(ue.getContent());
+            postData.State = getQueryString('state') || 0;
+
+            // { attrIds: attributeIds, attrNames: attributeNames, attrName: attrName, attrId: attrId };
+            var attr = GetOneAttrStr();
+
+            postData.AttrId = attr.attrId;
+            postData.AttrName = attr.attrName;
+
+            postData.AttrNames = attr.attrNames;
+            postData.AttrIds = attr.attrIds;
+            postData.AttrObj = GetInputValue();
+
+            //            postData.FreightId = FreightId;
+            //            postData.FreightName = $("#commodityFreight").val();
+            postData.FreightId = $("#commodityFreight").val();
+            postData.FreightName = $("#commodityFreight").find("option:selected").text();
+
+            if (postData.ColorNames == "请选择") {
+                postData.ColorNames = "";
+            }
+            if (postData.SizeNames == "请选择") {
+                postData.SizeNames = "";
+            }
+            //是否支持自提。
+            postData.IsEnableSelfTake = $("#chkIsEnableSelfTake").attr("checked") == "checked" ? 1 : 0;
+
+            postData.PricingMethod = $("input[name=rdoPriceMethod]:checked").attr("value");
+            postData.Weight = $("#commodityWeight").val();
+            postData.SaleAreas = $("#SaleAreas").val();
+            postData.VideoName = $.trim($("#VideoName").html());
+            postData.VideoUrl = $.trim($("#VideoUrl").html());
+            postData.VideoWebUrl = $.trim($("#VideoWebUrl").html());
+            postData.VideoPicUrl = $.trim($("#VideoPicUrl").html());
+
+            postData.CommodityBoxPrice = $.trim($("#commodityboxprice").val());
+            postData.CommodityBoxCount = $.trim($("#commodityboxcount").val());
+            postData.From = 1;
+            var result = Valid();
+            if (result == 0) {
+                $.ajax({
+                    url: '/Commodity/AddCommodity',
+                    type: 'post',
+                    data: postData,
+                    beforeSend: function () {
+                        //				clearInterval(iID);
+                        ajaxLoading(1, '');
+                    },
+                    complete: function () {
+                        ajaxLoading(1, '');
+                    },
+                    success: function (data) {
+                        if (data.Result == true) {
+                            $.cookie('SaveCommodityCookie', null);
+                            if (data.CommodityUrl == "0") {
+                                alert("发布成功");
+                                setTimeout(function () {
+                                    if (getQueryString('state')) {
+                                        window.location.href = "/Commodity/Index?appId=" + getQueryString('appId');
+                                    } else {
+                                        window.location.href = window.location.href.replace(/#.*$/, "");
+                                    }
+                                }, 1200);
+                            } else {
+                                alert("保存成功");
+                                setTimeout(function () {
+                                    if (getQueryString('state')) {
+                                        window.location.href = "/Commodity/StoreIndex?appId=" + getQueryString('appId');
+                                    } else {
+                                        window.location.href = window.location.href.replace(/#.*$/, "");
+                                    }
+                                }, 1200);
+                            }
+                        } else {
+                            alert(data.Messages);
+                        }
+                        return false;
+                    }, error: function (msg) {
+                        //				window.iID = setInterval(function () {ajaxSaveInfo();}, 500);
+                        alert("请稍后再试！");
+                        try {
+                            console.log(msg.responseText);
+                        } catch (e) {
+                        }
+                    }
+                })
+            } else {
+                alert(result);
+            }
+        }
+        function Valid() {
+            if ($.trim($("#commoditycode").val()) == "") {
+
+            } else {
+                var noCode = $("#commoditycode").next().html();
+                if (noCode != "") {
+                    return "商品编号不能重复，该编号已存在";
+                }
+            }
+            if ($.trim($("#commodityname").val()) == "" || $.trim($("#commodityname").val()) == "最多30个字" || $.trim($("#commodityname").val()) == "最多60个字") {
+                return "商品名称不能为空";
+            }
+
+            if ('@isCustomES'.toLowerCase() == 'false') {
+                if ($.trim($("#commodityname").val()).length > 30) {
+                    return "名称最多30个字";
+                }
+            } else {
+                if ($.trim($("#commodityname").val()).length > 60) {
+                    return "名称最多60个字";
+                }
+            }
+
+
+            if ($.trim($("#commodityprice").val()) == "") {
+                return "商品价格不能为空";
+            }
+            if (!/^\d+(\.\d{2})?$/.test($("#commodityprice").val())) {
+                if (!/^\d+(\.\d{1})?$/.test($("#commodityprice").val())) {
+                    return "请填写正确的价格最多保留2位小数";
+                }
+            }
+            if ($("#commodityprice").val() < 0) {
+                return "价格必须大于等于0";
+            }
+
+            var commoditymarketprice = $.trim($("#commoditymarketprice").val()) == '请输入正数最多两位小数' ? '' : $.trim($("#commoditymarketprice").val());
+            //市场价非必填内容，但如果有只，必须是正数，最多保留两位小数，且不小于$("#commodityprice")的值
+            if (commoditymarketprice != "") {
+                if (!/^\d+(\.\d{2})?$/.test(commoditymarketprice)) {
+                    if (!/^\d+(\.\d{1})?$/.test(commoditymarketprice)) {
+                        return "请填写正确的市场价最多保留2位小数";
+                    }
+                }
+
+            }
+            if (parseFloat($("#commoditymarketprice").val()) < parseFloat($("#commodityprice").val())) {
+                return "市场价不得小于商品现价";
+            }
+            var _commoditystock = $.trim($("#commoditystock").val());
+            if (_commoditystock == "") {
+                return "商品数量不能为空";
+            }
+
+
+            if (_commoditystock != "不限" && !/^\d+?$/.test(_commoditystock)) {
+                return "请填写正确的商品数量";
+            }
+            if (_commoditystock < 0) {
+                return "商品数量不能小于0";
+            }
+            if ($.trim($("#picture").val()) == "") {
+                return "商品缩略图不能为空";
+            }
+            //            if (!getListImgSrcString().length) {
+            //                return "商品详情页图样不能为空";
+            //            }
+            var con = ue.getContent();
+            con = con.replace(/<\/?(img)[^>]*>|&nbsp;/ig, "");
+            if (con.length > 0
+                && con.length > 8000) {
+                return "描述内容不能超过8000个字符。";
+            }
+            if (!IsCanSumbit) return "商品属性数量或价格格式输入不正确";
+
+            if (!CheckAttr()) return msgError;
+
+            if (!CheckMarketPrice()) return "市场价不得小于商品现价";
+
+
+            if ($("input[name=rdoPriceMethod]:checked").attr("value") == "1") {
+                var weight = $.trim($("#commodityWeight").val());
+                if (weight == "" || weight == "请输入正数") {
+                    return "计重商品重量参数不能为空";
+                }
+                if (!/^\d+(\.\d{1,5})?$/.test(weight)) {
+                    return "请填写正确的重量参数最多保留5位小数";
+                }
+                if (eval(weight) <= 0) {
+                    return "重量参数必须为正数";
+                }
+            }
+
+            var boxprice = $.trim($("#commodityboxprice").val());
+            var boxcount = $.trim($("#commodityboxcount").val());
+
+            if (boxprice != "" && !/^\d+(\.\d{2})?$/.test(boxprice) && !/^\d+(\.\d{1})?$/.test(boxprice)) {
+                return "请填写正确的价格最多保留2位小数";
+            }
+
+            if (boxcount != "" && !/^\d+?$/.test(boxcount)) {
+                return "请填写正确的餐盒数量";
+            }
+            if ((boxprice != "" && boxcount == "") || (boxcount != "" && boxprice == "")) {
+                return "餐盒数量和价格必须同时维护";
+            }
+            return 0;
+        }
+
+        function toSelectAll(obj) {
+            if ($(obj).attr("checked")) {
+                $("#sortable img.one").each(function () {
+                    if ($(this) != $("#sortable img:last")) {
+                        $(this).addClass("imgchecked");
+                        $(this).next().show();
+                    }
+                });
+            } else {
+                $("#sortable img").each(function () {
+                    if ($(this) != $("#sortable img:last")) {
+                        $(this).removeClass("imgchecked");
+                        $(this).next().hide();
+                    }
+                });
+            }
+        }
+        function toDeleteAllImgList() {
+            $("#sortable div.img1").each(function () {
+                if ($(this).find("img.two").css("display") != "none") {
+                    $(this).remove();
+                }
+            });
+            updateRightImg();
+        }
+
+        function updateRight() {
+            updateRightImg();
+            var comName = $.trim($("#commodityname").val());
+            if (comName.length > 12) {
+                comName = comName.substring(0, 12) + '...';
+            }
+            $("div.spfb_t_r ul li.one1 p").text(comName);
+            $("div.spfb_t_r ul li.one2").text(getCurrency() + $("#commodityprice").val());
+            var size = $.trim($("#commoditysize").val());
+            if (size == "" || size == "请选择") {
+                size = "请选择尺寸";
+            }
+            $("div.spfb_t_r ul li.one4 span.siz").text("尺寸：" + size);
+            var color = $.trim($("#commoditycolor").val());
+            if (color == "" || color == "请选择") {
+                color = "请选择颜色";
+            }
+            $("div.spfb_t_r ul li.one4 span.col").text("颜色：" + color);
+
+
+            $("div.spfb_t_r ul li.flag1").hide();
+            $("div.spfb_t_r ul li.flag2").hide();
+            for (var i = 0; i < SelectAttr.length; i++) {
+                if (i == 0) {
+                    $("div.spfb_t_r ul li.flag1").show();
+                    $("div.spfb_t_r ul li.one4 span.col").text(SelectAttr[i].Name + "：" + $("#commodityAttr1").val());
+                }
+                else {
+                    $("div.spfb_t_r ul li.flag2").show();
+                    $("div.spfb_t_r ul li.one4 span.siz").text(SelectAttr[i].Name + "：" + $("#commodityAttr2").val());
+                }
+            }
+        }
+        function updateRightImg() {
+            var imgList = $("#sortable div.img1 img.one");
+            if (imgList.length > 0) {
+                $("#showImg").attr("src", imgList[0].src);
+                ajaxSaveInfo();
+            }
+            else {
+                $("#showImg").attr("src", "/Images/comment_pic5.png");
+            }
+        }
+        function ajaxSaveInfo() {
+            var addCommodityCookie = {};
+            addCommodityCookie.AppId = getQueryString('appId');
+            addCommodityCookie.CommoditCategory = encodeURIComponent($.trim($("#cateogryIdList").val()));
+            addCommodityCookie.CommodityCode = encodeURIComponent($("#commoditycode").val());
+            addCommodityCookie.CommodityName = encodeURIComponent($("#commodityname").val());
+            addCommodityCookie.CommodityMarketPrice = encodeURIComponent($("#commoditymarketprice").val());
+            addCommodityCookie.CommodityPrice = encodeURIComponent($("#commodityprice").val());
+
+            addCommodityCookie.CommodityStock = encodeURIComponent($("#commoditystock").val());
+            addCommodityCookie.CommoditySize = encodeURIComponent($.trim($("#sizeIdList").val()));
+            addCommodityCookie.CommodityColor = encodeURIComponent($.trim($("#colorIdList").val()));
+            addCommodityCookie.CommoditySizeName = encodeURIComponent($("#commoditysize").val());
+            addCommodityCookie.CommodityColorName = encodeURIComponent($("#commoditycolor").val());
+            addCommodityCookie.CommoditCategoryName = encodeURIComponent($("#commoditycategory").val());
+            addCommodityCookie.Picture = encodeURIComponent($("#CommodityImg").attr('src'));
+            addCommodityCookie.hidpic = encodeURIComponent($.trim($("#picture").val()));
+            addCommodityCookie.CommodityDetails = encodeURIComponent(ue.getContent());
+            addCommodityCookie.State = getQueryString('state') || 0;
+            addCommodityCookie.listImgShowSrcString = getListImgSrcString();
+            addCommodityCookie.SelectAttr = encodeURIComponent(JSON.stringify(SelectAttr));
+            addCommodityCookie.FristAttrValueList = encodeURIComponent(JSON.stringify(FristAttrValueList));
+            addCommodityCookie.TwoAttrValueList = encodeURIComponent(JSON.stringify(TwoAttrValueList));
+            addCommodityCookie.FreightId = encodeURIComponent($("#commodityFreight").val());
+            addCommodityCookie.FreightName = encodeURIComponent($("#commodityFreight").find("option:selected").text());
+            addCommodityCookie.InputAttrValue = encodeURIComponent(GetInputValue());
+
+
+            addCommodityCookie.CommodityBoxPrice = encodeURIComponent($("#commodityboxprice").val());
+            addCommodityCookie.CommodityBoxCount = encodeURIComponent($("#commodityboxcount").val());
+
+
+            //是否支持自提。
+            addCommodityCookie.IsEnableSelfTake = $("#chkIsEnableSelfTake").attr("checked") == "checked" ? 1 : 0;
+
+            addCommodityCookie.PricingMethod = $("input[name=rdoPriceMethod]:checked").attr("value");
+
+            addCommodityCookie.Weight = $("#commodityWeight").val();
+            //addCommodityCookie.SaleAreas = $("#SaleAreas").val();          
+            //addCommodityCookie.SaleAreasText = $.trim($("#saleAreastxt").text());
+
+            //	$.ajax({
+            //		url: '/Commodity/SaveCookie',
+            //		type: 'post',
+            //		data: addCommodityCookie,
+            //		error: function (msg) {
+            //			try {
+            //				console.log(msg.responseText);
+            //			} catch (e) {
+            //			}
+            //		}, success: function () {
+            //
+            //		}
+            //
+            //	});
+            var arrTmp = [];
+            for (var i in addCommodityCookie) {
+                arrTmp.push(i + '=' + addCommodityCookie[i]);
+            }
+            var day = new Date();
+            day.setDate(day.getDate() + 30);
+
+
+
+
+            document.cookie = 'SaveCommodityCookie=' + arrTmp.join('&') + ';expires=' + day.toGMTString();
+        }
+
+        function closeWindow() {
+            //window.close();
+            //history.back(-1);
+            window.location.href = document.referrer;
+        }
+    </script>
+    <script type="text/javascript">
+        var AttrValueList = JSON.parse('@Html.Raw(ViewBag.AttributeValueJson)');
+        var SelectAttr = new Array();
+        var FristAttrValueList = new Array();
+        var TwoAttrValueList = new Array();
+        //关联商品确定时，回调
+        function commodityListFrame(ret) {
+            $("#commodityListFrame").jhtablebox("close");
+            $("#commodityListFrame").removeAttr("src");
+            if (ret && ret.code) {
+                var CommodityIds = $("#CommodityIds");
+                var str = deleteNumber(ret.code, true);
+                var newValue = deleteNumber(str.join(','), true);
+                CommodityIds.val(newValue.join(','));
+                $("#num").text("已选" + newValue.length + "件");
+            }
+            else if (ret.code == "") {
+                var CommodityIds = $("#CommodityIds");
+                CommodityIds.val("");
+                $("#num").text("已选0件");
+            }
+        }
+        //加载
+        $(function () {
+            $("#attributeUl input[type='checkbox']").change(function () {
+                toCheckAttributeSelected(this);
+            });
+            //            $("#freightUl input[type='checkbox']").change(function () {
+            //                toCheckFreightSelected(this);
+            //            });
+
+            $("#commodityFreight").change(function () {
+                ajaxSaveInfo();
+            });
+
+            $("#commodityAttribute").focus(function () {
+                var top = $('#commodityAttribute').offset().top;
+                var left = $('#commodityAttribute').offset().left;
+                var height = $('#commodityAttribute').height();
+                $("#attributeDIV").css({ "top": top + height, "left": left }).show();
+                $("#categoryDiv").hide();
+                $("#attrDIV2").hide();
+                $("#attrDIV1").hide();
+                $("#freightDIV").hide();
+            });
+
+            $("#commodityAttr1").focus(function () {
+                var top = $('#commodityAttr1').offset().top;
+                var left = $('#commodityAttr1').offset().left;
+                var height = $('#commodityAttr1').height();
+                $("#attrDIV1").css({ "top": top + height, "left": left }).show();
+                $("#categoryDiv").hide();
+                $("#attrDIV2").hide();
+                $("#attributeDIV").hide();
+                $("#freightDIV").hide();
+            });
+            $("#commodityAttr2").focus(function () {
+                var top = $('#commodityAttr2').offset().top;
+                var left = $('#commodityAttr2').offset().left;
+                var height = $('#commodityAttr2').height();
+                $("#attrDIV2").css({ "top": top + height, "left": left }).show();
+                $("#categoryDiv").hide();
+                $("#attrDIV1").hide();
+                $("#attributeDIV").hide();
+                $("#freightDIV").hide();
+            });
+
+            //弹出关联商品选择窗口
+            $("#relationcom").bind("click", function () {
+                var url = "/Commodity/RelationCommodityList?CommodityId=00000000-0000-0000-0000-000000000000&CommodityIdList=" + $("#CommodityIds").val();
+                $("#commodityListFrame").attr("src", url);
+                $("#commodityListFrame").jhtablebox({
+                    height: 750,
+                    width: 910,
+                    resizable: false,
+                    title: "选择部分上架商品",
+                    modal: true,
+                    buttons: {},
+                    autoOpen: true,
+                    closedByHide: true
+                });
+                $("#commodityListFrame").attr("width", "910");
+                $("#commodityListFrame").css("width", "910px");
+            });
+
+            $("#commodityAttr1,#commodityAttr2").focus(function () {
+                if (this.value == '请选择') {
+                    this.value = '';
+                    $(this).removeClass("txtColor");
+                }
+            }).blur(function () {
+                if (this.value == '') {
+                    this.value = '请选择';
+                    $(this).addClass("txtColor");
+                }
+            }).each(function () {
+                if (this.value == '请选择') {
+                    $(this).addClass("txtColor");
+                }
+            });
+
+
+            //            $("#commodityFreight").focus(function () {
+            //                if (this.value == '请选择物流模板') {
+            //                    this.value = '';
+            //                    $(this).removeClass("txtColor");
+            //                }
+            //            }).blur(function () {
+            //                if (this.value == '') {
+            //                    this.value = '请选择物流模板';
+            //                    $(this).addClass("txtColor");
+            //                }
+            //            }).each(function () {
+            //                if (this.value == '请选择物流模板') {
+            //                    $(this).addClass("txtColor");
+            //                }
+            //            });
+
+            $("#chkIsEnableSelfTake").on("change", function () {
+                ajaxSaveInfo();
+            });
+            InitAttr();
+
+
+
+
+        });
+
+        function JoinName(arr) {
+            var attributeNameList = "";
+            for (var i = 0; i < arr.length; i++) {
+                if (i == 0) {
+                    attributeNameList = arr[i].Name;
+                }
+                else {
+                    attributeNameList = attributeNameList + "," + arr[i].Name;
+                }
+            }
+            return attributeNameList;
+        }
+        var SelectAttrValue = new Array();
+        //利用缓存初始化
+        function InitAttr() {
+            selectAttrStr = '@(commodityCookie != null && commodityCookie.SelectAttr != null ? commodityCookie.SelectAttr : "")';
+            if (selectAttrStr != "") {
+                SelectAttr = JSON.parse(decodeURIComponent(selectAttrStr));
+            }
+
+            fristAttrValueListStr = '@(commodityCookie != null && commodityCookie.FristAttrValueList != null ? commodityCookie.FristAttrValueList : "")';
+            if (fristAttrValueListStr != "") {
+                FristAttrValueList = JSON.parse(decodeURIComponent(fristAttrValueListStr));
+            }
+
+            twoAttrValueListStr = '@(commodityCookie != null && commodityCookie.TwoAttrValueList != null ? commodityCookie.TwoAttrValueList : "")';
+            if (twoAttrValueListStr != "") {
+                TwoAttrValueList = JSON.parse(decodeURIComponent(twoAttrValueListStr));
+            }
+
+            var inputAttrValueListStr = '@(commodityCookie != null && commodityCookie.InputAttrValue != null ? commodityCookie.InputAttrValue : "")';
+            if (inputAttrValueListStr != "") {
+                SelectAttrValue = JSON.parse(decodeURIComponent(inputAttrValueListStr));
+            }
+
+
+            FreightId = '@(commodityCookie != null && commodityCookie.FreightId != null ? commodityCookie.FreightId : "")';
+            var FreightName = '@(commodityCookie != null && commodityCookie.FreightName != null ? commodityCookie.FreightName : "")';
+            $("#commodityFreight").val(FreightId);
+            //            if (FreightId != "") {
+            //                $("#commodityFreight").val(FreightName);
+            //                $("#commodityFreight").removeClass("txtColor");
+            //                var sourceObj1 = $("#freightDIV input[type='checkbox']");
+            //                sourceObj1.each(function () {
+            //                    if (this.value.toLocaleLowerCase() == FreightId.toLocaleLowerCase() || $(this).nextAll('span').text().toLocaleLowerCase() == FreightName.toLocaleLowerCase()) {
+            //                        this.checked = true;
+            //                    } else if (this.innerHTML == val) {
+            //                        this.checked = true;
+            //                    }
+            //                });
+            //            }
+
+            for (var i = 0; i < SelectAttr.length; i++) {
+                FromatAttrValue(SelectAttr[i].Id, SelectAttr[i].Name, i + 1);
+            }
+
+            $("#commodityAttribute").val(JoinName(SelectAttr));
+            $("#commodityAttribute").removeClass("txtColor");
+            $("#commodityAttr1").val(JoinName(FristAttrValueList));
+            $("#commodityAttr1").removeClass("txtColor");
+            $("#commodityAttr2").val(JoinName(TwoAttrValueList));
+            $("#commodityAttr2").removeClass("txtColor");
+
+            var attrArray = [];
+            attrArray = attrArray.concat(SelectAttr, FristAttrValueList, TwoAttrValueList);
+            var attrLen = attrArray.length;
+            var sourceObj = $("#attributeDIV input[type='checkbox'],#attrDIV1 input[type='checkbox'],#attrDIV2 input[type='checkbox']");
+            for (var i = 0; i < attrLen; i++) {
+                var val = attrArray[i];
+                if (val != "") {
+                    sourceObj.each(function () {
+                        if (this.value.toLocaleLowerCase() == val.Id.toLocaleLowerCase() || $(this).nextAll('span').text().toLocaleLowerCase() == val.Name.toLocaleLowerCase()) {
+                            this.checked = true;
+                        } else if (this.innerHTML == val) {
+                            this.checked = true;
+                        }
+                    });
+                }
+            }
+
+            CreateAttributeDecare(0);
+            updateRight();
+            ajaxSaveInfo();
+        }
+
+        var FreightId = "";
+        function toCheckFreightSelected(obj) {
+            var attrobj = $(obj);
+            if ($("#freightUl input:checkbox:checked").length > 1) {
+                alert("最多只能选择一项！");
+                attrobj.attr("checked", false);
+                return;
+            }
+            var freightIdList = "";
+            var freightNameList = "";
+
+            $("#freightUl input:checkbox:checked").each(function () {
+                freightIdList = $(this).val();
+                freightNameList = $(this).next().text();
+            });
+            FreightId = freightIdList;
+            // commodityFreight
+            $("#commodityFreight").val(freightNameList);
+            $("#commodityFreight").removeClass("txtColor");
+
+        }
+
+
+        function toCheckAttributeSelected(obj) {
+            var attrobj = $(obj);
+            if ($("#attributeUl input:checkbox:checked").length > 2) {
+                alert("最多只能选择两项！");
+                attrobj.attr("checked", false);
+                return;
+            }
+
+            if (SelectAttr.length == 2 && TwoAttrValueList.length > 0 && FristAttrValueList.length > 0) {
+                if (confirm("更改会清空已填写的数据，确认更改吗")) {
+                    FristAttrValueList = new Array();
+                    TwoAttrValueList = new Array();
+                    $("#attributeDecareli").hide();
+                    $("#attributeDecareTab").html("");
+                    $("#commoditystock").attr('readonly', false);
+                    $("#commoditymarketprice").removeAttr("disabled");
+                    $("#commodityprice").removeAttr("disabled");
+                }
+                else {
+                    attrobj.attr("checked", true);
+                    return;
+                }
+            }
+
+            var attrid = attrobj.val().toLocaleLowerCase();
+            $("#attrSelect1").hide();
+            $("#attrSelect2").hide();
+            if (attrobj.attr("checked") != true && attrobj.attr("checked") != "checked") {
+                for (var i = 0; i < SelectAttr.length; i++) {
+                    if (SelectAttr[i].Id.toLocaleLowerCase() == attrid) {
+                        SelectAttr.splice(i, 1);
+                        break;
+                    }
+                }
+            }
+            else {
+                SelectAttr.push({ Id: attrid, Name: attrobj.next().text() });
+            }
+            var attributeNameList = "";
+            for (var i = 0; i < SelectAttr.length; i++) {
+                if (i == 0) {
+                    attributeNameList = SelectAttr[i].Name;
+                }
+                else {
+                    attributeNameList = attributeNameList + "," + SelectAttr[i].Name;
+                }
+            }
+
+            for (var i = 0; i < SelectAttr.length; i++) {
+                FromatAttrValue(SelectAttr[i].Id, SelectAttr[i].Name, i + 1);
+            }
+
+            $("#commodityAttribute").val(attributeNameList);
+            $("#commodityAttribute").removeClass("txtColor");
+            updateRight();
+        }
+
+        function closeAttributeDIV() {
+            $("#attributeDIV").hide();
+            ajaxSaveInfo();
+        }
+        function closeFreightDIV() {
+            $("#freightDIV").hide();
+            ajaxSaveInfo();
+        }
+
+        function FromatAttrValue(attributeId, attributeName, ids) {
+            $("#attrSelect" + ids).show();
+            $("#commodityAttrNameTip" + ids).html("商品" + attributeName + "：");
+            $("#commodityAttr" + ids).val("");
+            $("#attrIdList" + ids).val("");
+
+            $("#updateAttr" + ids).attr("href", "/SecondAttribute/AttributeIndex?AttributeId=" + attributeId + "&@getUrlParam()");
+            $("#updateAttr" + ids).html("设置" + attributeName);
+
+            var _attrValueList = new Array();
+
+            for (var i = 0; i < AttrValueList.length; i++) {
+                if (AttrValueList[i].AttributeId.toLocaleLowerCase() == attributeId.toLocaleLowerCase()) {
+                    _attrValueList.push(AttrValueList[i]);
+                }
+            }
+
+            var html = '';
+            for (var i = 0; i < _attrValueList.length; i++) {
+                html += '<li><label><input type="checkbox" value="' + _attrValueList[i].Id + '"/><span>' + _attrValueList[i].Name + '</span></label></li>';
+            }
+            $("#attrtip" + ids).html("请选择" + attributeName + "信息");
+            $("#attrUl" + ids).html(html);
+            // $("#attrDiv" + ids).show();
+
+            $("#attrUl" + ids + " input[type='checkbox']").change(function () {
+                toCheckTwoAttributeSelected(this, ids);
+            });
+            //重新注册事件
+        }
+
+        function closeAttrDIV(ids) {
+            $("#attrDIV" + ids).hide();
+            ajaxSaveInfo();
+        }
+        var IsInput = false;
+        function toCheckTwoAttributeSelected(obj, ids) {
+            var attrobj = $(obj);
+            var sed = true;
+            if (attrobj.attr("checked") != true && attrobj.attr("checked") != "checked") {
+                sed = false;
+            }
+            if (SelectAttr.length == 2 && TwoAttrValueList.length > 0 && FristAttrValueList.length > 0 && IsInput) {
+                if (!confirm("更改会清空已填写的数据，确认更改吗")) {
+                    attrobj.attr("checked", !sed);
+                    return;
+                }
+            }
+
+
+            var tempAttr = new Array();
+            var colorIdList = "";
+            var colorNameList = "";
+
+            $("#attrUl" + ids + " input:checkbox:checked").each(function () {
+                tempAttr.push({ Id: $(this).val(), Name: $(this).next().text() });
+                colorIdList = colorIdList + "," + $(this).val();
+                colorNameList = colorNameList + "," + $(this).next().text();
+            });
+            if (colorIdList.length > 0) {
+                colorIdList = colorIdList.substring(1, colorIdList.length);
+                colorNameList = colorNameList.substring(1, colorNameList.length);
+            }
+
+            if (ids == 1) {
+                FristAttrValueList = tempAttr;
+            }
+            else {
+                TwoAttrValueList = tempAttr;
+            }
+            CreateAttributeDecare(1);
+            $("#commodityAttr" + ids).val(colorNameList);
+            $("#commodityAttr" + ids).removeClass("txtColor");
+            //  $("#attrIdList" + ids).val(colorIdList);
+            updateRight();
+        }
+
+        function stockFocus(obj) {
+            if (obj.value == '不限') {
+                obj.value = '';
+                $(obj).removeClass("txtColor");
+            }
+        }
+        function stockBlur(obj) {
+            if (obj.value == '') {
+                obj.value = '不限';
+                $(obj).addClass("txtColor");
+            }
+        }
+        //根据选择的属性创建笛卡尔积
+        function CreateAttributeDecare(type) {
+            IsInput = false;
+            if (SelectAttr.length == 2 && TwoAttrValueList.length > 0 && FristAttrValueList.length > 0) {
+                $("#commoditystock").attr('readonly', true);
+                if (type == 1) {
+                    //$("#commoditystock").val("");//暂不处理为空20161230
+                }
+                var fristAttributeId = SelectAttr[0].Id;
+                var twoAttributeId = SelectAttr[1].Id;
+                var fristAttributeName = SelectAttr[0].ame;
+                var twoAttributeName = SelectAttr[1].Name;
+
+                attrValueList = AttrValueList;
+                fristAttrValueList = FristAttrValueList;
+                twoAttrValueList = TwoAttrValueList;
+
+                var html = "";
+                html += '<tr>';
+                html += '<td align="center" style=" width:11%;">' + fristAttributeName + '</td>';
+                html += '<td align="center" style=" width:11%;">' + twoAttributeName + '</td>';
+                html += '<td align="center" style=" width:26%;"><span style="color:red; paddding:0px;margin:0px;" >*</span>价格</td>';
+                html += '<td align="center" style=" width:26%;"><span style="color:red; paddding:0px;margin:0px;" ></span>市场价</td>';
+                html += '<td align="center" style=" width:26%;"><span style="color:red; paddding:0px;margin:0px;" >*</span>库存</td>';
+                html += '</tr>';
+                for (var i = 0; i < fristAttrValueList.length; i++) {
+                    for (var j = 0; j < twoAttrValueList.length; j++) {
+                        html += '<tr>';
+                        if (j == 0) {
+                            html += '<td align="center" rowspan="' + twoAttrValueList.length + '">' + fristAttrValueList[i].Name + '</td>';
+                        }
+                        var josn = '[{"AttributeId":"' + fristAttributeId + '","SecondAttributeId":"' + fristAttrValueList[i].Id + '","Attribute":"' + fristAttributeName + '","SecondAttribute":"' + fristAttrValueList[i].Name + '"},';
+                        josn += '{"AttributeId":"' + twoAttributeId + '","SecondAttributeId":"' + twoAttrValueList[j].Id + '","Attribute":"' + twoAttributeName + '","SecondAttribute":"' + twoAttrValueList[j].Name + '"}]';
+                        josn = encodeURIComponent(josn);
+                        html += '<td align="center">' + twoAttrValueList[j].Name + '</td>';
+                        if (type == 0) {
+                            var reattr = AutoValue(fristAttrValueList[i].Name, twoAttrValueList[j].Name, fristAttributeName, twoAttributeName);
+                            var marketprice = reattr.MarketPrice ? reattr.MarketPrice : '';
+                            var _tempStock = reattr.Stock >= UnLimit ? "不限" : reattr.Stock
+                            html += '<td><input type="text" name="ComPrice" value="' + reattr.Price + '" style="width: 80px;" onblur="CheckAttrPrice(this)" maxlength="12" /><input type="hidden" name="attrCache" value="' + josn + '"> <span style="paddding:0px;margin:0px;"></span></td>';
+                            html += '<td><input type="text" name="MarketPrice" value="' + marketprice + '" style="width: 80px;" onblur="CheckAttrMarketPrice(this)" maxlength="12"/><span style="paddding:0px;margin:0px;"></span></td>';
+                            html += '<td><input onblur="stockBlur(this)" onfocus="stockFocus(this)" type="text" value="' + _tempStock + '" name="ComStock" style="width: 80px;" onblur="CheckAttrNum(this)"  maxlength="11"/><span style="paddding:0px;margin:0px;"></span></td>';
+                        }
+                        else {
+                            html += '<td><input type="text" name="ComPrice" style="width: 80px;" onblur="CheckAttrPrice(this)" maxlength="12"/><input type="hidden" name="attrCache" value="' + josn + '"> <span style="paddding:0px;margin:0px;"></span></td>';
+                            html += '<td><input type="text" name="MarketPrice" style="width: 80px;" onblur="CheckAttrMarketPrice(this)" maxlength="12"/><span style="paddding:0px;margin:0px;"></span></td>';
+                            html += '<td><input onblur="stockBlur(this)" onfocus="stockFocus(this)" type="text" value="不限"  name="ComStock" style="width: 80px;" onblur="CheckAttrNum(this)" maxlength="11"/><span style="paddding:0px;margin:0px;"></span></td>';
+                        }
+                        html += '</tr>';
+                    }
+                }
+                $("#attributeDecareTab").html(html);
+                if (fristAttributeName != null && fristAttributeName != "" && twoAttributeName != null & twoAttributeName != "") {
+                    $("#commodityprice").attr("disabled", "");
+                    $("#commoditymarketprice").attr("disabled", "");
+                }
+                else {
+                    $("#commodityprice").removeAttr("disabled");
+                    $("#commoditymarketprice").removeAttr("disabled");
+                }
+                $("#attributeDecareli").show();
+                refreshLayout();
+            }
+            else {
+                $("#attributeDecareli").hide();
+                $("#attributeDecareTab").html("");
+                $("#commoditystock").attr('readonly', false);
+            }
+        }
+        function refreshLayout() {
+            try {
+                $("body").height($("body div:first").outerHeight());
+                if (window.parent && window.parent.refreshLayout) {
+                    window.parent.refreshLayout();
+                }
+            }
+            catch (err) {
+            }
+        }
+
+        function AutoValue(fname, tname, aName1, aName2) {
+            fname = fname.toLocaleLowerCase();
+            tname = tname.toLocaleLowerCase();
+            if (SelectAttrValue.length > 0) {
+                var a1 = SelectAttrValue[0].ComAttributeIds[0].Attribute.toLocaleLowerCase();
+                var a2 = SelectAttrValue[0].ComAttributeIds[1].Attribute.toLocaleLowerCase();
+                aName1 = aName1.toLocaleLowerCase();
+                aName2 = aName2.toLocaleLowerCase();
+                if (a1 == aName1 && a2 == aName2) {
+                    for (var i = 0; i < SelectAttrValue.length; i++) {
+                        var f = SelectAttrValue[i].ComAttributeIds[0].SecondAttribute.toLocaleLowerCase();
+                        var t = SelectAttrValue[i].ComAttributeIds[1].SecondAttribute.toLocaleLowerCase();
+                        if (fname == f && t == tname) {
+                            IsInput = true;
+                            return { Price: SelectAttrValue[i].Price, Stock: SelectAttrValue[i].Stock, MarketPrice: SelectAttrValue[i].MarketPrice };
+                        }
+                    }
+                }
+            }
+            return "";
+        }
+
+        function CheckAttrPrice(obj) {
+            var val = $(obj).val();
+            var tip = $(obj).next().next();
+            tip.css("color", "red");
+            if (val == "") {
+                $(obj).val('0.00');
+                alert('金额不能为空');
+                return;
+            }
+            if (!/^\d+(\.\d{2})?$/.test(val)) {
+                if (!/^\d+(\.\d{1})?$/.test(val)) {
+                    $(obj).val('0.00');
+                    alert("请填写正确的金额最多保留2位小数");
+                    return;
+                }
+            }
+            if (val < 0) {
+                $(obj).val('0.00');
+                alert('金额不可为负数');
+                return;
+            }
+            if (!/^\d{1,9}$|^\d{1,9}[.]\d{1,2}$/.test(val)) {
+                if (!/^\d{1,9}$|^\d{1,9}[.]\d{1,2}$/.test(val)) {
+                    alert("最多填写9位正整数");
+                    return;
+                }
+            }
+
+            var marketprice = $(obj).parent().next().find('input:first').val();
+            if (parseFloat(val) > parseFloat(marketprice)) {
+                //$(obj).parent().next().find('span:first').html("不得大于市场价").css("color", "red");
+                tip.html("不得大于市场价");
+                return;
+            }
+            var maxprice = 9999999999;
+            var hasprice = false;
+            $("input[name='ComPrice']").each(function () {
+                var s = $(this).val();
+                if (parseFloat(s) > 0 && maxprice > parseFloat(s)) {
+                    maxprice = parseFloat(s);
+                    hasprice = true;
+                }
+            });
+            if (hasprice) {
+                $("#commodityprice").val(maxprice);
+            }
+
+            tip.html("");
+            tip.css("color", "");
+            IsInput = true;
+            ajaxSaveInfo();
+        }
+        function CheckAttrMarketPrice(obj) {
+            var val = $(obj).val();
+            var tip = $(obj).next();
+            tip.css("color", "red");
+            if (val == "") {
+                return;
+            }
+            if (!/^\d+(\.\d{2})?$/.test(val)) {
+                if (!/^\d+(\.\d{1})?$/.test(val)) {
+                    $(obj).val('0.00');
+                    alert("请填写正确的金额最多保留2位小数");
+                    return;
+                }
+            }
+            if (val < 0) {
+                $(obj).val('0.00');
+                alert('金额不可为负数');
+                return;
+            }
+            if (!/^\d{1,9}$|^\d{1,9}[.]\d{1,2}$/.test(val)) {
+                if (!/^\d{1,9}$|^\d{1,9}[.]\d{1,2}$/.test(val)) {
+                    alert("最多填写9位正整数");
+                    return;
+                }
+            }
+
+            var price = $(obj).parent().prev().find('input:first').val();
+            if (parseFloat(val) < parseFloat(price)) {
+                //$(obj).parent().next().find('span:first').html("不得大于市场价").css("color", "red");
+                tip.html("不得小于现价");
+                return;
+            }
+
+            var maxprice = 9999999999;
+            var hasprice = false;
+            $("input[name='MarketPrice']").each(function () {
+                var s = $(this).val();
+                if (parseFloat(s) > 0 && maxprice > parseFloat(s)) {
+                    maxprice = parseFloat(s);
+                    hasprice = true;
+                }
+            });
+            if (hasprice) {
+                $("#commoditymarketprice").val(maxprice);
+            }
+
+
+            tip.html("");
+            tip.css("color", "");
+            IsInput = true;
+            ajaxSaveInfo();
+        }
+        function CheckAttrNum(obj) {
+            var n = 0;
+            var isHasVal = -1;
+            $("input[name='ComStock']").each(function () {
+                var s = $(this).val();
+                if (s != "不限" && s != "" && /^\d+?$/.test(s)) {
+                    n += parseInt(s);
+                }
+                if (s == "不限") isHasVal = 0;
+            });
+            $("#commoditystock").val(isHasVal == 0 ? "不限" : n);
+
+            var v = $(obj).val();
+            var tip = $(obj).next();
+            tip.css("color", "red");
+            if (v == "") {
+                $(obj).val("不限");
+            }
+            if (v != "不限" && !/^\d+?$/.test(v)) {
+                tip.html("格式错误");
+                return;
+            }
+            tip.html("");
+            tip.css("color", "");
+            IsInput = true;
+            ajaxSaveInfo();
+        }
+
+        var msgError = "";
+        function CheckAttr() {
+            msgError = "";
+            if (SelectAttr.length > 0) {
+                if (FristAttrValueList.length <= 0) {
+                    msgError = "商品" + SelectAttr[0].Name + "不能为空";
+                    return false;
+                }
+            }
+
+            if (SelectAttr.length > 1) {
+                if (TwoAttrValueList.length <= 0) {
+                    msgError = "商品" + SelectAttr[1].Name + "不能为空";
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        var IsCanSumbit = true;
+        function CheckData(price, stock) {
+            if (stock == "" || price == "") {
+                IsCanSumbit = false;
+                return;
+            }
+            if (stock < UnLimit && !/^\d+?$/.test(stock)) {
+                IsCanSumbit = false;
+                return;
+            }
+            if (!/^\d+(\.\d{2})?$/.test(price)) {
+                if (!/^\d+(\.\d{1})?$/.test(price)) {
+                    IsCanSumbit = false;
+                    return;
+                }
+            }
+        }
+
+        // 获取用户输入的属性值
+        function GetInputValue() {
+            IsCanSumbit = true;
+            var selectJson = "[";
+            $("input[name='attrCache']").each(function () {
+                var price = $(this).prev().val();
+                var marketprice = $(this).parent().next().children().eq(0).val();
+                var stock = $(this).parent().next().next().children().eq(0).val();
+                if (stock == "" || stock == "不限") stock = UnLimit;
+                marketprice = $.trim(marketprice) == '' ? null : $.trim(marketprice);
+                var t = '{"ComAttributeIds":' + decodeURIComponent($(this).val()) + ',"Price":"' + price + '","Stock":"' + stock + '","MarketPrice":' + marketprice + '}';
+                if (selectJson == "[") {
+                    selectJson += t;
+                }
+                else {
+                    selectJson += "," + t;
+                }
+                if (IsCanSumbit) {
+                    CheckData(price, stock);
+                }
+            });
+            if (selectJson != "]") {
+                selectJson += "]";
+                return selectJson;
+            }
+            return "";
+        }
+        //校验市场价是否合法
+        //市场价不能小于商品现价
+        function CheckMarketPrice() {
+            var result = true;
+            var multAttr = false;
+            $("input[name='attrCache']").each(function () {
+                multAttr = true;
+                var price = $(this).prev().val();
+                var marketprice = $(this).parent().next().children().eq(0).val();
+                if (parseFloat(price) > parseFloat(marketprice)) {
+                    result = false;
+                    return;
+                }
+            });
+            if (!multAttr) {
+                var price = $("#commodityprice").val();
+                var marketprice = $("#commoditymarketprice").val();
+                if (parseFloat(price) > parseFloat(marketprice)) {
+                    result = false;
+                }
+            }
+            return result;
+        }
+
+        //获取只有一个属性的字符串
+        function GetOneAttrStr() {
+            var attributeNames = "";
+            var attributeIds = "";
+            var attrName = "";
+            var attrId = "";
+            if (SelectAttr.length == 1) {
+                for (var i = 0; i < FristAttrValueList.length; i++) {
+                    if (i == 0) {
+                        attributeNames = FristAttrValueList[i].Name;
+                        attributeIds = FristAttrValueList[i].Id;
+                    }
+                    else {
+                        attributeNames = attributeNames + "," + FristAttrValueList[i].Name;
+                        attributeIds = attributeIds + "," + FristAttrValueList[i].Id;
+                    }
+                }
+                attrId = SelectAttr[0].Id;
+                attrName = SelectAttr[0].Name;
+            }
+            return { attrIds: attributeIds, attrNames: attributeNames, attrName: attrName, attrId: attrId };
+        }
+        function deleteNumber(str, type) {
+            var arr = str.split(',');
+            var tmpArr = [];
+            var tmpObj = {};
+            var tmpValue = '';
+            for (var i = 0; i < arr.length; i++) {
+                tmpValue = $.trim(arr[i]);
+                if (!tmpObj[tmpValue] && tmpValue) {
+                    if (tmpValue == '请选择商品编号') {
+                        break;
+                    }
+                    tmpObj[tmpValue] = true;
+                    tmpArr.push(tmpValue);
+                }
+            }
+            return type ? tmpArr : tmpArr.join(',');
+        }
+
+        function ConfirmAppDistrictOption(arg) {
+            if (arg.length > 0) {
+                var saleAreas = "";
+                var saleAreasText = "";
+                for (var i = 0; i < arg.length - 1; i++) {
+                    saleAreas += arg[i].AreaCode + ",";
+                    saleAreasText += arg[i].AreaName + "、";
+                }
+                saleAreas += arg[arg.length - 1].AreaCode;
+                saleAreasText += arg[arg.length - 1].AreaName;
+                //alert(saleAreas);
+                $("#SaleAreas").val(saleAreas);
+                if (saleAreas == "000000") {
+                    $("#saleAreastxt").text("全网销售");
+                } else {
+                    $("#saleAreastxt").text(saleAreasText);
+                }
+            }
+            else {
+                $("#SaleAreas").val("");
+                $("#saleAreastxt").text("未指定销售区域");
+            }
+            ajaxSaveInfo();
+
+            closeDivSetSaleAreasDialog();
+        }
+        function CancelAppDistrictOption() {
+            closeDivSetSaleAreasDialog();
+        }
+        function GetAppDistrictOption() {
+            var tem = $("#SaleAreas").val();
+            var arg = tem;
+            var code = arg.split(',');
+            var a = new Array();
+            for (var i = 0; i < code.length; i++) {
+                a[i] = {};
+                a[i].AreaCode = code[i];
+            }
+            return a;
+        }
+
+        function ShowDivSetSaleAreasDialog() {
+
+            $("#divSetSaleAreasDialog").jhtablebox({
+                height: 530,
+                width: 632,
+                resizable: false,
+                title: "选择区域",
+                position: [300, 125],
+                modal: true,
+                closedByHide: false
+            });
+            $("#divSetSaleAreasDialog").parent().css({ "position": "fixed", "top": 125, "left": 300 });
+
+        }
+        function closeDivSetSaleAreasDialog() {
+            $("#divSetSaleAreasDialog").jhtablebox("close");
+        }
+
+        //        视频地址
+
+        function VideoDivAlert() {
+
+            $("#divSetVideoDialog").jhtablebox({
+                height: 640,
+                width: 850,
+                resizable: false,
+                title: "添加多媒体",
+                position: [300, 50],
+                modal: true,
+                closedByHide: false
+            });
+            $("#divSetVideoDialog").parent().css({ "position": "fixed", "top": 50, "left": 300 });
+
+        }
+        function toDeleteVideo() {
+            if ($("#VideoName").html()) {
+                $("<div></div>").jhtablebox({
+                    position: [300, 125],
+                    type: "Confirm",
+                    title: "消息提示",
+                    content: "您确认要删除视频吗？",
+                    autoOpen: true,
+                    confirm: function () {
+                        $("#deleVideo").hide();
+                        $("#VideoName").html("");
+                        $("#VideoUrl").html("");
+                        $("#VideoWebUrl").html("");
+                        $("#VideoPicUrl").html("");
+                    }
+                });
+
+            } else {
+                alert("没有可删除的视频！");
+            }
+        }
+        function MediaSelectComplete(result) {
+            if (result.operation == "confirm") {
+                document.getElementById("VideoName").innerText = result.name;
+                $("#deleVideo").show();
+                document.getElementById("VideoUrl").innerText = result.clientUrl;
+                document.getElementById("VideoWebUrl").innerText = result.url;
+                document.getElementById("VideoPicUrl").innerText = result.thumbnailUrl;
+            }
+
+            $("#divSetVideoDialog").jhtablebox("close");
+        }
+
+        // 初始化上传图片
+        function initUplodaImg() {
+            $("#comdtyPicBtn").uploadify({
+                'swf': '/scripts/uploadify/uploadify.swf',
+                'auto': true,
+                'multi': false,
+                'width': 110,
+                'height': 110,
+                'buttonText': '',
+                'buttonImage': '',
+                'fileTypeDesc': 'Image',
+                'fileTypeExts': '*.jpg;*.png',
+                'preventCaching': true,
+                'uploader': '/AppImage/DirectUploadWH',
+                'formData': { "iHeight": 316, "iWidth": 316 },
+                'onUploadSuccess': function (file, data, response) {
+                    if (data != "false") {
+                        if (data != "size" && data != "whsize") {
+                            var httpurl = data;
+                            $("#CommodityImg").attr("src", httpurl);
+                            ajaxSaveInfo();
+                            $('#picture').val(httpurl);
+                            refreshLayout();
+                        } else if (data == "size") {
+                            alert("请上传50K以内的图片！");
+                        } else {
+                            alert("请按要求高度和宽度上传图片！");
+                        }
+                    } else {
+                        alert("上传失败！");
+                    }
+                },
+                'onUploadError': function (file, errorCode, errorMes) {
+                    alert("上传失败，请稍后再试");
+                },
+                'onFallback': function () {
+                    alert("您未安装FLASH控件，无法上传图片！请安装FLASH控件后再试");
+                }
+            });
+            $("#comdtyPicBtn").css("height", "0px").css("width", "0px;");
+
+            $("#SWFUpload_0").css("left", "40px").css("margin-top", "18px").css("width", "110px").css("height", "110px").css("z-index", "9999"); ;
+        }
+    </script>
+</head>
+<div class="box">
+    <div class="content">
+        <div class="right right1">
+            <div class="spfb_t">
+                <div class="spfb_t_l" style="width: 800px">
+                    <ul>
+                        <li>
+                            <h2>
+                                基本信息</h2>
+                        </li>
+                        <li style="display:@ctreeDisplay"><span>商品类目：</span>
+                            @if (commodityCookie != null && commodityCookie.CommoditCategoryName != null)
+                            {
+                                <input type="text" id="commoditycategory" value="@commodityCookie.CommoditCategoryName"
+				       readonly="readonly"/>
+                            }
+                            else
+                            {
+                                <input type="text" id="commoditycategory" value="请选择" readonly="readonly" class="txtColor" />
+                            }
+                            @if (commodityCookie != null && commodityCookie.CommoditCategory != null)
+                            {
+                                <input type="hidden" id="cateogryIdList" value="@commodityCookie.CommoditCategory"/>
+                            }
+                            else
+                            {
+                                <input type="hidden" id="cateogryIdList" value="" />
+                            }
+                            <a target="_self" href="javascript:" id="changecategory">类目设置</a> </li>
+                        <li style="display: none;"><span>商品编号：</span>
+                            @if (commodityCookie != null && commodityCookie.CommodityCode != null)
+                            {
+                                <input type="text" id="commoditycode" value="@commodityCookie.CommodityCode" class="txtColor" maxlength="@Jinher.AMP.BTP.Common.InputControl.Commodity_NoCode_Length" />
+                            }
+                            else
+                            {
+                                <input type="text" id="commoditycode" value="" class="txtColor" maxlength="@Jinher.AMP.BTP.Common.InputControl.Commodity_NoCode_Length" />
+                            }
+                            <span style="margin: 0; color: red;"></span></li>
+                        <li class="dxin">
+                            <img src="/Images/xin.png" />
+                            <span>商品名称：</span>
+                            @if (commodityCookie != null && commodityCookie.CommodityName != null)
+                            {
+                                if (isCustomES)
+                                {
+                                <input type="text" id="commodityname" value="@commodityCookie.CommodityName" class="txtColor"
+                                       maxlength="60"/>
+                                }
+                                else
+                                {
+                                <input type="text" id="commodityname" value="@commodityCookie.CommodityName" class="txtColor"
+                                       maxlength="30"/>
+                                }
+
+                            }
+                            else
+                            {
+                                if (isCustomES)
+                                {
+                                <input type="text" id="commodityname" value="最多60个字" class="txtColor" maxlength="60" />
+                                }
+                                else
+                                {
+                                <input type="text" id="commodityname" value="最多30个字" class="txtColor" maxlength="30" />
+                                }
+
+                            }
+                            <input type="hidden" value="" id="commodityState" />
+                        </li>
+                        <li ><span style="margin-left: 33px">市场价：</span>
+                            @if (commodityCookie != null && commodityCookie.CommodityMarketPrice != null)
+                            {
+                                <input onblur="CheckInputFloatKk(this)" type="text" id="commoditymarketprice" value="@commodityCookie.CommodityMarketPrice" onchange="updateRight()"
+				       maxlength="12"/>
+                            }
+                            else
+                            {
+                                <input type="text" onblur="CheckInputFloatKk(this)" id="commoditymarketprice" value="请输入正数最多两位小数"
+                                    onchange="updateRight()" maxlength="12" class="txtColor" />
+                            }
+                            <span style="margin: 0">@Jinher.AMP.BTP.UI.Util.WebUtil.GetCurrency()</span> </li>
+                        <li class="dxin">
+                            <img src="/Images/xin.png" />
+                            <span>商品现价：</span>
+                            @if (commodityCookie != null && commodityCookie.CommodityPrice != null)
+                            {
+                                <input type="text" onblur="CheckInputFloat(this)" id="commodityprice" value="@commodityCookie.CommodityPrice" onchange="updateRight()"
+				       maxlength="12"/>
+                            }
+                            else
+                            {
+                                <input type="text" onblur="CheckInputFloat(this)" id="commodityprice" value="请输入正数最多两位小数"
+                                    onchange="updateRight()" maxlength="12" class="txtColor" />
+                            }
+                            <span>@Jinher.AMP.BTP.UI.Util.WebUtil.GetCurrency()</span></li>
+                        <li style="display: none;"><span>商品尺寸：</span>
+                            @if (commodityCookie != null && commodityCookie.CommoditySizeName != null)
+                            {
+                                <input type="text" id="commoditysize" value="@commodityCookie.CommoditySizeName" readonly="readonly"/>
+                            }
+                            else
+                            {
+                                <input type="text" id="commoditysize" value="请选择" readonly="readonly" class="txtColor" />
+                            }
+                            @if (commodityCookie != null && commodityCookie.CommoditySizeids != null)
+                            {
+                                <input type="hidden" id="sizeIdList" value="@commodityCookie.CommoditySizeids"/>
+                            }
+                            else
+                            {
+                                <input type="hidden" id="sizeIdList" value="" />
+                            }
+                            <a target="_self" href="/SecondAttribute/SizeIndex?@getUrlParam()" id="updatesize">尺寸设置</a></li>
+                        <li style="display: none;"><span>商品颜色：</span>
+                            @if (commodityCookie != null && commodityCookie.CommodityColorName != null)
+                            {
+                                <input type="text" id="commoditycolor" value="@commodityCookie.CommodityColorName" readonly="readonly"/>
+                            }
+                            else
+                            {
+                                <input type="text" id="commoditycolor" value="请选择" readonly="readonly" class="txtColor" />
+                            }
+                            @if (commodityCookie != null && commodityCookie.CommodityColorids != null)
+                            {
+                                <input type="hidden" id="colorIdList" value="@commodityCookie.CommodityColorids"/>
+                            }
+                            else
+                            {
+                                <input type="hidden" id="colorIdList" value="" />
+                            }
+                            <a target="_self" href="/SecondAttribute/ColorIndex?@getUrlParam()" id="updatecolor">
+                                颜色设置</a></li>
+                        <li><span>商品属性：</span>
+                            <input type="text" id="commodityAttribute" value="请选择" readonly="readonly" class="txtColor" />
+                            <a target="_self" href="/SecondAttribute/AttributeIndex?@getUrlParam()" id="updatecolor">
+                                属性设置</a></li>
+                        <li style="display: none;" id="attrSelect1"><span id="commodityAttrNameTip1">商品属性1：</span>
+                            <input type="text" id="commodityAttr1" value="请选择" readonly="readonly" class="txtColor" />
+                            <a target="_self" href="/SecondAttribute/AttributeIndex?@getUrlParam()" id="updateAttr1">
+                                设置</a></li>
+                        <li style="display: none;" id="attrSelect2"><span id="commodityAttrNameTip2">商品属性2：</span>
+                            <input type="text" id="commodityAttr2" value="请选择" readonly="readonly" class="txtColor" />
+                            <a target="_self" href="/SecondAttribute/AttributeIndex?@getUrlParam()" id="updateAttr2">
+                                设置</a> </li>
+                        <li style="padding-left: 15px; width: 750px; display: none;" id="attributeDecareli">
+                            <table class="createtable" border="0" align="center" cellpadding="0" cellspacing="0"
+                                id="attributeDecareTab">
+                            </table>
+                        </li>
+                        <li class="dxin">
+                          
+                            <span>商品数量：</span>
+                            @if (commodityCookie != null && commodityCookie.CommodityStock != null)
+                            {
+                                <input type="text" id="commoditystock" value="@(commodityCookie.CommodityStock)"/>
+                            }
+                            else
+                            {
+                                <input type="text" id="commoditystock" value="不限" class="txtColor" />
+                            }
+                            <span>件</span></li>
+                         <li>
+                            <span>餐盒价格：</span>
+                            @if (commodityCookie != null && commodityCookie.CommodityBoxPrice != null)
+                            {
+                                <input type="text" id="commodityboxprice" value="@(commodityCookie.CommodityBoxPrice)"/>
+                            }
+                            else
+                            {
+                                <input type="text" id="commodityboxprice" value="" class="txtColor" />
+                            }
+                            <span></span></li>
+
+                         <li>
+                            <span>餐盒数量：</span>
+                            @if (commodityCookie != null && commodityCookie.CommodityBoxCount != null)
+                            {
+                                <input type="text" id="commodityboxcount" value="@(commodityCookie.CommodityBoxCount)"/>
+                            }
+                            else
+                            {
+                                <input type="text" id="commodityboxcount" value="" class="txtColor" />
+                            }
+                            <span></span></li>
+
+                        <li style="display: none;"><span>计价方式：</span>
+                            @if (commodityCookie != null && commodityCookie.PricingMethod == "1")
+                            {
+                                <input id="idJS" style="width: 15px; height: 13px; border: none;" type="radio" name="rdoPriceMethod"
+                                    value="0" />
+                                <label for="idJS">
+                                    按件数</label>
+                                <input id="idZL" style="width: 15px; height: 13px; border: none;" type="radio" name="rdoPriceMethod"
+                                    value="1" checked="checked" />
+                                <label for="idZL">
+                                    按重量</label>
+                            }
+                            else
+                            {
+                            
+                                <input id="idJS" style="width: 15px; height: 13px; border: none;" type="radio" name="rdoPriceMethod"
+                                    value="0" checked="checked" />
+                                <label for="idJS">
+                                    按件数</label>
+                                <input id="idZL" style="width: 15px; height: 13px; border: none;" type="radio" name="rdoPriceMethod"
+                                    value="1" />
+                                <label for="idZL">
+                                    按重量</label>
+
+                            }
+                        </li>
+                        <li class="dxin" style="display: none" id="liWeight">
+                            <img src="/Images/xin.png" />
+                            <span>重量参数：</span>
+                            @if (commodityCookie != null && commodityCookie.Weight != null)
+                            {
+                                <input type="text" id="commodityWeight" value="@commodityCookie.Weight"/>
+                            }
+                            else
+                            {
+                                <input type="text" id="commodityWeight" value="请输入非负数" class="txtColor" />
+                            }
+                            <span>kg</span></li>
+                        <li style="display: none;"><span>物流费用：</span>
+                            <select id="commodityFreight" class="txtColor" style="width: 452px; height: 29px;">
+                            </select>
+                            <a target="_self" href="/Freight/Index?@getUrlParam()" id="updateFreight">物流模板设置</a>
+                        </li>
+                        <li style="display: none;"><span>销售区域：</span> @* @if (commodityCookie != null && commodityCookie.SaleAreasText != null)
+                            {
+                                <span id="saleAreastxt">@commodityCookie.SaleAreasText</span>
+                            }
+                            else
+                            {
+                                <span id="saleAreastxt">未指定销售区域</span>
+                            }*@ <span id="saleAreastxt">未指定销售区域</span> <a href="javascript:" id="updateTmpSaleAreas"
+                                onclick="ShowDivSetSaleAreasDialog()">编辑区域</a> </li>
+                        @*   <li style="display:@ViewBag.IsAppInZPH">
+                            <div class="input">
+                                <span>
+                                    <input type="checkbox" id="chkIsEnableSelfTake" style="width: auto; height: auto; vertical-align:middle;
+                                cursor: pointer;" @selfTakeChk />
+                                </span>
+                                <label for="chkIsEnableSelfTake" style="cursor: pointer; vertical-align: middle;">
+                                    支持自提</label></div>
+                        </li>*@
+                        <li style="display: none;">
+                            <input id="CommodityIds" type="hidden" value="" /><span>相关商品：</span> <a id="relationcom"
+                                style="text-decoration: underline; cursor: pointer;">选择相关商品</a>&nbsp;&nbsp;&nbsp;<span
+                                    id="num">已选0件</span> </li>
+                        <div id="VideoFunc" style="display:none;">
+                            <li>
+                                <input id="CommodityVideo" type="hidden" value="" /><span>视频展示：</span> <a id="relationvideo"
+                                    onclick="VideoDivAlert()" style="text-decoration: underline; cursor: pointer;">从资源库获取</a>&nbsp;&nbsp;&nbsp;<span
+                                        id="VideoName"></span> &nbsp;&nbsp;&nbsp;<a href="javascript:void(0)" id="deleVideo"
+                                            style="display: none" onclick="toDeleteVideo()">删除</a></li>
+                        </div>
+                        <li class="spa">
+                            <div style="display: -webkit-box; display: -webkit-flex; display: -ms-flexbox; display: flex;
+                                -webkit-box-align: center; -webkit-align-items: center; -ms-flex-align: center;
+                                align-items: center;">
+                                <img src="/Images/xin.png" alt="" />
+                                <span style="margin-left: -2px;">商品缩略图：<input type="file" id="comdtyPicBtn" style="display: none" /></span>
+                                <span style="margin-left: 10px;">&nbsp;&nbsp;建议图片尺寸：316*316,小于50K</span>
+                            </div>
+                            @if (commodityCookie != null && commodityCookie.Picture != null)
+                            {
+
+                                <div>
+                                    <img class="tut" style="margin-top:10px;margin-left: 20px;" alt="" src="@commodityCookie.Picture"
+					     width="110" height="110" id="CommodityImg"/>
+                                </div>
+                            }
+                            else
+                            {
+                                <div>
+                                    <img class="tut" style="margin-top: 5px;" alt="" src="/Images/comment_pic5.png" width="110"
+                                        height="110" id="CommodityImg" />
+                                </div>
+                            }
+                            @if (commodityCookie != null && commodityCookie.Hidpic != null)
+                            {
+                                <input type="hidden" id="picture" value="@commodityCookie.Hidpic"/>
+                            }
+                            else
+                            {
+                                <input type="hidden" id="picture" value="" />
+                            }
+                        </li>
+                    </ul>
+                </div>
+                <!-- 右侧图片预览 -->
+                <div class="spfb_t_r" style="visibility: hidden;">
+                    <ul>
+                        <li>
+                            <img src="/images/tele_top.png" alt="" width="240" height="15" /></li>
+                        <li>
+                            <img src="/images/add_pic.png" alt="" width="240" height="32" /></li>
+                        <li>
+                            <div id="showPrev" style="float: left; top: 50%; margin-top: -90px; position: absolute;
+                                cursor: pointer">
+                                <img src="/Images/m_prev.png" />
+                            </div>
+                            <div id="showNext" style="float: right; top: 50%; margin-top: -90px; position: absolute;
+                                right: 0; cursor: pointer">
+                                <img src="/Images/m_next.png" />
+                            </div>
+                            <div>
+                                <img id="showImg" src="/Images/comment_pic5.png" alt="" width="240" height="181" />
+                            </div>
+                        </li>
+                        <li class="one one1" style="position: absolute; top: 210px;">
+                            <p>
+                                裂帛2014秋冬新款时尚春色通勤毛呢外套</p>
+                            <span>收藏</span></li>
+                        <li class="one one2">请输入整数最多两位小数</li>
+                        <li class="one one4 flag1"><span class="col">请选择颜色</span></li>
+                        <li class="one one4 flag2"><span class="siz">请选择尺码</span></li>
+                        <li class="one one4">
+                            <p>
+                                <span class="fir">卖家包邮</span><span>月销量82笔</span><span>广东广州</span>
+                            </p>
+                        </li>
+                        <li>
+                            <img src="/images/add3.png" alt="" width="240" height="39" /></li>
+                        <li class="one6"></li>
+                        <li class="one5"><span class="spa1">加入购物车</span><span class="spa2">购买</span></li>
+                    </ul>
+                </div>
+                <div style="clear: both;">
+                </div>
+            </div>
+            <div class="spfb_b">
+                <div class="spfb_b1">
+                    <div class="spfb_b1t">
+                        <span class="xint"></span><span class="zihao">商品详情页图样</span> <span>（</span>
+                        <img src="/Images/xiaoshou.jpg" /><span>直接拖动图片可调整顺序）</span> <a id="batchUploadA"
+                            style="padding-left: 100px;" href="javascript:" onclick="uploadImgBatch()">批量上传图片</a>
+                        <span style="float: right; padding-right: 15px;">
+                            <input id="selectAllInput" name="selectAllInput" type="checkbox" onpropertychange="toSelectAll(this)"
+                                onchange="toSelectAll(this)" value="全选" />
+                            <label for="selectAllInput">
+                                全选</label>&nbsp&nbsp&nbsp&nbsp&nbsp<a href="javascript:void(0)" onclick="toDeleteAllImgList()">删除</a></span>
+                    </div>
+                    <div class="spfb_b1c" id="sortable">
+                        @if (commodityCookie != null && commodityCookie.listImgShowSrcString != null)
+                        {
+                            <input id="listImgShowSrcString" type="text" style="display:none" value="@commodityCookie.listImgShowSrcString" />
+                        }
+                        else
+                        {
+                            <input id="listImgShowSrcString" type="text" style="display: none" value="" />
+                        }
+                        <img src="/Images/comment_pic5.png" id="CommodityListPic" />
+                    </div>
+                </div>
+                <div class="spfb_b1">
+                    <div class="spfb_b1t">
+                        <span class="zihao1">描述内容</span>
+                    </div>
+                    <div id="textDiv" class="item" style="padding-left: 0; width: 100%;">
+                        <script type="text/plain" id="myEditor"></script>
+                    </div>
+                </div>
+            </div>
+            <div class="butt" style="text-align: center; width: 98%; margin: 20px;">
+                <a href="javascript:;" class="btn120" id="btnSubmit" onclick="toSave()">发布</a> <a
+                    id="btnCancel" href="javascript:;" class="btn120" onclick="closeWindow()" style="margin-left: 20px;">
+                    取消</a>
+            </div>
+            <div style="text-align: center; width: 98%; margin: 20px; margin-top: 10px;">
+                <span class="zihao">注：商品发布成功后5分钟左右可搜索到该商品~</span>
+            </div>
+        </div>
+    </div>
+    <div class="floa11 addfloa2" id="attributeDIV" style=" z-index:9999">
+        <!--gyy -->
+        <h1>
+            <a href="javascript:;" class="close" onclick="closeAttributeDIV()"></a><span>最多只能选择两项</span>
+        </h1>
+        <div style="overflow-y: auto; height: 150px;">
+            <ul class="first" id="attributeUl">
+                @foreach (var attr in AttributeList)
+                {
+
+                    <li>
+                        <label>
+                            <input type="checkbox" value="@attr.AttributeId"/><span>@attr.AttributeName</span></label></li>
+                }
+            </ul>
+        </div>
+        <div class="bbtn" style="text-align: center;">
+            <h1>
+            </h1>
+            <a href="javascript:;" id="savecolor" onclick="closeAttributeDIV()" class="btn120"
+                style="margin-top: 6px;">确定</a>
+        </div>
+    </div>
+    <div class="floa11 addfloa2" id="attrDIV1" style=" z-index:9999">
+        <!--gyy -->
+        <h1>
+            <a href="javascript:;" class="close" onclick="closeAttrDIV(1)"></a><span id="attrtip1">
+                请选择**信息</span>
+        </h1>
+        <div style="overflow-y: auto; height: 150px;">
+            <ul class="first" id="attrUl1">
+            </ul>
+        </div>
+        <div class="bbtn" style="text-align: center;">
+            <h1>
+            </h1>
+            <a href="javascript:;" id="savecolor" onclick="closeAttrDIV(1)" class="btn120" style="margin-top: 6px;">
+                确定</a>
+        </div>
+    </div>
+    <div class="floa11 addfloa2" id="attrDIV2" style="z-index: 9999;">
+        <!--gyy -->
+        <h1>
+            <a href="javascript:;" class="close" onclick="closeAttrDIV(2)"></a><span id="attrtip2">
+                请选择**信息</span>
+        </h1>
+        <div style="overflow-y: auto; height: 150px;">
+            <ul class="first" id="attrUl2">
+            </ul>
+        </div>
+        <div class="bbtn" style="text-align: center;">
+            <h1>
+            </h1>
+            <a href="javascript:;" id="savecolor" onclick="closeAttrDIV(2)" class="btn120" style="margin-top: 6px;">
+                确定</a>
+        </div>
+    </div>
+    <div class="floa11 addfloa2" id="freightDIV" style="z-index: 9999;">
+        <!--gyy -->
+        <h1>
+            <a href="javascript:;" class="close" onclick="closeFreightDIV()"></a>请选择物流信息
+        </h1>
+        <div style="overflow-y: auto; height: 150px;">
+            <ul class="first" id="freightUl">
+                @*                @foreach (var freight in FreightListFreightList)
+                {
+
+                    <li>
+                        <label>
+                            <input type="checkbox" value="@freight.Id"/>
+                            <span>@freight.Name</span>
+                        </label>
+                    </li>
+                }*@
+            </ul>
+        </div>
+        <div class="bbtn" style="text-align: center;">
+            <h1>
+            </h1>
+            <a href="javascript:;" id="saveFreight" onclick="closeFreightDIV()" class="btn120"
+                style="margin-top: 6px;">确定</a>
+        </div>
+    </div>
+    <div class="floa2 addfloa2" id="categoryDiv">
+        <!-- gyy -->
+        <h1>
+            <a href="javascript:;" class="close" onclick="closeCategoryDiv()"></a><span>选择类目信息</span>
+        </h1>
+        <div style="overflow-y: auto; height: 195px;">
+            <ul class="first" id="tcategoryUl">
+                @foreach (var cate in categorylist)
+                {
+                    <li class="firs">
+                        <label>
+                            @if (cate.SecondCategory == null || cate.SecondCategory.Count == 0)
+                            {
+                                <input name="cateogryClassLevel1" type="checkbox" value="@cate.Id"/>
+                            }<span>@cate.Name</span>
+                        </label>
+                        <ul class="second">
+                            @if (cate.SecondCategory == null) { cate.SecondCategory = new List<Jinher.AMP.BTP.Deploy.CustomDTO.SCategorySDTO>(); }
+                            @foreach (var scate in cate.SecondCategory)
+                            {
+                                <li class="firs firs1">
+                                    <label>
+                                        @if (scate.ThirdCategory == null || scate.ThirdCategory.Count == 0)
+                                        {
+                                            <input name="cateogryClassLevel2" type="checkbox" value="@scate.Id"/>
+                                        }<span>@scate.Name</span>
+                                    </label>
+                                    <ul class="third">
+                                        @if (scate.ThirdCategory == null) { scate.ThirdCategory = new List<Jinher.AMP.BTP.Deploy.CustomDTO.TCategorySDTO>(); }
+                                        @foreach (var tcate in scate.ThirdCategory)
+                                        {
+                                            <li>
+                                                <label>
+                                                    <input name="cateogryClassLevel3" type="checkbox"
+								       value="@tcate.Id"/><span>@tcate.Name</span>
+                                                </label>
+                                            </li>
+                                        }
+                                    </ul>
+                                </li>
+                            }
+                        </ul>
+                    </li>
+                }
+            </ul>
+        </div>
+        <div class="bbtn" style="text-align: center;">
+            <h1>
+            </h1>
+            <a href="javascript:;" id="savecategory" onclick="closeCategoryDiv()" class="btn120"
+                style="margin-top: 6px;">确定</a>
+        </div>
+    </div>
+    <div class="floa1 addfloa2" id="sizeDIV" style=" z-index:9999">
+        <!-- gyy -->
+        <h1>
+            <a href="javascript:;" class="close" onclick="closeSzieDIV()"></a><span>选择尺寸信息</span>
+        </h1>
+        <div style="overflow-y: auto; height: 160px;">
+            <!-- gyy 195 -->
+            <ul class="first" id="sizeUl">
+                @foreach (var size in Sizelist)
+                {
+
+                    <li>
+                        <label>
+                            <input type="checkbox" value="@size.Id"/>
+                            <span>@size.Name</span>
+                        </label>
+                    </li>
+                }
+            </ul>
+        </div>
+        <div class="bbtn" style="text-align: center;">
+            <h1>
+            </h1>
+            <a href="javascript:;" id="savesize" onclick="closeSzieDIV()" class="btn120" style="margin-top: 6px;">
+                确定</a>
+        </div>
+    </div>
+    <div class="floa11 addfloa2" id="colorDIV" style=" z-index:9999">
+        <!--gyy -->
+        <h1>
+            <a href="javascript:;" class="close" onclick="closeColorDIV()"></a><span>选择颜色信息</span>
+        </h1>
+        <div style="overflow-y: auto; height: 150px;">
+            <ul class="first" id="colorUl">
+                @foreach (var color in Colorlist)
+                {
+
+                    <li>
+                        <label>
+                            <input type="checkbox" value="@color.Id"/><span>@color.Name</span></label></li>
+                }
+            </ul>
+        </div>
+        <div class="bbtn" style="text-align: center;">
+            <h1>
+            </h1>
+            <a href="javascript:;" id="savecolor" onclick="closeColorDIV()" class="btn120" style="margin-top: 6px;">
+                确定</a>
+        </div>
+    </div>
+    <div id="divSetSaleAreasDialog" style="display: none;">
+        <div>
+            @*   @if (commodityCookie != null && commodityCookie.SaleAreas != null)
+            {
+                <input type="hidden" id="SaleAreas" value="@commodityCookie.SaleAreas" />                            
+            }
+            else
+            {
+                <input type="hidden" id="SaleAreas" value="" />                         
+            }*@
+            <input type="hidden" id="SaleAreas" value="" />
+            <iframe style="width:100%;height:600px; scroll:auto; border:0;" src="@ViewBag.ProvinceCityUrl">
+            </iframe>
+        </div>
+    </div>
+    @*视频地址*@
+    <div id="divSetVideoDialog" style="display: none;">
+        <div>
+            <span style="display: none" id="VideoName"></span><span style="display: none" id="VideoUrl">
+            </span><span style="display: none" id="VideoWebUrl"></span><span style="display: none"
+                id="VideoPicUrl"></span>
+            <iframe style="width:100%;height:600px; scroll:auto; border:0;" src="@ViewBag.VideoHost">
+            </iframe>
+        </div>
+    </div>
+</div>
+<div id="loadImgDiv" style="overflow: hidden; width: auto; min-height: 0; height: 470px;
+    display: none;">
+    <iframe id="contentFrame" name="contentFrame" scrolling="no" src="" height="480"
+        width="630" frameborder="0" style="border: 0; overflow: hidden;"></iframe>
+</div>
+<div class="tanchu" id="div3" style="height: 160px;">
+    <div class="tanchu_r">
+        <p>
+        </p>
+        <div style="font-size: 14px; text-align: center;" class="color">
+            您需要先完善发布者信息才能发布商品！</div>
+        <div style="text-align: center;">
+            <button class="an1">
+                确定</button>
+        </div>
+    </div>
+</div>
+<div id="uploadImgBatchDiv">
+    <iframe id="uploadImgBatchIframe" style="width: 100%; height: 600px; scroll: auto;
+        border: 0;"></iframe>
+</div>
+<div id="loadCommodityList" style="overflow: hidden; width: auto; min-height: 0;
+    height: 470px; display: none;">
+    <iframe id="commodityListFrame" name="commodityListFrame" scrolling="yes" src=""
+        frameborder="0" style="border: 0; overflow: hidden; padding: 0; margin: 0; height: 630px;
+        width: 939px" width="939"></iframe>
+</div>
+<script type="text/javascript">
+    var textDivWidth = $("#textDiv").width();
+    var ue = UM.getEditor('myEditor', {
+        //这里可以选择自己需要的工具按钮名称
+        toolbar: ['undo redo | bold italic underline strikethrough | forecolor | removeformat |',
+            'insertorderedlist insertunorderedlist | selectall cleardoc | paragraph fontsize',
+            '| justifyleft justifycenter justifyright justifyjustify |',
+            'link unlink | image | horizontal fullscreen'],
+        //focus时自动清空初始化时的内容
+        autoClearinitialContent: false,
+        //关闭字数统计
+        wordCount: false,
+        //关闭elementPath
+        elementPathEnabled: false,
+        //默认的编辑区域高度
+        initialFrameHeight: 300,
+        //宽度
+        initialFrameWidth: '100%',
+        //自适应高度
+        autoHeightEnabled: false,
+        //工具条保持不动
+        autoFloatEnabled: false,
+        zIndex: 5,
+        //更多其他参数，请参考umeditor.config.js中的配置项
+        filterRules: function () {
+            return {
+                //$:{}表示不保留任何属性
+                p: { $: {} },
+                h3: { $: {} },
+                h2: { $: {} },
+                img: function (node) {
+                    var src = node.getAttr('src');
+                    node.setAttr();
+                    node.setAttr({ 'src': src })
+                },
+                //黑名单，以下标签及其子节点都会被过滤掉
+                '-': 'script style meta iframe embed object'
+            }
+        } ()
+    });
+
+    ue.addListener("contentChange", function () {
+        ajaxSaveInfo();
+    });
+
+
+    var commodityDetailCookie = '@if (commodityCookie != null)
+                                 {@Html.Raw(@commodityCookie.CommodityDetails);
+                                 }';
+
+
+    ue.setContent(commodityDetailCookie);
+	
+</script>
+<script type="text/javascript">
+
+    //以下为图片批量上传所用
+
+    //在页面中添加图片
+    function loadBatchUploadListImg(imgListArry) {
+        var listImgSrc = imgListArry;
+        var listImgShowSrc = imgListArry;
+        for (var i = 0; i < listImgSrc.length; i++) {
+            if (listImgSrc[i] != "") {
+                var htmlContent = $('<div class="img1">' +
+                        '<img src="" name="" width="80" height="80" class="one">' +
+                        '<img src="/Images/finished.png" class="two" style="display: none">' +
+                        '<div class="diwein" style="position: absolute; top: 40px; left: 5px; display: none;">' +
+                        '<a href="javascript:void(0)" class="reUpImage">重新上传</a>' +
+                        '<a href="javascript:void(0)" class="deleteImage">删除</a></div>' +
+                        '</div>');
+                var clone = htmlContent.clone();
+                clone.find('.one').attr('src', listImgSrc[i]).attr('name', listImgSrc[i]);
+                $("#sortable").find('img:last').before(clone);
+            }
+        }
+    }
+
+    //图片批量上传的url
+    var curUrl = window.location.href;
+    var uploadImgBatchIframeUrl = "/ImgBatchUpload/Index" + curUrl.substring(curUrl.indexOf("?"));
+
+    //打开
+    function uploadImgBatch() {
+        var icount = $("#sortable").find('.one').length;
+        if (icount >= 5) {
+            alert('最多只能上传5张图片');
+            return;
+        }
+        $("#uploadImgBatchIframe").attr("src", uploadImgBatchIframeUrl);
+        $("#uploadImgBatchDiv").jhtablebox({
+            title: "批量上传图片",
+            width: 710,
+            height: 490,
+            modal: true,
+            resizable: false
+        });
+    }
+    //初时加载
+    function loadBatchParam() {
+        var objLoad = {};
+        var icount = $("#sortable").find('.one').length;
+        objLoad.Width = 640;
+        objLoad.Height = 480;
+        objLoad.Size = 50;
+        objLoad.Accept = [".png", ".jpg", ".jpeg"];
+        objLoad.Count = 5;
+        objLoad.iCount = icount;
+        objLoad.Url = "/Handler/ImgBatchUploadHandler.ashx";
+        return objLoad;
+    }
+    //关闭
+    function uploadImgBatchClose() {
+        $("#uploadImgBatchDiv").jhtablebox("close");
+    }
+    //确定
+    function uploadImgBatchConfirm(obj) {
+        $("#uploadImgBatchDiv").jhtablebox("close");
+        if (obj && obj.Url) {
+            loadBatchUploadListImg(obj.Url);
+        }
+
+    }
+</script>

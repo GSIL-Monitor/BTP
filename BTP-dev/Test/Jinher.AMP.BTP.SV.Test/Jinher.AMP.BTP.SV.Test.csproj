@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{BB3F6552-5CA5-405B-BEC2-EACA7AF7A33D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Jinher.AMP.BTP.SV.Test</RootNamespace>
+    <AssemblyName>Jinher.AMP.BTP.SV.Test</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Jinher.AMP.BTP.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.BTP.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.CBC.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.CBC.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.BF.BE">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\JAP\Implement\Jinher.JAP.BF.BE.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Jinher.JAP.BF.BE.Deploy">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\JAP\Interface\Jinher.JAP.BF.BE.Deploy.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Jinher.JAP.BF.SV">
+      <HintPath>..\..\..\..\..\Lib\JAP\Implement\Jinher.JAP.BF.SV.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Jinher.JAP.BF.ISV">
+      <HintPath>..\..\..\..\..\Lib\JAP\Interface\Jinher.JAP.BF.ISV.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <CodeAnalysisDependentAssemblyPaths Condition=" '$(VS100COMNTOOLS)' != '' " Include="$(VS100COMNTOOLS)..\IDE\PrivateAssemblies">
+      <Visible>False</Visible>
+    </CodeAnalysisDependentAssemblyPaths>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="JsonHelper.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RestRequestTest.cs" />
+    <Compile Include="Setting.cs" />
+    <Compile Include="SVTest\PromotionTest.cs" />
+    <Compile Include="SVTest\StoreTest.cs" />
+    <Compile Include="SVTest\ShoppingCartTest.cs" />
+    <Compile Include="SVTest\ReviewTest.cs" />
+    <Compile Include="SVTest\PaymentsTest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <Compile Include="SVTest\CategoryTest.cs" />
+    <Compile Include="SVTest\CollectionTest.cs" />
+    <Compile Include="SVTest\CommodityTest.cs" />
+    <Compile Include="SVTest\CommodityOrderTest.cs" />
+    <Compile Include="SVTest\DeliveryAddressTest.cs" />
+    <Compile Include="SVTest\MessageTest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Implement\Jinher.AMP.BTP.SV\Jinher.AMP.BTP.SV.csproj">
+      <Project>{75384AC5-EFD4-4CAE-9969-A11A660C9C3A}</Project>
+      <Name>Jinher.AMP.BTP.SV</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Interface\Jinher.AMP.BTP.IBP\Jinher.AMP.BTP.IBP.csproj">
+      <Project>{AE8ED766-27DA-4992-8F96-ADF20AEF932E}</Project>
+      <Name>Jinher.AMP.BTP.IBP</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Interface\Jinher.AMP.BTP.ISV\Jinher.AMP.BTP.ISV.csproj">
+      <Project>{2DCAB1F9-D0AB-444F-8CEE-25712DC9ACCC}</Project>
+      <Name>Jinher.AMP.BTP.ISV</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

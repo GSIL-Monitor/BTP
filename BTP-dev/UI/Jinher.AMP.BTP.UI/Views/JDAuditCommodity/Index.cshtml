@@ -1,0 +1,77 @@
+﻿@{
+    ViewBag.Title = ViewBag.Name;
+}
+<style type="text/css">
+    .nav_right
+    {
+        width: 100%;
+        height: 100%;
+        float: left;
+        overflow: hidden;
+    }
+    
+    .nav_block
+    {
+        width: 100px;
+        height: 110px;
+        display: inline-block;
+        margin-left: 100px;
+        margin: 20px 0px 0px 100px;
+        float: left;
+    }
+    .spn
+    {        
+        display: inline-block;
+        font-size: 13px;
+    }
+</style>
+<body>
+    <div class="nav_right">
+        @if (ViewBag.IsYpk)
+        {
+            <div class="nav_block">
+                <a href="@Url.Action("JDEditCostPriceIndex", "JDAuditCommodity")?appId=@ViewBag.appId">
+                    <img src="../../Content/images/JDEditCostPrice.png" style="width: 80px; height: 80px;" />
+                </a><span class="spn">进价审核</span>
+            </div>
+            <div class="nav_block">
+                <a href="@Url.Action("JDAuditOffSaleIndex", "JDAuditCommodity")?appId=@ViewBag.appId">
+                    <img src="../../Content/images/JDNoGoods.png" style="width: 80px; height: 80px;" />
+                </a><span class="spn">下架无货审核</span>
+            </div>
+        }
+        else
+        {
+            <div class="nav_block">
+                <a href="@Url.Action("JDEditPriceIndex", "JDAuditCommodity")?appId=@ViewBag.appId">
+                    <img src="../../Content/images/JDEditPrice.png" style="width: 80px; height: 80px;" />
+                </a><span class="spn">售价审核</span>
+            </div>
+            if (ViewBag.IsShow)
+            {
+                <div class="nav_block">
+                    <a href="@Url.Action("JDEditCostPriceIndex", "JDAuditCommodity")?appId=@ViewBag.appId">
+                        <img src="../../Content/images/JDEditCostPrice.png" style="width: 80px; height: 80px;" />
+                    </a><span class="spn">进价审核</span>
+                </div>
+                <div class="nav_block">
+                    <a href="@Url.Action("JDAuditOffSaleIndex", "JDAuditCommodity")?appId=@ViewBag.appId">
+                        <img src="../../Content/images/JDNoGoods.png" style="width: 80px; height: 80px;" />
+                    </a><span class="spn">下架无货审核</span>
+                </div>
+            }
+        }
+        <div class="nav_block">
+            <a href="@Url.Action("Index","JdCommodity")?appId=@ViewBag.appId">
+                <img src="../../Content/images/JdComAuto.png" style="width: 80px; height: 80px;" />
+            </a><span class="spn">商品信息同步</span>
+        </div>
+
+
+        <div class="nav_block">
+            <a href="@Url.Action("Index", "AutoSettingPrice")?appId=@ViewBag.appId">
+                <img src="../../Content/images/AutoSettingPrice.png" style="width: 80px; height: 80px;" />
+            </a><span class="spn">自动调价设置</span>
+        </div>
+    </div>
+</body>

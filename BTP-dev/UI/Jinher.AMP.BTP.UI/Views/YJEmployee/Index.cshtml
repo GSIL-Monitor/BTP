@@ -1,0 +1,401 @@
+﻿@{
+    ViewBag.Title = "易捷员工表";
+    Layout = "~/Views/Shared/_Vue2Layout.cshtml";
+}
+<div class="content">
+    <div id="listWithFiltersPage">
+        <div class="content-inner">
+            <!-- filters start -->
+            <div class="filters">
+                <el-form :inline="true" :model="searchForm" :rules="searchFormRules" ref="searchForm">
+                    <el-form-item label="登录账户：" prop="UserAccount">
+                        <el-input v-model="searchForm.UserAccount"></el-input>
+                    </el-form-item>
+                    <el-form-item label="姓名：" prop="UserName">
+                        <el-input v-model="searchForm.UserName"></el-input>
+                    </el-form-item>
+                    <el-form-item label="联系方式：" prop="Phone">
+                        <el-input v-model="searchForm.Phone"></el-input>
+                    </el-form-item>
+                    <el-form-item label="所在区域：" prop="Area">
+                        <el-select v-model="searchForm.Area">
+                            <el-option label="全部" value=""></el-option>
+                            <el-option v-for="item in AreaOptions" :key="item.Area" :label="item.Area" :value="item.Area"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="站名称：" prop="StationName">
+                        <el-input v-model="searchForm.StationName"></el-input>
+                    </el-form-item>
+                    <el-form-item label="站编码：" prop="StationCode">
+                        <el-input v-model="searchForm.StationCode"></el-input>
+                    </el-form-item>
+                    <el-form-item label="身份证号：" prop="IdentityNum">
+                        <el-input v-model="searchForm.IdentityNum"></el-input>
+                    </el-form-item>  
+                    <el-form-item label="是否管理岗：" prop="IsManager">
+                        <el-select v-model="searchForm.IsManager"> 
+                            <el-option label="全部" value="0"></el-option>
+                            <el-option v-for="item in Managers" :key="item.label" :label="item.label" :value="item.value"></el-option>
+                        </el-select>
+                    </el-form-item>
+                     <el-form-item label="部   门：" prop="Department">
+                        <el-input v-model="searchForm.Department"></el-input>
+                    </el-form-item>
+                     <el-form-item label="岗   位：" prop="Station">
+                        <el-input v-model="searchForm.Station"></el-input>
+                    </el-form-item>        
+                    <el-form-item>
+                        <el-button type="success" @@click="handleSearch()">查询</el-button>                      
+                    </el-form-item>
+                </el-form>
+            </div>
+            <div class="operations" style="flo">
+                <el-button size="small" type="danger"  @@click="handleDelAll">删除</el-button>  
+                <el-button size="small" type="primary"  @@click="handleCreating">新增</el-button>  
+                <el-button size="small" type="primary"  @@click="handleImport">导入</el-button>  
+                <el-button size="small" type="primary"  @@click="handleExport">导出</el-button>
+                <el-button size="small" type="primary"  @@click="handleUpdateUser">更新无效用户</el-button>  
+				<el-button size="small" type="primary"  @@click="handleExportInvalidData">导出未注册员工</el-button> 
+            </div>
+            <el-table :data="tableData" class="scrollbar" max-height="860" element-loading-text="拼命加载中" v-loading="loading" stripe @@selection-change="SelectCheck">
+                <el-table-column type="index" lable="序号" width="60"></el-table-column>
+                <el-table-column type="selection" width="55"></el-table-column> 
+                <el-table-column prop="UserAccount" label="登录账号" min-width="120"></el-table-column>
+                <el-table-column prop="UserName" label="姓名" min-width="100" ></el-table-column>
+                <el-table-column prop="IdentityNum" label="身份证号" min-width="100"></el-table-column>
+                <el-table-column prop="Phone" label="联系方式" min-width="120"></el-table-column>
+                <el-table-column prop="Area" label="所在区域" min-width="100" ></el-table-column>
+                <el-table-column prop="StationCode" label="站编号" min-width="100"></el-table-column>
+                <el-table-column prop="StationName" label="站名称" min-width="100"></el-table-column>
+                <el-table-column label="是否管理岗" width="100">
+                     <template scope="scope">
+					<el-button v-if="scope.row.IsManager==null" >否</el-button>
+                    <el-button v-if="scope.row.IsManager==1" >是</el-button>
+                    <el-button v-if="scope.row.IsManager==2" >否</el-button>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="Department" label="部门" min-width="100"></el-table-column>
+                <el-table-column prop="Station" label="岗位" min-width="100"></el-table-column>
+                </el-table-column>
+                <el-table-column label="操作" width="195" align="left">
+                    <template scope="scope">                        
+                            <el-button type="primary" plain size="mini" @@click="handleUpdating(scope.row)">编辑</el-button>
+                            <el-button type="danger" plain size="mini" @@click="handleDelete(scope.row)">删除</el-button>                        
+                    </template>
+                </el-table-column>
+            </el-table>
+            <div class="pagination-wrapper" v-show="!loading">
+                <el-pagination layout="total, sizes, prev, pager, next, jumper" @@size-change="handleSizeChange" @@current-change="handleCurrentChange" :total="total" :current-page="page" :page-sizes="[10, 20, 50, 100]" :page-size="pageSize" >
+                </el-pagination>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="tempyijie">
+<template >     
+    <el-dialog title="易捷员工信息导入" :visible.sync="ImportDialogVisible" >          
+        <span style="color:crimson">*</span> 提示：亲，为了保证您职员导入顺利，请您使用我们提供的模板！<a style="color:royalblue" href="/Content/ExcelTemplate/员工信息采集.xlsx">点击下载导入模板</a><br><br>      
+        <el-upload
+        class="upload-demo"
+        ref="upload"
+        action="/YJEmployee/ImportExcel"
+        :on-preview="handlePreview"
+        :on-remove="handleRemove"
+        :before-upload="beforeupload"
+        :on-error="onerror"
+        :on-success="onsuccess"       
+        :file-list="fileList"
+        :limit="1"
+        :auto-upload="false">
+        <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+        <el-button style="margin-left: 10px;" size="small" type="success" @@click="submitUpload">上   传</el-button>
+        <div slot="tip" class="el-upload__tip">只能上传.xls文件</div>
+    </el-upload>
+        <span slot="footer" class="dialog-footer">            
+            <el-button @@click="ImportDialogVisible=false">取 消</el-button>                       
+        </span>
+    </el-dialog>  
+</template>
+</div>
+<div class="tempyijie">
+    <template>   
+        <el-dialog title="异常数据" :visible.sync="ErrorDataVisible">             
+          
+            <p style="color:crimson;font-size:15px"></p>
+                <ol class="elol">       
+                    <li v-for="item in RepeatList" >{{ item }}</li>                      
+                </ol>          
+            <h2 style="color:crimson;font-size:15px">无效用户账号：</h2>
+               <p>此次上传员工数据无效用户条数:
+                   <span v-if="InvalidDatas!=null" style="color:crimson;font-size:15px">{{InvalidDatas.length}}</span>
+                   <span v-if="InvalidDatas==null" style="color:crimson;font-size:15px">0</span>
+               </p>  
+               <el-button v-if="InvalidDatas==null" disabled size="small" type="primary" @@click="handleExportData">导出无效用户</el-button>
+               <el-button v-if="InvalidDatas!=null" disabled size="small" type="primary" @@click="handleExportData">导出无效用户</el-button>           
+           
+            <h2 style="color:crimson;font-size:15px">已存在用户账号：</h2>                
+                <el-table ref="singleTable" :data="RepeatableData" highlight-current-row  style="width: 100%">
+                    <el-table-column type="index" width="50">
+                    </el-table-column>
+                    <el-table-column property="UserAccount" label="用户账号" width="150">
+                    </el-table-column>
+                    <el-table-column property="UserName" label="姓名" width="150">
+                    </el-table-column>
+                    <el-table-column property="Area" label="所在区域" width="150">
+                    </el-table-column>
+                    <el-table-column property="StationName" label="站名称" width="150">
+                    </el-table-column>
+               </el-table>                  
+            <span slot="footer" class="dialog-footer">            
+                <el-button @@click="ErrorDataVisible=false">关  闭</el-button>                       
+            </span>
+        </el-dialog>
+    </template>
+</div>
+@section Script{
+<script>
+ 
+ var strArea="@ViewBag.AreaList";
+ //var arr=JSON.parse();
+
+var defaultVue = new Vue({
+    el: '#app',
+    data: {
+        searchForm: {
+            UserAccount: '',
+            UserName: '',
+            Phone: '',
+            StationName:'',
+            StationCode:'',
+            IdentityNum:'',
+            Area:'',
+            IsManager:'',
+            Department:'',
+            Station:''
+        },
+        searchFormRules: {
+          UserAccount: [
+            { max: 11, message: '最多输入11个字符', trigger: 'blur' }
+          ]
+        },  
+        RepeatDatas:[],
+        InvalidDatas:[],  
+        RepeatList:[], 
+        ImportDialogVisible:false,
+        ErrorDataVisible:false,       
+        loading: true, 
+        tableData: [],
+        total: 0,
+        page: 1,
+        pageSize: 20,
+        currentRow: {}, 
+        multipleUsers: [], 
+        Ids: [],         
+        AreaOptions:[],
+        Managers: [{
+             value:1,           
+            label: '是'            
+        }, { 
+            value:2,           
+            label: '否'
+        }],               
+        fileList: [], 
+        RepeatableData:[]
+
+    },
+    methods: {
+        handleSearch: function () {
+            this.$refs['searchForm'].validate(function (valid) {
+                if (valid) {
+                    defaultVue.handleCurrentChange(1);
+                }
+            });
+        },
+        handleSizeChange: function (val) {
+            this.pageSize = val;
+            this.handleCurrentChange(1);
+        },
+        handleCurrentChange: function (page) {
+            this.page = page || this.page;
+            this.fetchData();
+        },
+        fetchData: function () {
+            this.loading = true;
+            var postData = {
+                PageSize: this.pageSize,
+                PageIndex: this.page,
+                UserAccount: this.searchForm.UserAccount,
+                UserName: this.searchForm.UserName,
+                Area: this.searchForm.Area,
+                Phone: this.searchForm.Phone,
+                StationName: this.searchForm.StationName,
+                StationCode: this.searchForm.StationCode,
+                IdentityNum: this.searchForm.IdentityNum,
+                IsManager:this.searchForm.IsManager,
+                Department:this.searchForm.Department,
+                Station:this.searchForm.Station
+            };            
+            this.$http.post('@Url.Action("GetData")', postData).
+            then(function (res) {
+                defaultVue.loading = false;
+                if (res.body.isSuccess) {
+                    defaultVue.tableData = res.body.Data.List;
+                    defaultVue.total = res.body.Data.Count;
+                } else {
+                    defaultVue.$message.error(res.body.Message);
+                }
+            });
+            this.AreaOptions= @Html.Raw(ViewBag.AreaList);            
+        },
+        handleCreating: function() {
+            window.location.href = "@Url.Action("Create")?appid=@ViewBag.AppId";
+        },
+        handleDetails: function(row){
+            window.location.href = "@Url.Action("Details")?appid=@ViewBag.AppId&id="+row.Id;
+        },
+        handleUpdating: function(row){
+            window.location.href = "@Url.Action("Update")?appid=@ViewBag.AppId&id="+row.Id;
+        },
+        handleImport:function() {
+            this.ImportDialogVisible = true;
+        },
+        SelectCheck(val) {
+            this.Ids = [];
+            multipleSelection = [];
+            for (var i = 0; i < val.length; i++) {
+                this.Ids.push(val[i].Id);
+                multipleSelection.push({
+                    Id: val[i].Id,
+                    Percent: val[i].Percent
+                });
+            }
+            this.SelectCount = val.length;
+        },
+        handleUpdateUser:function(){
+             this.$http.post('@Url.Action("UpdateUserId")').
+                then(function (res) {
+                    if (res.body.isSuccess) {
+                        defaultVue.fetchData();
+                        defaultVue.$message.success('更新成功');
+                    } else {
+                        defaultVue.$message.error(res.body.Message);
+                    }
+                });
+        },
+        handleDelAll:function() {  
+                var postData = {
+                    Ids:this.Ids
+                };   
+                if (this.Ids.length > 0) {      
+                this.$confirm('您确认要删除选中活动吗？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    modalAppendToBody: false
+                }).then(() => {
+                        this.$http.post('@Url.Action("DeleteAll")', postData).
+                        then(function (res) {
+                            if (res.body.isSuccess) {
+                                defaultVue.fetchData();
+                                defaultVue.$message.success('删除成功');
+                            } else {
+                                defaultVue.$message.error(res.body.Message);
+                            }
+                        });
+                }).catch(() => {
+
+                }); 
+            }       
+        },
+        handlemultipleUsers: function(val,a,b){
+            this.multipleUsers = val;            
+        },
+        handleDelete: function(row) {
+            this.$confirm('您确认要删除选中活动吗？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                modalAppendToBody: false
+            }).then(() => {
+                    this.$http.post('@Url.Action("Delete")', {
+                        Id: row.Id
+                    }).
+                    then(function (res) {
+                        if (res.body.isSuccess) {
+                            defaultVue.fetchData();
+                            defaultVue.$message.success('删除成功');
+                        } else {
+                            defaultVue.$message.error(res.body.Message);
+                        }
+                    });
+            }).catch(() => {
+
+            });        
+        },
+        handleExport:function () {                                          
+            UserAccount=this.searchForm.UserAccount,
+            UserName= this.searchForm.UserName,
+            Area=typeof(this.searchForm.Area)==undefined?"":this.searchForm.Area,
+            Phone=this.searchForm.Phone,
+            StationName= this.searchForm.StationName,
+            StationCode=this.searchForm.StationCode,
+            IdentityNum=this.searchForm.IdentityNum,
+            IsManager=this.searchForm.IsManager===''?0:this.searchForm.IsManager,
+            Department=this.searchForm.Department,
+            Station=this.searchForm.Station                    
+            window.location.href = "@Url.Action("ExportYJEmployee")?UserAccount="+UserAccount+"&UserName="+UserName+"&Area="+Area+"&Phone="+Phone+"&StationName="+StationName+"&StationCode="+StationCode+"&IdentityNum="+IdentityNum+"&IsManager="+IsManager+"&Departmen="+Department+"&Station="+Station;            
+        },		
+        handleExportData:function(){
+            window.location.href = "@Url.Action("ExportInvalidData")";
+        },
+		handleExportInvalidData:function(){
+            window.location.href = "@Url.Action("ExportAllInvalidData")?UserAccount="+this.InvalidDatas;
+        },
+        beforeupload:function(file){
+          console.log(file);
+        },
+        submitUpload:function(){
+             this.$refs.upload.submit()                 
+        },
+        handleRemove:function(file, fileList) {
+            console.log(file, fileList);
+        },
+        handlePreview:function(file) {
+            console.log(file);
+        },
+        onerror:function(err, file, fileList){
+          console.log(file);
+        },        
+        onsuccess:function(err, file, fileList){
+            if(err.ResultCode==0){
+               this.ErrorDataVisible=true; 
+               this.ImportDialogVisible=false;
+               defaultVue.fetchData();
+               this.RepeatableData=err.Data.RepeatData;
+               this.InvalidDatas=err.Data.InvalidData;               
+               this.fileList=[];
+               alert(err.Message);  
+            }else if(err.ResultCode==1){
+               this.ErrorDataVisible=true; 
+               this.ImportDialogVisible=false;
+               this.fileList=[];              
+               this.RepeatList=err.Data.RepeatList;  
+               this.RepeatableData=err.Data.RepeatData;
+               this.InvalidDatas=err.Data.InvalidData; 
+            }else if(err.ResultCode==2){
+                this.fileList=[];
+                alert(err.Message);               
+            }else{ 
+                this.fileList=[]; 
+                this.ImportDialogVisible=false;
+                defaultVue.fetchData();
+            }
+        }        
+    },
+    mounted: function () {
+            this.fetchData();
+    }
+   
+})
+</script>
+}

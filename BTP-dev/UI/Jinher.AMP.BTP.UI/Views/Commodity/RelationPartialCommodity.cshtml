@@ -1,0 +1,157 @@
+﻿@{
+    Layout = null;
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.CommodityPromVM> comcalist = ViewBag.CommodityList;
+}
+<script type="text/javascript">
+    $(function () {
+
+        //选中商品
+        $(".chkcom").change(function () {
+            var sva = deleteNumber($("#fcomlist").val(), true);
+            var bl = false;
+            if ($(this).attr("checked") == "checked") {
+
+                if (sva.length >= 4) {
+                    $(this).removeAttr("checked");
+                    alert("最多关联4个商品");
+                    return;
+                }
+
+                for (y = 0; y < sva.length; y++) {
+                    if (sva[y].split('|')[0] == $(this).val()) {
+                        bl = true;
+                        break;
+                    }
+                }
+                if (bl == false) {
+                    var strcoms = $("#fcomlist").val();
+                    strcoms += "," + $(this).val() + "|1";
+                    $("#fcomlist").val(strcoms);
+                }
+            }
+            else {
+                for (y = 0; y < sva.length; y++) {
+                    if (sva[y].split('|')[0] == $(this).val()) {
+                        bl = true;
+                        sva.splice(y, 1);
+                        break;
+                    }
+                }
+                if (bl == true) {
+                    $("#fcomlist").val(sva.join(','));
+                }
+
+            }
+
+        });
+        if ($("#fcomlist").val() != "") {
+            var sva = deleteNumber($("#fcomlist").val(), true);
+            for (y = 0; y < sva.length; y++) {
+                $(".prom").each(function () {
+                    if ($(this).children(".one").find("input").val() == sva[y].split('|')[0]) {
+                        $(this).children(".one").find("input").attr("checked", "checked");
+                        return;
+                    }
+                });
+            }
+        }
+    });
+   
+</script>
+<input type="hidden" id="rowcounts" value="@ViewBag.Count"/>
+<div id="div_table">
+    <table border="0" cellspacing="0" cellpadding="0" id="dataTable" class="m_talbe m_talbe3">
+        <tr class="t_tr1">
+            <td class="one">
+                @* <input type="checkbox" id="chk_all" /><span>全选</span>*@
+            </td>
+            <td class="two" style="text-align: center">
+                商品名称
+            </td>
+            <td class="three">
+                商品类别
+            </td>
+            <td class="four">
+                价格
+            </td>
+            <td class="five">
+                数量
+            </td>
+            <td class="six six1">
+                总销量
+            </td>
+        </tr>
+        @*<script>
+            $("#chk_all").click(function () {
+                var f = document.getElementById("chk_all").checked;
+                var s = document.getElementsByName("BOX");
+                if (f) {
+                    for (var i = 0; i < s.length; i += 1)
+                        s[i].checked = "checked";
+                }
+                else {
+                    for (var i = 0; i < s.length; i += 1)
+                        s[i].checked = "";
+                }
+            });
+            $("input[name=BOX]").bind("click", function () {
+                if ($("input[name=BOX]").length == $("input[name=BOX]:checked").length) {
+                    $("#chk_all").attr("checked", 'true')
+                }
+                else {
+                    $("#chk_all").removeAttr("checked")
+                }
+            });
+            if (getQueryString("type") == "int") {
+                $(".seven1").hide();
+            }
+        </script>*@
+        @if (comcalist.Count() > 0 && comcalist != null)
+        {
+            foreach (var commodity in comcalist)
+            {
+            <tr class="t_tr2 t_tr2_bg prom">
+                <td class="one">
+                    @if (commodity.IsPro == 0)
+                    {
+                        <input class="chkcom" type="checkbox" name="BOX" value="@commodity.Id"  />
+                    }
+                    else
+                    {
+                        <input class="chkcom"  type="checkbox" name="BOX" value="@commodity.Id" checked="checked"  />
+                    }<span><img src="@commodity.Pic" alt="" width="86" height="85" /></span>
+                </td>
+                <td class="two" style="text-align: center">
+                    <p>@commodity.Name</p>
+                </td>
+                <td class="three">
+                    <ul>
+                        @if (commodity.Categorys.Count > 0 && commodity.Categorys != null)
+                        {
+                            foreach (var cate in commodity.Categorys)
+                            {
+                            <li>@cate.Name</li>
+                            }
+                        }
+                    </ul>
+                </td>
+                <td class="four">
+                    <span>@commodity.Price</span><br />
+                </td>
+                <td class="five">
+                    <span>@commodity.Stock</span>
+                </td>
+                <td class="six six1">
+                    @commodity.Total
+                </td>
+                @* <td class="seven seven1">@commodity.Subtime.ToString("yyyy-MM-dd")
+                                </td>*@
+            </tr> }
+        }
+        else
+        {
+            <p class="wenzi">
+                未查询到相关商品</p>
+        }
+    </table>
+</div>

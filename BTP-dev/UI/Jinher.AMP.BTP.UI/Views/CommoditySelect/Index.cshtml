@@ -1,0 +1,474 @@
+﻿
+@using Jinher.JAP.MVC.UIJquery
+@using Jinher.JAP.MVC.UIJquery.Validate
+@using Jinher.AMP.BTP.UI.Models
+@using Jinher.AMP.BTP.Common
+@{
+	Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "SelectAppLink";
+}
+@section Css{
+@*@{Html.jQuery().StyleSheetRegistrar().DefaultGroup(group => group.Add("common.css").Add("default/ui.jqgrid.css").Add("default/jquery.ui.jhtablebox.css"));}*@
+<link href="/Content/common.css" rel="stylesheet" type="text/css" />
+<link href="/Content/default/ui.jqgrid.css" rel="stylesheet" type="text/css" />
+<link href="/Content/default/jquery.ui.jhtablebox.css" rel="stylesheet" type="text/css" />
+
+    <style type="text/css">
+    .SAppUL{}
+    .SAppUL li {padding:5px 0;}
+    .SAppUL li a{float:right;}
+    .SAppUL li img{width:20px;height:20px;}
+    .radioLabel{width:120px;display:inline-block;line-height:30px;}
+    </style>
+}
+<div id="outer" class="formList" style="padding: 15px;">
+   <div class="item" style="line-height: 30px; padding-left: 150px;">
+        <span class="label" style="width: 135px; margin-left: -140px;">第一步：选择电商APP：</span><span
+            id="selectedAppName">&nbsp;</span>
+    </div>
+    <div id="appTypeDiv" class="item" style="line-height: 30px; padding-left: 150px;">
+        <span class="label" style="width: 135px; margin-left: -140px;">选择电商APP：</span>
+        <div class="radioLabel">
+            <input type="radio" name="appType" id="myApp" value="1" checked="checked" onclick="myAppSelect()" /><label
+                for="myApp">我的APP</label></div>
+        <div class="radioLabel">
+            <input type="radio" name="appType" id="otherApp" value="2" onclick="otherAppSelect()" /><label
+                for="otherApp">选择他人的APP</label></div>
+    </div>
+    <div id="divMyApp" class="item" style="padding-left: 150px;">
+        <span class="label">我的APP：</span>
+        <div style="width: 600px;">
+            @if (ViewBag.MyAppList != null) {
+                foreach (var item in ViewBag.MyAppList) {
+                <span class="radioLabel">
+                    <input type="radio" name="myAppItem" id="@item.Id" value="@item.Id" onclick="SelecteMyApp()" /><label for="@item.Id">@item.Name</label><input type="hidden" value="@item.ShareUrl" />
+                </span>   
+                }
+            }
+        </div>
+    </div>
+    <div id="divOtherApp" style="display: none;">
+        <div class="item" style="padding-left: 150px;">
+            <span class="label">APP名称：</span>
+            <input class="inp-txt mr10" id="AppName" maxlength="30" />&nbsp; <a href="javascript:SearchApp()"
+                class="btn120">查询</a>
+        </div>
+        <div style="padding-top: 15px; width: 100%;">
+            <table id="AppGrid">
+            </table>
+            <div id="page">
+            </div>
+        </div>
+    </div>
+    <div class="bor-top" style="margin: 10px 0; clear: both;">
+    </div>
+    <div id="goodsDiv" class="item" style="line-height: 30px; padding-left: 150px;">
+        <span class="label" style="margin-left: -150px;">第二步：选择商品：</span>
+    </div>
+    <div class="item" style="padding-left: 150px;">
+        <span class="label">选择商品：</span> <span class="">商品分类</span>
+        <input class="inp-txt mr10" id="GoodsCategory" maxlength="30" />&nbsp; <span class="">
+            商品名称</span>
+        <input class="inp-txt mr10" id="GoodsName" maxlength="30" />&nbsp; <a href="javascript:SearchGoods()"
+            class="btn120">查询</a>
+    </div>
+    <div style="padding-top: 15px; width: 98%;">
+        <div id="leftDiv" style="width: 75%; float: left;">
+            <table id="GoodsGrid">
+            </table>
+            <div id="GoodsPage">
+            </div>
+        </div>
+        <div id="rightDiv" style="width: 23%; float: right;">
+            已选商品：
+            <div style="border: solid #DBDBDB 1px; padding: 10px; margin-top: 10px; height: 330px;
+                overflow: auto;">
+                <ul id="selectedGoodsList" class="SAppUL">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div style="clear: both;">
+    </div>
+    <div class="btn-center" style="padding: 15px 0 5px 0;">
+        <a href="javascript:ConfirmSelect()" class="btn120">确定</a> <a href="javascript:ConsoleClick()"
+            class="btn120">取消</a>
+    </div>
+</div>
+@section ClientScript{
+	<script type="text/javascript" src="/Content/Mobile/allEvent.js"></script>
+	<script type="text/javascript" src="/Scripts/i18n/jquery.ui-zh.js"></script>
+	<script type="text/javascript" src="/Scripts/Grid/jquery.grid.base.js"></script>
+	<script type="text/javascript" src="/Scripts/TableBox/jquery.ui.jhtablebox.js"></script>
+	<script type="text/javascript" src="/Scripts/jquery.ui.base.js"></script>
+	<script type="text/javascript" src="/Scripts/jquery.nicescroll.min.js"></script>
+	<script type="text/javascript" src="/Scripts/Pager/jquery.ui.jhpager.js"></script>
+	<script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.jhdatetime.js"></script>
+	<script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.datepicker.js"></script>
+	<script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.jhstartandenddate.js"></script>
+	
+    <script type="text/javascript">
+        var PlateCode = "4";
+        var SelectedAppItem = null;
+        var SelectedAppName = "";
+        var IsGridLoad = false;
+        var preType;
+        var preAppId;
+        var goodurl = "";
+        var IsGoodsImg = false;
+        var MaxSelectedCount = 10;
+        var SelectedGoodsList = new Array();
+        var selectedCount = 0;
+
+        $(document).ready(function () {
+            
+
+            initGoodsGrid();
+
+            try {
+                MaxSelectedCount = parseInt("@Jinher.AMP.BTP.Common.CustomConfig.GoodsMaxSelectedCount");
+            } catch (err) { }
+
+            if (isNaN(MaxSelectedCount)) {
+                MaxSelectedCount = 10;
+            }
+
+            selectedCount = getQueryString("SelectedCount");
+            if (isNaN(selectedCount)) {
+                selectedCount = 0;
+            }
+            selectedCount = parseInt(selectedCount);
+        });
+
+        function initGrid() {
+            var data = InitSearchParam();
+            var width = $("#outer").width() - 30;
+            $("#AppGrid").jqGrid({
+                datatype: "json",
+                postData: data,
+                mtype: 'POST',
+                colNames: ['APP名称', 'APP分类', '应用描述', '创建日期', '地址', '操作'],
+                colModel: [
+                        { name: 'Name', index: 'Name', width: 60, align: "center", sortable: false },
+                        { name: 'Category', index: 'Category', width: 40, align: "center", sortable: false },
+                        { name: 'Descript', index: 'Descript', width: 60, align: "center", sortable: false },
+                        { name: 'CreatedDate', index: 'CreatedDate', width: 60, align: "center", sortable: false },
+                        { name: 'ShareUrl', index: 'ShareUrl', width: 60, align: "center", sortable: false, hidden: true },
+                        { name: 'Process', index: 'Process', width: 20, align: "center", sortable: false, formatter: FormatterProcess }
+   	            ],
+                rowNum: 10,
+                pager: 'page',
+                pagerAlone: true,
+                height: '100%',
+                width: width,
+                multiselect: false,
+                forceFit: true,
+                scroll: false,
+                shrinkToFit: true
+            });
+        }
+
+        function FormatterProcess(callvalue, opts, rowdata) {
+            var id = "Img_" + opts.rowId;
+            return "<a href='javascript:SelectApp(\"" + opts.rowId + "\",\"" + id + "\",\"" + rowdata[0] + "\")'><img id='" + id + "' src='/Content/images/sl-3.png' style='width:28px;height:28px;' /></a>";
+        }
+        //查询App
+        function SearchApp() {
+            var data = InitSearchParam();
+            $('#AppGrid').jqGrid('setGridParam', { url: "/CommoditySelect/SearchApp?random=" + Math.random(), postData: data, page: 1 });
+            $('#AppGrid').trigger("reloadGrid");
+        }
+        function InitSearchParam() {
+            //var categoryId = $("#AppCategory").val();
+            var categoryId = "";
+            var appName = $("#AppName").val();
+            var data = { "appName": appName, "categoryId": categoryId, "plateCode": PlateCode };
+            return data;
+        }
+        //选择App
+        function SelectApp(appId, id, name) {
+            var sImg = $(".se");
+            if (sImg && sImg.length > 0) {
+                sImg.removeClass("se");
+                sImg.attr("src", "/Content/images/sl-3.png");
+            }
+            var img = $("#" + id);
+            if (img) {
+                img.addClass("se");
+                img.attr("src", "/Content/images/sl-3-1.png");
+            }
+            SelectedAppItem = appId;
+            SelectedAppName = name;
+            $("#selectedAppName").text(name);
+            if (appId != preAppId) {
+                ClearGoods();
+            }
+            preAppId = appId;
+        }
+        function SelecteMyApp() {
+            var appName;
+            var appId = $("input:radio[name='myAppItem']:checked").val();
+            if (appId) {
+                appName = $("#" + appId + " + label").text();
+            }
+
+            $("#selectedAppName").text(appName);
+            if (appId != preAppId) {
+                ClearGoods();
+            }
+            preAppId = appId;
+        }
+        function myAppSelect() {
+            $("#divMyApp").show();
+            $("#divOtherApp").hide();
+            ClearSelectedApps();
+        }
+        function otherAppSelect() {
+            $("#divMyApp").hide();
+            $("#divOtherApp").show();
+            if (IsGridLoad == false) {
+                initGrid();
+                IsGridLoad = true;
+            }
+            ClearSelectedApps();
+        }
+        function GetSelectedAppName() {
+            var appName = "";
+            var appType = $("#appTypeDiv input:radio[name='appType']:checked").val();
+            if (appType == 1) {
+                var appId = $("input:radio[name='myAppItem']:checked").val();
+                if (appId) {
+                    appName = $("#" + appId + " + label").text();
+                }
+            } else if (SelectedAppName) {
+                appName = SelectedAppName;
+            }
+            $("#selectedAppName").text(appName);
+        }
+    </script>
+    <script type="text/javascript">
+        var CommodityUrl = "@ViewBag.CommodityUrl";
+    
+      
+        function initGoodsGrid() {
+            $("#GoodsGrid").jqGrid({
+                datatype: "json",
+                mtype: 'POST',
+                colNames: ['商品名称', '商品分类', '商品图片', '商品价格', '折扣', 'AppId', '操作'],
+                colModel: [
+                        { name: 'Name', index: 'Name', width: 60, align: "center", sortable: false },
+                        { name: 'Category', index: 'Category', width: 40, align: "center", sortable: false },
+                        { name: 'Pic', index: 'Pic', width: 60, align: "center", sortable: false, formatter: FormatePic },
+                        { name: 'Price', index: 'Price', width: 60, align: "center", sortable: false },
+                        { name: 'Intensity', index: 'Intensity', width: 60, align: "center", sortable: false, formatter: FormateIntensity },
+                        { name: 'AppId', index: 'AppId', hidden: true, sortable: false },
+                        { name: 'Process', index: 'Process', width: 20, align: "center", sortable: false, formatter: FormatterGoodsProcess }
+
+   	            ],
+                rowNum: 10,
+                pager: 'GoodsPage',
+                pagerAlone: true,
+                height: '100%',
+                autowidth: true,
+                multiselect: false,
+                forceFit: true,
+                scroll: false,
+                shrinkToFit: true
+            });
+        }
+        function FormatePic(callvalue, opts, rowdata) {
+            return "<img src='" + callvalue + "' style='width:120px;height:auto;' />";
+        }
+        function FormatterGoodsProcess(callvalue, opts, rowdata) {
+            var imgId = "SGM_" + opts.rowId;
+            var exists = false;
+            for (var i = 0; i < SelectedGoodsList.length; i++) {
+                if (SelectedGoodsList[i].Id == opts.rowId) {
+                    exists = true;
+                    break;
+                }
+            }
+            if (exists == false) {
+                return "<a href='javascript:SelectGoods(\"" + rowdata[5] + "\",\"" + opts.rowId + "\",\"" + rowdata[0] + "\",\"" + imgId + "\",\"" + rowdata[1] + "\",\"" + rowdata[2] + "\",\"" + rowdata[3] + "\")'><img id='" + imgId + "' src='/Content/images/sl-3.png' style='width:28px;height:28px;' /></a>";
+            } else {
+                return "<a href='javascript:SelectGoods(\"" + rowdata[5] + "\",\"" + opts.rowId + "\",\"" + rowdata[0] + "\",\"" + imgId + "\",\"" + rowdata[1] + "\",\"" + rowdata[2] + "\",\"" + rowdata[3] + "\")'><img id='" + imgId + "' src='/Content/images/sl-3-1.png' style='width:28px;height:28px;' /></a>";
+            }
+        }
+        function FormateIntensity(callvalue, opts, rowdata) {
+            if (callvalue == 10) {
+                return "";
+            } else {
+                return callvalue + "折";
+            }
+        }
+        //选择
+        function SelectGoods(appId, id, name, imgId, category, pic, price) {
+            var exists = false;
+            for (var i = 0; i < SelectedGoodsList.length; i++) {
+                if (SelectedGoodsList[i].Id == id) {
+                    exists = true;
+                    break;
+                }
+            }
+            var seId = "SG_" + id;
+            if (exists == false) {
+                if (SelectedGoodsList.length + selectedCount >= MaxSelectedCount) {
+                    alert("最多选择 " + MaxSelectedCount + " 个商品");
+                } else {
+                    SelectedGoodsList.push({ "Id": id, "Name": name, "Category": category, "Pic": pic, "AppId": appId, "Price": price });
+                    var appItem = "<li id='" + seId + "'>" + name + "<a href='javascript:void(0)' onclick='RemoveGoods(\"" + seId + "\",\"" + imgId + "\",\"" + id + "\")'><img src='/Content/images/RemoveApp.jpg'/></a><div style='clear:both;'></div></li>";
+                    $("#selectedGoodsList").append(appItem);
+
+                    var img = $("#" + imgId);
+                    if (img) {
+                        img.attr("src", "/Content/images/sl-3-1.png");
+                    }
+                }
+            } else {
+                RemoveGoods(seId, imgId, id);
+            }
+        }
+        //移除
+        function RemoveGoods(seId, imgId, id) {
+            for (var i = 0; i < SelectedGoodsList.length; i++) {
+                if (SelectedGoodsList[i].Id == id) {
+                    SelectedGoodsList.splice(i, 1);
+                }
+            }
+            try {
+                $("#" + seId).remove();
+                $("#" + imgId).attr("src", "/Content/images/sl-3.png");
+            } catch (err) {
+            }
+        }
+
+        function SearchGoods() {
+            var data = InitGoodsParam();
+            if (data) {
+                $('#GoodsGrid').jqGrid('setGridParam', { url: "/CommoditySelect/SearchGoods?random=" + Math.random(), postData: data, page: 1 });
+                $('#GoodsGrid').trigger("reloadGrid");
+            }
+        }
+        function InitGoodsParam() {
+            var appId = GetSelectedApp(true);
+            if (appId) {
+                var category = $("#GoodsCategory").val();
+                var name = $("#GoodsName").val();
+                var data = { "name": name, "category": category, "appIds": appId };
+                return data;
+            }
+        }
+        function GetCommidityIds() {
+            var ids = "";
+            if (SelectedGoodsList) {
+                for (var i = 0; i < SelectedGoodsList.length; i++) {
+                    if (i > 0) {
+                        ids += ",";
+                    }
+                    ids += SelectedGoodsList[i].Id;
+                }
+            }
+            return ids;
+        }
+        function GetCommidityNames() {
+            var name = "";
+            if (SelectedGoodsList) {
+                name = SelectedGoodsList[0].Name;
+                if (SelectedGoodsList.length > 1) {
+                    IsGoodsImg = true;
+                    name += "等(" + SelectedGoodsList.length + ")";
+                }
+            }
+            return name;
+        }
+        function GetSelectedApp(needAlt) {
+            var appId;
+            var appType = $("#appTypeDiv input:radio[name='appType']:checked").val();
+            if (appType == 1) {
+                appId = $("input:radio[name='myAppItem']:checked").val();
+            } else if (SelectedAppItem) {
+                appId = SelectedAppItem;
+            }
+
+            if (appId) {
+                return appId;
+            } else {
+                if (needAlt == true) {
+                    alert("请选择APP");
+                }
+            }
+        }
+
+        function ClearSelectedGoods() {
+            SelectedGoodsList = new Array();
+            $("#selectedGoodsList").html("");
+        }
+
+
+        function ClearSelectedApps() {
+            //var appId = GetSelectedApp(false);
+            //if()
+            var appType = $("#appTypeDiv input:radio[name='appType']:checked").val();
+            if (appType != preType) {
+                if (appType == 1) {
+                    $("input:radio[name='myAppItem']:checked").removeAttr("checked");
+                } else {
+                    SelectedAppName = "";
+                    SelectedAppItem = null;
+                    $("#AppName").val("");
+                    SearchApp();
+                }
+
+                $("#GoodsCategory").val("");
+                $("#GoodsName").val("");
+
+                ClearGoods();
+
+                GetSelectedAppName();
+            }
+            preType = appType;
+        }
+
+        function ClearGoods() {
+            SelectedGoodsList = new Array();
+            $("#selectedGoodsList").html("");
+
+            ClearGoodsGrid();
+        }
+        function ClearGoodsGrid() {
+
+            var data = { "name": "", "category": "", "appIds": null };
+            if (data) {
+                $('#GoodsGrid').jqGrid('setGridParam', { url: "/CommoditySelect/SearchGoods?random=" + Math.random(), postData: data, page: 1 });
+                $('#GoodsGrid').trigger("reloadGrid");
+            }
+        }
+
+        //确定选择
+        function ConfirmSelect() {
+            if (SelectedGoodsList && SelectedGoodsList.length > 0) {
+                window.parent.BtpProductSelectComplete(SelectedGoodsList);
+            } else {
+                alert("请选择商品");
+            }
+        }
+        function ConsoleClick() {
+            window.parent.BtpProductWinClose();
+        }
+
+    </script>
+}
+
+@*@section Script{
+    @{Html.jQuery().ScriptRegistrar().DefaultGroup(group => group.Add("i18n/jquery.ui-zh.js")
+        .Add("Grid/jquery.grid.base.js")
+        .Add("TableBox/jquery.ui.jhtablebox.js")
+        .Add("jquery.ui.base.js")
+        .Add("jquery.nicescroll.min.js")
+        .Add("Pager/jquery.ui.jhpager.js")
+        .Add("DatePicker/jquery.ui.jhdatetime.js")
+        .Add("DatePicker/jquery.ui.datepicker.js")
+        .Add("DatePicker/jquery.ui.jhstartandenddate.js")
+        );}
+}*@
+

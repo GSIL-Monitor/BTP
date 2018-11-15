@@ -1,0 +1,614 @@
+﻿@{
+    ViewBag.Title = "商品列表";
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.CommodityPromVM> comcalist = ViewBag.CommodityList;
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.CategorySDTO> categorylist = ViewBag.CategoryList;
+}
+<head>
+    <title>商品列表</title>
+    <style type="text/css">
+        .t_tr2 input[type=text]
+        {
+            width: 55px;
+            border: 1px solid #B8BFCF;
+            border-radius: 3px;
+        }
+        .alcom
+        {
+            color: Red !important;
+            font-size: 12px !important;
+            height: 25px;
+        }
+        .manag_bot .m_talbe.m_talbe3 tr td.one
+        {
+            width:100px;
+        }
+        .manag_bot .m_talbe.m_talbe3 tr td.two
+        {
+            width:100px;
+        }
+        .manag_bot .m_talbe.m_talbe3 tr td.three
+        {
+            width:90px;
+        }
+        .manag_bot .m_talbe.m_talbe3 tr td.four
+        {
+           width:60px;
+        }
+        .manag_bot .m_talbe.m_talbe3 tr td.five
+        {
+            width:60px;
+        }
+        .manag_bot .m_talbe.m_talbe3 tr td.six,.manag_bot .m_talbe.m_talbe3 tr td.six1
+        {
+            width:50px;
+        }
+        .manag_bot .m_talbe.m_talbe3 tr td.serven,.manag_bot .m_talbe.m_talbe3 tr td.serven1,.manag_bot .m_talbe.m_talbe3 tr td.serven2,.manag_bot .m_talbe.m_talbe3 tr td.serven3
+        {
+            width:100px;
+        }
+        
+        
+    </style>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            if (getQueryString("type") == "int") {
+                $(".seven1").hide();
+            }
+            $("#chk_all").click(function () {
+                var f = document.getElementById("chk_all").checked;
+                var s = document.getElementsByName("BOX");
+                if (f) {
+                    for (var i = 0; i < s.length; i += 1)
+                        s[i].checked = "checked";
+                }
+                else {
+                    for (var i = 0; i < s.length; i += 1)
+                        s[i].checked = "";
+                }
+            });
+            $("input[name=BOX]").live("click", function () {
+                if ($("input[name=BOX]").length == $("input[name=BOX]:checked").length) {
+                    $("#chk_all").attr("checked", 'true')
+                }
+                else {
+                    $("#chk_all").removeAttr("checked")
+                }
+            });
+            //验证输入的是否为正确的优惠价
+            $(".txtDiscountPrice").live("blur", function () {
+
+                var th = $(this);
+                if (th.val() == "") {
+                    th.next().html("优惠价不能为空");
+                    //alert("优惠价不能为空");
+                    return false;
+                }
+                if (th.val() <= 0) {
+                    th.val("");
+                    th.next().html("请填写正确的优惠价");
+                    //alert("请填写正确的优惠价");
+                    return false;
+                }
+                if (!/^\d+(\.\d{2})?$/.test(th.val())) {
+                    if (!/^\d+(\.\d{1})?$/.test(th.val())) {
+                        th.val("");
+                        //alert("请填写正确的优惠价");
+                        th.next().html("请填写正确的优惠价");
+                        return false;
+
+                    }
+                }
+                $(".aldispri").html("");
+            });
+
+            //验证输入的是否为正确的限购数量
+            $(".txtLimitBuyEach").live("blur", function () {
+                if (eachvail($(this)) == true) {
+                    totalvail($(this).parent().next().children());
+                }
+            });
+
+            $(".txtLimitBuyTotal").live("blur", function () {
+                if (totalvail($(this)) == true) {
+
+                    eachvail($(this).parent().prev().children());
+                }
+            });
+
+            $("#SearchtcategoryUl input[type='checkbox']").change(function () {
+                toSearchCheckSelected(this);
+            });
+
+
+            $("#CommodityCategory").focus(function () {
+                if ("@ViewBag.IsShowCategoryTree".toLowerCase() == "false") {
+                    return;
+                }
+                var top = $('#CommodityCategory').offset().top;
+                var left = $('#CommodityCategory').offset().left;
+                var height = $('#CommodityCategory').height();
+                $("#SearchcategoryDiv").css({ "top": top + height, "left": left }).show();
+                //  $("#SearchcategoryDiv").show();
+            });
+
+
+
+
+            function getQueryString(name) {
+                var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+                var r = window.location.search.substr(1).match(reg);
+                if (r != null) return unescape(r[2]); return null;
+            }
+
+
+
+            function showContent(event, data) {
+                $("#div_table").replaceWith(data);
+            }
+
+            $("#pager").jhpager({
+                dataType: 'html',
+                requestType: 'post',
+                //                dataSource: '/Promotion/PartialCommodity&starTime=' + getQueryString('starTime') + '&endTime=' + getQueryString('endTime'),
+                dataSource: '/Promotion/PartialCommodity',
+                requestData: 'starTime=' + getQueryString('starTime') + '&endTime=' + getQueryString('endTime') + "&promotionId=" + getQueryString('promotionId'),
+                async: true,
+                totalCount: '@ViewBag.Count',
+                rowNum: 20,
+                requestSuccess: showContent
+            });
+            $("#btnSubmit").click(function () {
+
+
+                //                if ($("input[name='BOX']:checked").length == 0) {
+                //                    alert("请至少选择一个");
+                //                    return false;
+                //                }
+                var chestr = '';
+                var pan = true;
+
+                $(".prom").each(function () {
+
+
+                    chestr += $(this).children(".one").find("input").val();
+                    if ($(this).children(".one").find("input").attr("checked") == "checked") {
+                        if (getQueryString("type") == "dis") {
+                            if ($.trim($(this).children(".seven1").find("input").val()) != "") {
+                                chestr += "|" + $(this).children(".seven1").find("input").val();
+                            }
+                            else {
+                                $(this).children(".seven1").find("input").next().html("优惠价不能为空");
+                                pan = false;
+                                return false;
+                            }
+                        }
+                        else {
+                            chestr += "|-1";
+                        }
+                    }
+                    else {
+                        chestr += "|-1";
+                    }
+
+                    if ($.trim($(this).children(".seven2").find("input").val()) != "") {
+                        chestr += "|" + $(this).children(".seven2").find("input").val();
+                        if (eachvail($(this).children(".seven2").find("input")) == false) {
+                            pan = false;
+                            return false;
+                        }
+                    }
+                    else {
+                        chestr += "|-1";
+                    }
+
+                    if ($.trim($(this).children(".seven3").find("input").val()) != "") {
+                        chestr += "|" + $(this).children(".seven3").find("input").val();
+                        if (totalvail($(this).children(".seven3").find("input")) == false) {
+                            pan = false;
+                            return false;
+                        }
+                    }
+                    else {
+                        chestr += "|-1";
+                    }
+                    if ($(this).children(".one").find("input").attr("checked") == "checked") {
+                        chestr += "|1,";
+                    }
+                    else {
+                        chestr += "|0,";
+                    }
+
+
+                });
+                if (pan == false) {
+                    return false;
+                }
+                //                //for chrome 
+                //                if (window.opener != undefined) { //window.opener的值在谷歌浏览器下面不为空，在IE/火狐下面是未定义，由此判断是否是谷歌浏览器 
+                //                    window.opener.returnValue = { code: chestr }; //谷歌浏览器下给返回值赋值的方法window.opener.close(); //这里必须关闭一次，否则执行下面的window.close()无法关闭弹出窗口，因为谷歌浏览器下弹出窗口是个新的window  
+                //                }
+
+                //                else {
+                //                    window.returnValue = { code: chestr }; //这种赋值方法兼容IE/火狐，但不支持谷歌浏览器 
+                //                }
+                // window.close();
+                //                window.top.returnValue = { code: chestr }
+                //                window.close();
+                //                window.top.returnValue = { code: chestr }
+                //                window.close();
+                var result = { code: chestr };
+                window.parent.commodityListFrame(result);
+            });
+        });
+
+        function CloseSearchCate(obj) {
+            $("#SearchcategoryDiv").hide();
+        }
+
+        function toSearch(obj) {
+            if ($.trim($("#CommodityCategory").val()) == "") {
+                searchcateogryIdList = "";
+                searchcateogryIdList = "";
+                var cks = document.all("SearchtcategoryUl").getElementsByTagName("input");
+                var len = cks.length;
+                for (i = 0; i < len; i++) {
+                    if (cks[i].type == "checkbox") {
+                        if (cks[i].checked == true) {
+                            cks[i].checked = false;
+                        }
+                    }
+                }
+            }
+            var CommodityName = $("#CommodityName").val();
+            var CommodityCategory = searchcateogryIdList;
+            var CommodityCode = $("#CommodityCode").val();
+            var PromotionId = getQueryString("promotionId");
+
+            $.ajax({
+                url: '/Promotion/PartialCommodity?starTime=@ViewBag.StartTime&endTime=+@ViewBag.EndTime',
+                type: 'post',
+                data: { commodityName: CommodityName, category: CommodityCategory, commodityCode: CommodityCode, promotionId: PromotionId },
+                success: function (html) {
+                    $("#rowcounts").remove();
+                    $("#div_table").replaceWith(html);
+                    var rowCount = $("#rowcounts").val();
+                    $("#pager").jhpager("refresh", 1, rowCount)
+
+                },
+                beforeSend: function () {
+                    ajaxLoading(1, '');
+                },
+                complete: function () {
+                    ajaxLoading(1, '');
+                },
+                error: function () {
+                    alert("请稍后再试！！！！！");
+                }
+
+            });
+        }
+
+        var searchcateogryIdList = "";
+        var searchcategoryNameList = "";
+        function toSearchCheckSelected(obj) {
+            searchcateogryIdList = "";
+            searchcategoryNameList = "";
+            $("#SearchtcategoryUl input:checkbox:checked").each(function () {
+                searchcateogryIdList = searchcateogryIdList + "," + $(this).val();
+                searchcategoryNameList = searchcategoryNameList + "," + $(this).next().text();
+            });
+            if (searchcateogryIdList.length > 0) {
+                searchcateogryIdList = searchcateogryIdList.substring(1, searchcateogryIdList.length);
+                searchcategoryNameList = searchcategoryNameList.substring(1, searchcategoryNameList.length);
+            }
+            $("#CommodityCategory").val(searchcategoryNameList);
+        }
+
+        function toReset(obj) {
+            $("#CommodityName").val("");
+            $("#CommodityCategory").val("");
+            $("#CommodityCode").val("");
+        }
+
+        function eachvail(obj) {
+
+            //每人限购数量^[0-9]*[1-9][0-9]*$
+            var th = obj;
+            if ($.trim(th.val()) != "") {
+                if (!/^[0-9]*[1-9][0-9]*$/.test(th.val())) {
+                    //th.val("");
+                    th.next().html("应为正整数");
+                    return false;
+                }
+                if ($.trim(th.parent().next().find("input").val()) != "") {
+                    if ($.trim(th.val()) * 1 > $.trim(th.parent().next().find("input").val()) * 1) {
+                        //th.val("");
+                        th.next().html("应小于参加促销商品总数");
+                        return false;
+                    }
+                }
+                else {
+                    if (th.val() * 1 > th.parent().parent().children(".five").find("span").html() * 1) {
+                        //th.val("");
+                        th.next().html("应小于商品数量");
+                        return false;
+                    }
+                }
+            }
+            th.next().html("");
+            return true;
+        }
+
+        function totalvail(obj) {
+            //每人限购数量^[0-9]*[1-9][0-9]*$
+            var th = obj;
+            if ($.trim(th.val()) != "") {
+                if (!/^[0-9]*[1-9][0-9]*$/.test(th.val())) {
+                    // th.val("");
+                    th.next().html("应为正整数");
+                    return false;
+                }
+                if (th.val() * 1 > th.parent().parent().children(".five").find("span").html() * 1) {
+                    // th.val("");
+                    th.next().html("应小于商品数量");
+                    return false;
+                }
+                else {
+                    if ($.trim(th.parent().prev().find("input").val()) != "") {
+                        if ($.trim(th.val()) * 1 < $.trim(th.parent().prev().find("input").val()) * 1) {
+                            //   th.val("");
+                            th.next().html("应大于每人限购数量");
+                            return false;
+                        }
+                    }
+                }
+
+            }
+            th.next().html("");
+            return true;
+        }
+        
+    </script>
+    <style>
+        .btn120
+        {
+            display: inline-block;
+            width: 120px;
+            height: 28px;
+            line-height: 28px;
+            background: url('/Content/default/images/btn120.png') no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+        }
+    </style>
+</head>
+<div class="box" style="margin-left:5px;padding:0; overflow:auto; min-width:950px;">
+    <div class="content" style="margin:0;padding:0;">
+        <div class="right right1" >
+            @*<div class="manag_top  manag_top3">
+                    <ul class="clearfix">
+                        <li class="door_one door_one1"><span>商品名称：</span><input type="text" id="CommodityName" /></li>
+                        <li class="door_two door_two1"><span>商品类目：</span><input type="text" id="CommodityCategory" /></li>
+                     </ul>
+                     <ul class="clearfix">
+                        <li class="door_three door_one1"><span>商品编号：</span><input type="text" id="CommodityCode" /></li>
+                        <li class="five five1">
+                            <button type="button" onclick="toSearch(this)">
+                                查询</button><span><a class="btn120" href="#">重置</a></span></li>
+                    </ul>
+                </div>*@
+            <div class="manag_top  manag_top3" style=" margin:0;padding:0;margin-top:10px; height:auto;">
+                <ul class="clearfix">
+                    <li class="door_one door_one1"><span>商品名称：</span><input id="CommodityName" type="text" />&nbsp;&nbsp;</li>
+                    <li class="door_two door_one1"><span>商品编号：</span><input id="CommodityCode" type="text" /></li></ul>
+                <ul class="clearfix" style="margin-top: 10px;">
+                    <li class="door_one door_one1"><span>商品类目：</span><input id="CommodityCategory" type="text" />&nbsp;&nbsp;</li>
+                    <li class="door_two door_one1"><span></span><a href="javascript:void(0)" class="btn120"
+                        onclick="toSearch(this);">查询</a> <span><a href="javascript:void(0)" class="btn120"
+                            onclick="toReset(this);">重置</a></span></li>
+                </ul>
+            </div>
+            <div class="manag_bot manag_bot1"  style=" margin:0;padding:0;margin-top:10px;">
+                <div class="last last_btn">
+                    <span id="btnSubmit">保存</span>
+                </div>
+                <div id="div_table">
+                    <table border="0" cellspacing="0" cellpadding="0" id="dataTable" class="m_talbe m_talbe3" style=" table-layout:fixed;" >
+                        <tr class="t_tr1">
+                            <td class="one">
+                                <input type="checkbox" id="chk_all" /><span>全选</span>
+                            </td>
+                            <td class="two" style="text-align: center">
+                                商品名称
+                            </td>
+                            <td class="three">
+                                商品类别
+                            </td>
+                            <td class="four">
+                                价格
+                            </td>
+                            <td class="five">
+                                数量
+                            </td>
+                            <td class="six six1">
+                                总销量
+                            </td>
+                            @* <td class="seven seven1">
+                                添加时间
+                            </td>*@
+                            <td class="seven seven1">
+                                <span style="color: Red;">*</span>优惠价
+                            </td>
+                            <td class="seven seven2">
+                                每人限购数量
+                            </td>
+                            <td class="seven seven3">
+                                参加促销商品总数
+                            </td>
+                        </tr>
+                        @if (comcalist.Count() > 0 && comcalist != null)
+                        {
+                            foreach (var commodity in comcalist)
+                            {
+                            <tr class="t_tr2 t_tr2_bg prom">
+                                <td class="one">
+                                    <div>
+                                    @if (commodity.IsPro == 0)
+                                    {
+                                        <input type="checkbox" name="BOX" value="@commodity.Code" style=" margin-top:40px;"  />
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" name="BOX" value="@commodity.Code" checked="checked" style="  margin-top:40px;"  />
+                                    } <span style=" vertical-align:middle;">
+                                        <img src="@commodity.Pic" alt="" width="86" height="85" /></span>
+                                        </div>
+                                </td>
+                                <td class="two" style="text-align: center">
+                                    <p>@commodity.Name</p>
+                                </td>
+                                <td class="three">
+                                    <ul>
+                                        @if (commodity.Categorys.Count > 0 && commodity.Categorys != null)
+                                        {
+                                            foreach (var cate in commodity.Categorys)
+                                            {
+                                            <li>@cate.Name</li>
+                                            }
+                                        }
+                                    </ul>
+                                </td>
+                                <td class="four">
+                                    <span>@commodity.Price</span><br />
+                                </td>
+                                <td class="five">
+                                    <span>@commodity.Stock</span>
+                                </td>
+                                <td class="six six1">
+                                    @commodity.Total
+                                </td>
+                                @* <td class="seven seven1">@commodity.Subtime.ToString("yyyy-MM-dd")
+                                </td>*@
+                                <td class="seven seven1">
+                                    @if (commodity.IsPro == 0)
+                                    {
+                                        <input id="txtDiscountPrice" class="txtDiscountPrice" type="text" />
+                                    }
+                                    else
+                                    {
+                                        if (commodity.DiscountPrice == -1)
+                                        {
+                                        <input id="txtDiscountPrice" class="txtDiscountPrice" type="text" />
+                                        }
+                                        else
+                                        {
+                                        <input id="txtDiscountPrice" class="txtDiscountPrice" type="text" value='@commodity.DiscountPrice' />
+                                        }
+                                    }
+                                    <div class="aldispri alcom">
+                                    </div>
+                                </td>
+                                <td class="seven seven2">
+                                    @if (commodity.IsPro == 0)
+                                    {
+                                        <input id="txtLimitBuyEach" class="txtLimitBuyEach" type="text" />
+                                    }
+                                    else
+                                    {
+                                        if (commodity.LimitBuyEach == -1)
+                                        {
+                                        <input id="txtLimitBuyEach" class="txtLimitBuyEach" type="text" />
+                                        }
+                                        else
+                                        {
+                                        <input id="txtLimitBuyEach" class="txtLimitBuyEach" type="text"  value='@commodity.LimitBuyEach' />
+                                        }
+                                    }
+                                    <div class="allimbea alcom">
+                                    </div>
+                                </td>
+                                <td class="seven seven3">
+                                    @if (commodity.IsPro == 0)
+                                    {
+                                        <input id="txtLimitBuyTotal" class="txtLimitBuyTotal" type="text" />
+                                    }
+                                    else
+                                    {
+                                        if (commodity.LimitBuyTotal == -1)
+                                        {
+                                        <input id="txtLimitBuyTotal" class="txtLimitBuyTotal" type="text" />
+                                        }
+                                        else
+                                        {
+                                        <input id="txtLimitBuyTotal" class="txtLimitBuyTotal" type="text" value='@commodity.LimitBuyTotal' />
+                                        }
+                                    }
+                                    <div class="allimbto alcom">
+                                    </div>
+                                </td>
+                            </tr> }
+                        }
+                        else
+                        {
+                            <p class="wenzi">
+                                未查询到相关商品</p>
+                        }
+                    </table>
+                </div>
+                <div id="pager">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="floa2 float_new addfloa2" id="SearchcategoryDiv" style="display: none">
+        <div style="overflow-y: auto; height: 190px; margin-top: 6px;">
+            <ul class="first" id="SearchtcategoryUl">
+               @foreach (var cate in categorylist)
+                {
+                    <li class="firs">
+                        <label>
+                          @if (cate.SecondCategory == null || cate.SecondCategory.Count==0)
+                          {
+                                <input name="cateogryClassLevel1" type="checkbox" value="@cate.Id"/>
+                             }<span>@cate.Name</span>
+                        </label>
+                        <ul class="second">
+                            @if (cate.SecondCategory == null) { cate.SecondCategory = new List<Jinher.AMP.BTP.Deploy.CustomDTO.SCategorySDTO>(); }
+                            @foreach (var scate in cate.SecondCategory)
+                            {
+                                <li class="firs firs1">
+                                    <label>
+                                     @if (scate.ThirdCategory == null || scate.ThirdCategory.Count == 0)
+                                     {
+                                        <input name="cateogryClassLevel2" type="checkbox" value="@scate.Id"/>
+                                     }<span>@scate.Name</span>
+                                    </label>
+                                    <ul class="third">
+                                        @if (scate.ThirdCategory == null) { scate.ThirdCategory = new List<Jinher.AMP.BTP.Deploy.CustomDTO.TCategorySDTO>(); }
+                                        @foreach (var tcate in scate.ThirdCategory)
+                                        {
+                                            <li>
+                                                <label>
+                                                    <input name="cateogryClassLevel3" type="checkbox"
+								       value="@tcate.Id"/><span>@tcate.Name</span>
+                                                </label>
+                                            </li>
+                                        }
+                                    </ul>
+                                </li>
+                            }
+                        </ul>
+                    </li>
+                }
+            </ul>
+            <div class="shut">
+                <img src="/Images/shut.png" alt="" width="7" height="7" onclick="CloseSearchCate(this)" />
+            </div>
+            <div class="btn">
+                <button id="searchcate" type="button" onclick="CloseSearchCate(this)">
+                    确定</button></div>
+        </div>
+    </div>
+</div>

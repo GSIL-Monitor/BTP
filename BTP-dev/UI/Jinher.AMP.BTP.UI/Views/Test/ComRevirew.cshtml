@@ -1,0 +1,214 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>金和IU</title>
+    <link href="/Scripts/ueditor_mini/dialogs/image/image.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="/Scripts/ueditor_mini/umeditor.config.js"></script>
+    <script type="text/javascript" src="/Scripts/ueditor_mini/umeditor.min.js"></script>
+    <script type="text/javascript" src="/Scripts/ueditor_mini/lang/zh-cn/zh-cn.js"></script>
+    <script type="text/javascript" src="/Scripts/ueditor_mini/dialogs/link/link.js"></script>
+    <script type="text/javascript" src="/Scripts/ueditor_mini/dialogs/image/image.js"></script>
+    <script src="../../Scripts/Validator/JValidator.js" type="text/javascript"></script>
+    <script src="../../Scripts/FunctionJS.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.datepicker.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhdatetime.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhstartandenddate.js" type="text/javascript"></script>
+    <style type="text/css">
+	.txtColor {
+		color: #8c94a9;
+	    border: 1px solid #B6C0CD;
+	    border-radius: 3px;
+	}
+ 
+	.floa2 h1,
+	.floa1 h1,
+	.floa11 h1,
+	.bbtn h1 {
+		font-size: 14px;
+		color: #8c94a9;
+		padding-bottom: 5px;
+		border-bottom: 1px solid #DDDDDD;
+	}
+
+	.close {
+		margin-top: 10px;
+		float: right;
+		display: inline-block;
+		*zoom: 1;
+		*display: inline;
+		width: 7px;
+		height: 7px;
+		color: transparent;
+		background: url('/Images/shut.png') center no-repeat;
+	}
+
+	.floa11 ul,
+	.floa1 ul,
+	.floa2 ul {
+		padding: 0 0 10px 10px;
+	}
+
+	.floa11 ul li,
+	.floa1 ul li
+	.floa2 ul li {
+		margin-top: 5px;
+		color: #8c94a9;
+	}
+
+	.addfloa2 {
+		display: none;
+		padding: 5px 10px;
+		height: auto;
+		border: 1px solid #B8BFCF;
+
+		-webkit-border-radius: 3px;
+		-moz-border-radius: 3px;
+		border-radius: 3px;
+	}
+
+	.btn120 {
+		display: inline-block;
+		width: 120px;
+		height: 28px;
+		line-height: 28px;
+		background: url('/Content/default/images/btn120.png') no-repeat;
+		text-align: center;
+		vertical-align: middle;
+		color: #5F7392;
+		box-shadow: 1px 1px 2px #DBDBDB;
+	}
+	
+	 .createtable {  
+            border: 1px solid #B1CDE3;  
+            padding:0;   
+            margin:0 auto;  
+            border-collapse: collapse;  
+            width:100%;
+        }  
+          
+     .createtable td {  
+            border: 1px solid #B1CDE3;  
+            background: #fff;  
+            font-size:12px;  
+            padding: 3px 3px 3px 8px;  
+            color: #4f6b72;  
+        }  
+        .spfb_t_l tr
+        {
+             height:45px;
+        }
+        .ble
+        {
+            text-align:right;
+        }
+</style>
+    <script type="text/javascript">
+        $(function () {
+            if (sessionStorage.testuserId) {
+                $("#userId").val(sessionStorage.testuserId);
+            }
+ 
+            $("#userId").blur(function() {
+                sessionStorage.testuserId = $.trim($("#userId").val());
+            });
+            
+            $("#goReview").click(function () {
+                var userId = $.trim($("#userId").val());
+                if (!userId) {
+                    alert("请输入用户Id");
+                    return;
+                }
+                var comid = $.trim($("#comid").val());
+                if (!comid) {
+                    alert("请输入商品Id");
+                    return;
+                }
+                var data = {
+                    uId: userId,
+                    comId: comid,
+                };
+                
+                $.ajax({
+                    url: '/Test/GetReviewUrl',
+                    type: 'post',
+                    data: data,
+                    beforeSend: function () {
+                        ajaxLoading(1, '');
+                    },
+                    complete: function () {
+                        ajaxLoading(1, '');
+                    },
+                    success: function (data) {
+                        if (data.ResultCode == 0) {
+                            $("#reviewUrl").val(data.Message);
+                            window.open(data.Message);
+                        }
+                        else {
+                            alert("生成失败");
+                        }
+                    }
+                });
+            });
+ 
+  
+
+  
+
+
+        })
+
+    </script>
+</head>
+<body>
+    <div class="con">
+        <h2>
+            商品评价</h2>
+        <table>
+            <tr>
+                <td class="ble">
+                    <img src="/Images/xin.png" />
+                </td>
+                <td>
+                    <p>
+                        用户Id：</p>
+                </td>
+                <td>
+                    <input type="text" id="userId" height="60" class="txtColor" datacol="yes"
+                        checkexpession="NotNull" />
+                </td>
+            </tr>
+            <tr>
+                <td class="ble">
+                    <img src="/Images/xin.png" />
+                </td>
+                <td>
+                    <p>
+                        商品Id：</p>
+                </td>
+                <td>
+                    <input type="text" id="comid" value="" height="60" class="txtColor" datacol="yes"
+                        checkexpession="NotNull" />
+                </td>
+                <td>
+                    <a href="javascript:;" class="btn120" id="goReview">跳转页面</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="ble">
+                </td>
+                <td>
+                    <p>
+                        浏览器无法跳转，请拷贝以下url：</p>
+                </td>
+                <td>
+                    <input type="text" id="reviewUrl" height="60" width="200px" class="txtColor" datacol="yes" checkexpession="NotNull" />
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

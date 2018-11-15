@@ -1,0 +1,2619 @@
+﻿
+<edmx:Edmx Version="2.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="YJBJ.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2005" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
+  <EntityContainer Name="YJBJStoreContainer">
+    <EntitySet Name="MoneySummary" EntityType="YJBJ.Store.MoneySummary" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="DiscountSummary" EntityType="YJBJ.Store.DiscountSummary" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="CommodityOrder1" EntityType="YJBJ.Store.CommodityOrder1" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="PayTransaction1" EntityType="YJBJ.Store.PayTransaction1" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="OrderItem1" EntityType="YJBJ.Store.OrderItem1" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="TaxSummary" EntityType="YJBJ.Store.TaxSummary" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="SettleAccounts1" EntityType="YJBJ.Store.SettleAccounts1" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="SettleAccountsDetails1" EntityType="YJBJ.Store.SettleAccountsDetails1" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="WeiXinBill" EntityType="YJBJ.Store.WeiXinBill" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="WeiXinBillSummary" EntityType="YJBJ.Store.WeiXinBillSummary" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="AliPayBill" EntityType="YJBJ.Store.AliPayBill" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="AliPayBillSummary" EntityType="YJBJ.Store.AliPayBillSummary" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="OrderDiscount" EntityType="YJBJ.Store.OrderDiscount" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="CommodityDiscount" EntityType="YJBJ.Store.CommodityDiscount" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="UnionPayBill" EntityType="YJBJ.Store.UnionPayBill" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="UnionPayBillSummary" EntityType="YJBJ.Store.UnionPayBillSummary" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="JinCaiMoneySummary" EntityType="YJBJ.Store.JinCaiMoneySummary" store:Type="Tables" Schema="dbo" />
+  </EntityContainer>
+  <EntityType Name="MoneySummary">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="TradeDate" Type="nvarchar" Nullable="false" MaxLength="8" />
+    <Property Name="EsAppId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="EsAppName" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="AppId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="AppName" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="AppType" Type="smallint" Nullable="false" />
+    <Property Name="DeliveryType" Type="nvarchar" Nullable="false" MaxLength="10" />
+    <Property Name="PayType" Type="nvarchar" Nullable="false" MaxLength="10" />
+    <Property Name="OrderState" Type="nvarchar" Nullable="false" MaxLength="10" />
+    <Property Name="OrderCount" Type="int" Nullable="false" />
+    <Property Name="ShouldMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="DiscountMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="PayMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="RefundMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="FreightMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="RefundFreightMoney" Type="decimal" Nullable="false" Scale="2" />
+  </EntityType>
+  <EntityType Name="DiscountSummary">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="TradeDate" Type="nvarchar" Nullable="false" MaxLength="8" />
+    <Property Name="EsAppId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="EsAppName" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="AppId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="AppName" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="AppType" Type="smallint" Nullable="false" />
+    <Property Name="DeliveryType" Type="nvarchar" Nullable="false" MaxLength="10" />
+    <Property Name="PayType" Type="nvarchar" Nullable="false" MaxLength="10" />
+    <Property Name="OrderState" Type="nvarchar" Nullable="false" MaxLength="10" />
+    <Property Name="DiscountType" Type="nvarchar" Nullable="false" MaxLength="10" />
+    <Property Name="OrderCount" Type="int" Nullable="false" />
+    <Property Name="DiscountMoney" Type="decimal" Nullable="false" Scale="2" />
+  </EntityType>
+  <EntityType Name="CommodityOrder1">
+    <Key>
+      <PropertyRef Name="OrderId" />
+    </Key>
+    <Property Name="OrderId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="OrderCode" Type="nvarchar" Nullable="false" MaxLength="128" />
+    <Property Name="EsAppId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="EsAppName" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="AppId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="AppName" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="AppType" Type="smallint" Nullable="false" />
+    <Property Name="Payment" Type="int" Nullable="false" />
+    <Property Name="State" Type="int" Nullable="false" />
+    <Property Name="OrderState" Type="nvarchar" Nullable="false" MaxLength="10" />
+    <Property Name="SubTime" Type="datetime" Nullable="false" />
+    <Property Name="PayTime" Type="datetime" Nullable="false" />
+    <Property Name="RefundTime" Type="datetime" Nullable="true" />
+    <Property Name="ReceiptUserName" Type="nvarchar" Nullable="false" MaxLength="512" />
+    <Property Name="ReceiptPhone" Type="nvarchar" Nullable="false" MaxLength="512" />
+    <Property Name="ReceiptAddress" Type="nvarchar" Nullable="false" MaxLength="4000" />
+    <Property Name="RecipientsZipCode" Type="nvarchar" Nullable="true" MaxLength="6" />
+    <Property Name="Details" Type="nvarchar" Nullable="true" MaxLength="4000" />
+    <Property Name="ShouldMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="DiscountMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="PayMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="RefundMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="FreightMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="MainOrderId" Type="uniqueidentifier" Nullable="true" />
+    <Property Name="SubId" Type="uniqueidentifier" Nullable="true" />
+  </EntityType>
+  <EntityType Name="PayTransaction1">
+    <Key>
+      <PropertyRef Name="TradeId" />
+    </Key>
+    <Property Name="TradeId" Type="nvarchar" Nullable="false" MaxLength="60" />
+    <Property Name="TradeDate" Type="nvarchar" Nullable="false" MaxLength="8" />
+    <Property Name="TradeTime" Type="datetime" Nullable="false" />
+    <Property Name="OrderId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="OrderCode" Type="nvarchar" Nullable="false" MaxLength="128" />
+    <Property Name="TradeNum" Type="nvarchar" Nullable="true" MaxLength="50" />
+    <Property Name="EsAppId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="EsAppName" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="AppId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="AppName" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="AppType" Type="smallint" Nullable="false" />
+    <Property Name="PayType" Type="int" Nullable="false" />
+    <Property Name="TradeResult" Type="int" Nullable="false" />
+    <Property Name="OrderState" Type="nvarchar" Nullable="false" MaxLength="10" />
+    <Property Name="ShouldMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="DiscountMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="PayMoney" Type="decimal" Nullable="false" DefaultValue="0" Scale="2" />
+    <Property Name="RefundMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="FreightMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="RefundFreightMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="NotifyData" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="RefundNotifyData" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="RefundTradeNum" Type="nvarchar" Nullable="true" MaxLength="50" />
+    <Property Name="RealTradeTime" Type="datetime" Nullable="true" />
+    <Property Name="MainOrderId" Type="uniqueidentifier" Nullable="true" />
+    <Property Name="PayorId" Type="uniqueidentifier" Nullable="true" />
+    <Property Name="ThirdUserId" Type="nvarchar" Nullable="true" MaxLength="50" />
+    <Property Name="SupplierCode" Type="nvarchar" Nullable="true" MaxLength="128" />
+    <Property Name="SupplierName" Type="nvarchar" Nullable="true" MaxLength="512" />
+    <Property Name="SupplierType" Type="smallint" Nullable="true" />
+    <Property Name="JcActivityId" Type="uniqueidentifier" Nullable="true" />
+    <Property Name="JcCustomerId" Type="uniqueidentifier" Nullable="true" />
+    <Property Name="JcCustomerCode" Type="nvarchar" Nullable="true" MaxLength="30" />
+    <Property Name="JcCustomerName" Type="nvarchar" Nullable="true" MaxLength="30" />
+    <Property Name="JcCustomerProperty" Type="nvarchar" Nullable="true" MaxLength="10" />
+    <Property Name="YJCouponMoney" Type="decimal" Nullable="true" Scale="2" />
+  </EntityType>
+  <EntityType Name="OrderItem1">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="TradeId" Type="nvarchar" Nullable="false" MaxLength="60" />
+    <Property Name="OrderId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="OrderCode" Type="nvarchar" Nullable="false" MaxLength="128" />
+    <Property Name="CommodityId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="EsAppId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="EsAppName" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="AppId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="AppName" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="AppType" Type="smallint" Nullable="false" />
+    <Property Name="CategoryName" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="CommodityName" Type="nvarchar" Nullable="false" MaxLength="512" />
+    <Property Name="Number" Type="int" Nullable="false" />
+    <Property Name="RealPrice" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="TaxRate" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="ShouldMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="DiscountMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="PayMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="RefundMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="FreightMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="RefundFreightMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="TaxMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="CostPrice" Type="decimal" Nullable="true" Scale="2" />
+    <Property Name="InputRax" Type="decimal" Nullable="true" Scale="2" />
+    <Property Name="OrderItemId" Type="uniqueidentifier" Nullable="true" />
+    <Property Name="SubTime" Type="datetime" Nullable="true" />
+    <Property Name="CommodityStockId" Type="uniqueidentifier" Nullable="true" />
+  </EntityType>
+  <EntityType Name="TaxSummary">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="TradeDate" Type="nvarchar" Nullable="false" MaxLength="8" />
+    <Property Name="EsAppId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="EsAppName" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="TaxRate" Type="nvarchar" Nullable="false" MaxLength="10" />
+    <Property Name="OrderState" Type="nvarchar" Nullable="false" MaxLength="10" />
+    <Property Name="OrderCount" Type="int" Nullable="false" />
+    <Property Name="ShouldMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="DiscountMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="PayMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="RefundMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="FreightMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="RefundFreightMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="TaxMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="AppType" Type="smallint" Nullable="false" DefaultValue="0" />
+  </EntityType>
+  <EntityType Name="SettleAccounts1">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="EsAppId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="EsAppName" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="AppId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="AppName" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="AppType" Type="smallint" Nullable="false" />
+    <Property Name="ModifiedOn" Type="datetime" Nullable="false" />
+    <Property Name="SubDate" Type="nvarchar" Nullable="false" MaxLength="8" />
+    <Property Name="BeginDate" Type="datetime" Nullable="false" />
+    <Property Name="EndDate" Type="datetime" Nullable="false" />
+    <Property Name="OrderAmount" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="OrderRealAmount" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="CouponAmount" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="RefundAmount" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="PromotionAmount" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="SellerAmount" Type="decimal" Nullable="false" Scale="2" />
+  </EntityType>
+  <EntityType Name="SettleAccountsDetails1">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="SAId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="OrderId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="OrderCode" Type="nvarchar" Nullable="false" MaxLength="128" />
+    <Property Name="EsAppId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="EsAppName" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="AppId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="AppName" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="AppType" Type="smallint" Nullable="false" />
+    <Property Name="OrderAmount" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="OrderRealAmount" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="OrderCouponAmount" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="OrderRefundAmount" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="PromotionAmount" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="SellerAmount" Type="decimal" Nullable="false" Scale="2" />
+  </EntityType>
+  <EntityType Name="WeiXinBill">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="TradeDate" Type="nvarchar" Nullable="false" MaxLength="8" />
+    <Property Name="TradeTime" Type="datetime" Nullable="false" />
+    <Property Name="WeiXinAppId" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="MchId" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="SubMchId" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="DeviceInfo" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="WeiXinOrderCode" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="TempId" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="WeiXinUserId" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="TradeType" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="TradeState" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="Bank" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="MoneyType" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="PayMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="HongBaoMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="WeiXinRefundOrderCode" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="RefundTempId" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="RefundMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="RefundHongBaoMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="RefundType" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="RefundState" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="CommodityName" Type="nvarchar" Nullable="false" MaxLength="512" />
+    <Property Name="MchData" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Commission" Type="decimal" Nullable="false" Scale="5" />
+    <Property Name="CommissionRate" Type="decimal" Nullable="false" Scale="2" />
+  </EntityType>
+  <EntityType Name="WeiXinBillSummary">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="WeiXinAppId" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="MchId" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="TradeDate" Type="nvarchar" Nullable="false" MaxLength="8" />
+    <Property Name="TradeTime" Type="datetime" Nullable="false" />
+    <Property Name="TradeCount" Type="int" Nullable="false" />
+    <Property Name="PayMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="RefundMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="RefundHongBaoMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="Commission" Type="decimal" Nullable="false" Scale="5" />
+  </EntityType>
+  <EntityType Name="AliPayBill">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="PId" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="TradeDate" Type="nvarchar" Nullable="false" MaxLength="8" />
+    <Property Name="TradeTime" Type="datetime" Nullable="false" />
+    <Property Name="AliPayTradeNo" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="MerchantOrderCodeFull" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="MerchantOrderCode" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="TradeState" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="CommodityName" Type="nvarchar" Nullable="false" MaxLength="512" />
+    <Property Name="CreateTime" Type="datetime" Nullable="false" />
+    <Property Name="CompleteTime" Type="datetime" Nullable="false" />
+    <Property Name="StoreCode" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="StoreName" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="Operator" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="TerminalNumber" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="ReceiptAccount" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="OrderMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="ReceiptMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="HongBaoMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="JiFenBaoMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="AliPayDiscountMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="MerchantDiscountMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="QuanHeXiaoMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="QuanName" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="MerchantHongBaoMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="CardConsumptionMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="AliPayRefundTradeNo" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="ServiceCharge" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="FenRunMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="Remark" Type="nvarchar(max)" Nullable="false" />
+  </EntityType>
+  <EntityType Name="AliPayBillSummary">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="PId" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="TradeDate" Type="nvarchar" Nullable="false" MaxLength="8" />
+    <Property Name="TradeTime" Type="datetime" Nullable="false" />
+    <Property Name="StoreCode" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="StoreName" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="PayCount" Type="int" Nullable="false" />
+    <Property Name="RefundCount" Type="int" Nullable="false" />
+    <Property Name="TradeCount" Type="int" Nullable="false" />
+    <Property Name="OrderMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="ReceiptMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="AliPayDiscountMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="MerchantDiscountMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="CardConsumptionMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="ServiceCharge" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="FenRunMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="ShiShouMoney" Type="decimal" Nullable="false" Scale="2" />
+  </EntityType>
+  <EntityType Name="OrderDiscount">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="OrderId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="OrderCode" Type="nvarchar" Nullable="false" MaxLength="128" />
+    <Property Name="EsAppId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="EsAppName" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="AppId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="AppName" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="AppType" Type="smallint" Nullable="false" />
+    <Property Name="DiscountType" Type="nvarchar" Nullable="false" MaxLength="10" />
+    <Property Name="DiscountMoney" Type="decimal" Nullable="false" Scale="2" />
+  </EntityType>
+  <EntityType Name="CommodityDiscount">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="OrderId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="OrderCode" Type="nvarchar" Nullable="false" MaxLength="128" />
+    <Property Name="CommodityId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="EsAppId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="EsAppName" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="AppId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="AppName" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="AppType" Type="smallint" Nullable="false" />
+    <Property Name="DiscountType" Type="nvarchar" Nullable="false" MaxLength="10" />
+    <Property Name="DiscountMoney" Type="decimal" Nullable="false" Scale="2" />
+  </EntityType>
+  <EntityType Name="UnionPayBill">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="TradeDate" Type="nvarchar" Nullable="false" MaxLength="8" />
+    <Property Name="TradeTime" Type="datetime" Nullable="false" />
+    <Property Name="TradeCode" Type="nvarchar" Nullable="false" MaxLength="3" />
+    <Property Name="AcqInsCode" Type="nvarchar" Nullable="false" MaxLength="11" />
+    <Property Name="SendInsCode" Type="nvarchar" Nullable="false" MaxLength="11" />
+    <Property Name="TraceNo" Type="nvarchar" Nullable="false" MaxLength="6" />
+    <Property Name="TxnTime" Type="nvarchar" Nullable="false" MaxLength="10" />
+    <Property Name="PayCardNo" Type="nvarchar" Nullable="false" MaxLength="19" />
+    <Property Name="TxnAmt" Type="nvarchar" Nullable="false" MaxLength="12" />
+    <Property Name="MerCatCode" Type="nvarchar" Nullable="false" MaxLength="4" />
+    <Property Name="TermType" Type="nvarchar" Nullable="false" MaxLength="2" />
+    <Property Name="QueryId" Type="nvarchar" Nullable="false" MaxLength="21" />
+    <Property Name="PayCode" Type="nvarchar" Nullable="false" MaxLength="2" />
+    <Property Name="OrderId" Type="nvarchar" Nullable="false" MaxLength="32" />
+    <Property Name="OrderIdGuid" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="PayCardType" Type="nvarchar" Nullable="false" MaxLength="11" />
+    <Property Name="OriginalTraceNo" Type="nvarchar" Nullable="false" MaxLength="6" />
+    <Property Name="OriginalTxnTime" Type="nvarchar" Nullable="false" MaxLength="10" />
+    <Property Name="Commission" Type="nvarchar" Nullable="false" MaxLength="13" />
+    <Property Name="SettleMoney" Type="nvarchar" Nullable="false" MaxLength="13" />
+    <Property Name="PayType" Type="nvarchar" Nullable="false" MaxLength="4" />
+    <Property Name="TxnType" Type="nvarchar" Nullable="false" MaxLength="2" />
+    <Property Name="BizType" Type="nvarchar" Nullable="false" MaxLength="6" />
+    <Property Name="OrigQryId" Type="nvarchar" Nullable="false" MaxLength="21" />
+    <Property Name="MerId" Type="nvarchar" Nullable="false" MaxLength="15" />
+    <Property Name="SubMerId" Type="nvarchar" Nullable="false" MaxLength="15" />
+    <Property Name="SubMerMoney" Type="nvarchar" Nullable="false" MaxLength="13" />
+    <Property Name="SettleNetAmount" Type="nvarchar" Nullable="false" MaxLength="13" />
+    <Property Name="TermId" Type="nvarchar" Nullable="false" MaxLength="8" />
+    <Property Name="MerReserved" Type="nvarchar" Nullable="false" MaxLength="32" />
+    <Property Name="DiscountMoney" Type="nvarchar" Nullable="false" MaxLength="13" />
+    <Property Name="InvoiceMoney" Type="nvarchar" Nullable="false" MaxLength="13" />
+    <Property Name="InstallmentCommission" Type="nvarchar" Nullable="false" MaxLength="12" />
+    <Property Name="InstallmentCount" Type="nvarchar" Nullable="false" MaxLength="2" />
+    <Property Name="OriOrderId" Type="nvarchar" Nullable="false" MaxLength="32" />
+    <Property Name="OriOrderIdGuid" Type="uniqueidentifier" Nullable="false" />
+  </EntityType>
+  <EntityType Name="UnionPayBillSummary">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="TradeDate" Type="nvarchar" Nullable="false" MaxLength="8" />
+    <Property Name="TradeTime" Type="datetime" Nullable="false" />
+    <Property Name="TradeCount" Type="int" Nullable="false" />
+    <Property Name="TxnAmtD" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="TxnAmtC" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="CommissionMoneyD" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="CommissionMoneyC" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="SettleMoneyD" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="SettleMoneyC" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="MerId" Type="nvarchar" Nullable="false" MaxLength="15" />
+  </EntityType>
+  <EntityType Name="JinCaiMoneySummary">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="TradeDate" Type="nvarchar" Nullable="false" MaxLength="8" />
+    <Property Name="EsAppId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="EsAppName" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="CustomerCode" Type="nvarchar" Nullable="false" MaxLength="30" />
+    <Property Name="CustomerName" Type="nvarchar" Nullable="false" MaxLength="30" />
+    <Property Name="CustomerProperty" Type="nvarchar" Nullable="false" MaxLength="10" />
+    <Property Name="AppId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="AppName" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="AppType" Type="smallint" Nullable="false" />
+    <Property Name="DeliveryType" Type="nvarchar" Nullable="false" MaxLength="10" />
+    <Property Name="OrderState" Type="nvarchar" Nullable="false" MaxLength="10" />
+    <Property Name="OrderCount" Type="int" Nullable="false" />
+    <Property Name="ShouldMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="DiscountMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="PayMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="RefundMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="FreightMoney" Type="decimal" Nullable="false" Scale="2" />
+    <Property Name="RefundFreightMoney" Type="decimal" Nullable="false" Scale="2" />
+  </EntityType>
+</Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema xmlns="http://schemas.microsoft.com/ado/2008/09/edm" xmlns:cg="http://schemas.microsoft.com/ado/2006/04/codegeneration" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" Namespace="YJBJ" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation">
+        <EntityContainer Name="YJBJContainer" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="MoneySummary" EntityType="YJBJ.MoneySummary" />
+          <EntitySet Name="DiscountSummary" EntityType="YJBJ.DiscountSummary" />
+          <EntitySet Name="CommodityOrder1" EntityType="YJBJ.CommodityOrder1" />
+          <EntitySet Name="PayTransaction1" EntityType="YJBJ.PayTransaction1" />
+          <EntitySet Name="OrderItem1" EntityType="YJBJ.OrderItem1" />
+          <EntitySet Name="TaxSummary" EntityType="YJBJ.TaxSummary" />
+          <EntitySet Name="SettleAccounts1" EntityType="YJBJ.SettleAccounts1" />
+          <EntitySet Name="SettleAccountsDetails1" EntityType="YJBJ.SettleAccountsDetails1" />
+          <EntitySet Name="WeiXinBill" EntityType="YJBJ.WeiXinBill" />
+          <EntitySet Name="WeiXinBillSummary" EntityType="YJBJ.WeiXinBillSummary" />
+          <EntitySet Name="AliPayBill" EntityType="YJBJ.AliPayBill" />
+          <EntitySet Name="AliPayBillSummary" EntityType="YJBJ.AliPayBillSummary" />
+          <EntitySet Name="OrderDiscount" EntityType="YJBJ.OrderDiscount" />
+          <EntitySet Name="CommodityDiscount" EntityType="YJBJ.CommodityDiscount" />
+          <EntitySet Name="UnionPayBill" EntityType="YJBJ.UnionPayBill" />
+          <EntitySet Name="UnionPayBillSummary" EntityType="YJBJ.UnionPayBillSummary" />
+          <EntitySet Name="JinCaiMoneySummary" EntityType="YJBJ.JinCaiMoneySummary" />
+          </EntityContainer>
+        <EntityType Name="MoneySummary">
+          <Documentation>
+            <Summary>销售汇总</Summary>
+          </Documentation>
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Guid" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="None" />
+          <Property Type="String" Name="TradeDate" Nullable="false" MaxLength="8">
+            <Documentation>
+              <Summary>交易日期</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Guid" Name="EsAppId" Nullable="false" annotation:StoreGeneratedPattern="None">
+            <Documentation>
+              <Summary>商城Id</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="EsAppName" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>商城名称</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Guid" Name="AppId" Nullable="false" annotation:StoreGeneratedPattern="None">
+            <Documentation>
+              <Summary>商家Id</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="AppName" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>商家名称</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Int16" Name="AppType" Nullable="false">
+            <Documentation>
+              <Summary>商家类型</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="DeliveryType" Nullable="false" MaxLength="10">
+            <Documentation>
+              <Summary>提货方式</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="PayType" Nullable="false" MaxLength="10">
+            <Documentation>
+              <Summary>支付方式</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="OrderState" Nullable="false" MaxLength="10">
+            <Documentation>
+              <Summary>交易状态(支付成功、退款成功)</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Int32" Name="OrderCount" Nullable="false">
+            <Documentation>
+              <Summary>暂无用</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="ShouldMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>订单应付金额累计(包含运费)</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="DiscountMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>订单优惠金额累计</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="PayMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>订单实付金额累计(包含运费)</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="RefundMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>订单退款金额累计</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="FreightMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>订单运费累计</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="RefundFreightMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>订单运费退款金额累计</Summary>
+            </Documentation>
+          </Property>
+        </EntityType>
+        <EntityType Name="DiscountSummary">
+          <Documentation>
+            <Summary>优惠汇总</Summary>
+          </Documentation>
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Guid" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="None" />
+          <Property Type="String" Name="TradeDate" Nullable="false" MaxLength="8">
+            <Documentation>
+              <Summary>交易日期</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Guid" Name="EsAppId" Nullable="false" annotation:StoreGeneratedPattern="None">
+            <Documentation>
+              <Summary>商城Id</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="EsAppName" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>商城名称</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Guid" Name="AppId" Nullable="false" annotation:StoreGeneratedPattern="None">
+            <Documentation>
+              <Summary>商家Id</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="AppName" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>商家名称</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Int16" Name="AppType" Nullable="false">
+            <Documentation>
+              <Summary>商家类型</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="DeliveryType" Nullable="false" MaxLength="10">
+            <Documentation>
+              <Summary>提货方式</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="PayType" Nullable="false" MaxLength="10">
+            <Documentation>
+              <Summary>支付方式</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="OrderState" Nullable="false" MaxLength="10">
+            <Documentation>
+              <Summary>交易状态(支付成功、退款成功)</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="DiscountType" Nullable="false" MaxLength="10">
+            <Documentation>
+              <Summary>优惠类型(优惠券、易捷币)</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Int32" Name="OrderCount" Nullable="false">
+            <Documentation>
+              <Summary>暂无用</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="DiscountMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>订单优惠金额累计</Summary>
+            </Documentation>
+          </Property>
+        </EntityType>
+        <EntityType Name="CommodityOrder1">
+          <Documentation>
+            <Summary>订单(BTP.CommodityOrder)</Summary>
+          </Documentation>
+          <Key>
+            <PropertyRef Name="OrderId" />
+          </Key>
+          <Property Type="Guid" Name="OrderId" Nullable="false" annotation:StoreGeneratedPattern="None">
+            <Documentation>
+              <Summary>订单Id</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="OrderCode" Nullable="false" MaxLength="128">
+            <Documentation>
+              <Summary>订单编号</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Guid" Name="EsAppId" Nullable="false" annotation:StoreGeneratedPattern="None">
+            <Documentation>
+              <Summary>商城Id</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="EsAppName" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>商城名称</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Guid" Name="AppId" Nullable="false" annotation:StoreGeneratedPattern="None">
+            <Documentation>
+              <Summary>商家Id</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="AppName" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>商家名称</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Int16" Name="AppType" Nullable="false">
+            <Documentation>
+              <Summary>商家类型</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Int32" Name="Payment" Nullable="false" />
+          <Property Type="Int32" Name="State" Nullable="false">
+            <Documentation>
+              <Summary>订单状态</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="OrderState" Nullable="false" MaxLength="10">
+            <Documentation>
+              <Summary>订单状态(支付成功、退款成功)</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="DateTime" Name="SubTime" Nullable="false">
+            <Documentation>
+              <Summary>下单时间</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="DateTime" Name="PayTime" Nullable="false">
+            <Documentation>
+              <Summary>支付时间</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="DateTime" Name="RefundTime" Nullable="true">
+            <Documentation>
+              <Summary>退款时间</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="ReceiptUserName" Nullable="false" MaxLength="512">
+            <Documentation>
+              <Summary>收货人姓名</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="ReceiptPhone" Nullable="false" MaxLength="512">
+            <Documentation>
+              <Summary>收货人电话</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="ReceiptAddress" Nullable="false" MaxLength="4000">
+            <Documentation>
+              <Summary>收货地址</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="RecipientsZipCode" Nullable="true" MaxLength="6">
+            <Documentation>
+              <Summary>邮编</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="Details" Nullable="true" MaxLength="4000">
+            <Documentation>
+              <Summary>买家备注</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="ShouldMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>订单应付金额(包含运费)</Summary>
+              <LongDescription>来自字段Price+Freight</LongDescription>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="DiscountMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>订单优惠金额</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="PayMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>订单实付金额(包含运费)</Summary>
+              <LongDescription>来自字段RealPrice</LongDescription>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="RefundMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>订单退款金额</Summary>
+              <LongDescription>来自于字段OrderRefund.RefundMoney</LongDescription>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="FreightMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>订单运费</Summary>
+              <LongDescription>来自字段Freight</LongDescription>
+            </Documentation>
+          </Property>
+          <Property Type="Guid" Name="MainOrderId" Nullable="true" annotation:StoreGeneratedPattern="None">
+            <Documentation>
+              <Summary>主订单Id</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Guid" Name="SubId" Nullable="true" annotation:StoreGeneratedPattern="None">
+            <Documentation>
+              <Summary>下单用户Id</Summary>
+            </Documentation>
+          </Property>
+          </EntityType>
+        <EntityType Name="PayTransaction1">
+          <Documentation>
+            <Summary>订单交易直接到账(Finance.PayTransaction)</Summary>
+          </Documentation>
+          <Key>
+            <PropertyRef Name="TradeId" />
+          </Key>
+          <Property Type="String" Name="TradeId" Nullable="false" annotation:StoreGeneratedPattern="None" MaxLength="60">
+            <Documentation>
+              <Summary>交易标识(订单Id+交易时间yyyyMMddHHmmssfff)</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="TradeDate" Nullable="false" MaxLength="8">
+            <Documentation>
+              <Summary>订单交易日期</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="DateTime" Name="TradeTime" Nullable="false">
+            <Documentation>
+              <Summary>订单交易时间</Summary>
+              <LongDescription>支付时间、退款时间</LongDescription>
+            </Documentation>
+          </Property>
+          <Property Type="Guid" Name="OrderId" Nullable="false" annotation:StoreGeneratedPattern="None">
+            <Documentation>
+              <Summary>订单Id</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="OrderCode" Nullable="false" MaxLength="128">
+            <Documentation>
+              <Summary>订单编号</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="TradeNum" Nullable="true" MaxLength="50">
+            <Documentation>
+              <Summary>支付系统支付流水号</Summary>
+              <LongDescription>微信订单号、支付宝交易号、银联查询流水号</LongDescription>
+            </Documentation>
+          </Property>
+          <Property Type="Guid" Name="EsAppId" Nullable="false" annotation:StoreGeneratedPattern="None">
+            <Documentation>
+              <Summary>商城Id</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="EsAppName" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>商城名称</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Guid" Name="AppId" Nullable="false" annotation:StoreGeneratedPattern="None">
+            <Documentation>
+              <Summary>商家Id</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="AppName" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>商家名称</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Int16" Name="AppType" Nullable="false">
+            <Documentation>
+              <Summary>商家类型</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Int32" Name="PayType" Nullable="false">
+            <Documentation>
+              <Summary>1支付宝5银联6微信</Summary>
+              <LongDescription>订单支付类型(Finance.PayTypeEnum)</LongDescription>
+            </Documentation>
+          </Property>
+          <Property Type="Int32" Name="TradeResult" Nullable="false">
+            <Documentation>
+              <Summary>订单交易处理结果</Summary>
+              <LongDescription>1：请求支付  2：请求成功 3：异步通知  4：支付成功  5：支付失败  6：请求退款  7：退款请求成功  8：退款异步通知  9：退款成功  10：退款失败</LongDescription>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="OrderState" Nullable="false" MaxLength="10">
+            <Documentation>
+              <Summary>交易状态(支付成功、退款成功)</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="ShouldMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>订单应付金额(包含运费)</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="DiscountMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>订单优惠金额</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="PayMoney" Nullable="false" DefaultValue="0" Scale="2">
+            <Documentation>
+              <Summary>订单实付金额(包含运费)</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="RefundMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>订单退款金额(可能含运费)</Summary>
+              <LongDescription>RefundFreightMoney&gt;0则包含运费</LongDescription>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="FreightMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>订单运费</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="RefundFreightMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>订单运费退款</Summary>
+              <LongDescription>订单商品退款金额=RefundMoney-RefundFreightMoney</LongDescription>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="NotifyData" Nullable="true">
+            <Documentation>
+              <Summary>支付系统支付成功回调数据</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="RefundNotifyData" Nullable="true">
+            <Documentation>
+              <Summary>支付系统退款成功回调数据</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="RefundTradeNum" Nullable="true" MaxLength="50">
+            <Documentation>
+              <Summary>支付系统退款流水号</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="DateTime" Name="RealTradeTime" Nullable="true">
+            <Documentation>
+              <Summary>交易时间(第三方回调数据中时间)</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Guid" Name="MainOrderId" Nullable="true" annotation:StoreGeneratedPattern="None">
+            <Documentation>
+              <Summary>主订单Id</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Guid" Name="PayorId" Nullable="true" annotation:StoreGeneratedPattern="None">
+            <Documentation>
+              <Summary>支付用户Id</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="ThirdUserId" Nullable="true" MaxLength="50">
+            <Documentation>
+              <Summary>第三方支付用户标识</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="SupplierCode" Nullable="true" MaxLength="128" />
+          <Property Type="String" Name="SupplierName" Nullable="true" MaxLength="512" />
+          <Property Type="Int16" Name="SupplierType" Nullable="true" />
+          <Property Type="Guid" Name="JcActivityId" Nullable="true" />
+          <Property Type="Guid" Name="JcCustomerId" Nullable="true" />
+          <Property Type="String" Name="JcCustomerCode" Nullable="true" MaxLength="30" />
+          <Property Type="String" Name="JcCustomerName" Nullable="true" MaxLength="30" />
+          <Property Type="String" Name="JcCustomerProperty" Nullable="true" MaxLength="10" />
+          <Property Type="Decimal" Name="YJCouponMoney" Scale="2" Nullable="true">
+            <Documentation>
+              <Summary>易捷抵用券金额</Summary>
+            </Documentation>
+          </Property>
+          </EntityType>
+        <EntityType Name="OrderItem1">
+          <Documentation>
+            <Summary>订单商品(BTP.OrderItem)</Summary>
+          </Documentation>
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Guid" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="None">
+          </Property>
+          <Property Type="String" Name="TradeId" Nullable="false" annotation:StoreGeneratedPattern="None" MaxLength="60">
+            <Documentation>
+              <Summary>交易标识(订单Id+交易时间yyyyMMddHHmmssfff)</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Guid" Name="OrderId" Nullable="false" annotation:StoreGeneratedPattern="None">
+            <Documentation>
+              <Summary>订单Id</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="OrderCode" Nullable="false" MaxLength="128">
+            <Documentation>
+              <Summary>订单编号</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Guid" Name="CommodityId" Nullable="false" annotation:StoreGeneratedPattern="None">
+            <Documentation>
+              <Summary>商品Id</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Guid" Name="EsAppId" Nullable="false" annotation:StoreGeneratedPattern="None">
+            <Documentation>
+              <Summary>商城Id</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="EsAppName" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>商城名称</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Guid" Name="AppId" Nullable="false" annotation:StoreGeneratedPattern="None">
+            <Documentation>
+              <Summary>商家Id</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="AppName" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>商家名称</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Int16" Name="AppType" Nullable="false">
+            <Documentation>
+              <Summary>商家类型</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="CategoryName">
+            <Documentation>
+              <Summary>商品品类</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="CommodityName" Nullable="false" MaxLength="512">
+            <Documentation>
+              <Summary>商品名称</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Int32" Name="Number" Nullable="false">
+            <Documentation>
+              <Summary>商品数量</Summary>
+            </Documentation>
+          </Property>          
+          <Property Name="RealPrice" Nullable="false" Scale="2" Type="Decimal">
+            <Documentation>
+              <Summary>商品价格(实际交易价格)</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="TaxRate" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>销项税</Summary>
+            </Documentation>
+          </Property>
+          <Property Name="ShouldMoney" Nullable="false" Scale="2" Type="Decimal">
+            <Documentation>
+              <Summary>商品应付金额(不含运费)</Summary>
+            </Documentation>
+          </Property>
+          <Property Name="DiscountMoney" Nullable="false" Scale="2" Type="Decimal">
+            <Documentation>
+              <Summary>商品优惠金额(拆分自订单)</Summary>
+            </Documentation>
+          </Property>
+          <Property Name="PayMoney" Nullable="false" Scale="2" Type="Decimal">
+            <Documentation>
+              <Summary>商品实付金额(不含运费)</Summary>
+              <LongDescription>应付 - 优惠</LongDescription>
+            </Documentation>
+          </Property>
+          <Property Name="RefundMoney" Nullable="false" Scale="2" Type="Decimal">
+            <Documentation>
+              <Summary>商品退款金额(不含运费)</Summary>
+            </Documentation>
+          </Property>
+          <Property Name="FreightMoney" Nullable="false" Scale="2" Type="Decimal">
+            <Documentation>
+              <Summary>商品运费(拆分自订单)</Summary>
+            </Documentation>
+          </Property>
+          <Property Name="RefundFreightMoney" Nullable="false" Scale="2" Type="Decimal">
+            <Documentation>
+              <Summary>商品运费退款(拆分自订单)</Summary>
+              <LongDescription>暂未处理</LongDescription>
+            </Documentation>
+          </Property>
+          <Property Name="TaxMoney" Nullable="false" Scale="2" Type="Decimal">
+            <Documentation>
+              <Summary>商品税金</Summary>
+              <LongDescription>实付/(1+税率)*税率；-退款/(1+税率)*税率；</LongDescription>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="CostPrice" Nullable="true" Scale="2">
+            <Documentation>
+              <Summary>进货价</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="InputRax" Nullable="true" Scale="2">
+            <Documentation>
+              <Summary>进项税</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Guid" Name="OrderItemId" Nullable="true" annotation:StoreGeneratedPattern="None" />
+          <Property Type="DateTime" Name="SubTime" Nullable="true" />
+          <Property Type="Guid" Name="CommodityStockId" Nullable="true" annotation:StoreGeneratedPattern="None" />
+        </EntityType>
+        <EntityType Name="TaxSummary">
+          <Documentation>
+            <Summary>分税率销售汇总</Summary>
+          </Documentation>
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Guid" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="None" />
+          <Property Type="String" Name="TradeDate" Nullable="false" MaxLength="8">
+            <Documentation>
+              <Summary>交易日期</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Guid" Name="EsAppId" Nullable="false" annotation:StoreGeneratedPattern="None">
+            <Documentation>
+              <Summary>商城Id</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="EsAppName" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>商城名称</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="TaxRate" Nullable="false" MaxLength="10">
+            <Documentation>
+              <Summary>商品税率</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="OrderState" Nullable="false" MaxLength="10">
+            <Documentation>
+              <Summary>交易状态(支付成功、退款成功)</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Int32" Name="OrderCount" Nullable="false">
+            <Documentation>
+              <Summary>暂无用</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="ShouldMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>商品应付金额累计(不含运费)</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="DiscountMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>商品优惠金额</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="PayMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>商品实付金额累计(不含运费)</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="RefundMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>商品退款金额累计</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="FreightMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>商品运费累计</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="RefundFreightMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>商品退款运费累计</Summary>
+              <LongDescription>暂未处理</LongDescription>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="TaxMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>商品税金累计</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Int16" Name="AppType" Nullable="false" DefaultValue="0" />
+        </EntityType>
+        <EntityType Name="SettleAccounts1">
+          <Documentation>
+            <Summary>商家结算明细(BTP.SettleAccounts)</Summary>
+          </Documentation>
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Guid" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="None">
+            <Documentation>
+              <Summary>结算记录Id</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Guid" Name="EsAppId" Nullable="false" annotation:StoreGeneratedPattern="None">
+            <Documentation>
+              <Summary>商城Id</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="EsAppName" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>商城名称</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Guid" Name="AppId" Nullable="false" annotation:StoreGeneratedPattern="None">
+            <Documentation>
+              <Summary>商家Id</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="AppName" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>商家名称</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Int16" Name="AppType" Nullable="false">
+            <Documentation>
+              <Summary>商家类型</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="DateTime" Name="ModifiedOn" Nullable="false">
+            <Documentation>
+              <Summary>打款时间</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="SubDate" Nullable="false" MaxLength="8">
+            <Documentation>
+              <Summary>打款日期</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="DateTime" Name="BeginDate" Nullable="false">
+            <Documentation>
+              <Summary>结算起始日期</Summary>
+              <LongDescription>筛选可结算订单</LongDescription>
+            </Documentation>
+          </Property>
+          <Property Type="DateTime" Name="EndDate" Nullable="false">
+            <Documentation>
+              <Summary>结算截止日期</Summary>
+              <LongDescription>筛选可结算订单</LongDescription>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="OrderAmount" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>订单应付金额累计</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="OrderRealAmount" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>订单实付金额累计</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="CouponAmount" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>订单优惠券优惠金额累计</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="RefundAmount" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>订单退款金额累计</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="PromotionAmount" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>(商家)商城佣金</Summary>
+              <LongDescription>(订单)商城佣金汇总</LongDescription>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="SellerAmount" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>商家结算金额</Summary>
+              <LongDescription>订单结算金额汇总</LongDescription>
+            </Documentation>
+          </Property>
+          </EntityType>
+        <EntityType Name="SettleAccountsDetails1">
+          <Documentation>
+            <Summary>订单结算明细(BTP.SettleAccountsDetails)</Summary>
+          </Documentation>
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Guid" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="None" />
+          <Property Type="Guid" Name="SAId" Nullable="false">
+            <Documentation>
+              <Summary>结算记录Id</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Guid" Name="OrderId" Nullable="false">
+            <Documentation>
+              <Summary>订单Id</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="OrderCode" Nullable="false" MaxLength="128">
+            <Documentation>
+              <Summary>订单编号</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Guid" Name="EsAppId" Nullable="false" annotation:StoreGeneratedPattern="None">
+            <Documentation>
+              <Summary>商城Id</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="EsAppName" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>商城名称</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Guid" Name="AppId" Nullable="false" annotation:StoreGeneratedPattern="None">
+            <Documentation>
+              <Summary>商家Id</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="AppName" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>商家名称</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Int16" Name="AppType" Nullable="false">
+            <Documentation>
+              <Summary>商家类型</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="OrderAmount" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>订单应付金额</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="OrderRealAmount" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>订单实付金额</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="OrderCouponAmount" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>订单优惠券优惠金额</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="OrderRefundAmount" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>订单退款金额</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="PromotionAmount" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>(订单)商城佣金</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="SellerAmount" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>订单结算金额</Summary>
+            </Documentation>
+          </Property>
+        </EntityType>
+        <EntityType Name="WeiXinBill">
+          <Documentation>
+            <Summary>微信对账单</Summary>
+          </Documentation>
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Guid" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="None" />
+          <Property Type="String" Name="TradeDate" Nullable="false" MaxLength="8">
+            <Documentation>
+              <Summary>交易日期</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="DateTime" Name="TradeTime" Nullable="false">
+            <Documentation>
+              <Summary>交易时间</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="WeiXinAppId" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>公众账号ID</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="MchId" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>商户号</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="SubMchId" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>子商户号</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="DeviceInfo" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>设备号</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="WeiXinOrderCode" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>微信订单号</Summary>
+              <LongDescription>支付系统支付流水号</LongDescription>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="TempId" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>商户订单号</Summary>
+              <LongDescription>电商临时微信订单号？</LongDescription>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="WeiXinUserId" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>用户标识</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="TradeType" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>交易类型(如App)</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="TradeState" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>交易状态</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="Bank" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>付款银行</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="MoneyType" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>货币种类</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="PayMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>总金额</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="HongBaoMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>企业红包金额</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="WeiXinRefundOrderCode" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>微信退款单号</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="RefundTempId" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>商户退款单号</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="RefundMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>退款金额</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="RefundHongBaoMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>企业红包退款金额</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="RefundType" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>退款类型</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="RefundState" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>退款状态</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="CommodityName" Nullable="false" MaxLength="512">
+            <Documentation>
+              <Summary>商品名称</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="MchData" Nullable="false">
+            <Documentation>
+              <Summary>商户数据包</Summary>
+              <LongDescription>对应电商主订单好或订单号</LongDescription>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="Commission" Nullable="false" Scale="5">
+            <Documentation>
+              <Summary>手续费</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="CommissionRate" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>费率百分比</Summary>
+              <LongDescription>0.60代表0.60%</LongDescription>
+            </Documentation>
+          </Property>
+        </EntityType>
+        <EntityType Name="WeiXinBillSummary">
+          <Documentation>
+            <Summary>微信对账单按天汇总</Summary>
+          </Documentation>
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Guid" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="None" />
+          <Property Type="String" Name="WeiXinAppId" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>公众账号ID</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="MchId" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>商户号</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="TradeDate" Nullable="false" MaxLength="8">
+            <Documentation>
+              <Summary>交易日期</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="DateTime" Name="TradeTime" Nullable="false">
+            <Documentation>
+              <Summary>交易日期</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Int32" Name="TradeCount" Nullable="false">
+            <Documentation>
+              <Summary>总交易单数</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="PayMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>总交易额</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="RefundMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>总退款金额</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="RefundHongBaoMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>总企业红包退款金额</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="Commission" Nullable="false" Scale="5">
+            <Documentation>
+              <Summary>手续费总金额</Summary>
+            </Documentation>
+          </Property>
+          </EntityType>
+        <EntityType Name="AliPayBill">
+          <Documentation>
+            <Summary>支付宝对账单</Summary>
+          </Documentation>
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Guid" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="None" />
+          <Property Type="String" Name="PId" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>商户编号</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="TradeDate" Nullable="false" MaxLength="8">
+            <Documentation>
+              <Summary>交易日期</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="DateTime" Name="TradeTime" Nullable="false">
+            <Documentation>
+              <Summary>交易时间</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="AliPayTradeNo" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>支付宝交易号</Summary>
+              <LongDescription>支付系统支付流水号</LongDescription>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="MerchantOrderCodeFull" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>商户订单号</Summary>
+              <LongDescription>支付宝返回的原始数据</LongDescription>
+            </Documentation>
+          </Property>
+          <Property Type="Guid" Name="MerchantOrderCode" Nullable="false" annotation:StoreGeneratedPattern="None">
+            <Documentation>
+              <Summary>商户订单号</Summary>
+              <LongDescription>解析自MerchantOrderCodeFull</LongDescription>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="TradeState" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>业务类型(交易、退款)</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="CommodityName" Nullable="false" MaxLength="512">
+            <Documentation>
+              <Summary>商品名称</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="DateTime" Name="CreateTime" Nullable="false">
+            <Documentation>
+              <Summary>创建时间</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="DateTime" Name="CompleteTime" Nullable="false">
+            <Documentation>
+              <Summary>完成时间</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="StoreCode" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>门店编号</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="StoreName" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>门店名称</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="Operator" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>操作员</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="TerminalNumber" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>终端号</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="ReceiptAccount" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>对方账户(收款账户)</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="OrderMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>订单金额</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="ReceiptMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>商家实收金额</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="HongBaoMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>支付宝红包金额</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="JiFenBaoMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>集分宝金额</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="AliPayDiscountMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>支付宝优惠</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="MerchantDiscountMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>商家优惠</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="QuanHeXiaoMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>券核销金额</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="QuanName" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>券名称</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="MerchantHongBaoMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>商家红包消费金额</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="CardConsumptionMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>卡消费金额</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="AliPayRefundTradeNo" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>退款批次号/请求号</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="ServiceCharge" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>服务费</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="FenRunMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>分润费</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="Remark" Nullable="false">
+            <Documentation>
+              <Summary>备注</Summary>
+            </Documentation>
+          </Property>
+          </EntityType>
+        <EntityType Name="AliPayBillSummary">
+          <Documentation>
+            <Summary>支付宝对账单按天汇总</Summary>
+          </Documentation>
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Guid" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="None" />
+          <Property Type="String" Name="PId" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>商户编号</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="TradeDate" Nullable="false" MaxLength="8">
+            <Documentation>
+              <Summary>交易日期</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="DateTime" Name="TradeTime" Nullable="false">
+            <Documentation>
+              <Summary>交易日期</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="StoreCode" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>门店编号</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="StoreName" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>门店名称</Summary>
+            </Documentation>
+          </Property>          
+          <Property Type="Int32" Name="PayCount" Nullable="false">
+            <Documentation>
+              <Summary>交易订单总笔数</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Int32" Name="RefundCount" Nullable="false">
+            <Documentation>
+              <Summary>退款订单总笔数</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Int32" Name="TradeCount" Nullable="false">
+            <Documentation>
+              <Summary>总交易(交易+退款)单数</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="OrderMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>订单金额</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="ReceiptMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>商家实收金额</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="AliPayDiscountMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>支付宝优惠</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="MerchantDiscountMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>商家优惠</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="CardConsumptionMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>卡消费金额</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="ServiceCharge" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>服务费</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="FenRunMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>分润</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="ShiShouMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>实收净额</Summary>
+            </Documentation>
+          </Property>
+          </EntityType>
+        <EntityType Name="OrderDiscount">
+          <Documentation>
+            <Summary>订单优惠明细</Summary>
+          </Documentation>
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="None" Type="Guid" />
+          <Property Name="OrderId" Nullable="false" annotation:StoreGeneratedPattern="None" Type="Guid">
+            <Documentation>
+              <Summary>订单Id</Summary>
+            </Documentation>
+          </Property>
+          <Property Name="OrderCode" Nullable="false" MaxLength="128" Type="String">
+            <Documentation>
+              <Summary>订单编号</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Guid" Name="EsAppId" Nullable="false" annotation:StoreGeneratedPattern="None">
+            <Documentation>
+              <Summary>商城Id</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="EsAppName" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>商城名称</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Guid" Name="AppId" Nullable="false" annotation:StoreGeneratedPattern="None">
+            <Documentation>
+              <Summary>商家Id</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="AppName" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>商家名称</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Int16" Name="AppType" Nullable="false">
+            <Documentation>
+              <Summary>商家类型</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="DiscountType" Nullable="false" MaxLength="10">
+            <Documentation>
+              <Summary>优惠类型</Summary>
+              <LongDescription>参考枚举类型DiscountType</LongDescription>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="DiscountMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>优惠金额</Summary>
+            </Documentation>
+          </Property>
+        </EntityType>
+        <EntityType Name="CommodityDiscount">
+          <Documentation>
+            <Summary>订单商品优惠明细</Summary>
+          </Documentation>
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Guid" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="None" />
+          <Property Type="Guid" Name="OrderId" Nullable="false" annotation:StoreGeneratedPattern="None">
+            <Documentation>
+              <Summary>订单Id</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="OrderCode" Nullable="false" MaxLength="128">
+            <Documentation>
+              <Summary>订单编号</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Guid" Name="CommodityId" Nullable="false" annotation:StoreGeneratedPattern="None">
+            <Documentation>
+              <Summary>商品Id</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Guid" Name="EsAppId" Nullable="false" annotation:StoreGeneratedPattern="None">
+            <Documentation>
+              <Summary>商城Id</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="EsAppName" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>商城名称</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Guid" Name="AppId" Nullable="false" annotation:StoreGeneratedPattern="None">
+            <Documentation>
+              <Summary>商家Id</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="AppName" Nullable="false" MaxLength="50">
+            <Documentation>
+              <Summary>商家名称</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Int16" Name="AppType" Nullable="false">
+            <Documentation>
+              <Summary>商家类型</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="DiscountType" Nullable="false" MaxLength="10">
+            <Documentation>
+              <Summary>优惠类型</Summary>
+              <LongDescription>参考枚举类型DiscountType</LongDescription>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="DiscountMoney" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>优惠金额</Summary>
+            </Documentation>
+          </Property>
+        </EntityType>
+        <EntityType Name="UnionPayBill">
+          <Documentation>
+            <Summary>银联对账单</Summary>
+          </Documentation>
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Guid" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="None" />
+          <Property Type="String" Name="TradeDate" Nullable="false" MaxLength="8">
+            <Documentation>
+              <Summary>交易日期</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="DateTime" Name="TradeTime" Nullable="false">
+            <Documentation>
+              <Summary>交易时间</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="TradeCode" Nullable="false" MaxLength="3">
+            <Documentation>
+              <Summary>交易代码(s56:自助消费,s30:联机退货)</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="AcqInsCode" Nullable="false" MaxLength="11">
+            <Documentation>
+              <Summary>代理机构标识码</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="SendInsCode" Nullable="false" MaxLength="11">
+            <Documentation>
+              <Summary>发送机构标识码</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="TraceNo" Nullable="false" MaxLength="6">
+            <Documentation>
+              <Summary>系统跟踪号</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="TxnTime" Nullable="false" MaxLength="10">
+            <Documentation>
+              <Summary>交易传输时间</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="PayCardNo" Nullable="false" MaxLength="19">
+            <Documentation>
+              <Summary>帐号</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="TxnAmt" Nullable="false" MaxLength="12">
+            <Documentation>
+              <Summary>交易金额</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="MerCatCode" Nullable="false" MaxLength="4">
+            <Documentation>
+              <Summary>商户类别</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="TermType" Nullable="false" MaxLength="2">
+            <Documentation>
+              <Summary>终端类型</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="QueryId" Nullable="false" MaxLength="21">
+            <Documentation>
+              <Summary>查询流水号</Summary>
+              <LongDescription>支付系统支付流水号</LongDescription>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="PayCode" Nullable="false" MaxLength="2">
+            <Documentation>
+              <Summary>支付方式（旧）</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="OrderId" Nullable="false" MaxLength="32">
+            <Documentation>
+              <Summary>商户订单号</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Guid" Name="OrderIdGuid" Nullable="false">
+            <Documentation>
+              <Summary>商户订单号</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="PayCardType" Nullable="false" MaxLength="11">
+            <Documentation>
+              <Summary>支付卡类型</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="OriginalTraceNo" Nullable="false" MaxLength="6">
+            <Documentation>
+              <Summary>原始交易的系统跟踪号</Summary>
+              <LongDescription>退货记录独有</LongDescription>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="OriginalTxnTime" Nullable="false" MaxLength="10">
+            <Documentation>
+              <Summary>原始交易日期时间</Summary>
+              <LongDescription>退货记录独有</LongDescription>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="Commission" Nullable="false" MaxLength="13">
+            <Documentation>
+              <Summary>商户手续费</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="SettleMoney" Nullable="false" MaxLength="13">
+            <Documentation>
+              <Summary>结算金额</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="PayType" Nullable="false" MaxLength="4">
+            <Documentation>
+              <Summary>支付方式</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="TxnType" Nullable="false" MaxLength="2">
+            <Documentation>
+              <Summary>交易类型(01:消费,04:退货)</Summary>
+              <LongDescription>消费=支付，退货=退款</LongDescription>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="BizType" Nullable="false" MaxLength="6">
+            <Documentation>
+              <Summary>业务类型</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="OrigQryId" Nullable="false" MaxLength="21">
+            <Documentation>
+              <Summary>原交易查询流水号</Summary>
+              <LongDescription>退货记录独有</LongDescription>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="MerId" Nullable="false" MaxLength="15">
+            <Documentation>
+              <Summary>商户代码</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="SubMerId" Nullable="false" MaxLength="15">
+            <Documentation>
+              <Summary>二级商户代码</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="SubMerMoney" Nullable="false" MaxLength="13">
+            <Documentation>
+              <Summary>二级商户分账入账金额</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="SettleNetAmount" Nullable="false" MaxLength="13">
+            <Documentation>
+              <Summary>清算净额</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="TermId" Nullable="false" MaxLength="8">
+            <Documentation>
+              <Summary>终端号</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="MerReserved" Nullable="false" MaxLength="32">
+            <Documentation>
+              <Summary>商户自定义域</Summary>
+              <LongDescription>消费记录独有</LongDescription>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="DiscountMoney" Nullable="false" MaxLength="13">
+            <Documentation>
+              <Summary>优惠金额</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="InvoiceMoney" Nullable="false" MaxLength="13">
+            <Documentation>
+              <Summary>发票金额</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="InstallmentCommission" Nullable="false" MaxLength="12">
+            <Documentation>
+              <Summary>分期付款附加手续费</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="InstallmentCount" Nullable="false" MaxLength="2">
+            <Documentation>
+              <Summary>分期付款期数</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="OriOrderId" Nullable="false" MaxLength="32">
+            <Documentation>
+              <Summary>原始交易订单号</Summary>
+              <LongDescription>退货记录独有</LongDescription>
+            </Documentation>
+          </Property>
+          <Property Type="Guid" Name="OriOrderIdGuid" Nullable="false">
+            <Documentation>
+              <Summary>原始交易订单号</Summary>
+              <LongDescription>退货记录独有</LongDescription>
+            </Documentation>
+          </Property>
+          </EntityType>
+        <EntityType Name="UnionPayBillSummary">
+          <Documentation>
+            <Summary>银联对账单按天汇总</Summary>
+          </Documentation>
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Guid" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="None" />
+          <Property Type="String" Name="TradeDate" Nullable="false" MaxLength="8">
+            <Documentation>
+              <Summary>交易日期</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="DateTime" Name="TradeTime" Nullable="false">
+            <Documentation>
+              <Summary>交易日期</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Int32" Name="TradeCount" Nullable="false">
+            <Documentation>
+              <Summary>交易笔数</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="TxnAmtD" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>交易金额-借</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="TxnAmtC" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>交易金额-贷</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="CommissionMoneyD" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>费用-借</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="CommissionMoneyC" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>费用-贷</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="SettleMoneyD" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>资金清算差额-借</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="Decimal" Name="SettleMoneyC" Nullable="false" Scale="2">
+            <Documentation>
+              <Summary>资金清算差额-贷</Summary>
+            </Documentation>
+          </Property>
+          <Property Type="String" Name="MerId" Nullable="false" MaxLength="15">
+            <Documentation>
+              <Summary>商户代码</Summary>
+            </Documentation>
+          </Property>
+        </EntityType>
+        <EntityType Name="JinCaiMoneySummary">
+          <Documentation>
+            <Summary>金采订单销售汇总</Summary>
+          </Documentation>
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Guid" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="None" />
+          <Property Type="String" Name="TradeDate" Nullable="false" MaxLength="8" />
+          <Property Type="Guid" Name="EsAppId" Nullable="false" annotation:StoreGeneratedPattern="None" />
+          <Property Type="String" Name="EsAppName" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="CustomerCode" Nullable="false" MaxLength="30" />
+          <Property Type="String" Name="CustomerName" Nullable="false" MaxLength="30" />
+          <Property Type="String" Name="CustomerProperty" Nullable="false" MaxLength="10" />
+          <Property Type="Guid" Name="AppId" Nullable="false" annotation:StoreGeneratedPattern="None" />
+          <Property Type="String" Name="AppName" Nullable="false" MaxLength="50" />
+          <Property Type="Int16" Name="AppType" Nullable="false" />
+          <Property Type="String" Name="DeliveryType" Nullable="false" MaxLength="10" />
+          <Property Type="String" Name="OrderState" Nullable="false" MaxLength="10" />
+          <Property Type="Int32" Name="OrderCount" Nullable="false" />
+          <Property Type="Decimal" Name="ShouldMoney" Nullable="false" Scale="2" />
+          <Property Type="Decimal" Name="DiscountMoney" Nullable="false" Scale="2" />
+          <Property Type="Decimal" Name="PayMoney" Nullable="false" Scale="2" />
+          <Property Type="Decimal" Name="RefundMoney" Nullable="false" Scale="2" />
+          <Property Type="Decimal" Name="FreightMoney" Nullable="false" Scale="2" />
+          <Property Type="Decimal" Name="RefundFreightMoney" Nullable="false" Scale="2" />
+        </EntityType>
+        </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+    <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="YJBJStoreContainer" CdmEntityContainer="YJBJContainer">
+    <EntitySetMapping Name="MoneySummary">
+      <EntityTypeMapping TypeName="IsTypeOf(YJBJ.MoneySummary)">
+        <MappingFragment StoreEntitySet="MoneySummary">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="TradeDate" ColumnName="TradeDate" />
+          <ScalarProperty Name="EsAppId" ColumnName="EsAppId" />
+          <ScalarProperty Name="EsAppName" ColumnName="EsAppName" />
+          <ScalarProperty Name="AppId" ColumnName="AppId" />
+          <ScalarProperty Name="AppName" ColumnName="AppName" />
+          <ScalarProperty Name="AppType" ColumnName="AppType" />
+          <ScalarProperty Name="DeliveryType" ColumnName="DeliveryType" />
+          <ScalarProperty Name="PayType" ColumnName="PayType" />
+          <ScalarProperty Name="OrderState" ColumnName="OrderState" />
+          <ScalarProperty Name="OrderCount" ColumnName="OrderCount" />
+          <ScalarProperty Name="ShouldMoney" ColumnName="ShouldMoney" />
+          <ScalarProperty Name="DiscountMoney" ColumnName="DiscountMoney" />
+          <ScalarProperty Name="PayMoney" ColumnName="PayMoney" />
+          <ScalarProperty Name="RefundMoney" ColumnName="RefundMoney" />
+          <ScalarProperty Name="FreightMoney" ColumnName="FreightMoney" />
+          <ScalarProperty Name="RefundFreightMoney" ColumnName="RefundFreightMoney" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="DiscountSummary">
+      <EntityTypeMapping TypeName="IsTypeOf(YJBJ.DiscountSummary)">
+        <MappingFragment StoreEntitySet="DiscountSummary">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="TradeDate" ColumnName="TradeDate" />
+          <ScalarProperty Name="EsAppId" ColumnName="EsAppId" />
+          <ScalarProperty Name="EsAppName" ColumnName="EsAppName" />
+          <ScalarProperty Name="AppId" ColumnName="AppId" />
+          <ScalarProperty Name="AppName" ColumnName="AppName" />
+          <ScalarProperty Name="AppType" ColumnName="AppType" />
+          <ScalarProperty Name="DeliveryType" ColumnName="DeliveryType" />
+          <ScalarProperty Name="PayType" ColumnName="PayType" />
+          <ScalarProperty Name="OrderState" ColumnName="OrderState" />
+          <ScalarProperty Name="DiscountType" ColumnName="DiscountType" />
+          <ScalarProperty Name="OrderCount" ColumnName="OrderCount" />
+          <ScalarProperty Name="DiscountMoney" ColumnName="DiscountMoney" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="CommodityOrder1">
+      <EntityTypeMapping TypeName="IsTypeOf(YJBJ.CommodityOrder1)">
+        <MappingFragment StoreEntitySet="CommodityOrder1">
+          <ScalarProperty Name="OrderId" ColumnName="OrderId" />
+          <ScalarProperty Name="OrderCode" ColumnName="OrderCode" />
+          <ScalarProperty Name="EsAppId" ColumnName="EsAppId" />
+          <ScalarProperty Name="EsAppName" ColumnName="EsAppName" />
+          <ScalarProperty Name="AppId" ColumnName="AppId" />
+          <ScalarProperty Name="AppName" ColumnName="AppName" />
+          <ScalarProperty Name="AppType" ColumnName="AppType" />
+          <ScalarProperty Name="Payment" ColumnName="Payment" />
+          <ScalarProperty Name="State" ColumnName="State" />
+          <ScalarProperty Name="OrderState" ColumnName="OrderState" />
+          <ScalarProperty Name="SubTime" ColumnName="SubTime" />
+          <ScalarProperty Name="PayTime" ColumnName="PayTime" />
+          <ScalarProperty Name="RefundTime" ColumnName="RefundTime" />
+          <ScalarProperty Name="ReceiptUserName" ColumnName="ReceiptUserName" />
+          <ScalarProperty Name="ReceiptPhone" ColumnName="ReceiptPhone" />
+          <ScalarProperty Name="ReceiptAddress" ColumnName="ReceiptAddress" />
+          <ScalarProperty Name="RecipientsZipCode" ColumnName="RecipientsZipCode" />
+          <ScalarProperty Name="Details" ColumnName="Details" />
+          <ScalarProperty Name="ShouldMoney" ColumnName="ShouldMoney" />
+          <ScalarProperty Name="DiscountMoney" ColumnName="DiscountMoney" />
+          <ScalarProperty Name="PayMoney" ColumnName="PayMoney" />
+          <ScalarProperty Name="RefundMoney" ColumnName="RefundMoney" />
+          <ScalarProperty Name="FreightMoney" ColumnName="FreightMoney" />
+          <ScalarProperty Name="MainOrderId" ColumnName="MainOrderId" />
+          <ScalarProperty Name="SubId" ColumnName="SubId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PayTransaction1">
+      <EntityTypeMapping TypeName="IsTypeOf(YJBJ.PayTransaction1)">
+        <MappingFragment StoreEntitySet="PayTransaction1">
+          <ScalarProperty Name="TradeId" ColumnName="TradeId" />
+          <ScalarProperty Name="TradeDate" ColumnName="TradeDate" />
+          <ScalarProperty Name="TradeTime" ColumnName="TradeTime" />
+          <ScalarProperty Name="OrderId" ColumnName="OrderId" />
+          <ScalarProperty Name="OrderCode" ColumnName="OrderCode" />
+          <ScalarProperty Name="TradeNum" ColumnName="TradeNum" />
+          <ScalarProperty Name="EsAppId" ColumnName="EsAppId" />
+          <ScalarProperty Name="EsAppName" ColumnName="EsAppName" />
+          <ScalarProperty Name="AppId" ColumnName="AppId" />
+          <ScalarProperty Name="AppName" ColumnName="AppName" />
+          <ScalarProperty Name="AppType" ColumnName="AppType" />
+          <ScalarProperty Name="PayType" ColumnName="PayType" />
+          <ScalarProperty Name="TradeResult" ColumnName="TradeResult" />
+          <ScalarProperty Name="OrderState" ColumnName="OrderState" />
+          <ScalarProperty Name="ShouldMoney" ColumnName="ShouldMoney" />
+          <ScalarProperty Name="DiscountMoney" ColumnName="DiscountMoney" />
+          <ScalarProperty Name="PayMoney" ColumnName="PayMoney" />
+          <ScalarProperty Name="RefundMoney" ColumnName="RefundMoney" />
+          <ScalarProperty Name="FreightMoney" ColumnName="FreightMoney" />
+          <ScalarProperty Name="RefundFreightMoney" ColumnName="RefundFreightMoney" />
+          <ScalarProperty Name="NotifyData" ColumnName="NotifyData" />
+          <ScalarProperty Name="RefundNotifyData" ColumnName="RefundNotifyData" />
+          <ScalarProperty Name="RefundTradeNum" ColumnName="RefundTradeNum" />
+          <ScalarProperty Name="RealTradeTime" ColumnName="RealTradeTime" />
+          <ScalarProperty Name="MainOrderId" ColumnName="MainOrderId" />
+          <ScalarProperty Name="PayorId" ColumnName="PayorId" />
+          <ScalarProperty Name="ThirdUserId" ColumnName="ThirdUserId" />
+          <ScalarProperty Name="SupplierCode" ColumnName="SupplierCode" />
+          <ScalarProperty Name="SupplierName" ColumnName="SupplierName" />
+          <ScalarProperty Name="SupplierType" ColumnName="SupplierType" />
+          <ScalarProperty Name="JcActivityId" ColumnName="JcActivityId" />
+          <ScalarProperty Name="JcCustomerId" ColumnName="JcCustomerId" />
+          <ScalarProperty Name="JcCustomerCode" ColumnName="JcCustomerCode" />
+          <ScalarProperty Name="JcCustomerName" ColumnName="JcCustomerName" />
+          <ScalarProperty Name="JcCustomerProperty" ColumnName="JcCustomerProperty" />
+          <ScalarProperty Name="YJCouponMoney" ColumnName="YJCouponMoney" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="OrderItem1">
+      <EntityTypeMapping TypeName="IsTypeOf(YJBJ.OrderItem1)">
+        <MappingFragment StoreEntitySet="OrderItem1">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="TradeId" ColumnName="TradeId" />
+          <ScalarProperty Name="OrderId" ColumnName="OrderId" />
+          <ScalarProperty Name="OrderCode" ColumnName="OrderCode" />
+          <ScalarProperty Name="CommodityId" ColumnName="CommodityId" />
+          <ScalarProperty Name="EsAppId" ColumnName="EsAppId" />
+          <ScalarProperty Name="EsAppName" ColumnName="EsAppName" />
+          <ScalarProperty Name="AppId" ColumnName="AppId" />
+          <ScalarProperty Name="AppName" ColumnName="AppName" />
+          <ScalarProperty Name="AppType" ColumnName="AppType" />
+          <ScalarProperty Name="CategoryName" ColumnName="CategoryName" />
+          <ScalarProperty Name="CommodityName" ColumnName="CommodityName" />
+          <ScalarProperty Name="Number" ColumnName="Number" />
+          <ScalarProperty Name="RealPrice" ColumnName="RealPrice" />
+          <ScalarProperty Name="TaxRate" ColumnName="TaxRate" />
+          <ScalarProperty Name="ShouldMoney" ColumnName="ShouldMoney" />
+          <ScalarProperty Name="DiscountMoney" ColumnName="DiscountMoney" />
+          <ScalarProperty Name="PayMoney" ColumnName="PayMoney" />
+          <ScalarProperty Name="RefundMoney" ColumnName="RefundMoney" />
+          <ScalarProperty Name="FreightMoney" ColumnName="FreightMoney" />
+          <ScalarProperty Name="RefundFreightMoney" ColumnName="RefundFreightMoney" />
+          <ScalarProperty Name="TaxMoney" ColumnName="TaxMoney" />
+          <ScalarProperty Name="CostPrice" ColumnName="CostPrice" />
+          <ScalarProperty Name="InputRax" ColumnName="InputRax" />
+          <ScalarProperty Name="OrderItemId" ColumnName="OrderItemId" />
+          <ScalarProperty Name="SubTime" ColumnName="SubTime" />
+          <ScalarProperty Name="CommodityStockId" ColumnName="CommodityStockId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="TaxSummary">
+      <EntityTypeMapping TypeName="IsTypeOf(YJBJ.TaxSummary)">
+        <MappingFragment StoreEntitySet="TaxSummary">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="TradeDate" ColumnName="TradeDate" />
+          <ScalarProperty Name="EsAppId" ColumnName="EsAppId" />
+          <ScalarProperty Name="EsAppName" ColumnName="EsAppName" />
+          <ScalarProperty Name="TaxRate" ColumnName="TaxRate" />
+          <ScalarProperty Name="OrderState" ColumnName="OrderState" />
+          <ScalarProperty Name="OrderCount" ColumnName="OrderCount" />
+          <ScalarProperty Name="ShouldMoney" ColumnName="ShouldMoney" />
+          <ScalarProperty Name="DiscountMoney" ColumnName="DiscountMoney" />
+          <ScalarProperty Name="PayMoney" ColumnName="PayMoney" />
+          <ScalarProperty Name="RefundMoney" ColumnName="RefundMoney" />
+          <ScalarProperty Name="FreightMoney" ColumnName="FreightMoney" />
+          <ScalarProperty Name="RefundFreightMoney" ColumnName="RefundFreightMoney" />
+          <ScalarProperty Name="TaxMoney" ColumnName="TaxMoney" />
+          <ScalarProperty Name="AppType" ColumnName="AppType" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SettleAccounts1">
+      <EntityTypeMapping TypeName="IsTypeOf(YJBJ.SettleAccounts1)">
+        <MappingFragment StoreEntitySet="SettleAccounts1">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="EsAppId" ColumnName="EsAppId" />
+          <ScalarProperty Name="EsAppName" ColumnName="EsAppName" />
+          <ScalarProperty Name="AppId" ColumnName="AppId" />
+          <ScalarProperty Name="AppName" ColumnName="AppName" />
+          <ScalarProperty Name="AppType" ColumnName="AppType" />
+          <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+          <ScalarProperty Name="SubDate" ColumnName="SubDate" />
+          <ScalarProperty Name="BeginDate" ColumnName="BeginDate" />
+          <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+          <ScalarProperty Name="OrderAmount" ColumnName="OrderAmount" />
+          <ScalarProperty Name="OrderRealAmount" ColumnName="OrderRealAmount" />
+          <ScalarProperty Name="CouponAmount" ColumnName="CouponAmount" />
+          <ScalarProperty Name="RefundAmount" ColumnName="RefundAmount" />
+          <ScalarProperty Name="PromotionAmount" ColumnName="PromotionAmount" />
+          <ScalarProperty Name="SellerAmount" ColumnName="SellerAmount" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SettleAccountsDetails1">
+      <EntityTypeMapping TypeName="IsTypeOf(YJBJ.SettleAccountsDetails1)">
+        <MappingFragment StoreEntitySet="SettleAccountsDetails1">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="SAId" ColumnName="SAId" />
+          <ScalarProperty Name="OrderId" ColumnName="OrderId" />
+          <ScalarProperty Name="OrderCode" ColumnName="OrderCode" />
+          <ScalarProperty Name="EsAppId" ColumnName="EsAppId" />
+          <ScalarProperty Name="EsAppName" ColumnName="EsAppName" />
+          <ScalarProperty Name="AppId" ColumnName="AppId" />
+          <ScalarProperty Name="AppName" ColumnName="AppName" />
+          <ScalarProperty Name="AppType" ColumnName="AppType" />
+          <ScalarProperty Name="OrderAmount" ColumnName="OrderAmount" />
+          <ScalarProperty Name="OrderRealAmount" ColumnName="OrderRealAmount" />
+          <ScalarProperty Name="OrderCouponAmount" ColumnName="OrderCouponAmount" />
+          <ScalarProperty Name="OrderRefundAmount" ColumnName="OrderRefundAmount" />
+          <ScalarProperty Name="PromotionAmount" ColumnName="PromotionAmount" />
+          <ScalarProperty Name="SellerAmount" ColumnName="SellerAmount" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="WeiXinBill">
+      <EntityTypeMapping TypeName="IsTypeOf(YJBJ.WeiXinBill)">
+        <MappingFragment StoreEntitySet="WeiXinBill">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="TradeDate" ColumnName="TradeDate" />
+          <ScalarProperty Name="TradeTime" ColumnName="TradeTime" />
+          <ScalarProperty Name="WeiXinAppId" ColumnName="WeiXinAppId" />
+          <ScalarProperty Name="MchId" ColumnName="MchId" />
+          <ScalarProperty Name="SubMchId" ColumnName="SubMchId" />
+          <ScalarProperty Name="DeviceInfo" ColumnName="DeviceInfo" />
+          <ScalarProperty Name="WeiXinOrderCode" ColumnName="WeiXinOrderCode" />
+          <ScalarProperty Name="TempId" ColumnName="TempId" />
+          <ScalarProperty Name="WeiXinUserId" ColumnName="WeiXinUserId" />
+          <ScalarProperty Name="TradeType" ColumnName="TradeType" />
+          <ScalarProperty Name="TradeState" ColumnName="TradeState" />
+          <ScalarProperty Name="Bank" ColumnName="Bank" />
+          <ScalarProperty Name="MoneyType" ColumnName="MoneyType" />
+          <ScalarProperty Name="PayMoney" ColumnName="PayMoney" />
+          <ScalarProperty Name="HongBaoMoney" ColumnName="HongBaoMoney" />
+          <ScalarProperty Name="WeiXinRefundOrderCode" ColumnName="WeiXinRefundOrderCode" />
+          <ScalarProperty Name="RefundTempId" ColumnName="RefundTempId" />
+          <ScalarProperty Name="RefundMoney" ColumnName="RefundMoney" />
+          <ScalarProperty Name="RefundHongBaoMoney" ColumnName="RefundHongBaoMoney" />
+          <ScalarProperty Name="RefundType" ColumnName="RefundType" />
+          <ScalarProperty Name="RefundState" ColumnName="RefundState" />
+          <ScalarProperty Name="CommodityName" ColumnName="CommodityName" />
+          <ScalarProperty Name="MchData" ColumnName="MchData" />
+          <ScalarProperty Name="Commission" ColumnName="Commission" />
+          <ScalarProperty Name="CommissionRate" ColumnName="CommissionRate" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="WeiXinBillSummary">
+      <EntityTypeMapping TypeName="IsTypeOf(YJBJ.WeiXinBillSummary)">
+        <MappingFragment StoreEntitySet="WeiXinBillSummary">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="WeiXinAppId" ColumnName="WeiXinAppId" />
+          <ScalarProperty Name="MchId" ColumnName="MchId" />
+          <ScalarProperty Name="TradeDate" ColumnName="TradeDate" />
+          <ScalarProperty Name="TradeTime" ColumnName="TradeTime" />
+          <ScalarProperty Name="TradeCount" ColumnName="TradeCount" />
+          <ScalarProperty Name="PayMoney" ColumnName="PayMoney" />
+          <ScalarProperty Name="RefundMoney" ColumnName="RefundMoney" />
+          <ScalarProperty Name="RefundHongBaoMoney" ColumnName="RefundHongBaoMoney" />
+          <ScalarProperty Name="Commission" ColumnName="Commission" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="AliPayBill">
+      <EntityTypeMapping TypeName="IsTypeOf(YJBJ.AliPayBill)">
+        <MappingFragment StoreEntitySet="AliPayBill">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="PId" ColumnName="PId" />
+          <ScalarProperty Name="TradeDate" ColumnName="TradeDate" />
+          <ScalarProperty Name="TradeTime" ColumnName="TradeTime" />
+          <ScalarProperty Name="AliPayTradeNo" ColumnName="AliPayTradeNo" />
+          <ScalarProperty Name="MerchantOrderCodeFull" ColumnName="MerchantOrderCodeFull" />
+          <ScalarProperty Name="MerchantOrderCode" ColumnName="MerchantOrderCode" />
+          <ScalarProperty Name="TradeState" ColumnName="TradeState" />
+          <ScalarProperty Name="CommodityName" ColumnName="CommodityName" />
+          <ScalarProperty Name="CreateTime" ColumnName="CreateTime" />
+          <ScalarProperty Name="CompleteTime" ColumnName="CompleteTime" />
+          <ScalarProperty Name="StoreCode" ColumnName="StoreCode" />
+          <ScalarProperty Name="StoreName" ColumnName="StoreName" />
+          <ScalarProperty Name="Operator" ColumnName="Operator" />
+          <ScalarProperty Name="TerminalNumber" ColumnName="TerminalNumber" />
+          <ScalarProperty Name="ReceiptAccount" ColumnName="ReceiptAccount" />
+          <ScalarProperty Name="OrderMoney" ColumnName="OrderMoney" />
+          <ScalarProperty Name="ReceiptMoney" ColumnName="ReceiptMoney" />
+          <ScalarProperty Name="HongBaoMoney" ColumnName="HongBaoMoney" />
+          <ScalarProperty Name="JiFenBaoMoney" ColumnName="JiFenBaoMoney" />
+          <ScalarProperty Name="AliPayDiscountMoney" ColumnName="AliPayDiscountMoney" />
+          <ScalarProperty Name="MerchantDiscountMoney" ColumnName="MerchantDiscountMoney" />
+          <ScalarProperty Name="QuanHeXiaoMoney" ColumnName="QuanHeXiaoMoney" />
+          <ScalarProperty Name="QuanName" ColumnName="QuanName" />
+          <ScalarProperty Name="MerchantHongBaoMoney" ColumnName="MerchantHongBaoMoney" />
+          <ScalarProperty Name="CardConsumptionMoney" ColumnName="CardConsumptionMoney" />
+          <ScalarProperty Name="AliPayRefundTradeNo" ColumnName="AliPayRefundTradeNo" />
+          <ScalarProperty Name="ServiceCharge" ColumnName="ServiceCharge" />
+          <ScalarProperty Name="FenRunMoney" ColumnName="FenRunMoney" />
+          <ScalarProperty Name="Remark" ColumnName="Remark" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="AliPayBillSummary">
+      <EntityTypeMapping TypeName="IsTypeOf(YJBJ.AliPayBillSummary)">
+        <MappingFragment StoreEntitySet="AliPayBillSummary">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="PId" ColumnName="PId" />
+          <ScalarProperty Name="TradeDate" ColumnName="TradeDate" />
+          <ScalarProperty Name="TradeTime" ColumnName="TradeTime" />
+          <ScalarProperty Name="StoreCode" ColumnName="StoreCode" />
+          <ScalarProperty Name="StoreName" ColumnName="StoreName" />
+          <ScalarProperty Name="PayCount" ColumnName="PayCount" />
+          <ScalarProperty Name="RefundCount" ColumnName="RefundCount" />
+          <ScalarProperty Name="TradeCount" ColumnName="TradeCount" />
+          <ScalarProperty Name="OrderMoney" ColumnName="OrderMoney" />
+          <ScalarProperty Name="ReceiptMoney" ColumnName="ReceiptMoney" />
+          <ScalarProperty Name="AliPayDiscountMoney" ColumnName="AliPayDiscountMoney" />
+          <ScalarProperty Name="MerchantDiscountMoney" ColumnName="MerchantDiscountMoney" />
+          <ScalarProperty Name="CardConsumptionMoney" ColumnName="CardConsumptionMoney" />
+          <ScalarProperty Name="ServiceCharge" ColumnName="ServiceCharge" />
+          <ScalarProperty Name="FenRunMoney" ColumnName="FenRunMoney" />
+          <ScalarProperty Name="ShiShouMoney" ColumnName="ShiShouMoney" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="OrderDiscount">
+      <EntityTypeMapping TypeName="IsTypeOf(YJBJ.OrderDiscount)">
+        <MappingFragment StoreEntitySet="OrderDiscount">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="OrderId" ColumnName="OrderId" />
+          <ScalarProperty Name="OrderCode" ColumnName="OrderCode" />
+          <ScalarProperty Name="EsAppId" ColumnName="EsAppId" />
+          <ScalarProperty Name="EsAppName" ColumnName="EsAppName" />
+          <ScalarProperty Name="AppId" ColumnName="AppId" />
+          <ScalarProperty Name="AppName" ColumnName="AppName" />
+          <ScalarProperty Name="AppType" ColumnName="AppType" />
+          <ScalarProperty Name="DiscountType" ColumnName="DiscountType" />
+          <ScalarProperty Name="DiscountMoney" ColumnName="DiscountMoney" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="CommodityDiscount">
+      <EntityTypeMapping TypeName="IsTypeOf(YJBJ.CommodityDiscount)">
+        <MappingFragment StoreEntitySet="CommodityDiscount">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="OrderId" ColumnName="OrderId" />
+          <ScalarProperty Name="OrderCode" ColumnName="OrderCode" />
+          <ScalarProperty Name="CommodityId" ColumnName="CommodityId" />
+          <ScalarProperty Name="EsAppId" ColumnName="EsAppId" />
+          <ScalarProperty Name="EsAppName" ColumnName="EsAppName" />
+          <ScalarProperty Name="AppId" ColumnName="AppId" />
+          <ScalarProperty Name="AppName" ColumnName="AppName" />
+          <ScalarProperty Name="AppType" ColumnName="AppType" />
+          <ScalarProperty Name="DiscountType" ColumnName="DiscountType" />
+          <ScalarProperty Name="DiscountMoney" ColumnName="DiscountMoney" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="UnionPayBill">
+      <EntityTypeMapping TypeName="IsTypeOf(YJBJ.UnionPayBill)">
+        <MappingFragment StoreEntitySet="UnionPayBill">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="TradeDate" ColumnName="TradeDate" />
+          <ScalarProperty Name="TradeTime" ColumnName="TradeTime" />
+          <ScalarProperty Name="TradeCode" ColumnName="TradeCode" />
+          <ScalarProperty Name="AcqInsCode" ColumnName="AcqInsCode" />
+          <ScalarProperty Name="SendInsCode" ColumnName="SendInsCode" />
+          <ScalarProperty Name="TraceNo" ColumnName="TraceNo" />
+          <ScalarProperty Name="TxnTime" ColumnName="TxnTime" />
+          <ScalarProperty Name="PayCardNo" ColumnName="PayCardNo" />
+          <ScalarProperty Name="TxnAmt" ColumnName="TxnAmt" />
+          <ScalarProperty Name="MerCatCode" ColumnName="MerCatCode" />
+          <ScalarProperty Name="TermType" ColumnName="TermType" />
+          <ScalarProperty Name="QueryId" ColumnName="QueryId" />
+          <ScalarProperty Name="PayCode" ColumnName="PayCode" />
+          <ScalarProperty Name="OrderId" ColumnName="OrderId" />
+          <ScalarProperty Name="OrderIdGuid" ColumnName="OrderIdGuid" />
+          <ScalarProperty Name="PayCardType" ColumnName="PayCardType" />
+          <ScalarProperty Name="OriginalTraceNo" ColumnName="OriginalTraceNo" />
+          <ScalarProperty Name="OriginalTxnTime" ColumnName="OriginalTxnTime" />
+          <ScalarProperty Name="Commission" ColumnName="Commission" />
+          <ScalarProperty Name="SettleMoney" ColumnName="SettleMoney" />
+          <ScalarProperty Name="PayType" ColumnName="PayType" />
+          <ScalarProperty Name="TxnType" ColumnName="TxnType" />
+          <ScalarProperty Name="BizType" ColumnName="BizType" />
+          <ScalarProperty Name="OrigQryId" ColumnName="OrigQryId" />
+          <ScalarProperty Name="MerId" ColumnName="MerId" />
+          <ScalarProperty Name="SubMerId" ColumnName="SubMerId" />
+          <ScalarProperty Name="SubMerMoney" ColumnName="SubMerMoney" />
+          <ScalarProperty Name="SettleNetAmount" ColumnName="SettleNetAmount" />
+          <ScalarProperty Name="TermId" ColumnName="TermId" />
+          <ScalarProperty Name="MerReserved" ColumnName="MerReserved" />
+          <ScalarProperty Name="DiscountMoney" ColumnName="DiscountMoney" />
+          <ScalarProperty Name="InvoiceMoney" ColumnName="InvoiceMoney" />
+          <ScalarProperty Name="InstallmentCommission" ColumnName="InstallmentCommission" />
+          <ScalarProperty Name="InstallmentCount" ColumnName="InstallmentCount" />
+          <ScalarProperty Name="OriOrderId" ColumnName="OriOrderId" />
+          <ScalarProperty Name="OriOrderIdGuid" ColumnName="OriOrderIdGuid" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="UnionPayBillSummary">
+      <EntityTypeMapping TypeName="IsTypeOf(YJBJ.UnionPayBillSummary)">
+        <MappingFragment StoreEntitySet="UnionPayBillSummary">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="TradeDate" ColumnName="TradeDate" />
+          <ScalarProperty Name="TradeTime" ColumnName="TradeTime" />
+          <ScalarProperty Name="TradeCount" ColumnName="TradeCount" />
+          <ScalarProperty Name="TxnAmtD" ColumnName="TxnAmtD" />
+          <ScalarProperty Name="TxnAmtC" ColumnName="TxnAmtC" />
+          <ScalarProperty Name="CommissionMoneyD" ColumnName="CommissionMoneyD" />
+          <ScalarProperty Name="CommissionMoneyC" ColumnName="CommissionMoneyC" />
+          <ScalarProperty Name="SettleMoneyD" ColumnName="SettleMoneyD" />
+          <ScalarProperty Name="SettleMoneyC" ColumnName="SettleMoneyC" />
+          <ScalarProperty Name="MerId" ColumnName="MerId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="JinCaiMoneySummary">
+      <EntityTypeMapping TypeName="IsTypeOf(YJBJ.JinCaiMoneySummary)">
+        <MappingFragment StoreEntitySet="JinCaiMoneySummary">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="TradeDate" ColumnName="TradeDate" />
+          <ScalarProperty Name="EsAppId" ColumnName="EsAppId" />
+          <ScalarProperty Name="EsAppName" ColumnName="EsAppName" />
+          <ScalarProperty Name="CustomerCode" ColumnName="CustomerCode" />
+          <ScalarProperty Name="CustomerName" ColumnName="CustomerName" />
+          <ScalarProperty Name="CustomerProperty" ColumnName="CustomerProperty" />
+          <ScalarProperty Name="AppId" ColumnName="AppId" />
+          <ScalarProperty Name="AppName" ColumnName="AppName" />
+          <ScalarProperty Name="AppType" ColumnName="AppType" />
+          <ScalarProperty Name="DeliveryType" ColumnName="DeliveryType" />
+          <ScalarProperty Name="OrderState" ColumnName="OrderState" />
+          <ScalarProperty Name="OrderCount" ColumnName="OrderCount" />
+          <ScalarProperty Name="ShouldMoney" ColumnName="ShouldMoney" />
+          <ScalarProperty Name="DiscountMoney" ColumnName="DiscountMoney" />
+          <ScalarProperty Name="PayMoney" ColumnName="PayMoney" />
+          <ScalarProperty Name="RefundMoney" ColumnName="RefundMoney" />
+          <ScalarProperty Name="FreightMoney" ColumnName="FreightMoney" />
+          <ScalarProperty Name="RefundFreightMoney" ColumnName="RefundFreightMoney" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping></edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="False" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams>
+      <Diagram Name="YJBJ" ZoomLevel="79">
+        <EntityTypeShape EntityType="YJBJ.MoneySummary" Width="1.875" PointX="0.5" PointY="8.5" Height="4.2622688802083335" />
+        <EntityTypeShape EntityType="YJBJ.DiscountSummary" Width="1.75" PointX="2.75" PointY="8.5" Height="3.4981901041666656" />
+        <EntityTypeShape EntityType="YJBJ.CommodityOrder1" Width="1.75" PointX="0.5" PointY="0.5" Height="4.2622688802083326" />
+        <EntityTypeShape EntityType="YJBJ.PayTransaction1" Width="2" PointX="2.5" PointY="0.5" Height="7.318583984375" />
+        <EntityTypeShape EntityType="YJBJ.OrderItem1" Width="1.875" PointX="4.75" PointY="0.5" Height="6.1724658203125" />
+        <EntityTypeShape EntityType="YJBJ.TaxSummary" Width="1.875" PointX="4.75" PointY="8.5" Height="3.8802294921874996" />
+        <EntityTypeShape EntityType="YJBJ.SettleAccounts1" Width="1.75" PointX="7" PointY="8.5" Height="4.0712491861979156" />
+        <EntityTypeShape EntityType="YJBJ.SettleAccountsDetails1" Width="2" PointX="9" PointY="8.5" Height="3.8802294921874996" />
+        <EntityTypeShape EntityType="YJBJ.WeiXinBill" Width="2.125" PointX="0.5" PointY="13.625" Height="5.9814461263020835" />
+        <EntityTypeShape EntityType="YJBJ.WeiXinBillSummary" Width="2" PointX="2.875" PointY="13.625" Height="2.9251310221354156" />
+        <EntityTypeShape EntityType="YJBJ.AliPayBill" Width="2.125" PointX="5.125" PointY="13.625" Height="6.7455249023437531" />
+        <EntityTypeShape EntityType="YJBJ.AliPayBillSummary" Width="2.125" PointX="7.5" PointY="13.625" Height="4.2622688802083335" />
+        <EntityTypeShape EntityType="YJBJ.OrderDiscount" PointX="6.875" PointY="0.5" Width="1.5" Height="2.9251310221354165" />
+        <EntityTypeShape EntityType="YJBJ.CommodityDiscount" Width="1.875" PointX="8.625" PointY="0.5" Height="3.1161507161458331" />
+        <EntityTypeShape EntityType="YJBJ.UnionPayBill" Width="2" PointX="9.875" PointY="13.625" Height="8.0826627604166674" />
+        <EntityTypeShape EntityType="YJBJ.UnionPayBillSummary" Width="2" PointX="12.125" PointY="13.625" Height="3.1161507161458335" />
+        <EntityTypeShape EntityType="YJBJ.JinCaiMoneySummary" Width="2" PointX="11.25" PointY="8.5" Height="4.6443082682291656" />
+      </Diagram>
+    </Diagrams>
+  </Designer>
+</edmx:Edmx>

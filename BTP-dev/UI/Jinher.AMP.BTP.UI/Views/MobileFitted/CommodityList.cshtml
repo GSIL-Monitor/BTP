@@ -1,0 +1,1061 @@
+﻿@using System.Web
+@model List<string[]>
+    @{
+        Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+        ViewBag.Title = "CommodityList";
+        bool isShowAddCart = ViewBag.ComListSetting.IsAddShopCartInComList;
+        int goodsDefaultFormat = ViewBag.ComListSetting.GoodsDefaultFormat;
+    }
+    @helper Currency()
+    {
+        @Jinher.AMP.BTP.UI.Util.MobileCookies.GetCurrency();
+    }
+    @section TitleHtml
+    {
+        <title>所有商品</title>
+    }
+    @section CssStyles{
+        <link href="/Content/Mobile/zphStyle/mobileKit-min.css" rel="stylesheet" type="text/css" />
+        <link rel="stylesheet" type="text/css" href="/Content/Mobile/zphStyle/skin.css" />
+        <link href="/Content/Mobile/zphStyle/icons.css" rel="stylesheet" type="text/css" />
+        <link rel="stylesheet" type="text/css" href="/Content/Mobile/zphStyle/goodsListSelect.css" />
+
+
+        <link rel="stylesheet" type="text/css" href="/Content/lbt/storeList.css" />
+        <link rel="stylesheet" href="/Content/lbt/shutter.css" />
+
+        <style type="text/css">
+            .item-photo {
+                width: 45vw;
+                height: 45vw;
+            }
+
+            .double-rowName {
+                font-size: 4vw;
+                color: black;
+                margin: 2vw;
+            }
+
+            .tag {
+                border: 1px solid red;
+                padding: 2px;
+                font-size: 4px;
+                margin-top: 3px;
+                margin-left: 2px;
+                color: red;
+            }
+
+
+            .notFind {
+                font-size: 14px;
+                text-align: center;
+                vertical-align: middle;
+                margin-top: 200px;
+            }
+
+            .sortColor {
+                color: #8b8b8b;
+            }
+
+            #doubleSingle .i-more {
+                padding: 0;
+                top: 4px;
+                font-size: 1.1rem;
+            }
+
+            #doubleSingle .i-class {
+                padding: 0;
+                top: 4px;
+                font-size: 1.3rem;
+            }
+
+            .bar-item {
+                vertical-align: middle;
+            }
+
+            #scroller1 .u-presale-list .item .ghcDot .shopping-cart {
+                color: #ff0054;
+                width: 24px;
+                height: 24px;
+                line-height: 22px;
+                text-align: center;
+                border: 1px solid #ff0054;
+                border-radius: 50%;
+                font-size: 12.8px;
+                background: #ffe5ee;
+            }
+
+            #scroller2 .u-presale-list .item .ghcDot1 .shopping-cart {
+                color: #ff0054;
+                width: 24px;
+                height: 24px;
+                line-height: 22px;
+                text-align: center;
+                border: 1px solid #ff0054;
+                border-radius: 50%;
+                font-size: 12.8px;
+                background: #ffe5ee;
+                float: right;
+            }
+
+            .marketPrice {
+                margin: 8px 0 7px 0;
+                padding: 0 10px;
+                line-height: 9px;
+                font-size: 9px;
+                color: #b3b3b3;
+                text-decoration: line-through;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+
+        </style>
+    }
+    @section ClientScript
+    {
+        <script src="/Scripts/CommLib.js" type="text/javascript"></script>
+        <script src="/Content/Mobile/fly.js" type="text/javascript"></script>
+
+        <script src="/Content/lbt/storeList.js"></script>
+        @*<script src="http://www.jq22.com/jquery/jquery-1.10.2.js"></script>
+            <script src="/Content/lbt/velocity.js"></script>
+             <script src="/Content/lbt/shutter.js"></script>
+             <script>
+                 $(function () {
+                     $('.shutter').shutter({
+                         shutterW: 1000, // 容器宽度
+                         shutterH: 358, // 容器高度
+                         isAutoPlay: true, // 是否自动播放
+                         playInterval: 1000, // 自动播放时间
+                         curDisplay: 3, // 当前显示页
+                         fullPage: false // 是否全屏展示
+                     });
+                 });
+             </script>*@
+
+        @Html.Raw(@Jinher.AMP.BTP.UI.Util.WebUtil.GetBehaviorRecordJs())
+        <script type="text/javascript">
+
+        //全局参数设置
+        var service_type = "0x0001";
+        var _source = "";
+        var _productType = "";
+        var _appId = getQueryString("shopId");
+
+        var _doubleSingle = @goodsDefaultFormat; //0 double; 1 single
+        //多属性选择结果
+        var _masSelectedResult = new Object();
+        //当前点击的商品项的Item的根节点。
+        var _commodityItemRootElement = null;
+        var _commodityDobleTemplete = "";
+        var _commoditySingleTemplete = "";
+        var _productImg = '<img src="{0}" alt="{1}" />';
+        var _commodityListData = [];
+        //购买数量，直接加入购物车，数量为1
+        var _span_number = 1;
+        var _pageIndex = 1;
+        var _pageSize = 20;
+        var _rowCount = 0;
+        var _isLastPage = false;
+        var _isHasStock = false;
+        var _minPrice = null;
+        var _maxPrice = null;
+        var _fieldSort = 0;
+        var _orderState = 0;
+        var _searchData = {};
+        _searchData.AppId = _appId;
+        _searchData.areaCode = areaCode;
+
+        var scroller;
+        var scroller2;
+        //以下为sessionStorage设置
+        var srcType = getQueryString('SrcType');
+        if (srcType != undefined && srcType != "" && srcType != "null" && srcType != null && srcType != "undefined") {
+            sessionStorage.SrcType = getQueryString('SrcType');
+        }
+        var srcTagId = getQueryString('SrcTagId');
+        if (srcTagId != undefined && srcTagId != "" && srcTagId != "null" && srcTagId != null && srcTagId != "undefined") {
+            sessionStorage.SrcTagId = getQueryString('SrcTagId');
+        }
+        var cpsId = getQueryString('CPSId');
+        if (cpsId != undefined && cpsId != "" && cpsId != "null" && cpsId != null && cpsId != "undefined") {
+            sessionStorage.CPSId = getQueryString('CPSId');
+        }
+
+        if (getQueryString('isStart') == 0) {
+            toast("亲，活动还未开始哦~");
+        }
+        var areaCode = "";
+        if ((sessionStorage.ProductType == "appcjzy" || sessionStorage.ProductType == "webcjzy") && JsVilaDataNull(getCookie("selectCityCode"))) {
+            areaCode = getCookie("selectCityCode") || '';
+        }
+        if (!sessionStorage.appId || sessionStorage.appId == "null" || sessionStorage.appId == "undefined") {
+            sessionStorage.appId = sessionStorage.appIdCong;
+        }
+        if (sessionStorage.appId && sessionStorage.appId != "undefined" && sessionStorage.appId != "null") {
+        } else {
+            sessionStorage.appId = getQueryString('shopId') || appId;
+        }
+        if (isInJhApp()) { //在应用内
+            _source = "internal";
+            _productType = "appcjzy";
+        } else { //应用外
+            _source = "share";
+            _productType = "webcjzy";
+        }
+        sessionStorage.source = _source;
+        sessionStorage.ProductType = _productType;
+        var lbtIndex = 0;
+        $(function () {
+            setInterval(function () {
+                lbtIndex++;
+                if (lbtIndex >= $(".shutter a").length)
+                    lbtIndex = 0;
+                $(".shutter a").eq(lbtIndex)
+                    .animate({ opacity: 1 }, 700, 'ease-out').siblings()
+                    .animate({ opacity: 0 }, 700, 'ease-out');
+
+
+            }, 3000);
+            saveContextDTOByUrl();
+            var tmpDoubleSingle = getCookie("dobluesingle");
+            if (JsVilaDataNull(tmpDoubleSingle)) {
+                if (tmpDoubleSingle === "1") {
+                    _doubleSingle = 1;
+                } else {
+                    _doubleSingle = 0;
+                }
+            }
+
+            if (_doubleSingle == 0) {
+                var item = $("#doubleSingle").children("i");
+                item.removeClass("i-more").addClass("i-class");
+                $("#scroller2").hide();
+                $("#scroller1").show();
+            } else {
+                var item = $("#doubleSingle").children("i");
+                $("#doubleSingle").children("img").attr("src", "/Content/Mobile/zphStyle/images/tolist.png");
+                item.removeClass("i-class").addClass("i-more");
+                $("#scroller1").hide();
+                $("#scroller2").show();
+            }
+                _commodityDobleTemplete = '<li class="more-recommend-list">'+ $("#commodityDobleTemplete").html()+'</li>';
+            _commoditySingleTemplete = $("#commoditySingleTemplete").html();
+
+            //滚动加载
+            scroller = $('#scroller1').scrollLoad({
+//                loadDownFn: function (me) { //下拉加载数据
+//                    if (!_isLastPage) {
+//                        GetData1();
+//                    } else {
+//                        scroller.setScrollLoad('disableBottom');
+//                    }
+//                    /*在这添加数据*/
+//                    me.resetload();
+//                },
+                loadUpFn: function(me) { //上拉刷新
+                    _pageIndex = 1;
+                    _isLastPage = false;
+                    GetData1();
+                    me.resetload();
+                }
+            });
+            $(window).endlessScroll({
+                direction: 'portrait', //默认为portrait
+                scrollAjax: false,
+                content: function(me) {
+                    if (!_isLastPage) {
+                        GetData1();
+                    }
+                }
+            });
+            //滚动加载
+            scroller2 = $('#scroller2').scrollLoad({
+                loadDownFn: function(me) { //下拉加载数据
+                    if (!_isLastPage) {
+                        GetData1();
+                    }
+                    /*在这添加数据*/
+                    me.resetload();
+                },
+                loadUpFn: function(me) { //上拉刷新
+                    _pageIndex = 1;
+                    _isLastPage = false;
+                    GetData1();
+                    me.resetload();
+                }
+            });
+//            $('#scroller2').endlessScroll({
+//                direction: 'portrait', //默认为portrait
+//                scrollAjax: false,
+//                content: function (me) {
+//                    if (!_isLastPage) {
+//                        GetData1();
+//                    }
+//                }
+//            });
+            //加载一级
+            GetData1();
+            $("#doubleSingle").click();
+            //登录事件
+            if (DealLoginPartial) {
+                //设置登录成功之后回调函数
+                DealLoginPartial.setCallback(function() {
+                    //toast("登录成功！");
+                    AddToCart();
+                });
+            }
+
+            //商品属性选择子页面发送通知使用。
+            window.addEventListener('message', function(e) {
+                var data = e.data;
+                //恢复窗口的滚动条。
+                $("body").css("overflow-y", "auto");
+                if (data == "close") {
+                    $("#divMasRoot").hide();
+                } else if (data.alertMessage) {
+                    $("#divMasRoot").hide();
+                    if (data.Message) {
+                        toast(data.Message);
+                    }
+
+                }
+            }, false);
+
+            //以下为排序用
+            $("#defaultSort").on("click", function() {
+                _pageIndex = 1;
+                _fieldSort = 0;
+                _orderState = 0;
+                GetData1();
+            });
+            $("#salesSort").on("click", function() {
+                _pageIndex = 1;
+                _fieldSort = 2;
+                _orderState = 0;
+                GetData1();
+            });
+            $("#priceSort").on("click", function() {
+                _pageIndex = 1;
+                _fieldSort = 1;
+                var itemDown = $(".fa-caret-down");
+                var itemUp = $(".fa-caret-up");
+                if (itemDown.hasClass("no-active")) {
+                    itemDown.removeClass("no-active");
+                    itemUp.addClass("no-active");
+                    _orderState = 0;
+                } else {
+                    itemUp.removeClass("no-active");
+                    itemDown.addClass("no-active");
+                    _orderState = 1;
+                }
+                GetData1();
+            });
+            $("#sureBtn").on("click", function() {
+                _pageIndex = 1;
+                setTimeout(function() {
+                    if ($("#isHasStockSort").is(".active")) {
+                        _isHasStock = true;
+                    } else {
+                        _isHasStock = false;
+                    }
+                    var tmpMin = $("#minPriceSort").val();
+                    if (tmpMin != "") {
+                        _minPrice = tmpMin;
+                    } else {
+                        _minPrice = null;
+                    }
+                    var tmpMax = $("#maxPriceSort").val();
+                    if (tmpMax != "") {
+                        _maxPrice = tmpMax;
+                    } else {
+                        _maxPrice = null;
+                    }
+                    if (!_isHasStock && _minPrice == null && _maxPrice == null) {
+                        $("#panel-select-a").removeClass("active");
+                    } else {
+                        $("#panel-select-a").addClass("active");
+                    }
+                    GetData1();
+                }, 100);
+            });
+            $("#canelBtn").on("click", function() {
+                if (_isHasStock) {
+                    if ($("#isHasStockSort").is(".active")) {
+                        //
+                    } else {
+                        $("#isHasStockSort").addClass("active");
+                    }
+                } else {
+                    $("#isHasStockSort").removeClass("active");
+                }
+                if (_minPrice === null) {
+                    $("#minPriceSort").val("");
+                } else {
+                    $("#minPriceSort").val(_minPrice);
+                }
+                if (_maxPrice === null) {
+                    $("#maxPriceSort").val("");
+                } else {
+                    $("#maxPriceSort").val(_maxPrice);
+                }
+            });
+            $("#minPriceSort").on("keyup", function() {
+                this.value = this.value.replace(/\D/g, '');
+            });
+            $("#maxPriceSort").on("keyup", function() {
+                this.value = this.value.replace(/\D/g, '');
+            });
+        });
+        //显示 商品属性选择框。
+
+        function showMasIframe(operType, commodityId) {
+            document.getElementById("iframeMas").contentWindow.postMessage({ commodityId: commodityId, operType: operType, needDoTask: 1 }, "*");
+            $("#iframeMas").width($(document).width());
+            $("#iframeMas").height($(document).height());
+            $("#divMasRoot").show();
+        }
+
+//点击进入商品详情
+
+        function gotoCommodityDetail(obj) {
+            window.location.href = urlAppendCommonParams('/Mobile/CommodityDetail?commodityId=' + $(obj).attr("data-id") + '&shopId=' + _appId);
+        }
+
+//点击单双列，显示单双列
+
+        function changeDoblueSingle(obj) {
+            var item = $(obj).children("img");
+            if (false)//(item.attr("src").indexOf("to2vertical") > -1)
+            {
+                item.attr("src", "/Content/Mobile/zphStyle/images/tolist.png");
+                $("#scroller1").hide();
+                $("#scroller2").show();
+                setSessionCookie("dobluesingle", "1");
+                _doubleSingle = 1;
+            }
+            else
+            {
+                item.attr("src", "/Content/Mobile/zphStyle/images/to2vertical.png");
+                $("#scroller2").hide();
+                $("#scroller1").show();
+                setSessionCookie("dobluesingle", "0");
+                _doubleSingle = 0;
+            }
+        }
+
+//清除
+
+        function clearCondition() {
+            $("#isHasStockSort").removeClass("active");
+            $("#minPriceSort").val("");
+            $("#maxPriceSort").val("");
+            if (_isHasStock == false && _minPrice === null && _maxPrice === null) {
+                return;
+            }
+            _isHasStock = false;
+            _minPrice = null;
+            _maxPrice = null;
+            _pageIndex = 1;
+            $("#panel-select-a").removeClass("active");
+            GetData1();
+        }
+
+
+
+          
+
+        function GetData1() {
+            _searchData.PageIndex = _pageIndex;
+            _searchData.PageSize = _pageSize;
+            //_searchData.CategoryId='00000000-0000-0000-0000-000000000000';
+            _searchData.IsHasStock = _isHasStock;
+            _searchData.MinPrice = _minPrice;
+            _searchData.MaxPrice = _maxPrice;
+            _searchData.FieldSort = _fieldSort;
+            //_searchData.SortedColName = "";
+            _searchData.OrderState = _orderState; //默认
+            _searchData.CouponType = 1;
+            var couponTemplateId = getQueryString('couponTemplateId');
+            var type = getQueryString('couponTemplateId');
+            var coupontype1 = getQueryString('coupontype');
+            var UserId = getQueryString('UserId');
+            @if (ViewBag.IsYJCoupon)
+            {
+                <text>
+                _searchData.CouponTemplateId = '@ViewBag.YJCouponId';
+                _searchData.CouponType = 2;
+                couponTemplateId = '@ViewBag.YJCouponId';
+                </text>
+            }
+
+            if (coupontype1 == 4) {
+                _searchData.UserId = UserId;
+                _searchData.CouponTemplateId = couponTemplateId;
+                var subData = JSON.stringify(_searchData);
+                GetCommodityListV2(subData);
+
+            }
+            else {
+                if (couponTemplateId == null) {
+                    var subData = JSON.stringify(_searchData);
+                    GetCommodityListV2(subData);
+                } else {
+                    _searchData.CouponTemplateId = couponTemplateId;
+
+                    var subData = JSON.stringify(_searchData);
+                    GetCommodityListV2ForCoupon(subData);
+                }
+            }
+        }
+
+        function GetCommodityListV2ForCoupon(subData) {
+            getDataAjax2({
+                url: '@(ViewBag.IsYJCoupon ? "/Mobile/GetCommodityListV2ForYJCoupon" : "/Mobile/GetCommodityListV2ForCoupon")',
+                type: 'post',
+                async: true,
+                dataType: "json",
+                contentType: "application/json",
+                data: subData,
+                error: function() {
+                    $("#ajaxLoadBlind").remove();
+                },
+                callback: function(msg) {
+                    $("#ajaxLoadBlind").remove();
+                    if (!msg || !msg.isSuccess) {
+                        toast(msg.Message);
+                        return;
+                    }
+                    var dataList = msg.comdtyList;
+                    if (!dataList || dataList.length == 0) {
+                        if (_pageIndex == 1) {
+                            $("#commodityListGrid").html("");
+                            $("#commodityListGrid2").html("");
+                            $("#hasNoContent").show();
+                            $("#hasNoMore").hide();
+                            _commodityListData = [];
+                        } else {
+                            _isLastPage = true;
+                            scroller.setScrollLoad('disableBottom');
+                            scroller2.setScrollLoad('disableBottom');
+                            if (_pageIndex == 1 && (!dataList || dataList.length == 0)) {
+                                $("#hasNoMore").hide();
+                            } else {
+                                $("#hasNoMore").show();
+                            }
+                        }
+                        return;
+                    }
+                    //第一页需要清空之前数据
+                    if (_pageIndex == 1) {
+                        $("#commodityListGrid").html("");
+                        $("#commodityListGrid2").html("");
+                        $("#hasNoContent").hide();
+                        $("#hasNoMore").hide();
+                        _commodityListData = [];
+                    }
+                    var htmlList = "";
+                    var htmlList2 = "";
+                    for (var i = 0; i < dataList.length; i++) {
+                        var itemData = dataList[i];
+                        itemData.gImage = _productImg.format(itemData.Pic, itemData.Name);
+                        itemData.gDescription = "";
+                        itemData.gDescriptionHide = "";
+
+                        for (let c = 0; c < 4; c++)
+                            itemData["tag" + c.toString()] = '';
+
+                        for (let c = 0; c < itemData.Tags.length; c++)
+                            itemData["tag" + c.toString()] = '<div class="list-tips" style="display:inline-block"><span>' + itemData.Tags[c] + '</span></div>';
+
+                        itemData.gPrice1 = 0;
+                        itemData.gPrice2 = 0;
+                        itemData.gPrice2Hide = "";
+                        itemData.gPromotionDes = "";
+                        itemData.gPromotionDesHide = "";
+                        itemData.gShoppingCartHide = "";
+
+                        var isPromtion = false;
+                        if (itemData.DiscountPrice > 0) {
+                            itemData.gPrice1 = Math.abs(itemData.DiscountPrice).toFixed(2);
+                            itemData.gPrice2 = itemData.Price;
+                            //itemData.gPromotionDes = "优惠价";
+                            isPromtion = true;
+                        } else {
+                            if (itemData.Intensity == 10) {
+                                itemData.gPrice1 = itemData.Price;
+                                if (itemData.MarketPrice && itemData.MarketPrice != null && itemData.MarketPrice != 'null') {
+                                    itemData.gPrice2 = itemData.MarketPrice;
+                                } else {
+                                    itemData.gPrice2Hide = "hide";
+                                }
+                            } else {
+                                itemData.gPrice1 = Math.abs(itemData.Price * (itemData.Intensity / 10)).toFixed(2);
+                                itemData.gPrice2 = itemData.Price;
+                                //itemData.gPromotionDes = itemData.Intensity + "折";
+                                isPromtion = true;
+                            }
+                        }
+                        //优惠价与折扣不显示
+                        itemData.gPromotionDesHide = "hide";
+
+                        if (!isPromtion) {
+                            itemData.gPromotionDesHide = "hide";
+                        }
+                        if (itemData.PromotionType == 1 || itemData.PromotionType == 2) {
+                            itemData.gShoppingCartHide = "hide";
+                        }
+                        if (itemData.Stock <= 0) {
+                            itemData.gDescription = "已售完";
+                            itemData.gShoppingCartHide = "hide";
+                        } else {
+                            itemData.gDescriptionHide = "hide";
+                        }
+                        if (!ArrayContains(_commodityListData, itemData)) {
+                            _commodityListData.push(itemData);
+                            htmlList = htmlList + _commodityDobleTemplete.format(itemData);
+                            htmlList2 = htmlList2 + _commoditySingleTemplete.format(itemData);
+                        }
+                    }
+                    //_commodityListData = _commodityListData.concat(dataList);
+                    $("#commodityListGrid").append(htmlList);
+                    $("#commodityListGrid2").append(htmlList2);
+
+                    if (dataList != null && dataList.length > 0) {
+                        if (dataList.length < _pageSize) {
+                            _isLastPage = true;
+                        }
+                    } else {
+                        _isLastPage = true;
+                    }
+                    if (_isLastPage) {
+                        scroller.setScrollLoad('disableBottom');
+                        scroller2.setScrollLoad('disableBottom');
+                        if (_pageIndex == 1 && (!dataList || dataList.length == 0)) {
+                            $("#hasNoMore").hide();
+                        } else {
+                            $("#hasNoMore").show();
+                        }
+                    } else {
+                        scroller.setScrollLoad('enableBottom');
+                        scroller2.setScrollLoad('enableBottom');
+                        $("#hasNoMore").hide();
+                    }
+                    _pageIndex++;
+                },
+                beforeSend: function() {
+                    ajaxLoading('1', '');
+                }
+            });
+
+            }
+
+
+
+
+        function GetCommodityListV2(subData) {
+            getDataAjax2({
+                url: '/Mobile/GetCommodityListV3',
+                type: 'post',
+                async: true,
+                dataType: "json",
+                contentType: "application/json",
+                data: subData,
+                error: function() {
+                    $("#ajaxLoadBlind").remove();
+                },
+                callback: function(msg) {
+                    $("#ajaxLoadBlind").remove();
+                    if (!msg || !msg.isSuccess) {
+                        toast(msg.Message);
+                        return;
+                    }
+                    $("#AppName").text(msg.appInfoList[0].appName);
+                    //轮播图的显示
+                    if (msg.LBList != null) {
+                        if (msg.LBList.List.length > 0) {
+                            var str = "";
+                            for (var i = 0; i < msg.LBList.List.length; i++) {
+                                str += "<a href='" + msg.LBList.List[i].LinkUrl + "' style='position:absolute;display:block;width:100%;height:100%;background-size: cover;background-size:100% 100%; background-image:url(" + msg.LBList.List[i].ImageUrl + ")'></a>";
+                            }
+                            $(".shutter").append(str);
+                            $(".shutter").show();
+                        }
+                        else {
+                            $(".shutter").hide();
+                        }
+
+                    }
+
+                    //直播的显示
+                    if (msg.LiveActivity != null) {
+                        $(".direct-seeding").show();
+                        var str = "<img class='direct-img' src='" + msg.LiveActivity.AppIcon + "' alt='' /><div class='direct-text'><h4>" + msg.LiveActivity.AppName + "</h4><p>" + msg.LiveActivity.LiveName + "</p></div>";
+                        $(".direct-seeding").append(str);
+                    }
+                    else {
+                        $(".direct-seeding").hide();
+                    }
+
+                    var dataList = msg.comdtyList;
+                    if (!dataList || dataList.length == 0) {
+                        if (_pageIndex == 1) {
+                            $("#commodityListGrid").html("");
+                            $("#commodityListGrid2").html("");
+                            $("#hasNoContent").show();
+                            $("#hasNoMore").hide();
+                            _commodityListData = [];
+                        } else {
+                            _isLastPage = true;
+                            scroller.setScrollLoad('disableBottom');
+                            scroller2.setScrollLoad('disableBottom');
+                            if (_pageIndex == 1 && (!dataList || dataList.length == 0)) {
+                                $("#hasNoMore").hide();
+                            } else {
+                                $("#hasNoMore").show();
+                            }
+                        }
+                        return;
+                    }
+                    //第一页需要清空之前数据
+                    if (_pageIndex == 1) {
+                        $("#commodityListGrid").html("");
+                        $("#commodityListGrid2").html("");
+                        $("#hasNoContent").hide();
+                        $("#hasNoMore").hide();
+                        _commodityListData = [];
+                    }
+                    var htmlList = "";
+                    var htmlList2 = "";
+                    for (var i = 0; i < dataList.length; i++) {
+                        var itemData = dataList[i];
+                        itemData.gImage = _productImg.format(itemData.Pic, itemData.Name);
+                        itemData.gDescription = "";
+                        itemData.gDescriptionHide = "";
+                        itemData.gPrice1 = 0;
+                        itemData.gPrice2 = 0;
+                        itemData.gPrice2Hide = "";
+                        itemData.gPromotionDes = "";
+                        itemData.gPromotionDesHide = "";
+                        itemData.gShoppingCartHide = "";
+                        console.log(itemData.Tags);
+
+                        for (let c = 0; c < 4; c++)
+                            itemData["tag" + c.toString()] = '';
+                        //for (let c = 0; c < itemData.Tags.length; c++)
+                        //    itemData["tag" + c.toString()] = '<span class="tag">' + itemData.Tags[c] + '</span>';
+                        for (let c = 0; c < itemData.Tags.length; c++)
+                            itemData["tag" + c.toString()] = '<div class="list-tips" style="display:inline-block"><span>' + itemData.Tags[c] + '</span></div>';
+
+
+                        var isPromtion = false;
+                        if (itemData.DiscountPrice > 0) {
+                            itemData.gPrice1 = Math.abs(itemData.DiscountPrice).toFixed(2);
+                            itemData.gPrice2 = itemData.Price;
+                            //itemData.gPromotionDes = "优惠价";
+                            isPromtion = true;
+                        } else {
+                            if (itemData.Intensity == 10) {
+                                itemData.gPrice1 = itemData.Price;
+                                if (itemData.MarketPrice && itemData.MarketPrice != null && itemData.MarketPrice != 'null') {
+                                    itemData.gPrice2 = itemData.MarketPrice;
+                                } else {
+                                    itemData.gPrice2Hide = "hide";
+                                }
+                            } else {
+                                itemData.gPrice1 = Math.abs(itemData.Price * (itemData.Intensity / 10)).toFixed(2);
+                                itemData.gPrice2 = itemData.Price;
+                                //itemData.gPromotionDes = itemData.Intensity + "折";
+                                isPromtion = true;
+                            }
+                        }
+                        //优惠价与折扣不显示
+                        itemData.gPromotionDesHide = "hide";
+
+                        if (!isPromtion) {
+                            itemData.gPromotionDesHide = "hide";
+                        }
+                        if (itemData.PromotionType == 1 || itemData.PromotionType == 2) {
+                            itemData.gShoppingCartHide = "hide";
+                        }
+                        if (itemData.Stock <= 0) {
+                            itemData.gDescription = "已售完";
+                            itemData.gShoppingCartHide = "hide";
+                        } else {
+                            itemData.gDescriptionHide = "hide";
+                        }
+                        if (!ArrayContains(_commodityListData, itemData)) {
+                            _commodityListData.push(itemData);
+                            htmlList = htmlList + _commodityDobleTemplete.format(itemData);
+                            htmlList2 = htmlList2 + _commoditySingleTemplete.format(itemData);
+                        }
+                    }
+                    //_commodityListData = _commodityListData.concat(dataList);
+                    $("#commodityListGrid").append(htmlList);
+                    $("#commodityListGrid2").append(htmlList2);
+
+                    if (dataList != null && dataList.length > 0) {
+                        if (dataList.length < _pageSize) {
+                            _isLastPage = true;
+                        }
+                    } else {
+                        _isLastPage = true;
+                    }
+                    if (_isLastPage) {
+                        scroller.setScrollLoad('disableBottom');
+                        scroller2.setScrollLoad('disableBottom');
+                        if (_pageIndex == 1 && (!dataList || dataList.length == 0)) {
+                            $("#hasNoMore").hide();
+                        } else {
+                            $("#hasNoMore").show();
+                        }
+                    } else {
+                        scroller.setScrollLoad('enableBottom');
+                        scroller2.setScrollLoad('enableBottom');
+                        $("#hasNoMore").hide();
+                    }
+                    _pageIndex++;
+                },
+                beforeSend: function() {
+                    ajaxLoading('1', '');
+                }
+            });
+        }
+
+///////////添加购物车/////////////////////////////////
+
+        function addShoppingCart(obj) {
+            if (event.stopPropagation) {
+                event.stopPropagation();
+            } else {
+                event.cancelBubble = true;
+            }
+            _commodityItemRootElement = $(obj).parents(".item");
+            DealLoginPartial.initPartialPage();
+        }
+
+        function AddToCart() {
+            if (_commodityItemRootElement == null) {
+                return;
+            }
+
+            var commodityId = _commodityItemRootElement.data("id");
+            var commodityInfo = _commodityListData.GetFirstElement("Id", commodityId);
+
+            //无属性商品取商品直接保存到购物车
+            if (commodityInfo.ComAttrType == 1) {
+                var shopCartData = {
+                    CommodityId: commodityId,         //商品ID
+                    CommodityNumber: 1, //商品数量固定传1
+                    SizeAndColorId: ',', //尺寸颜色固定传 ','
+                    UserId: getUserId(),  //用户Id
+                    AppId: commodityInfo.AppId,   //商品所在app的appid
+                    CommodityStockId: null, //商品库存项Id
+                    EsAppId: getEsAppId()    //esappid
+                };
+                document.getElementById("iframeMas").contentWindow.postMessage({ commodityId: commodityId, operType: 4, shopCartData: shopCartData }, "*");
+
+            } else {
+                showMasIframe(1, commodityId);
+            }
+        }
+
+        function ArrayContains(arr, val) {
+            for (var i = 0; i < arr.length; i++) {
+                if (arr[i].Id === val.Id) {
+                    return true;
+                }
+            }
+        }
+
+        </script>
+    }
+    <header class="nav-header">
+        <div class="back"></div>
+        <h1 id="AppName"></h1>
+        <a href="javascript:void(0);" class="collBtn">收藏</a>
+    </header>
+
+    <div class="shutter" style="position:relative;height:300px">
+
+    </div>
+
+    <div id="box" class="page">
+        <nav class="bar bar-header-secondary" style="display:none">
+            <a href="javascript:;" class="sort bar-item active" id="defaultSort">默认</a>
+            <a href="javascript:;" class="sort bar-item" id="salesSort">销量</a>
+            <a href="javascript:;" class="sort bar-item" id="priceSort">
+                <div class="clearfix">
+                    <div class="price-word pull-left">价格</div>
+                    <div class="price-icon pull-left"><i class="fa fa-caret-up no-active"></i><i class="fa fa-caret-down"></i></div>
+                </div>
+            </a>
+            <a href="javascript:;" class="bar-item" data-toggle="panel-select" data-target="panel-select" id="panel-select-a">筛选<i class="i-filter"></i></a>
+            <a href="javascript:void(0)" class="bar-item" onclick="changeDoblueSingle(this)" id="doubleSingle"><img src="/Content/Mobile/zphStyle/images/to2vertical.png" alt=""></a>
+        </nav>
+
+        <div class="direct-seeding">
+
+        </div>
+
+        <div class="content" style="padding-top:0px;background-color:white">
+            <div id="hasNoContent" class="item text-center" style="display: none; padding: 10px; font-size: .25rem; color: #969696;"> 没有找到相关的商品~</div>
+            <div id="scroller1" class="scroll-load">
+                <section class="more-recommend-wrap">
+                    <ul class="more-recommend-lists" id="commodityListGrid"></ul>
+                </section>
+            </div>
+            <div id="scroller2" class="scroll-load" style="display: none;">
+                <div class="u-presale-list" id="commodityListGrid2"></div>
+            </div>
+            <div id="hasNoMore" class="item text-center" style="display: none; padding: 10px;  font-size: .25rem; color: #969696;"> 已经看到最后一页啦~</div>
+            <a href="javascript:void(0);" class="icon i-carts fixed-shopping-cart hide"></a>
+            <!--侧边栏-->
+            <div class="panel-overlay"></div>
+
+        </div>
+    </div>
+    <div id="divMasRoot" style="position: fixed; bottom: -5px; z-index: 210; display: none;">
+        <iframe id="iframeMas" src="/Mobile/MultiAttributeSelector@("?appId=" + Request["appId"])" style="border: 0;"></iframe>
+    </div>
+    <ul style="display: none;">
+        <li class="more-recommend-list" id="commodityDobleTemplete" style="display: none;">
+            <a href="javascript: void(0);" class="item" data-id="{Id}" onclick="gotoCommodityDetail(this)">
+                <div class="pic">{gImage}</div>
+                {tag0}{tag1}{tag2}{tag3}
+                @*<div class="list-tips"><span>赠油卡19.90元</span></div>*@
+                <div class="title">{Name}</div>
+                <div class="price">￥<span class="num">{gPrice1}</span>  <span class="marketPrice">￥{gPrice2}</span></div>
+                
+            </a>
+        </li>
+
+    </ul>
+    <div id="commoditySingleTemplete" style="display: none;">
+        <a href="javascript:void(0)" class="item" data-id="{Id}" onclick="gotoCommodityDetail(this)">
+            <div class="media-photo">
+                {gImage}
+                <div class="shadow {gDescriptionHide}">
+                    {gDescription}
+                </div>
+            </div>
+            <div class="media-body">
+                <div class="didi1" style="height: 0;"></div>
+                <div class="item-info" title="{Name}">{Name}</div>
+                <div class="item-buying clearfix" style="display: none;">
+                    <div class="item-price pull-left">
+                        <span class="present">@Currency() {gPrice1}</span> <del class="{gPrice2Hide}">@Currency() {gPrice2}</del>
+                        <div class="freight hide"></div>
+                    </div>
+                    @if (isShowAddCart)
+                    {
+                        <span class="icon i-carts shopping-cart pull-right {gShoppingCartHide}" onclick=" addShoppingCart(this) ">
+                        </span>
+                    }
+                </div>
+                <div class="ghcDot1" style="display:block;margin-top: 10px; height: 28px;position: relative;">
+                    <div style="word-break: break-all;overflow: hidden;white-space: nowrap;text-overflow: ellipsis; width:91%;float: left; vertical-align: bottom;padding-right: 2px;vertical-align: middle;">
+                        <span class="ghcPrice11" style=" font-family: sans-serif;font-size: 16px;white-space: nowrap;">@Currency() {gPrice1}</span><del class="ghcPrice12 {gPrice2Hide}" style="font-family: sans-serif;font-size: 12.8px; margin-left:5px; margin-right: 2px; " title="@Currency() {gPrice2}">@Currency() {gPrice2}</del>
+                    </div>
+                    @if (isShowAddCart)
+                    {<div class="{gShoppingCartHide}" style="word-break: keep-all;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;width:91%; float: right;vertical-align: top;">
+                            <span class="ghcPrice13 icon i-carts shopping-cart  {gShoppingCartHide}" onclick="addShoppingCart(this)" style="width: 24px;white-space: nowrap;;font-size: 19.2px; position: absolute; top:0; right: 0; margin-right: 5px;">
+                            </span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="groupBtn">
+        <a href="javascript:void(0);" class="goTop hide"></a>
+        <a href="javascript:void(0);" class="service_btn"></a>
+    </div>
+
+    <script type="text/javascript">
+        /*二级导航*/
+        $('.bar-header-secondary').on('click', '.sort', function () {
+            $(this).addClass('active').siblings('.sort').removeClass('active');
+        });
+        /*展开收起*/
+        $('.app-store').on('click', function () {
+            if ($(this).next().is(':hidden')) {
+                $(this).find('.fa').addClass('fa-chevron-down').removeClass('fa-chevron-right');
+            } else {
+                $(this).find('.fa').addClass('fa-chevron-right').removeClass('fa-chevron-down');
+            }
+            $('.store-list').toggle();
+        });
+        /*列表选中*/
+        $('.store').on('click', 'li', function () {
+            $(this).addClass('checked').siblings().removeClass('checked');
+            $('.checked-store').text($(this).find('span').text());
+        });
+        /*确定和取消按钮*/
+        $('#sureBtn').on('click', function () {
+            closePanel('.panel-select');
+        });
+        $('#canelBtn').on('click', function () {
+            closePanel('.panel-select');
+        });
+        /*侧边栏*/
+        $('body').on('click', '[data-toggle="panel-select"]', function (e) {
+            var tag = $(this).attr('data-target');
+            var _oTag = $('#' + tag);
+            openPanel(_oTag);
+            return false;
+        });
+        $('.page').on('click', '.panel-overlay', function () {
+            closePanel('.panel-select');
+        });
+        function openPanel(el) {
+            var scroll = $(window).scrollTop();
+            $('body').attr('data-scroll', scroll).addClass('modal-open');
+            $('body').css({ top: -scroll });
+            $('.panel-overlay').show();
+            $(el).addClass('panel-right');
+            if (scroll != 0) {
+                $('.panel-overlay').css('top', scroll);
+                $(el).css('top', scroll);
+            } else {
+                $('.panel-overlay').css('top', 0);
+                $(el).css('top', 0);
+            }
+            $("body").bind("touchmove", function (event) { event.preventDefault(); });
+        }
+        function closePanel(el) {
+            var scroll = $('body').removeClass('modal-open').attr('data-scroll');
+            $(window).scrollTop(scroll);
+            $('body').removeAttr('data-scroll');
+            $('.panel-overlay').hide();
+            $(el).removeClass('panel-right');
+            $("body").unbind("touchmove");
+        }
+
+        /*抛物线加入购物车*/
+        $('.shopping-cart').on('click', addProduct);
+        function addProduct(event) {
+            var imgUrl = $(this).closest('.item').find('img').attr('src'),
+                offset = $(".fixed-shopping-cart").offset(),
+                target = $(this).closest('.item').find('img').offset(),
+                flyer = $('<div class="u-flyer"><img src="' + imgUrl + '"/></div>');
+            flyer.fly({
+                start: {
+                    left: target.left,
+                    top: target.top - $(document).scrollTop()
+                },
+                end: {
+                    left: offset.left,
+                    top: offset.top - $(document).scrollTop(),
+                    width: 20,
+                    height: 20
+                },
+                onEnd: function () {
+                    this.destroy();
+                }
+            });
+        }
+    </script>

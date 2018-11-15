@@ -1,0 +1,44 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <title>UMEDITOR 简单功能</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link href="../themes/default/css/umeditor.min.css" type="text/css" rel="stylesheet"/>
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../umeditor.config.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../umeditor.min.js"></script>
+</head>
+<body>
+
+    <h1>UMEDITOR 简单功能</h1>
+
+    <!--style给定宽度可以影响编辑器的最终宽度-->
+    <script type="text/plain" id="myEditor" style="width:800px;height:240px;">
+        <p>请输入信息内容</p>
+    </script>
+    <script type="text/javascript">
+        var ue = UM.getEditor('myEditor',{
+            //这里可以选择自己需要的工具按钮名称
+            toolbar:['undo redo | bold italic underline strikethrough | forecolor | removeformat |',
+            'insertorderedlist insertunorderedlist | selectall cleardoc | paragraph fontsize' ,
+            '| justifyleft justifycenter justifyright justifyjustify |',
+            'link unlink | image | horizontal'],
+            //focus时自动清空初始化时的内容
+            autoClearinitialContent:true,
+            //关闭字数统计
+            wordCount:false,
+            //关闭elementPath
+            elementPathEnabled:false,
+            //默认的编辑区域高度
+            initialFrameHeight:300,
+			//自适应高度
+			autoHeightEnabled:false,
+			//工具条保持不动
+			autoFloatEnabled:false
+            //更多其他参数，请参考umeditor.config.js中的配置项
+        });
+    </script>
+
+</body>
+</html>

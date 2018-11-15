@@ -1,0 +1,97 @@
+body {
+    background-color: #E7E6EC;
+}
+
+.my-group {
+    margin: 0 auto;
+    width: 100%;
+    max-width: 500px;
+}
+
+.my-group .table-view {
+    margin: 10px auto;
+    border-top: 1px solid #D7D6DB;
+    border-bottom: 1px solid #D7D6DB;
+}
+
+.my-group .table-view .table-view-cell {
+    padding: 10px;
+    line-height: 1.2;
+}
+
+.table-view .table-view-cell.tit {
+    padding-bottom: 9px;
+}
+
+.table-view .table-view-cell > a {
+    padding-right: 10px;
+    display: block;
+}
+
+.table-view-cell.tit span {
+    color: #ff0054;
+    position: absolute;
+    right: 30px;
+}
+
+.tit i::before {
+    opacity: .3;
+    font-size: .3em;
+    position: relative;
+    top: 1px;
+}
+
+.table-view-cell .media-photo {
+    width: 90px;
+    height: 80px;
+    position: relative;
+    display: table-cell;
+    padding-right: 10px;
+}
+
+.media-photo .goods-photo, .media-photo img {
+    width: 80px;
+    height: 80px;
+}
+
+.media-body {
+    display: table-cell;
+    height: 80px;
+    position: relative;
+    width: 100%;
+}
+
+.media-body .goods-name {
+    font-size: .875rem;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    white-space: normal;
+    word-break: break-all;
+    position: absolute;
+    top: 0;
+}
+
+.media-body .price-count {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    font-size: .8rem;
+    color: #a1a1a1;
+}
+
+.table-view .footer {
+    font-size: .8rem;
+    border-bottom: none;
+}
+
+.footer .time {
+    float: left;
+    color: #b0b0b0;
+}
+
+.footer .group-state {
+    float: right;
+    color: #ff0054;
+}

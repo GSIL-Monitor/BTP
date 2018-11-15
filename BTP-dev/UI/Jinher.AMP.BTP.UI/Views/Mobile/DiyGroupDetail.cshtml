@@ -1,0 +1,606 @@
+﻿@using System.Web
+@using Jinher.AMP.BTP.Common;
+@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+    var shareId = ViewBag.ShareId == null ? "" : ViewBag.ShareId;
+}
+@helper Currency()
+    {
+    @Jinher.AMP.BTP.UI.Util.MobileCookies.GetCurrency();
+}
+@section TitleHtml
+{
+    <title>拼团详情</title>
+}
+@section CssStyles{
+    <link href="/Content/Mobile/mobileKit-min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="/Content/Mobile/becomeGroup.css?v1" />
+    <style type="text/css">
+        .commodityInfo
+        {
+            cursor: pointer;
+        }
+    </style>
+}
+@section ClientScript
+{
+    <script src="/Scripts/CommLib.js" type="text/javascript"></script>
+    <script src="/Content/Mobile/distributionIncome.js" type="text/javascript"></script>
+        <script src="/Content/Mobile/Common.js" type="text/javascript"></script>
+    <script type="text/javascript" src="@HttpContext.Current.Request.Url.Scheme://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+    <script type="text/javascript" src="/Scripts/h5New/wxshare.js"></script>
+    <script type="text/javascript">
+        var loadUrlParam = window.location.search;
+        var _diyGroupId = '';
+        var _esAppId = '';
+        var _shareId = '';
+        var _commodityId = "";
+        var _speader = "";
+        var _source = "";
+        var _productType = "";
+        var _appId = "";
+        var _orderId = "";
+        var _userId = "";
+        var _isOver = false;
+        var _outsideId = '';
+
+        _diyGroupId = getQueryString("diyGroupId");
+        _esAppId = getQueryString("appId");
+       
+        if (JsVilaDataNull(sessionStorage.speader)) {
+            _speader = sessionStorage.sessionStorage;
+        } else {
+            _speader = _esAppId;
+        }
+        if (isInJhApp()) { //在应用内
+            _source = "internal";
+            _productType = "appcjzy";
+        } else { //应用外
+            _source = "share";
+            _productType = "webcjzy";
+        }
+
+        sessionStorage.source = _source;
+        sessionStorage.ProductType = _productType;
+        sessionStorage.diyGroupId = _diyGroupId;
+       
+        //活动图片 待、未、成、结束
+        var headActivePicture = new Array("/Content/Mobile/stay-become-group.png", "/Content/Mobile/no-become-group.png", "/Content/Mobile/become-group-success.png", "/Content/Mobile/activity-end.png");
+        //活动印章图片 待、未、成、结束
+        var circleActivePicture = new Array("", "/Content/Mobile/become-group-fail-seal.png", "/Content/Mobile/become-group-success-seal.png", "/Content/Mobile/activity-end-seal.png");
+        //拼团状态  0待、1未、2成、3结束
+        var _diyState = -1;
+        var memItemTeleplete = '<div class="member"><img src="{UserPicture}" alt=""><span class="identity">团员</span><span class="tel">{UserCode}</span><span class="behavior">参团</span><span class="begin-time">{SubTimeText}</span></div>';
+        //未参团默认图片
+        var notDiyPicture = "/Content/Mobile/head-icon.png";
+        //end图
+        var membEnd = '<div id="tmp"> <div class="member" id="memberEndTip"><img src="' + notDiyPicture + '" alt="" /><div class="num-tip" id="tip2"></div></div><div>';
+
+        $(function () {
+
+            if (_esAppId == "cf063155-e6e9-4019-ba12-6b44b704243f") {
+
+                $(".activity-tip").empty();
+                $(".activity-tip").append('<img src="/Content/Mobile/fire-icon.png" alt="" />支付开团并喊好友参团，组团成功后等待商家发货；如组团失败，请联系智力圈客服凯文退款。微信ID：kevinmeiguo。');
+            }
+            else {
+                $(".activity-tip").empty();
+                $(".activity-tip").append('<img src="/Content/Mobile/fire-icon.png" alt="" />支付开团并喊好友参团，组团成功后等待商家发货；如组团失败，则系统自动将款项原路退还。');
+            }
+            //单点
+            saveContextDTOByUrl();
+            _userId = getUserId();
+            LoadData();
+            $('#shareTips').on('click',function(){
+                $('#shareTips').addClass('hide');
+            })
+        });
+        function LoadData() {
+            var subData = {};
+            subData.DiyGoupId = _diyGroupId;
+            var subDataJson = CommLib.ObjToString(subData);
+            getDataAjax2({
+                url: '/Mobile/GetDiyGroupDetail?r="' + Math.random(),
+                data: subDataJson,
+                error: function () {
+                    ajaxLoadingSingle.hide();
+                },
+                beforeSend: function () {
+                    ajaxLoadingSingle.show();
+                },
+                callback: function (msg) {
+                    ajaxLoadingSingle.hide();
+                    if (!msg || msg.ResultCode != 0) {
+                        toast(msg.Message);
+                        return;
+                    }
+                    var diyGroup = msg.Data;
+                    var diyGroupOrder = msg.Data.DiyGroupOrderList;
+                    _commodityId = diyGroup.CommodityId;
+                    _appId = diyGroup.AppId;
+                    //商品图片
+                    var picturePath = diyGroup.PicturesPath;
+                    var comName = diyGroup.CommodityName;
+                    //总人数
+                    var groupMinVolume = diyGroup.GroupMinVolume;
+                    //已参加人数
+                    var joinNumber = diyGroup.JoinNumber;
+                    //相差人数
+                    var diffNum = groupMinVolume - joinNumber;
+                    //价格
+                    var discountPrice = diyGroup.DiscountPrice;
+                    //外部活动ID
+                    _outsideId = diyGroup.OutsideId;
+                    var startTimeP = GetDateFormat(diyGroup.StartTime, 3);
+                    var endTimeP = GetDateFormat(diyGroup.EndTime, 3);
+                    var expireSecond = diyGroup.ExpireSecond;
+                    var state = diyGroup.State;
+                    var diySubTime = GetDateFormat(diyGroup.SubTime, 3);
+                    var dateTimeNow = GetDateFormat(diyGroup.DateTimeNow, 3);
+                    var description = diyGroup.Description;
+                    if (diyGroup.ProductDetailPicture) {
+                        $('.page').prepend('<div style=" overflow:hidden; width:0px; height:0; margin:0 auto; position:absolute; top:-800px;"><img src="' + diyGroup.ProductDetailPicture + '"/></div>');
+                    }
+                    //拼团状态处理
+                    if (state == 4 || state == 5 || state == 6) {
+                        _diyState = 1;
+                    }
+                    else if (state == 0 || state == 1) {
+                        _diyState = 0;
+                        if (DiffTime(endTimeP, dateTimeNow) <= 0) {
+                            _diyState = 3;
+                        }
+                    }
+                    else if (state == 2 || state == 3) {
+                        _diyState = 2;
+                        if (state == 3) {
+                            _isOver = true;
+                        }
+                    } else {
+                        _diyState = -1;
+                    }
+                    var imgClass = "";
+                    //标题：待、未、成、结束
+                    if (_diyState == 0) {
+                        document.title = "待成团";
+                        imgClass = "stay-become-group";
+                    }
+                    else if (_diyState == 1) {
+                        document.title = "未成团";
+                        imgClass = "no-become-group";
+                    }
+                    else if (_diyState == 2) {
+                        document.title = "组团成功";
+                        imgClass = "become-group-success";
+                    }
+                    else if (_diyState == 3) {
+                        document.title = "活动已结束";
+                        imgClass = "activity-end";
+                    } else {
+                        document.title = "拼团详情";
+                        imgClass = "stay-become-group";
+                    }
+                    //头图
+                    $("#activityPicture").addClass(imgClass);
+                    $("#activityPicture").attr("src", headActivePicture[_diyState]);
+                    //商品
+                    $("#commodityPicture").attr("src", picturePath);
+                    $("#commodityName").html(comName);
+                    if (discountPrice <= 0) {
+                        discountPrice = diyGroup.DiyGroupOrderList[0].DiyGroupPrice;
+                    }
+                    $("#price").html(getCurrency() + discountPrice);
+                    //印章
+                    if (_diyState == 0) {
+                        $("#sealPicture").hide();
+                    } else {
+                        $("#sealPicture").attr("src", circleActivePicture[_diyState]);
+                        $("#sealPicture").show();
+                    }
+
+                    $("#totleNum").html(groupMinVolume);
+
+                    if (diffNum > 0) {
+                        //显示提示
+
+                        $("#tip1").html("还差<span>" + diffNum + "</span>人，就拼团成功啦～");
+                        $("#tip1").show();
+                    } else {
+                        //不显示提示
+                        $("#tip1").hide();
+                    }
+
+                    if (_diyState == 0) {
+                        $("#timeDiv").show();
+                        //计时
+                        var timeClick = 0;
+                        //var countTime = DiffNow(endTimeP);
+                        var countTime = DiffTime(endTimeP, dateTimeNow);
+                        //活动已结束
+                        if (countTime <= 0) {
+                            timeClick = 0;
+                        } else {
+                            //成团时间结束与否
+                            var countTime2 = DiffTime(diySubTime, endTimeP);
+                            if (countTime2 + expireSecond > 0) {
+                                timeClick = countTime;
+                            } else {
+                                var tmp = DiffTime(diySubTime, dateTimeNow) + expireSecond;
+                                if (tmp <= 0) {
+                                    timeClick = 0;
+                                } else {
+                                    timeClick = tmp;
+                                }
+                            }
+                        }
+                        if (timeClick > 0) {
+                            // 倒计时
+                            prmTimer(timeClick,
+                                {
+                                    hour: $("#prm_hour_show"),
+                                    minute: $("#prm_minute_show"),
+                                    second: $("#prm_second_show")
+                                },
+                                function () {
+
+                                }
+                            );
+                        } else {
+                            $("#prm_hour_show").html("00");
+                            $("#prm_minute_show").html("00");
+                            $("#prm_second_show").html("00");
+                        }
+                    } else {
+                        $("#timeDiv").hide();
+                    }
+
+                    //参团人物
+                    var diyGroupMem = "";
+                    //拼团人物
+                    for (var i = 0; i < diyGroupOrder.length; i++) {
+                        //头像
+                        $("#headPhoto").append('<img src="' + diyGroupOrder[i].UserPicture + '" alt="" />');
+                        if (diyGroupOrder[i].Role == 0) {
+                            //团长
+                            $("#memberMain>img").attr("src", diyGroupOrder[i].UserPicture);
+                            $("#memberMain>.tel").html(diyGroupOrder[i].UserCode);
+                            $("#memberMain>.begin-time").html(GetDateFormat(diyGroupOrder[i].SubTime, 3));
+                        } else {
+                            //团员
+                            diyGroupOrder[i].SubTimeText = GetDateFormat(diyGroupOrder[i].SubTime, 3);
+                            diyGroupMem += memItemTeleplete.format(diyGroupOrder[i]);
+                        }
+                        //取得当前登录人订单号
+                        if (_userId == diyGroupOrder[i].SubId) {
+                            _orderId = diyGroupOrder[i].OrderId;
+                        }
+                    }
+                    $("#memberList").append(diyGroupMem);
+                    //未参团人默认图片
+                    if (diffNum > 0) {
+                        for (var i = 0; i < diffNum; i++) {
+                            $("#headPhoto").append('<img src="' + notDiyPicture + '" alt="" />');
+                        }
+                        var memEndTmp = $(membEnd).find("#tip2").html("亲，距离组团成功还需要<i>" + diffNum + "</i>人的鼎力相助哦！").parents("#tmp").html();
+                        $("#memberList").append(memEndTmp);
+                    }
+
+                    //高亮
+                    if (_diyState == 0) {
+                        $("#step3").addClass("active");
+                    } else {
+                        $("#step4").addClass("active");
+                    }
+                    //分享
+                    var shareParam = "&share=" + getShareId();
+                    
+                    //主页
+                    var H5HomePage = "@Jinher.AMP.BTP.Common.CustomConfig.H5HomePage".format(_esAppId);
+                    if (isInJhApp()) {
+                        $("#homePage").on("click", function () {
+                            window.location.href = "jhoabrowser://loadHomePage?";
+                        });
+                    } else {
+                        $("#homePage").attr("href", H5HomePage);
+                    }
+
+                    //分享链接
+                    if (isInJhApp()) { //在应用内
+                        document.title = "拼团详情";
+                        if (_diyState == 2) {
+                            //已完成时，才可以点入订单详情
+                            if (_isOver) {
+                                $("#commodityInfo").addClass("commodityInfo");
+                                $("#commodityInfo").on("touchstart", function () {
+                                    window.location.href = urlAppendCommonParams("/Mobile/MyOrderDetail?shopId=" + _appId + "&orderId=" + _orderId);
+                                });
+                            }
+                        }
+                        var shareText = "分享给好友";
+                        $("#shareButton a").html(shareText);
+                        $("#shareNav").show();
+                        $("#shareButton a").on('click', function () {
+                            var base64 = new Base64();
+                            var shareUrl = getBtpDomain() + "Mobile/DiyGroupDetail?diyGroupId=" + _diyGroupId + "&shopId=" + _appId + "&appId=" + _esAppId + shareParam;
+                            var para = "{\"businessJson\":\"{\\\"Title\\\":\\\"" + comName + "\\\",\\\"content\\\":\\\"" + description + "\\\",\\\"ShareUrl\\\":\\\"" + shareUrl + "\\\",\\\"ImageUrl\\\":\\\"" + picturePath + "\\\",\\\"ShareType\\\":\\\"0\\\"}\"}";
+                            window.location.href = "jhoabrowser://share?args=" + base64.encode(para) + "&tag=" + base64.encode(_pageId);
+                        });
+                    }
+                    else { //应用外
+                        //设置title
+                        var $body = $('body');
+                        document.title = comName;
+                        var $iframe = $('<iframe src="/favicon.ico?r="' + Math.random() + '></iframe>');
+                        $iframe.on('load', function () {
+                            setTimeout(function () {
+                                $iframe.off('load').remove();
+                            }, 0);
+                        }).appendTo($body);
+                        if (!document.referrer) {
+                            //referrer有值
+                            var shareText = "";
+                            var shareUrl = "";
+                            var configureUrl = "@Jinher.AMP.BTP.Common.CustomConfig.DiyGroupCommodityList";
+
+                            if (_diyState == 0) {
+                                shareText = "我也要参团";
+                                shareUrl = "/Mobile/CommodityDetailDiy?" + "commodityId=" + _commodityId + "&apptype=4&source=share" + "&producttype=webcjzy" + "&appId=" + _esAppId + "&speader=" + _speader + "&diyGroupId=" + _diyGroupId + "&outPromotionId=" + _outsideId + shareParam;
+                            }
+                            else if (_diyState == 1) {
+                                shareText = "我也开个团，点击回到商品列表";
+                                shareUrl = configureUrl + "?appId=" + diyGroup.AppId;
+                            }
+                            else if (_diyState == 2) {
+                                shareText = "我也开个团，点击回到商品列表";
+                                shareUrl = configureUrl + "?appId=" + diyGroup.AppId;
+                            }
+                            else if (_diyState == 3) {
+                                shareText = "我也开个团，点击回到商品列表";
+                                shareUrl = configureUrl + "?appId=" + diyGroup.AppId;
+                            } else {
+                                shareText = "我也开个团，点击回到商品列表";
+                                shareUrl = configureUrl + "?appId=" + diyGroup.AppId;
+                            }
+                            $("#shareButton a").html(shareText);
+                            $("#shareButton a").attr("href", shareUrl);
+                            $("#shareNav").show();
+                        } else {
+                            //如果是微信中，显示“分享给好友”按钮，点击“分享给好友”提示用户点击微信中的分享
+                            if (IsWebchat()) {
+                                $("#shareButton a").html("分享给好友");
+                                $("#shareButton a").attr("href", "javascript:void(0)");
+                                $("#shareNav").show();
+                                $("#shareButton a").on('click',function(){
+                                    $('#shareTips').removeClass('hide');
+                                });
+                            }else{
+                                $("#shareNav").hide();
+                            }
+                        }
+                    }
+                    //微信自定义分享内容
+                    var wxDesc = "拼团中 | 现在只要" + $("#price").text() + "，这么惊喜的价格，你一定不想错过";
+                    WxShare.config($("#commodityName").text(), wxDesc, $("#commodityPicture").attr("src"));
+                }
+            });
+        }
+        function prmTimer(timestamp, timeElement, callback) {
+            var day = 0,
+                hour = 0,
+                minute = 0,
+                second = 0; //时间默认值
+            var hourText = "0";
+            var prm = window.setInterval(function () {
+                var intDiff = parseInt(timestamp);
+                if (intDiff >= 1) {
+                    //day = Math.floor(intDiff / (60 * 60 * 24));
+                    //hour = Math.floor(intDiff / (60 * 60)) - (day * 24);
+                    hour = Math.floor(intDiff / (60 * 60));
+                    minute = Math.floor(intDiff / 60) - (day * 24 * 60) - (hour * 60);
+                    second = Math.floor(intDiff) - (day * 24 * 60 * 60) - (hour * 60 * 60) - (minute * 60);
+                    if (hour > 99) {
+                        hourText = "99+";
+                    } else {
+                        if (hour <= 9) hour = '0' + hour;
+                        hourText = hour;
+                    }
+                    if (minute <= 9) minute = '0' + minute;
+                    if (second <= 9) second = '0' + second;
+                    if (timeElement.hour !== null) {
+                        //timeElement.day.html('<s></s>' + day);
+                        timeElement.hour.html(hourText);
+                        timeElement.minute.html(minute);
+                        timeElement.second.html(second);
+                    }
+                    --timestamp;
+
+                } else {
+                    if (timeElement.hour !== null) {
+                        //timeElement.day.html("0");
+                        timeElement.hour.html("00");
+                        timeElement.minute.html("00");
+                        timeElement.second.html("00");
+                    }
+                    clearInterval(prm);
+                    callback();
+                    return;
+                }
+
+            }, 1000);
+        }
+         
+        function GetDateFormat(cellval, state) {
+            try {
+                var date = new Date(parseInt(cellval.replace("/Date(", "").replace(")/", ""), 10));
+                var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+                var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+                var hour = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+                var minu = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+                var miao = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+                if (state == 1) {
+                    return date.getFullYear() + "/" + month + "/" + currentDate;
+                }
+                else if (state == 2) {
+                    return hour + ":" + minu + ":" + miao;
+                }
+                else if (state == 3) {
+                    return date.getFullYear() + "-" + month + "-" + currentDate + " " + hour + ":" + minu + ":" + miao;
+                }
+                else {
+                    return date.getFullYear() + "/" + month + "/" + currentDate + " " + hour + ":" + minu + ":" + miao;
+                }
+            } catch (e) {
+                return "";
+            }
+        }
+        function isEnd(dateTimeStr) {
+            if (DiffNow(dateTimeStr) > 0) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+        //返回距客户端当前时间的秒数
+        function DiffNow(dateTimeStr) {
+            var newDate = new Date(dateTimeStr);
+            var now = new Date();
+            var diffSecond = (newDate.getTime() - now.getTime()) / 1000;
+            return diffSecond;
+        }
+        //返回相差秒数
+        function DiffTime(dateTime1, dateTime2) {
+            var time1 = new Date(dateTime1.replace(/-/g, "/"));
+            var time2 = new Date(dateTime2.replace(/-/g, "/"));
+            var diffSecond = (time1.getTime() - time2.getTime()) / 1000;
+            return diffSecond;
+        }
+        //判断是否是微信中打开（不包括pc端为微信浏览器）
+        function IsWebchat(){
+            var u = navigator.userAgent;
+            var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
+            var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+            var ua = window.navigator.userAgent.toLowerCase();
+            if (ua.match(/MicroMessenger/i) == 'micromessenger' && (isAndroid || isiOS)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    </script>
+}
+<div class="page">
+    <header class="bar bar-nav hide">
+        <a href="javascript:window.history.back();" class="pull-left fa fa-chevron-left"> 返回</a>
+        <a href="javascript:window.history.back();" class="pull-right fa fa-ellipsis-v"></a>
+        <h1 class="title">拼团详情</h1>
+    </header>
+    <div class="content">
+        <div class="stay-become-group">
+            <div class="tip-img">
+                <img id="activityPicture" class="" src="" alt="" />
+            </div>
+            <div class="become-group-info" id="commodityInfo">
+                <img id="commodityPicture" src="" alt="" />
+                <div class="name-price">
+                    <div class="name" id="commodityName">
+                    </div>
+                    <span class="people-num"><span id="totleNum"></span>人团</span><span class="price"
+                        id="price">@Currency()</span>
+                </div>
+                <img class="seal" id="sealPicture" src="" alt="" style="display: none;" />
+            </div>
+            <div class="member-time" id="memberList">
+                <div class="head-photo" id="headPhoto">
+                </div>
+                <div class="photo-num-tip" id="tip1">
+                </div>
+                <div class="time" id="timeDiv">
+                    <div class="horizontal-line">
+                    </div>
+                    <div class="end-time clearfix">
+                        <span>剩余</span> <span class="hour" id="prm_hour_show"></span><span>:</span> <span
+                            class="minute" id="prm_minute_show"></span><span>:</span> <span class="seconds" id="prm_second_show">
+                            </span><span>结束</span>
+                    </div>
+                    <div class="horizontal-line">
+                    </div>
+                </div>
+                <div class="member gray" id="memberMain">
+                    <img src="" alt="" />
+                    <span class="identity">团长</span> <span class="tel"></span><span class="behavior">开团</span>
+                    <span class="begin-time"></span>
+                    <div class="triangle">
+                    </div>
+                </div>
+            </div>
+            <div class="activity-instruction">
+                <div class="instruction-head clearfix">
+                    <span>活动说明</span> <a href="DiyGroupActivityRule">查看更多></a>
+                </div>
+                <div class="steps" style="margin: 2px 0;">
+                    <div class="step">
+                        <div>
+                            <div class="step-text">
+                                选择<br />
+                                心仪商品</div>
+                            <div class="triangle">
+                            </div>
+                            <div class="step-num">
+                                1</div>
+                        </div>
+                    </div>
+                    <span>></span>
+                    <div class="step">
+                        <div>
+                            <div class="step-text">
+                                支付开团<br />
+                                或参团</div>
+                            <div class="triangle">
+                            </div>
+                            <div class="step-num">
+                                2</div>
+                        </div>
+                    </div>
+                    <span>></span>
+                    <div class="step" id="step3">
+                        <div>
+                            <div class="step-text">
+                                等待好友<br />
+                                参团支付</div>
+                            <div class="triangle">
+                            </div>
+                            <div class="step-num">
+                                3</div>
+                        </div>
+                    </div>
+                    <span>></span>
+                    <div class="step" id="step4">
+                        <div>
+                            <div class="step-text">
+                                达到人数<br />
+                                组团成功</div>
+                            <div class="triangle">
+                            </div>
+                            <div class="step-num">
+                                4</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="activity-tip">
+                    
+                </div>
+            </div>
+            <nav class="fixed-submit-btn" id="shareNav" style="display: none">
+                <div class="home">
+                    <a href="javascript:" id="homePage"><img src="/Content/Mobile/home2.png" alt=""/></a>
+                </div>
+                    <div class="submit-btn" id="shareButton"><a href="javascript:" style="color: #ffffff;">分享给好友</a></div>
+            </nav>
+        </div>
+    </div>
+    <div id="shareTips" class="share-tips hide">
+        <div class="share-tips-content">
+            <span class="font-blue">[点击右上角]</span> 分享至 <span class="friends font-blue">朋友圈</span>
+        </div>
+    </div>
+</div>

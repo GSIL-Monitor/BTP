@@ -1,0 +1,198 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<appPackage name="BTP" FileSourcePath="D:\Work\JAP\08Program" FileTargetPath="D:\Work\01-AMP\开发库\08-Program\Code\Biz-Dev\BTP-Dev\BTP\AppDeploy" packageName="BTP.zip" packageSize="#Size#" description="#description#" version="1.0" developerCode="#developerCode#" attributeTypeName="PackageAttributes">
+  <fileItem name="Portal">
+    <fileItem name="Configuration" class="config">
+      <fileItem name="IOC.Agent.config" FilePath="Product\Portal\Configuration\" ProcessingModeType="Extract" attributeTypeName="" />
+      <fileItem name="IOC.config" FilePath="Product\Portal\Configuration\" ProcessingModeType="Extract" attributeTypeName="" />
+      <fileItem name="WebRegistration.config" FilePath="Product\Portal\Configuration\" ProcessingModeType="Extract" attributeTypeName="" />
+      <fileItem name="Applications">
+        <fileItem name="Applications.xml" FilePath="Product\Portal\Configuration\Applications\" ProcessingModeType="Auto;Input" attributeTypeName="Applications_ApplicationAttributes" />
+        <fileItem name="Feature.xml" FilePath="Product\Portal\Configuration\Applications\" ProcessingModeType="Input" attributeTypeName="Features_FeatureAttributes" />
+        <fileItem name="Menu.xml" FilePath="Product\Portal\Configuration\Applications\" ProcessingModeType="Input" attributeTypeName="Menus_MenuAttributes;Menu_MenuItemAttributes" />
+      </fileItem>
+      <fileItem name="Service">
+        <fileItem name="Data">
+          <fileItem name="Service.config" FilePath="Product\Portal\Configuration\Service\Data\" ProcessingModeType="Extract" attributeTypeName="" />
+          <fileItem name="ServiceList.xml" FilePath="Product\Portal\Configuration\Service\Data\" ProcessingModeType="Extract" attributeTypeName="" />
+        </fileItem>
+      </fileItem>
+      <fileItem name="EMBConfiguration">
+        <fileItem name="EMBMessage.config" FilePath="Lib\Configuration\EMBConfiguration\" ProcessingModeType="Input" attributeTypeName="EMBMessages_addAttributes" />
+      </fileItem>
+      <fileItem name="CacheConfiguration">
+        <fileItem name="Cache.config" FilePath="Lib\Configuration\CacheConfiguration\" ProcessingModeType="Input" attributeTypeName="CacheManagers_addAttributes" />
+      </fileItem>
+      <fileItem name="SEConfiguration">
+        <fileItem name="Jinher.JAP.SE.SearchEngineConfig.xml" FilePath="Lib\Configuration\SEConfiguration\" CopyPath="Product\Portal\" CopyNode="IndexRule;SearchRule" ProcessingModeType="Extract;Copy;Input" attributeTypeName="ModuleData_dataAttributes" />
+      </fileItem>
+      <fileItem name="CustomConfig">
+        <fileItem name="#FileDirectoryName#">
+          <fileItem name="#应用自定义配置文件#" FilePath="Lib\Configuration\CustomConfig\" ProcessingModeType="Upload" attributeTypeName="" />
+        </fileItem>
+      </fileItem>
+    </fileItem>
+    <fileItem name="BizApp" class="assembly">
+      <fileItem name="Interface">
+        <fileItem name="#程序集文件#" FilePath="Product\Portal\BizApp\Interface\" ProcessingModeType="None" attributeTypeName="" />
+      </fileItem>
+      <fileItem name="Implement">
+        <fileItem name="#程序集文件#" FilePath="Product\Portal\BizApp\Implement\" ProcessingModeType="None" attributeTypeName="" />
+      </fileItem>
+    </fileItem>
+    <fileItem name="BizUI" class="assembly">
+      <fileItem name="#程序集文件#" FilePath="Product\Portal\BizUI\" ProcessingModeType="None" attributeTypeName="" />
+    </fileItem>
+    <fileItem name="TP" class="assembly">
+      <fileItem name="#需要添加的TP程序集文件#" FilePath="Product\Portal\TP\" ProcessingModeType="Upload" attributeTypeName="" />
+    </fileItem>
+    <fileItem name="Areas" class="page">
+      <fileItem name="#按应用名称查找，遍历所包含所有目录全部添加#" FilePath="Product\Portal\Areas\" ProcessingModeType="None" attributeTypeName="" />
+    </fileItem>
+    <fileItem name="Web.config" class="config" FilePath="Product\Portal\" ProcessingModeType="Extract;Input" attributeTypeName="ConnectionStrings_addAttributes" />
+  </fileItem>
+  <fileItem name="Apphost">
+    <fileItem name="Configuration" class="config">
+      <fileItem name="IOC.Agent.config" FilePath="Product\Portal\Configuration\" ProcessingModeType="Extract" attributeTypeName="" />
+      <fileItem name="IOC.config" FilePath="Product\Portal\Configuration\" ProcessingModeType="Extract" attributeTypeName="" />
+      <fileItem name="WebRegistration.config" FilePath="Product\Portal\Configuration\" ProcessingModeType="Extract" attributeTypeName="" />
+      <fileItem name="Applications">
+        <fileItem name="Applications.xml" FilePath="Product\Portal\Configuration\Applications\" ProcessingModeType="Auto;Input" attributeTypeName="Applications_ApplicationAttributes" />
+        <fileItem name="Feature.xml" FilePath="Product\Portal\Configuration\Applications\" ProcessingModeType="Input" attributeTypeName="Features_FeatureAttributes" />
+        <fileItem name="Menu.xml" FilePath="Product\Portal\Configuration\Applications\" ProcessingModeType="Input" attributeTypeName="Menus_MenuAttributes;Menu_MenuItemAttributes" />
+      </fileItem>
+      <fileItem name="Service">
+        <fileItem name="Data">
+          <fileItem name="Service.config" FilePath="Product\Portal\Configuration\Service\Data\" ProcessingModeType="Extract" attributeTypeName="" />
+          <fileItem name="ServiceList.xml" FilePath="Product\Portal\Configuration\Service\Data\" ProcessingModeType="Extract" attributeTypeName="" />
+        </fileItem>
+      </fileItem>
+      <fileItem name="EMBConfiguration">
+        <fileItem name="EMBMessage.config" FilePath="Lib\Configuration\EMBConfiguration\" ProcessingModeType="Input" attributeTypeName="EMBMessages_addAttributes" />
+      </fileItem>
+      <fileItem name="CacheConfiguration">
+        <fileItem name="Cache.config" FilePath="Lib\Configuration\CacheConfiguration\" ProcessingModeType="Input" attributeTypeName="CacheManagers_addAttributes" />
+      </fileItem>
+      <fileItem name="SEConfiguration">
+        <fileItem name="Jinher.JAP.SE.SearchEngineConfig.xml" FilePath="Lib\Configuration\SEConfiguration\" CopyPath="Product\Portal\" CopyNode="IndexRule;SearchRule" ProcessingModeType="Extract;Copy;Input" attributeTypeName="ModuleData_dataAttributes" />
+      </fileItem>
+      <fileItem name="CustomConfig">
+        <fileItem name="#FileDirectoryName#">
+          <fileItem name="#应用自定义配置文件#" FilePath="Lib\Configuration\CustomConfig\" ProcessingModeType="Upload" attributeTypeName="" />
+        </fileItem>
+      </fileItem>
+    </fileItem>
+    <fileItem name="BizApp" class="assembly">
+      <fileItem name="Interface">
+        <fileItem name="#程序集文件#" FilePath="Product\Portal\BizApp\Interface\" ProcessingModeType="None" attributeTypeName="" />
+      </fileItem>
+      <fileItem name="Implement">
+        <fileItem name="#程序集文件#" FilePath="Product\Portal\BizApp\Implement\" ProcessingModeType="None" attributeTypeName="" />
+      </fileItem>
+    </fileItem>
+    <fileItem name="BizUI" class="assembly">
+      <fileItem name="#程序集文件#" FilePath="Product\Portal\BizUI\" ProcessingModeType="None" attributeTypeName="" />
+    </fileItem>
+    <fileItem name="TP" class="assembly">
+      <fileItem name="#需要添加的程序集文件#" FilePath="Product\Portal\TP\" ProcessingModeType="Upload" attributeTypeName="" />
+    </fileItem>
+    <fileItem name="Jinher.JAP.BF.Host.exe.config" class="config" FilePath="Lib\" ProcessingModeType="Extract;Input" attributeTypeName="ConnectionStrings_addAttributes" />
+  </fileItem>
+  <fileItem name="Jobhost">
+    <fileItem name="Configuration" class="config">
+      <fileItem name="IOC.Agent.config" FilePath="Product\Portal\Configuration\" ProcessingModeType="Extract" attributeTypeName="" />
+      <fileItem name="IOC.config" FilePath="Product\Portal\Configuration\" ProcessingModeType="Extract" attributeTypeName="" />
+      <fileItem name="WebRegistration.config" FilePath="Product\Portal\Configuration\" ProcessingModeType="Extract" attributeTypeName="" />
+      <fileItem name="Applications">
+        <fileItem name="Applications.xml" FilePath="Product\Portal\Configuration\Applications\" ProcessingModeType="Auto;Input" attributeTypeName="Applications_ApplicationAttributes" />
+        <fileItem name="Feature.xml" FilePath="Product\Portal\Configuration\Applications\" ProcessingModeType="Input" attributeTypeName="Features_FeatureAttributes" />
+        <fileItem name="Menu.xml" FilePath="Product\Portal\Configuration\Applications\" ProcessingModeType="Input" attributeTypeName="Menus_MenuAttributes;Menu_MenuItemAttributes" />
+      </fileItem>
+      <fileItem name="Service">
+        <fileItem name="Data">
+          <fileItem name="Service.config" FilePath="Product\Portal\Configuration\Service\Data\" ProcessingModeType="Extract" attributeTypeName="" />
+          <fileItem name="ServiceList.xml" FilePath="Product\Portal\Configuration\Service\Data\" ProcessingModeType="Extract" attributeTypeName="" />
+        </fileItem>
+      </fileItem>
+      <fileItem name="EMBConfiguration">
+        <fileItem name="EMBMessage.config" FilePath="Lib\Configuration\EMBConfiguration\" ProcessingModeType="Input" attributeTypeName="EMBMessages_addAttributes" />
+      </fileItem>
+      <fileItem name="CacheConfiguration">
+        <fileItem name="Cache.config" FilePath="Lib\Configuration\CacheConfiguration\" ProcessingModeType="Input" attributeTypeName="CacheManagers_addAttributes" />
+      </fileItem>
+      <fileItem name="SEConfiguration">
+        <fileItem name="Jinher.JAP.SE.SearchEngineConfig.xml" FilePath="Lib\Configuration\SEConfiguration\" CopyPath="Product\Portal\" CopyNode="IndexRule;SearchRule" ProcessingModeType="Extract;Copy;Input" attributeTypeName="ModuleData_dataAttributes" />
+      </fileItem>
+      <fileItem name="CustomConfig">
+        <fileItem name="#FileDirectoryName#">
+          <fileItem name="#应用自定义配置文件#" FilePath="Lib\Configuration\CustomConfig\" ProcessingModeType="Upload" attributeTypeName="" />
+        </fileItem>
+      </fileItem>
+    </fileItem>
+    <fileItem name="BizApp" class="assembly">
+      <fileItem name="Interface">
+        <fileItem name="#程序集文件#" FilePath="Product\Portal\BizApp\Interface\" ProcessingModeType="None" attributeTypeName="" />
+      </fileItem>
+      <fileItem name="Implement">
+        <fileItem name="#程序集文件#" FilePath="Product\Portal\BizApp\Implement\" ProcessingModeType="None" attributeTypeName="" />
+      </fileItem>
+    </fileItem>
+    <fileItem name="BizUI" class="assembly">
+      <fileItem name="#程序集文件#" FilePath="Product\Portal\BizUI\" ProcessingModeType="None" attributeTypeName="" />
+    </fileItem>
+    <fileItem name="TP" class="assembly">
+      <fileItem name="#需要添加的程序集文件#" FilePath="Product\Portal\TP\" ProcessingModeType="Upload" attributeTypeName="" />
+    </fileItem>
+    <fileItem name="Jinher.JAP.Job.Host.exe.config" class="config" FilePath="Lib\" ProcessingModeType="Extract;Input" attributeTypeName="ConnectionStrings_addAttributes" />
+  </fileItem>
+  <fileItem name="JinherMessageServiceAgentSetup">
+    <fileItem name="Configuration" class="config">
+      <fileItem name="IOC.config" FilePath="Product\Portal\Configuration\" ProcessingModeType="Extract" attributeTypeName="" />
+      <fileItem name="WebRegistration.config" FilePath="Product\Portal\Configuration\" ProcessingModeType="Extract" attributeTypeName="" />
+      <fileItem name="Service">
+        <fileItem name="Data">
+          <fileItem name="Service.config" FilePath="Product\Portal\Configuration\Service\Data\" ProcessingModeType="Extract" attributeTypeName="" />
+          <fileItem name="ServiceList.xml" FilePath="Product\Portal\Configuration\Service\Data\" ProcessingModeType="Extract" attributeTypeName="" />
+        </fileItem>
+      </fileItem>
+      <fileItem name="EMBConfiguration">
+        <fileItem name="EMBMessage.config" FilePath="Lib\Configuration\EMBConfiguration\" ProcessingModeType="Input" attributeTypeName="EMBMessages_addAttributes" />
+      </fileItem>
+      <fileItem name="CacheConfiguration">
+        <fileItem name="Cache.config" FilePath="Lib\Configuration\CacheConfiguration\" ProcessingModeType="Input" attributeTypeName="CacheManagers_addAttributes" />
+      </fileItem>
+      <fileItem name="SEConfiguration">
+        <fileItem name="Jinher.JAP.SE.SearchEngineConfig.xml" FilePath="Lib\Configuration\SEConfiguration\" CopyPath="Product\Portal\" CopyNode="IndexRule;SearchRule" ProcessingModeType="Extract;Copy;Input" attributeTypeName="ModuleData_dataAttributes" />
+      </fileItem>
+      <fileItem name="CustomConfig">
+        <fileItem name="#FileDirectoryName#">
+          <fileItem name="#应用自定义配置文件#" FilePath="Lib\Configuration\CustomConfig\" ProcessingModeType="Upload" attributeTypeName="" />
+        </fileItem>
+      </fileItem>
+    </fileItem>
+    <fileItem name="Subscribers" class="assembly">
+      <fileItem name="#需要添加的程序集文件#" FilePath="Lib\Subscribers\" ProcessingModeType="Upload" attributeTypeName="" />
+    </fileItem>
+    <fileItem name="Jinher.JAP.EMB.MB.Agent.NTHost.exe.config" class="config" FilePath="Lib\" ProcessingModeType="Extract;Input" attributeTypeName="ConnectionStrings_addAttributes" />
+  </fileItem>
+  <fileItem name="JinherMessageServiceSetup">
+    <fileItem name="CacheConfiguration">
+      <fileItem name="Cache.config" FilePath="Lib\Configuration\CacheConfiguration\" ProcessingModeType="Input" attributeTypeName="CacheManagers_addAttributes" />
+    </fileItem>
+    <fileItem name="Jinher.JAP.EMB.MB.Service.NTHost.exe.config" class="assembly" FilePath="Lib\" ProcessingModeType="Extract;Input" attributeTypeName="ConnectionStrings_addAttributes" />
+  </fileItem>
+  <fileItem name="Script">
+    <fileItem name="Data" class="data">
+      <fileItem name="#需要添加的脚本文件#" FilePath="Script\Data\" ProcessingModeType="Upload" attributeTypeName="" />
+    </fileItem>
+    <fileItem name="DDL" class="script">
+      <fileItem name="#需要添加的脚本文件#" FilePath="Script\DDL\" ProcessingModeType="Upload" attributeTypeName="" />
+    </fileItem>
+    <fileItem name="UnInstall" class="script">
+      <fileItem name="#需要添加的脚本文件#" FilePath="Script\UnInstall\" ProcessingModeType="Upload" attributeTypeName="" />
+    </fileItem>
+  </fileItem>
+  <fileItem name="EDMX">
+    <fileItem name="#EMX项目/.edmx文件#" class="edmx" FilePath="#FilePath#" ProcessingModeType="Upload" attributeTypeName="" />
+    <fileItem name="#edmx相关dll文件#" class="assembly" FilePath="Lib\BizApp\Implement\" ProcessingModeType="None" attributeTypeName="" />
+  </fileItem>
+</appPackage>

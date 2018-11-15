@@ -1,0 +1,388 @@
+﻿@{
+ViewBag.Title = ViewBag.Name;
+Layout = "~/Views/Shared/_VueLayout.cshtml";
+}
+
+
+
+<div class="breadcrumb">
+    <span>入驻管理</span>
+    <span> > </span>
+    <span>入驻商城申请</span>
+    <span> > </span>
+    <span style="color:red">佣金查看</span>
+    <a class="back" href="@Url.Action("Index", "MallApply")?appId=@ViewBag.appId&userId=@ViewBag.userId">
+        <img  src="/Content/images/wx-back.png" /><span>&nbsp;返回上一级</span>
+    </a>
+</div>
+
+<div class="content">
+<div id="listWithFiltersPage">
+<div class="content-inner">
+<el-table :data="tableData" style="width: 100%" height="600" element-loading-text="拼命加载中" v-loading="loading" border stripe>
+    <el-table-column type="index" lable="序号"  width="70"></el-table-column>
+    <el-table-column prop="EsAppName" label="商城名称" min-width="150">
+        <template scope="scope">
+            {{scope.row.EsAppName}}
+        </template>
+    </el-table-column>
+    <el-table-column prop="Commission" label="基础佣金比例" min-width="150">
+        <template scope="scope">
+            {{scope.row.Commission|percent}}
+        </template>
+    </el-table-column>
+
+    <el-table-column label="操作" width="400">
+        <template scope="scope">
+            <el-button  type="primary" size="mini" @@click="SearchBaseCommission(scope.$index, scope.row)" >查看历史基础佣金</el-button>
+            <el-button  type="primary" size="mini" @@click="SearchCategoryCommission(scope.$index, scope.row)" >查看类目佣金</el-button>
+            <el-button  type="primary" size="mini" @@click="SearchCommodityCommission(scope.$index, scope.row)" >查看商品佣金</el-button>
+        </template>
+    </el-table-column>
+</el-table>
+</div>
+
+<el-dialog title="查看历史佣金" v-model="dialogBaseCommissionVisible" size="large">
+    <el-table :data="tableBaseCommission" style="width: 100%" element-loading-text="拼命加载中" v-loading="loading" border stripe>
+    <el-table-column type="index" lable="序号"  width="70"></el-table-column>
+    <el-table-column prop="SubTime" label="日期" min-width="150">
+        <template scope="scope">
+            {{scope.row.SubTime|datetime}}
+        </template>
+    </el-table-column>
+    <el-table-column prop="Commission" label="基础佣金比例" min-width="150">
+        <template scope="scope">
+            {{scope.row.Commission|percent}}
+        </template>
+    </el-table-column>
+        <el-table-column prop="EffectiveTime" label="生效时间" min-width="150">
+        <template scope="scope">
+            {{scope.row.EffectiveTime|datetime}}
+        </template>
+    </el-table-column>
+
+    <el-table-column prop="UserName" label="修改人" min-width="150">
+        <template scope="scope">
+            {{scope.row.UserName}}
+        </template>
+    </el-table-column>
+</el-table>
+    <div class="pagination-wrapper" v-show="!loading">
+    <el-pagination layout="total, sizes, prev, pager, next, jumper" @@size-change="handleSizeChange" @@current-change="handleCurrentChange" :total="total" :current-page="page" :page-sizes="[10, 20, 50, 100]" :page-size="pageSize" >
+    </el-pagination>                
+</div>
+</el-dialog>
+
+
+
+<el-dialog title="正品O2O商城--类目佣金" v-model="dialogCategoryCommissionVisible">
+    <el-table :data="tableCategoryCommission" style="width: 100%" element-loading-text="拼命加载中" v-loading="loading" border stripe>
+    <el-table-column type="index" lable="序号"  width="70"></el-table-column>
+    <el-table-column prop="Name" label="类目名称" min-width="150">
+        <template scope="scope">
+            {{scope.row.Name}}
+        </template>
+    </el-table-column>
+    <el-table-column prop="Commission" label="佣金比例" min-width="150">
+        <template scope="scope">
+            {{scope.row.Commission|percent}}
+        </template>
+    </el-table-column>
+     <el-table-column label="操作" min-width="150">
+        <template scope="scope">
+            <el-button  type="primary" size="mini" @@click="SearchhistoryCategoryCommission(scope.$index, scope.row)" >查看历史</el-button>
+            </template>
+    </el-table-column>
+</el-table>
+    <div class="pagination-wrapper" v-show="!loading">
+    <el-pagination layout="total, sizes, prev, pager, next, jumper" @@size-change="handleSizeChange" @@current-change="handleCurrentChange" :total="total" :current-page="page" :page-sizes="[10, 20, 50, 100]" :page-size="pageSize" >
+    </el-pagination>
+</div>
+</el-dialog>
+
+<el-dialog title="正品O2O商城--商品佣金" v-model="dialogCommodityCommission" size="large">
+
+<div class="filters">
+    <el-form :inline="true" :model="searchForm" ref="searchForm">
+        <el-form-item   label="商品名称：" prop="CommodityName">
+            <el-input  v-model="searchForm.CommodityName"></el-input>
+        </el-form-item>
+        <el-form-item>
+            <el-button type="primary" v-on:click="Search()">查询</el-button>
+        </el-form-item>
+    </el-form>
+</div>
+
+    <el-table :data="tableCommodityCommission" style="width: 100%" element-loading-text="拼命加载中" v-loading="loading" border stripe>
+    <el-table-column type="index" lable="序号"  width="70"></el-table-column>
+    <el-table-column prop="CommodityName" label="商品名称" min-width="150">
+    <template scope="scope">
+            {{scope.row.CommodityName}}
+        </template>
+    </el-table-column>
+    <el-table-column prop="CategoryName" label="所属类目" min-width="150">
+        <template scope="scope">
+            {{scope.row.CategoryName}}
+        </template>
+    </el-table-column>
+    <el-table-column prop="Commission" label="佣金比例" min-width="50">
+        <template scope="scope">
+            {{scope.row.Commission|percent}}
+        </template>
+    </el-table-column>
+    <el-table-column label="操作" min-width="50">
+        <template scope="scope">
+            <el-button  type="primary" size="mini" @@click="SearchhistoryCommodityCommission(scope.$index, scope.row)" >查看历史</el-button>
+        </template>
+    </el-table-column>
+</el-table>
+    <div class="pagination-wrapper" v-show="!loading">
+    <el-pagination layout="total, sizes, prev, pager, next, jumper" @@size-change="handleSizeChange" @@current-change="handleCurrentChange" :total="total" :current-page="page" :page-sizes="[10, 20, 50, 100]" :page-size="pageSize" >
+    </el-pagination>
+</div>
+</el-dialog>
+</div>
+</div>
+
+@section Script{
+<script type="text/javascript">
+
+Vue.filter('datetime', function (value) {
+return moment(value).format("YYYY-MM-DD HH:mm:ss"); 
+});
+
+Vue.filter('percent',function(value){
+return value + '%';
+});
+
+new Vue({
+el: '#app',
+data:{
+    searchForm:{
+        CommodityName:''
+    },
+    loading: true,      
+    tableData: [],
+    tableBaseCommission:[],
+    tableCategoryCommission:[],
+    tableCommodityCommission:[],
+    total:0,
+    page:1,
+    pageSize:20,
+    createDialog: false,
+    dialogBaseCommissionVisible:false,
+    dialogCategoryCommissionVisible:false,
+    dialogCommodityCommission:false,
+    Comminssion:'',
+    EsAppId:'',
+    MallApplyId:'',
+    AppId:'',
+    CategoryId:'',
+    CommodityId:''
+},
+methods: {
+    Search:function()
+    {
+        this.GetCommodityCommission(this.MallApplyId,this.AppId);
+    },
+    handleSizeChange:function(val)
+    {  
+        this.pageSize =val;
+        if (this.Comminssion=='BaseCommission') 
+        {
+           this.GetBaseCommission(this.MallApplyId);
+        }
+        if (this.Comminssion=='CategoryCommission') 
+        {
+            this.GetCategoryCommission(this.MallApplyId,this.AppId);
+        }
+        if(this.Comminssion=='CommodityCommission')
+        {
+            this.GetCommodityCommission(this.MallApplyId);
+        }
+        
+    },
+    handleCurrentChange:function(page) 
+    {
+        this.page=page||this.page;
+        if (this.Comminssion=='BaseCommission') 
+        {
+            this.GetBaseCommission(this.MallApplyId);
+        }
+        if (this.Comminssion=='CategoryCommission') 
+        {
+            this.GetCategoryCommission(this.MallApplyId,this.AppId);
+        }
+        if(this.Comminssion=='CommodityCommission')
+        {
+            this.GetCommodityCommission(this.MallApplyId);
+        }
+    },
+    fetchData:function()
+    {
+        this.loading = true; 
+        this.$http.post('@Url.Action("GetMallAppy", "MallApply")',{PageIndex:1,PageSize:10000,AppId:'@ViewBag.appId'}).then(function(res){
+            this.loading = false;
+            this.tableData= res.body.data;
+        }).catch(function(response){
+            this.loading = false;
+            var start=response.body.indexOf("<title>"); 
+            var end=response.body.indexOf("</title>"); 
+            var str=response.body.substring(start+7,end);
+                this.$message({
+                    showClose: true,
+                    message:str,
+                    type: 'error'
+                    });
+        });              
+    },
+    SearchBaseCommission:function(index,row)
+    {    
+        this.Comminssion='BaseCommission';
+        this.EsAppId=row.EsAppId;
+        this.MallApplyId=row.Id;
+        this.dialogBaseCommissionVisible=true;
+        this.GetBaseCommission(this.MallApplyId);
+                    
+    },
+    SearchCategoryCommission:function(index,row)
+    {    
+        this.Comminssion='CategoryCommission';
+        this.EsAppId=row.EsAppId;
+        this.MallApplyId=row.Id;
+        this.AppId=row.AppId;
+        this.dialogCategoryCommissionVisible=true;
+        this.GetCategoryCommission(this.MallApplyId,this.AppId);
+                            
+    },
+    SearchCommodityCommission:function(index,row)
+    {
+        this.Comminssion='CommodityCommission';
+        this.EsAppId=row.EsAppId;
+        this.MallApplyId=row.Id;
+        this.AppId=row.AppId;
+        this.dialogCommodityCommission=true;
+        this.GetCommodityCommission(this.MallApplyId,this.AppId);
+    },
+    SearchhistoryBaseCommission:function()
+    {  
+         this.dialogBaseCommissionVisible=true;
+         this.GetBaseCommission(this.MallApplyId);
+    },
+    SearchhistoryCategoryCommission:function(index,row)
+    {  
+         this.dialogBaseCommissionVisible=true;
+         this.CategoryId=row.CategoryId;
+         this.GethistoryCategoryCommission(this.MallApplyId);
+    },
+    SearchhistoryCommodityCommission:function(index,row)
+    {  
+       this.dialogBaseCommissionVisible=true;
+       this.CommodityId=row.CommodityId;
+       this.GethistoryCommodityCommission(this.MallApplyId);
+    },
+    GetBaseCommission:function(MallApplyId)
+    {
+        this.loading = true; 
+        this.$http.post('@Url.Action("GetBaseCommission", "EsShopCommission")',{PageIndex:this.page,PageSize:this.pageSize,MallApplyId:MallApplyId}).then(function(res){
+            this.loading = false;
+            this.tableBaseCommission= res.body.data;
+            this.total=res.body.count;
+        }).catch(function(response){
+            this.loading = false;
+            var start=response.body.indexOf("<title>"); 
+            var end=response.body.indexOf("</title>"); 
+            var str=response.body.substring(start+7,end);
+                this.$message({
+                    showClose: true,
+                    message:str,
+                    type: 'error'
+                    });
+        });          
+    },
+    GethistoryCategoryCommission:function(MallApplyId)
+    {
+        this.loading = true; 
+        this.$http.post('@Url.Action("GethistoryCategoryCommissionlist", "EsShopCommission")',{PageIndex:this.page,PageSize:this.pageSize,MallApplyId:MallApplyId,CategoryId:this.CategoryId}).then(function(res){
+        this.loading = false;
+        this.tableBaseCommission= res.body.data;
+        this.total=res.body.count;
+        }).catch(function(response){
+        this.loading = false;
+        var start=response.body.indexOf("<title>"); 
+        var end=response.body.indexOf("</title>"); 
+        var str=response.body.substring(start+7,end);
+            this.$message({
+                showClose: true,
+                message:str,
+                type: 'error'
+                });
+       });          
+   },
+   GethistoryCommodityCommission:function(MallApplyId)
+   {
+      this.loading = true; 
+      this.$http.post('@Url.Action("GethistoryCommodityCommissionlist", "EsShopCommission")',{PageIndex:this.page,PageSize:this.pageSize,MallApplyId:MallApplyId,CommodityId:this.CommodityId}).then(function(res){
+        this.loading = false;
+        this.tableBaseCommission= res.body.data;
+        this.total=res.body.count;
+         }).catch(function(response){
+        this.loading = false;
+        var start=response.body.indexOf("<title>"); 
+        var end=response.body.indexOf("</title>"); 
+        var str=response.body.substring(start+7,end);
+            this.$message({
+                showClose: true,
+                message:str,
+                type: 'error'
+                });
+       });          
+    },
+    GetCategoryCommission:function(MallApplyId,AppId)
+    {  
+        this.loading = true; 
+        this.$http.post('@Url.Action("GetCategoryCommission", "EsShopCommission")',{PageIndex:this.page,PageSize:this.pageSize,MallApplyId:MallApplyId,AppId:AppId,EsAppId:this.EsAppId}).then(function(res){
+            this.loading = false;
+            this.tableCategoryCommission= res.body.data;
+            this.total=res.body.count;
+        }).catch(function(response){
+            this.loading = false;
+            var start=response.body.indexOf("<title>"); 
+            var end=response.body.indexOf("</title>"); 
+            var str=response.body.substring(start+7,end);
+                this.$message({
+                    showClose: true,
+                    message:str,
+                    type: 'error'
+                    });
+        }); 
+    },
+    GetCommodityCommission:function(MallApplyId,AppId)
+    {
+        this.loading = true; 
+        this.$http.post('@Url.Action("GetCommodityCommission", "EsShopCommission")',{PageIndex:this.page,PageSize:this.pageSize,MallApplyId:MallApplyId,AppId:AppId,EsAppId:this.EsAppId,CommodityName:this.searchForm.CommodityName}).then(function(res){
+            this.loading = false;
+            this.tableCommodityCommission= res.body.data;
+            this.total=res.body.count;
+        }).catch(function(response){
+            this.loading = false;
+            var start=response.body.indexOf("<title>"); 
+            var end=response.body.indexOf("</title>"); 
+            var str=response.body.substring(start+7,end);
+                this.$message({
+                    showClose: true,
+                    message:str,
+                    type: 'error'
+                    });
+        });  
+
+    }
+},
+mounted:function() {
+    ///初始化
+    this.fetchData();
+}
+})
+</script>
+}
+

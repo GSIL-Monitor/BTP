@@ -1,0 +1,221 @@
+body {
+    background: #f3f3f3;
+}
+
+.myDistribution {
+    width: 100%;
+    max-width: 500px;
+    margin: auto;
+    overflow: hidden;
+    font-family: 'Microsoft Yahei';
+}
+
+.bar-nav {
+    background: #b00900;
+}
+
+.bar-nav a, .bar-nav .fa-chevron-left {
+    color: #fff;
+}
+
+.bar-nav .fa-chevron-left:before {
+    margin-right: 5px;
+}
+
+.bar-nav .title {
+    color: #fff;
+}
+
+.myDistribution .u-grand {
+    width: 100%;
+    background-color: #fff;
+    border-bottom: 1px solid #e8e8e8;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+}
+
+.myDistribution .grand-total:nth-child(2) > div {
+    position: relative;
+}
+
+.myDistribution .u-grand p.speech {
+    width: 301px;
+    position: absolute;
+    background-color: #ffe8bf;
+    border: 1px solid #fec050;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    margin: 0;
+    font-size: 12px;
+    padding: 2px 5px;
+    top: 40px;
+    right: -10px;
+    color: #3e3e3e;
+    display: none;
+}
+
+.myDistribution .u-grand p.speech:before {
+    content: ' ';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid #ffe8bf;
+    right: 11px;
+    top: -6px;
+    z-index: 10;
+}
+
+.myDistribution .u-grand p.speech:after {
+    content: ' ';
+    position: absolute;
+    width: 0;
+    height: 0;
+    right: 10px;
+    top: -7px;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-bottom: 7px solid #fec050;
+}
+
+.myDistribution .u-grand > a {
+    width: 50%;
+    margin: 15px 0 18px;
+    float: left;
+    display: -webkit-box;
+    -webkit-box-pack: center;
+    position: relative;
+}
+
+.myDistribution .u-grand > a .under-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -18px;
+    height: 5px;
+    background: #FF0054;
+    padding: 0;
+}
+
+.myDistribution .u-grand > a .under-line > div {
+    position: absolute;
+    border: 5px solid transparent;
+    border-bottom-color: #FF0054;
+    top: -10px;
+    left: 50%;
+}
+
+.myDistribution .u-grand > a:nth-child(1) {
+    border-right: 1px solid #e8e8e8;
+}
+
+.myDistribution .u-grand > a > div {
+    height: 65px;
+    padding-top: 10px;
+}
+
+.myDistribution .u-grand > a > div > p {
+    float: left;
+    margin: 0;
+}
+
+.myDistribution .u-grand > a > div > p:nth-child(1) {
+    width: 30px;
+    height: 30px;
+}
+
+.myDistribution .u-grand > a > div > p:nth-child(1) > img {
+    display: block;
+    width: 30px;
+    height: 30px;
+}
+
+.myDistribution .u-grand .grand-money {
+    margin-left: 10px;
+}
+
+.myDistribution .u-grand .grand-money .query {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    text-align: center;
+    line-height: 16px;
+    color: #fff;
+    border-radius: 10px;
+    background-color: #fec04f;
+    font-size: 12px;
+    margin-left: 3px;
+    font-weight: bold;
+}
+
+.myDistribution .u-grand .grand-money > span {
+    font-size: 14px;
+    display: block;
+}
+
+.myDistribution .u-grand .grand-money > span:nth-child(1) {
+    line-height: 30px;
+    color: #3e3e3e;
+}
+
+.myDistribution .u-grand .grand-money > span:nth-child(2) {
+    color: #fe0151;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.income {
+    background: #fff;
+    font-size: .8rem;
+}
+
+.income .income-list > li {
+    border-bottom: 1px solid #e8e8e8;
+}
+
+.income .thead {
+    font-size: .875rem;
+    color: #FD6165;
+    background: #fcfcfc;
+    border-bottom: 1px solid #e2e2e2;
+    height: 50px;
+    line-height: 50px;
+    position: fixed;
+    top: 99px;
+    z-index: 10;
+    left: 0;
+    right: 0;
+}
+
+.scroll-load {
+    padding-top: 149px;
+}
+
+.income .thead li, .income .income-list ul li {
+    width: 25%;
+    text-align: center;
+}
+
+.income .income-list ul li {
+    height: 50px;
+    line-height: 36px;
+}
+
+.income .income-list .date div {
+    height: 17px;
+    line-height: 16px;
+}
+
+.income .income-list .date div:first-child {
+    margin-top: 9px;
+}
+
+.income .income-list .date div:last-child {
+    font-size: .75rem;
+    color: #a2a2a2;
+}

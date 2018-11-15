@@ -1,0 +1,402 @@
+body{
+    font-family: 'Microsoft Yahei';
+}
+.stay-become-group {
+    margin: 0 auto;
+    width: 100%;
+    max-width: 500px;
+    padding-bottom: 60px;
+}
+
+.tip-img {
+    height: 60px;
+    background: #EAFEF3;
+    border-bottom: 1px solid #E2F1E9;
+    text-align: center;
+}
+
+.tip-img .stay-become-group, .tip-img .no-become-group {
+    width: 105px;
+    margin-top: 6px;
+}
+
+.tip-img .activity-end {
+    margin-top: 8px;
+    width: 135px;
+}
+
+.tip-img .become-group-success {
+    margin-top: 6px;
+    width: 118px;
+}
+
+.become-group-info {
+    padding: 10px;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    position: relative;
+}
+
+.become-group-info .seal {
+    width: 50px;
+    height: 50px;
+    margin: 5px;
+}
+
+.become-group-info img {
+    width: 60px;
+    height: 60px;
+    margin-right: 10px;
+}
+
+.become-group-info .name-price {
+    -webkit-flex: 1;
+    flex: 1;
+    -webkit-box-flex: 1;
+}
+
+.become-group-info .name-price .name {
+    font-size: .875rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+     -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+   /*  height: 2.1rem;*/
+    margin-top: 5px;
+    line-height: 1.2;
+}
+
+.become-group-info .name-price .people-num {
+    font-size: .75rem;
+}
+
+.become-group-info .name-price .price {
+    font-size: .875rem;
+    color: #e4393c;
+    padding-left: 10px;
+}
+
+.member-time {
+    border-top: 5px solid #ddd;
+}
+
+.member-time .head-photo {
+    text-align: center;
+    padding: 10px 0;
+}
+
+.member-time .head-photo img {
+    width: 30px;
+    height: 30px;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+    margin: 3px;
+}
+
+.member-time .photo-num-tip {
+    font-size: .875rem;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.member-time .photo-num-tip span {
+    color: #FF0054;
+}
+
+.member-time .time {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.member-time .time .horizontal-line {
+    height: 1px;
+    background: #D8D8D8;
+    -webkit-flex: 1;
+    flex: 1;
+    -webkit-box-flex: 1;
+    margin: 10px 8px;
+}
+
+.member-time .time .end-time span {
+    font-size: .8rem;
+    float: left;
+    height: 20px;
+    line-height: 22px;
+    margin: 0 1px;
+}
+
+.member-time .time .end-time .hour, .member-time .time .end-time .minute, .member-time .time .end-time .seconds {
+    background: #404040;
+    color: #fff;
+    width: 20px;
+    text-align: center;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+}
+
+.member-time .member {
+    height: 40px;
+    line-height: 40px;
+    padding: 0 10px;
+    font-size: .8rem;
+    position: relative;
+    border-top: 1px solid #E3E3E3;
+    border-bottom: 1px solid #E3E3E3;
+    margin-bottom: 15px;
+    color: #4F4F4F;
+}
+
+.member-time .photo-num-tip + .member {
+    margin-top: 20px;
+}
+
+.member-time .head-photo + .member {
+    margin-top: 8px;
+}
+
+.member-time .member.gray {
+    background: #B9B9B9;
+}
+
+.member-time .member img {
+    width: 30px;
+    height: 30px;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+    float: left;
+    margin-top: 5px;
+}
+
+.member-time .member .identity, .member-time .member .tel {
+    float: left;
+}
+
+.member-time .member .identity {
+    margin: 0 5px;
+}
+
+.member-time .member .begin-time, .member-time .member .behavior {
+    float: right;
+}
+
+.member-time .member .behavior {
+    margin-left: 5px;
+}
+
+.member-time .member .triangle {
+    border: 8px solid transparent;
+    border-bottom-color: #B9B9B9;
+    position: absolute;
+    top: -16px;
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+}
+
+.member-time .member .num-tip {
+    float: left;
+    margin-left: 5px;
+    color: #B7B7B7;
+}
+
+.member-time .member .num-tip i {
+    font-style: normal;
+}
+
+.activity-instruction {
+    padding: 0 10px;
+    border-top: 5px solid #ddd;
+}
+
+.activity-instruction .instruction-head {
+    height: 34px;
+    line-height: 34px;
+}
+
+.activity-instruction .instruction-head span {
+    font-size: .875rem;
+}
+
+.activity-instruction .instruction-head a {
+    float: right;
+    font-size: .8rem;
+    color: #565555;
+    line-height: 1.2;
+    padding: 10px 0 9px;
+}
+
+.activity-instruction .instruction-head a:active {
+    opacity: .8;
+}
+
+.activity-instruction .steps {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+}
+
+.activity-instruction .steps .step, .activity-instruction .steps .step > div {
+    width: 69px;
+    height: 46px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.activity-instruction .steps .step {
+    font-size: .75rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.activity-instruction .steps .step > div {
+    border: 1px dashed #999;
+    color: #666;
+}
+
+.activity-instruction .steps .step.active > div {
+    border: 1px dashed #ff7800;
+    color: #ff7800;
+}
+
+.activity-instruction .steps .step .triangle {
+    width: 30px;
+    height: 30px;
+    background: #999;
+    -webkit-transform: rotate(45deg);
+    position: absolute;
+    top: -15px;
+    left: -15px;
+}
+
+.activity-instruction .steps .step.active .triangle {
+    background: #ff7800;
+}
+
+.activity-instruction .steps .step .step-text {
+    margin: 8px 0 0 10px;
+}
+
+.activity-instruction .steps .step .step-num {
+    color: #fff;
+    position: absolute;
+    top: 0;
+    left: 4px;
+}
+
+.activity-instruction .steps span {
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+    flex: 1;
+    color: #999;
+    height: 46px;
+    line-height: 46px;
+    text-align: center;
+}
+
+.activity-instruction .activity-tip {
+    color: #ff7800;
+    font-size: .75rem;
+    line-height: 18px;
+    padding: 10px 0;
+}
+
+.activity-instruction .activity-tip img {
+    width: 16px;
+    vertical-align: bottom;
+    margin-right: 5px;
+}
+
+.stay-become-group .fixed-submit-btn {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 44px;
+    border-top: 1px solid #e8e8e8;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    background: #fff;
+}
+
+.stay-become-group .fixed-submit-btn .home {
+    width: 54px;
+    text-align: center;
+}
+
+.stay-become-group .fixed-submit-btn .home img {
+    width: 30px;
+    margin-top: 7px;
+}
+
+.stay-become-group .fixed-submit-btn .submit-btn {
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+    flex: 1;
+    background: #e4393c;
+    text-align: center;
+    line-height: 44px;
+    color: #fff;
+}
+
+.stay-become-group .fixed-submit-btn > div:active {
+    opacity: .8;
+}
+
+.share-tips{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    max-width: 500px;
+    margin: 0 auto;
+    background: rgba(0,0,0,.7);
+}
+.share-tips .share-tips-content{
+    position: relative;
+    top:0;
+    left:0;
+}
+.share-tips .share-tips-content:before{
+    content: '';
+    width: 58px;
+    height: 80px;
+    background-image: url(/Content/Mobile/share-angle.png);
+    background-size: 100% 100%;
+    display: block;
+    position: absolute;
+    bottom: 20px;
+    right: 10px;
+}
+.share-tips .share-tips-content{
+    margin-top: 90px;
+    padding-right: 20px;
+    color: #fff;
+    font-size: 14px;
+    text-align: center;
+}
+.friends{
+    position: relative;
+    top: 0;
+    left: 0;
+}
+.friends:after{
+    display: block;
+    position: absolute;
+    right: -15px;
+    top: 2px;
+    content: '';
+    width: 15px;
+    height: 15px;
+    background-image: url(/Content/Mobile/pengyouquan.png);
+    background-size: 100% 100%;
+}
+.font-blue{
+    padding: 0 5px;
+    color: rgb(93,192,219);
+}

@@ -1,0 +1,486 @@
+﻿@{
+    ViewBag.Title = "上传文件";
+    Layout = null;
+}
+@model Jinher.AMP.BTP.Deploy.CategoryAdvertiseDTO 
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.jhtablebox.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/ui.jqgrid.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/css/common.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.datepicker.css" />
+    <link rel="stylesheet" type="text/css" href="/Scripts/uploadify/uploadify.css" />
+    <link type="text/css" href="/Content/default/jquery.ui.all.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/jqueryui/Timepicker/jquery-ui-timepicker-addon.min.css")" />
+    <script type="text/javascript" src="/Scripts/jquery.js"></script>
+    <script type="text/javascript" src="/Scripts/jquery.ui.base.js"></script>
+    <script type="text/javascript" src="/Scripts/i18n/jquery.ui-zh.js"></script>
+    <script type="text/javascript" src="/Scripts/Pager/jquery.ui.jhpager.js"></script>
+    <script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.datepicker.js"></script>
+    <script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.jhdatetime.js"></script>
+    <script src="/Scripts/DatePicker/Timepicker/jquery-ui-timepicker-addon.min.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/Timepicker/i18n/jquery-ui-timepicker-zh-CN.js" type="text/javascript"></script>
+    <script type="text/javascript" src="/Scripts/i18n/jquery.ui.datepicker-zh.js"></script>
+    <script type="text/javascript" src="/Scripts/uploadify/jquery.uploadify.min.js"></script>
+    <script type="text/javascript" src="/Scripts/Grid/jquery.grid.base.js"></script>
+    <script type="text/javascript" src="/Scripts/jquery.extend.js"></script>
+    <script type="text/javascript" src="/Scripts/TableBox/jquery.ui.jhtablebox.js"></script>
+    <script src="/Scripts/jquery.cookie.js" type="text/javascript"></script>
+    <style>
+        .uploadify-queue
+        {
+            margin-bottom: 1em;
+        }
+        
+        .uploadify-queue-item
+        {
+            background-color: #F5F5F5;
+            -webkit-border-radius: 3px;
+            -moz-border-radius: 3px;
+            border-radius: 3px;
+            font: 11px Verdana,Geneva,sans-serif;
+            margin-top: 5px;
+            max-width: 350px;
+            padding: 10px;
+        }
+        
+        .uploadify-queue-item .cancel a
+        {
+            background: url('/Images/uploadify-cancel.png') 0 0 no-repeat;
+            float: right;
+            height: 16px;
+            text-indent: -9999px;
+            width: 16px;
+        }
+        
+        .uploadify-queue-item.completed
+        {
+            background-color: #E5E5E5;
+        }
+        .uploadify-progress
+        {
+            background-color: #E5E5E5;
+            margin-top: 10px;
+            width: 100%;
+        }
+        .uploadify-progress-bar
+        {
+            background-color: #09F;
+            height: 3px;
+            width: 1px;
+        }
+        .uploadify-error
+        {
+            background-color: #FDE5DD !important;
+        }
+        
+        .mainBack
+        {
+            font-size: 16px;
+        }
+        
+        .uploadify-button-text
+        {
+        }
+    </style>
+    <script language="javascript" type="text/javascript">
+        try {
+            var rootPath = "/";
+            var arr = window.location.host.split('.');
+            if (arr.length > 0) {
+                document.domain = arr[arr.length - 2] + "." + arr[arr.length - 1];
+            }
+        } catch (err) { }
+        function getCurrency() {
+            return "&#165;";
+        }    
+    </script>
+</head>
+<body class="mainBack">
+    <form action="/" method="post" enctype="multipart/form-data">
+    <div>
+        新建/编辑品类广告
+    </div>
+    <div id="divAdvertiseCreate" class="content ml20">
+        <div id="queue">
+        </div>
+        <div id="queueVideo">
+        </div>
+        <ul>
+            <li class="mt10 ml20">* 品类广告名称
+                <input id="txtAdvertiseName" type="text" class="inp-txt w300" name="txtAdvertiseName"
+                    maxlength="30" />
+            </li>
+            <li class="mt10 ml20">* 广告宣传图 <span>(广告图片应在100K以内,尺寸为480x212)</span>
+                <input id="intFileImg" type="file" name="intFileImg" multiple="true" />
+                <input type="hidden" id="txtHiddenImg" />
+                <img id="imgAdvertise" src="" style="display: none" />
+            </li>
+            <li class="mt10 ml20">广告视频 (广告视频应在5M以内)
+                <input id="intFileVideo" type="file" name="intFileVideo" multiple="true" />
+                <input type="hidden" id="txtHiddenVideo" />
+            </li>
+            <li class="mt20 ml20">* 投放时间
+                <input id="txtBeginTime" type="text" class="inp-txt w100" />
+                -
+                <input id="txtEndTime" type="text" class="inp-txt w100" />
+            </li>
+            <li class="mt10 ml20">
+                <div>
+                    <span>* 推广链接</span>
+                    <ul>
+                        <li class="mt10 ml20">
+                            <input type="radio" name="radExtension" value="1" checked="checked" />
+                            选择专题活动 <a href="javascript:GetZTInfo()">选择专题活动</a><label id="lblSpecial"></label>
+                        </li>
+                        <li class="mt10 ml20">
+                            <input type="radio" name="radExtension" value="2" />
+                            会员服务 <a href="javascript:GetUserInfo();">选择会员服务</a>
+                            <label id="lblUserService">
+                            </label>
+                        </li>
+                        <li class="mt10 ml20">
+                            <input type="radio" name="radExtension" value="3" />
+                            商品 <a href="javascript:GetProduct();">选择商品 </a>
+                            <label id="lblCommodity">
+                            </label>
+                        </li>
+                        <li class="mt10 ml20">
+                            <input type="radio" name="radExtension" value="4" />
+                            自定义链接
+                            <input type="text" name="txtThisUrl" value="" id="txtThisUrl" />
+                        </li>
+                    </ul>
+                </div>
+                <input type="hidden" name="hidAdverID" value="" id="hidAdverID" />
+                <input type="hidden" name="hidUserService" value="" id="hidUserService" />
+            </li>
+        </ul>
+        <input type="button" value="确定" id="butAdvertise" class="btn120" />
+    </div>
+    </form>
+    <div id="divCommodity">
+        <iframe frameborder="0" width="100%" height="100%" scrolling="no" title="商品" id="ifCommodtiy">
+        </iframe>
+    </div>
+    <div id="divUserService" class="content" style="display: none;">
+        <ul style="width: 500px;">
+            <li>
+                <input type="radio" value="会员积分" name="radUserService" />
+                会员积分</li>
+            <li>
+                <input type="radio" value="电商搜索" name="radUserService" />
+                电商搜索 </li>
+            <li>
+                <input type="radio" value="油卡充值" name="radUserService" />
+                油卡充值
+            </li>
+            <li>
+                <input type="radio" value="找店加油" name="radUserService" />
+                找店加油 </li>
+            <li>
+                <input type="radio" value="到店洗车" name="radUserService" />
+                到店洗车 </li>
+            <li>
+                <input type="radio" value="自驾游" name="radUserService" />
+                自驾游 </li>
+            <li>
+                <input type="radio" value="手机充值" name="radUserService" />
+                手机充值 </li>
+            <li>
+                <input type="radio" value="易捷海购" name="radUserService" />
+                易捷海购 </li>
+            <li>
+                <input type="radio" value="扫码购" name="radUserService" />
+                扫码购 </li>
+            <li>
+                <input type="radio" value="我的加油卡" name="radUserService" />
+                我的加油卡 </li>
+            <li>
+                <input type="radio" value="加油卡交易查询" name="radUserService" />
+                加油卡交易查询 </li>
+            <li>
+                <input type="radio" value="兑换包" name="radUserService" />
+                兑换包 </li>
+            <li> <input type="radio" value="电商搜索" name="radUserService" />
+                电商搜索 </li>            
+        </ul>
+        <input type="button" value="确定" id="butUserService" class="btn120" />
+        <input type="button" value="取消" id="butCancelUserService" class="btn120" />
+    </div>
+    @{
+        Html.RenderPartial("ThematicActivities");
+    }
+    <script language="javascript" type="text/javascript">
+        var advertiseID = "";
+        @if (!String.IsNullOrEmpty(Request["advertiseId"]))
+        {
+            <text>
+                advertiseID ="@Request["advertiseId"]";
+            </text>
+        }
+
+        $(function () {
+            $("#txtBeginTime").datetimepicker();
+            $("#txtEndTime").datetimepicker();
+
+            //            $("#txtEndTime").datepicker({
+            //                changeMonth: true,
+            //                changeYear: true,
+            //                showOtherMonths: true,
+            //                selectOtherMonths: true,
+            //                timer: false,
+            //                dateFormat: 'yy-mm-dd'
+            //            });
+
+            @if (Model != null)
+            {
+                <text>
+                    $("#txtAdvertiseName").val("@Model.AdvertiseName");
+                    @if (@Model.AdvertiseType == 0)
+                    {
+                        <text>
+                            $("#txtHiddenImg").val("@Model.AdvertiseImg");
+                            $("#imgAdvertise").attr("src","@Model.AdvertiseImg");
+                            $("#imgAdvertise").show();
+                        </text>
+                    }
+                    else
+                    {
+                        <text>
+                            $("#txtHiddenVideo").val("@Model.AdvertiseMedia");
+                        </text>
+                    }
+
+                    $("#txtBeginTime").val("@Model.PutTime.ToString("yyyy-MM-dd hh:mm")");
+                    $("#txtEndTime").val("@Model.PushTime.ToString("yyyy-MM-dd hh:mm")");
+                    $("input[name='radExtension'][value='@Model.spreadEnum']").prop("checked",true);
+                    $("#txtThisUrl").val("@Model.FreeUrl");
+                    $("#hidAdverID").val("@Model.AdverID");
+                    $("#hidUserService").val("@Model.UserService");
+                    
+                    var radioSel = @Model.spreadEnum;           
+                    switch(radioSel)
+                    {
+                        case 1:$("#lblSpecial").html("@Model.UserService");
+                        case 2:$("#lblUserService").html("@Model.UserService");
+                        case 3:$("#lblCommodity").html("@Model.UserService");
+                    }
+
+
+                </text>
+            }
+
+            $("#intFileImg").uploadify({
+                'swf': '@Url.Content("~/scripts/uploadify/uploadify.swf")',
+                'auto': true,
+                'multi': false,
+                'queueID': 'queue', //上传进度展示
+                'width': 80,
+                'height': 28,
+                'buttonText': '上传图片',
+                'buttonImage': '/Content/images/btn80.png',
+                'fileTypeDesc': 'Image',
+                'fileTypeExts': '*.jpg;*.png',
+                'preventCaching': true,
+                'uploader': '/AppImage/DirectUploadWH',
+                'formData': { "iHeight": 500, "iWidth": 500 },
+                'method': 'Post',
+                'onUploadSuccess': function (file, data, response) {
+                    if (data != "false") {
+                        $("#txtHiddenImg").val(data);
+                        $("#imgAdvertise").show();
+                        $("#imgAdvertise").attr("src", data);
+                    } else {
+                        alert("上传失败！");
+                    }
+                },
+                'onUploadError': function (file, errorCode, errorMes) {
+                    alert("上传失败，请稍后再试");
+                },
+                //            'onFallback': function () {
+                //                alert("您未安装FLASH控件，无法上传图片！请安装FLASH控件后再试");
+                //            },
+                fileSizeLimit: '100KB',
+                onSelectError: function (file, errorCode, errorMsg) {
+                    switch (errorCode) {
+                        case SWFUpload.QUEUE_ERROR.FILE_EXCEEDS_SIZE_LIMIT:
+                            this.queueData.errorMsg = '建议图片小于100K！';
+                            break;
+                    }
+                }
+            });
+
+            $("#intFileVideo").uploadify({
+                'swf': '@Url.Content("~/scripts/uploadify/uploadify.swf")',
+                'auto': true,
+                'multi': false,
+                'queueID': 'queueVideo', //上传进度展示
+                'width': 80,
+                'height': 28,
+                'buttonText': '上传视频',
+                'buttonImage': '/Content/images/btn80.png',
+                'fileTypeDesc': 'Image',
+                'fileTypeExts': '*.MP4;*.amv;*.wmv',
+                'preventCaching': true,
+                'uploader': '/AppImage/DirectUploadWH',
+                'formData': { "iHeight": 500, "iWidth": 500 },
+                'method': 'Post',
+                'onUploadSuccess': function (file, data, response) {
+                    if (data != "false") {
+                        $("#txtHiddenVideo").val(data);
+                    } else {
+                        alert("上传失败！");
+                    }
+                },
+                'onUploadError': function (file, errorCode, errorMes) {
+                    alert("上传失败，请稍后再试");
+                },
+                'onFallback': function () {
+                    alert("您未安装FLASH控件，无法上传图片！请安装FLASH控件后再试");
+                },
+                fileSizeLimit: '5MB',
+                onSelectError: function (file, errorCode, errorMsg) {
+                    switch (errorCode) {
+                        case SWFUpload.QUEUE_ERROR.FILE_EXCEEDS_SIZE_LIMIT:
+                            this.queueData.errorMsg = '建议视频小于5M！';
+                            break;
+                    }
+                }
+            });
+
+
+            $("input[name='radExtension']").click(function () {
+                if (this.value != "1" && this.value != "3") {
+                    $("#hidAdverID").val(-1);
+                }
+            });
+
+            $("#butAdvertise").click(function () {
+                if (!validate()) {
+                    return;
+                }
+                var postData = { AdvertiseID:advertiseID, "CategoryId": "@ViewBag.CategoryID", "adName": $("#txtAdvertiseName").val(), "adImg": $("#txtHiddenImg").val(), "adVideo": $("#txtHiddenVideo").val(), "bgDate": $("#txtBeginTime").val(), "edDate": $("#txtEndTime").val(), "LinkId": $("input[name='radExtension']:checked").val(), "AdverID": $("#hidAdverID").val(), "UserServiceName": $("#hidUserService").val(), "LinkUrl": $("#txtThisUrl").val() };
+
+                $.ajax({
+                    url: 'AddAdvertiseMent?',
+                    type: 'post',
+                    data: postData,
+                    beforeSend: function () {
+                        //				clearInterval(iID);
+                    },
+                    complete: function () {
+                        
+                    },
+                    success: function (data) {
+                        if (data.Result) {
+                            //alert("分类活动创建成功!");
+                            opener.reLoadAdvetise("@ViewBag.CategoryID");
+                            window.setTimeout(window.close(),5000);
+                        }
+                        else {
+                            alert(data.Messages);
+                        }
+                    },
+                    error: function (msg) {
+                        alert("分类活动上传失败!");
+                    }
+                });
+            });
+
+            $("#butUserService").click(function () {
+                $("#hidUserService").val($("input[name='radUserService']:checked").val());
+                $("#lblUserService").html($("input[name='radUserService']:checked").val());
+                $("#divUserService").jhtablebox("hide");
+            });
+
+            $("#butCancelUserService").click(function () {
+                $("#divUserService").jhtablebox("hide");
+            });
+        });
+
+        function GetZTInfo() {
+            $("#divThemActive").jhtablebox({
+                title: "添加专题活动",
+                width: 850,
+                height: 800,
+                modal: true,
+                resizable: false,
+                beforeClose: function (e) {
+                    
+                }
+            });
+        }
+
+        function GetProduct() {
+//          window.open('/Commodity/SelectCommodityList?AppId=@ViewBag.AppId', 'newwindow', 'height=800, width=900, top=0, left=0, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no');
+
+            $("#ifCommodtiy").attr("src", "/Commodity/SelectCommodityList?AppId=@ViewBag.AppId");
+
+            $("#divCommodity").jhtablebox({
+                title: "添加商品信息",
+                width: $(window).width(),
+                height: $(window).height(),
+                modal: true,
+                resizable: false,
+                beforeClose: function (e) {
+                    
+                }
+            });
+        }
+
+        function GetUserInfo() {
+            $("#divUserService").jhtablebox({
+                title: "添加会员服务",
+                width: 500,
+                height: 400,
+                modal: true,
+                resizable: false,
+                beforeClose: function (e) {
+                    
+                }
+            });
+        }
+
+        function validate() {
+            if ($("#txtAdvertiseName").val() == "") {
+                alert("请添加标题");
+                return false;
+            }
+
+            if ($("#txtHiddenImg").val() == "") {
+                alert("请上传图片");
+                return false;
+            }
+
+            if ($("#txtBeginTime").val() == "" || $("#txtEndTime").val() == "") {
+                alert("请选择投放时间!");
+                return false;
+            }
+
+            if ($("#hidAdverID").val() == "") {
+                alert("请选择推广链接!");
+                return false;
+            }
+
+            if ($("#txtEndTime").val() < $("#txtBeginTime").val()) {
+                alert("结束时间不能小于开始时间!");
+                return false;
+            }
+
+            return true;
+        }
+
+        function setAwardID(awID,awName)
+        {
+            $("#hidAdverID").val(awID);
+            $("#lblCommodity").html(awName);
+            $("#divCommodity").jhtablebox("hide");
+            $("#hidUserService").val(awName);
+
+        }
+    </script>
+</body>
+</html>

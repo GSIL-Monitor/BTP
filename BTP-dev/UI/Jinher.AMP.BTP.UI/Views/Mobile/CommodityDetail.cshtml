@@ -1,0 +1,1543 @@
+﻿@using System.Web
+@{
+    Layout = "~/Views/Shared/_MobileLayout.cshtml";
+    bool noCommodity = string.IsNullOrEmpty(Request["commodityId"]) || Request["commodityId"] == Guid.Empty.ToString();
+    string connectionStyle = ViewBag.IsShowConnection ? "" : "hide";
+}
+@helper Currency()
+    {
+    @Jinher.AMP.BTP.UI.Util.MobileCookies.GetCurrency();
+}
+@section CssStyles{
+    <link href="/Content/Mobile/style/base.css" rel="stylesheet" type="text/css" />
+    <link href="/Content/Mobile/style/mycart.css" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+        /*修改*/
+        #divMasRoot > iframe
+        {
+            max-width: 500px !important;
+        }
+        body
+        {
+            width: 100%;
+            max-width: 500px !important;
+            margin: 0 auto;
+        }
+        #footer
+        {
+            padding: 10px 0;
+            max-width: 500px;
+        }
+        #sendNotifications
+        {
+            background-color: #ff0054;
+            color: #fff;
+            cursor: pointer;
+        }
+        /**/
+        .fu
+        {
+            bottom: 5px !important;
+        }
+        .footer_4
+        {
+            border-radius: 4px;
+            background-color: #e0e0e0;
+            text-align: center;
+            color: #505050;
+            font-size: 1.3em;
+            letter-spacing: 3px;
+            padding: 3.5% 10%;
+            display: inline-block;
+            margin-left: 30px;
+        }
+        #items
+        {
+            background-color: #fff;
+        }
+        .footer_2
+        {
+            font-size: 1.3em !important;
+            padding: 3.5% 17% !important;
+        }
+        .span_2
+        {
+            background: url(/Content/Mobile/sub_hover.png) left no-repeat;
+            margin-right: 0px;
+        }
+        .span_3
+        {
+            background: url(/Content/Mobile/add_hover.png) right no-repeat;
+            margin-left: 0px;
+        }
+        .span_com
+        {
+            width: 26px;
+            height: 26px;
+            margin-top: 0.2em !important;
+            background-size: 25px 25px;
+        }
+        #crowdwin img
+        {
+            width: 50px;
+            height: auto;
+        }
+        
+        
+        .black_overlay
+        {
+            display: none;
+            position: absolute;
+            top: 0%;
+            left: 0%;
+            width: 100%;
+            height: 100%; /*background-color: #EEEEEE;*/
+            z-index: 99998;
+            -moz-opacity: 0.8;
+            opacity: .80;
+            filter: alpha(opacity=80);
+        }
+        .white_content
+        {
+            display: none;
+            position: absolute;
+            top: 10%;
+            left: 15%;
+            width: 70%;
+            height: 400px;
+            padding: 1px;
+            border: 1px solid #aaa;
+            background-color: white;
+            z-index: 99999;
+            overflow: auto;
+            overflow: hidden;
+        }
+        .HidHeader
+        {
+            height: 45px;
+            width: 100%;
+            background: url("../../Content/Mobile/header.png") no-repeat center top;
+            background-size: contain;
+        }
+        .HidFooter
+        {
+            text-align: center;
+            height: 45px;
+            line-height: 45px;
+            width: 100%;
+            background: url("../../Content/Mobile/footer.png") repeat-x;
+            background-size: contain;
+        }
+        .HidFooter a
+        {
+            color: #0055aa;
+            text-decoration: underline;
+        }
+        .contentImg img
+        {
+            width: 100%;
+            height: auto;
+        }
+        .time-item
+        {
+            text-align: left;
+        }
+        .time-item strong
+        {
+            color: rgb(181, 22, 26);
+            width: 35px;
+            height: 35px;
+            line-height: 35px;
+            font-size: .9rem;
+            font-family: Arial;
+            margin-right: 5px;
+            border-radius: 3px; /*box-shadow: 1px 1px 3px rgba(0,0,0,0.2);background: rgb(181, 22, 26);*/
+            display: inline-block;
+            text-align: center;
+            float: right;
+        }
+        .time-item span
+        {
+            display: inline-block;
+            float: right;
+        }
+        #day_show
+        {
+            float: left;
+            line-height: 49px;
+            color: #c71c60;
+            font-size: 32px;
+            margin: 0 10px;
+            font-family: Arial,Helvetica,sans-serif;
+        }
+        .item-title .unit
+        {
+            background: none;
+            line-height: 49px;
+            font-size: 24px;
+            padding: 0 10px;
+            float: left;
+        }
+        .hover_text
+        {
+            margin-top: 0;
+            float: right;
+            height: 35px;
+            line-height: 35px;
+        }
+        .hour_wrap
+        {
+            float: right;
+            margin-top: -12px;
+            height: 46px;
+            overflow: hidden;
+            padding-right: 7%;
+        }
+        .time-item
+        {
+            clear: both;
+            height: 35px;
+            padding-top: 10px;
+            padding-right: 6px;
+            overflow: hidden;
+        }
+        .hover_point
+        {
+            font-size: 20px;
+            padding-top: 4px;
+        }
+        .yhzknum
+        {
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+            padding: 0 6px;
+            background-color: rgba(230,220, 228,.2);
+            color: #E4393C;
+            font-size: 12px;
+            line-height: 1.5;
+            text-align: center;
+        }
+        .zcz
+        {
+            float: right;
+            padding: 1px 4px;
+            font-size: .6rem;
+            background-color: #000;
+            color: #fff;
+            display: none;
+        }
+        
+        
+        .detail_cmt
+        {
+            border-bottom: 1px solid #ddd;
+            background: #fff;
+        }
+        .detail_cmt .cmt_list_wrap
+        {
+            padding: 0 10px;
+        }
+        .detail_cmt .cmt_list
+        {
+            font-size: 12px;
+            color: #333;
+            margin-bottom: -1px;
+        }
+        .detail_cmt .cmt_list li
+        {
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        .detail_cmt .cmt_list
+        {
+            font-size: 12px;
+            color: #333;
+            margin-bottom: -1px;
+        }
+        .detail_cmt .cmt_cnt
+        {
+            line-height: 1.3rem;
+            padding: 5px 0;
+            word-break: break-all;
+            text-align: left;
+            margin-top: 10px;
+        }
+        .detail_cmt .cmt_att
+        {
+            margin-right: -10px;
+            padding-bottom: 4px;
+        }
+        .detail_cmt .cmt_user
+        {
+            position: relative;
+        }
+        .detail_cmt .cmt_user .user
+        {
+            display: inline-block;
+            position: absolute;
+            left: 2px;
+            top: 4px;
+            max-width: 8.2em;
+            vertical-align: middle;
+        }
+        .buy_area .old_price_wrap, .shop_info_wrap .shop_name, .detail_cmt .cmt_user .user
+        {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .detail_cmt .cmt_user .tip
+        {
+            color: #999;
+            margin: 0 100px 0 8.2em;
+        }
+        
+        
+        .detail_cmt .cmt_user .date
+        {
+            position: absolute;
+            width: 100px;
+            text-align: right;
+            color: #999;
+            right: 2px;
+            top: 4px;
+        }
+        .detail_cmt .cmt_sku
+        {
+            color: #999;
+        }
+        
+        
+        .detail_cmt .cmt_list_more
+        {
+            text-align: center;
+            line-height: 44px;
+            display: block;
+        }
+        
+        .detail_cmt
+        {
+            font-family: Helvetica,STHeiti STXihei, Microsoft JhengHei, Microsoft YaHei, Arial;
+            line-height: 1.5;
+            color: #666;
+        }
+        .footer_6
+        {
+            border-radius: 4px;
+            background-color: #E0E0E0;
+            text-align: center;
+            color: #505050;
+            font-size: 1.3em;
+            letter-spacing: 3px;
+            padding: 3.5% 10%;
+            display: inline-block;
+            margin-left: 30px;
+        }
+        #number .numjj
+        {
+            display: inline-block;
+            padding: 0px;
+            text-align: center;
+            line-height: 25px;
+            background: none;
+            margin: 0 !important;
+        }
+        #number .span_number
+        {
+            margin: 0 !important;
+            height: 25px;
+            text-align: center;
+            -webkit-appearance: none;
+        }
+        .ui-notice
+        {
+            width: 100%;
+            max-width: 500px;
+            margin: auto;
+            overflow: hidden;
+            margin-top: 50px;
+        }
+        .ui-notice p
+        {
+            margin: 20px auto 40px;
+            text-align: center;
+            color: #999;
+        }
+        .ui-notice i
+        {
+            display: block;
+            text-align: center;
+            font-size: 100px;
+            color: #ddd;
+        }
+        
+        .loginTitle
+        {
+            color: #a1a1a1;
+            font-size: 14px;
+        }
+        #btnLogin
+        {
+            width: 170px;
+            height: 40px;
+            font-size: 15px;
+            line-height: 28px;
+        }
+        .li_disable
+        {
+            opacity: .3;
+        }
+        
+        .commission
+        {
+            color: #FF0054;
+            margin: 0;
+            margin-right: 5px;
+        }
+        .commission-mark img
+        {
+            width: 24px;
+            height: 24px;
+        }
+        .pull-right
+        {
+            float: right;
+        }
+        #btnDistribute51
+        {
+            background-color: #FF0054;
+            border-color: #cd0044;
+            color: #fff;
+            border: 1px solid #FF0054;
+            position: relative;
+            display: inline-block;
+            padding: 6px 8px 7px;
+            margin-bottom: 0;
+            font-size: .8rem;
+            font-weight: 400;
+            line-height: 1;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: top;
+            cursor: pointer;
+            outline: none 0;
+            -webkit-border-radius: 3px;
+            -moz-border-radius: 3px;
+            border-radius: 3px;
+        }
+        
+        .swiper-notice
+        {
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 9;
+            margin: 0;
+            font-size: 14px;
+            padding: 10px; /*background: rgba(228,113,180,0.5);*/
+            background: rgba(0,0,0,0.5);
+            color: #fff;
+            box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            padding-right: 24px;
+        }
+        #divRegOrDownloadTip > a
+        {
+            position: absolute;
+            right: 6px;
+            top: 9px;
+            display: inline-block;
+            border-radius: .8rem;
+            width: 1.3rem;
+            height: 1.3rem;
+            font-size: 0.9rem;
+            background-color: #000;
+            color: #fff;
+            text-decoration: none;
+            text-align: center;
+            line-height: 1.5;
+        }
+        .img_item
+        {
+            -webkit-transition: left 0.5s ease;
+        }
+    </style>
+}
+<head>
+    <title>商品详情</title>
+</head>
+@if (noCommodity)
+{
+    <div id="box" style="padding: 0">
+        <div id="header">
+            <span class="header_span_1_2"></span><span class="header_span_2">商品详情</span>
+        </div>
+        <div class="ui-notice">
+            <i>
+                <img src="../../Content/Mobile/redredenvelope/fail.png" alt="" style="margin: auto;
+                    width: 160px;">
+            </i>
+            <p class="loginTitle">
+                商品不存在</p>
+        </div>
+    </div>
+}
+else
+{
+    <div id="box" style="padding: 0; border-top: 0px;">
+        <div id="header">
+            <span class="header_span_1_2"></span><span class="header_span_2">商品详情</span>
+        </div>
+        <input type="hidden" id="selfTakeFlag" />
+        <div id="divRegOrDownloadTip" style="position: relative;">
+            <p id="pDownload" class="swiper-notice" style="display: none;">
+                点击此处下载<span id="spanAppName"></span>App,管理佣金和下级分销商
+            </p>
+@*            <p id="pRegist" class="swiper-notice" style="display: none;">
+                注册就能成为分销商拿佣金哦，点此立即注册</p>*@
+            <a href="javascript:void(0);">×</a>
+        </div>
+        <div id="img" class="clearFloat">
+            <div id="make">
+            </div>
+            <img src="/Content/Mobile/2.jpg" class="img noDisplay" alt="" id="clone_img_element" />
+            <div style="min-height: 280px;">
+                <ul class="img_item">
+                    <li>
+                        <img src="/Content/Mobile/com_default.png" style="width: 100%; height: auto;" />
+                    </li>
+                </ul>
+            </div>
+            <div id="promotionMsg" style="display: none; position: absolute; top: 0; left: 0;
+                right: 0; bottom: 0; z-index: 129; pointer-events: none;">
+                <div style="position: absolute; top: 50%; left: 50%; width: 60px; height: 60px; margin-left: -30px;
+                    margin-top: -30px; background-color: rgba(0,0,0,.8); border-radius: 50%; color: #fff;
+                    line-height: 60px; text-align: center;">
+                </div>
+            </div>
+            <!-- <div class="title">
+                     <div class="title_bg">
+                     </div>
+                     <p>
+                     </p>
+                 </div>  -->
+        </div>
+        <div id="property" style="background:#fff;">
+            <h1 id="title">
+            </h1>
+            <div id="cmdtyProperties" style="float: left;padding-left: 15px;">
+            </div>
+            <span id="spanCommission" class="pull-right" style="position: relative; top: -12px;
+                display: none;"><span class="commission-mark">
+                    <img src="/Content/Mobile/zphStyle/images/commission.png" /></span> <span class="commission">
+                        @Currency()0.00</span><a href="/ShareRedEnvelope/ShowRuleDescription/"><span class="commission-mark"><img
+                            src="/Content/Mobile/zphStyle/images/assetsbtn.png" /></span></a>
+            </span>
+            <div id="divDistribute51" style="display: none; border-top: 1px solid #e5e5e5; height: 36px;
+                margin-top: 28px; padding-top: 8px; margin-left: 8px; margin-right: 8px;">
+                <a id="btnDistribute51" class="btn btn-primary pull-right btnDistribute51" style="color: #fff;
+                    right: 6px;">我要分销</a> <span style="clear: both;"></span>
+            </div>
+            <div class="add_wrap">
+                <div class="add_list clearFloat">
+                    <div class="logistics u-g-freight" style="width: 30%; height: auto;">
+                        <h2 style="padding-right: 5px; text-align: left;">
+                            运费至<span> <a id="freightTo" class="u-link-select" href="javascript:void(0);">选择收货地址
+                                <select id="" name="">
+                                    <option value="北京">北京</option>
+                                    <option value="河北省">河北省</option>
+                                    <option value="陕西省">陕西省</option>
+                                    <option value="湖北省">湖北省</option>
+                                    <option value="河南省">河南省</option>
+                                    <option value="湖南省">湖南省</option>
+                                </select>
+                            </a></span><span id="freight"></span>元
+                        </h2>
+                    </div>
+                    <div class="sales" style="width: 30%; display: none;">
+                        <h2>
+                            已售</h2>
+                        <div class="color_1 type_5">
+                        </div>
+                    </div>
+                    <div class="point" style="width: 30%; display: none;">
+                        <h2>
+                            库存</h2>
+                        <div class="type_4">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="partialFree" style="padding-top: 8px; padding-bottom: 1px; color: #999;
+                padding-left: 24px; font-size: 9px; background: #ecf0f1; line-height: 16px;">
+            </div>
+        </div>
+        <div class="add_sql" id="add_sql_bd">
+        </div>
+        <div id="content">
+            <div id="nav">
+                <div id="content_box">
+                    <div class="content_ content_1">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="add_btb" style="display: none">
+            <span>评价( <b id="reviewCount" class=""></b>)<i class="add_event1"></i> </span>
+        </div>
+        <div class="detail_cmt" style="display: none">
+            <!-- cmt_tag -->
+            <div class="cmt_list_wrap">
+                <ul id="reviewList" class="cmt_list">
+                </ul>
+                <span><a href="javascript:;" id="summaryEnter2" class="cmt_list_more">查看全部评价</a></span>
+                <div id="morReview" style="width: 100%; text-align: center; height: 25px; line-height: 25px;">
+                    没有更多评价</div>
+            </div>
+            <!-- list -->
+        </div>
+        <div id="connection" class="add-chart clearFloat @connectionStyle">
+            <a href="javascript:;" id="backcomlist"><i class="jindianguang" style="left: 20px;">
+            </i>进店逛逛</a> <a href="javascript:;" id="contactOwner"><i class="lianxishangjia" style="left: 20px;">
+            </i>联系商家</a>
+        </div>
+        <div style="width: 100%; @*display: none;*@" id="RelationProduct">
+            <div data-role="fieldcontain">
+                <div class="g-add-hd" style="text-align: center">
+                    更多您可能喜欢</div>
+                <!-- <div style="width: 100%; padding-left: .1rem;">
+                         <span id="RelationProductImg"></span>
+                     </div> -->
+            </div>
+        </div>
+        <div id="items" class="clearFloat">
+        </div>
+        <div id="img_show_box">
+            <div class="mask">
+            </div>
+            <div class="insert_img">
+            </div>
+        </div>
+        <div id="footer" style="text-align: center; font-size: 0.9em; z-index: 200;">
+            <div class="time-item" style="display: none">
+                <strong id="second_show">00</strong><span class="hover_point">:</span> <strong id="minute_show">
+                    00</strong><span class="hover_point">:</span><strong id="hour_show">00</strong>
+                <span class="hover_text">倒计时</span>
+            </div>
+            <div class=" footer_5 " id="backcomlist" style="margin-right: 15px; margin-left: -12px;
+                display: none;">
+            </div>
+            <a class="btn_fav" href="javascript:;" id="fav" manualclick="xxx" pppptag="7001.1.23">
+                <i class="i_cang"></i>
+                <div>
+                    收藏
+                </div>
+            </a>
+            <div class="footer_4" id="addshopcart" style="margin-right: 5px; margin-left: 0;
+                padding: 3.5% 8%;">
+                加入购物车</div>
+            <div class="footer_2">
+                购买</div>
+            <a class="cart_wrap2" href="#"><i class="i_cart" id="cartNum"></i>
+                <div>
+                    购物车</div>
+            </a>
+            <div class="footer_3">
+            </div>
+        </div>
+        <div id="addCommodity" style="min-height: 600px; z-index: 210;">
+            <div class="addCommodity_1">
+            </div>
+            <div class="addCommodity_2">
+                <div class="addCommodity_3" id="clearAddCommodity">
+                    <img src="/Content/Mobile/b_6.png" alt="" />
+                </div>
+                <ul class="addCommodity_2_ul_1 clearFloat">
+                    <li class="clearFloat size"><span>请选择：</span>
+                        <ul>
+                            <li class="li_focus_1"></li>
+                        </ul>
+                    </li>
+                    <li class="clearFloat color"><span>请选择：</span>
+                        <ul>
+                            <li class="li_focus_1"></li>
+                        </ul>
+                    </li>
+                    @*  <span class="span_number">1</span>*@
+                    <li class="clearFloat"><span>购买数量：</span> <span class="span_1" id="number" style="border: 1px solid #BABABA;">
+                        <span class="span_2 span_com numjj" style="border-right: 1px solid #bababa;">-</span><input
+                            class="span_number" value="1" type="number" style="ime-mode: disabled; float: left;
+                            width: 50px; text-align: center; vertical-align: middle; margin-top: 8px;" /><span
+                                class="span_3 span_com numjj" style="border-left: 1px solid #bababa;">+</span></span>
+                        <span id="txtMaxStock" style="display: none"></span></li>
+                    <li class="clearFloat"><span>价格：</span> <span class="span_1" id="pre_money_count">@Currency()0.00</span></li>
+                    <li class="clearFloat">
+                        <div class="box_2" id="upCommodity" style="display: none;">
+                            确定
+                        </div>
+                        <div class="box_2" id="btnshopcart" style="display: none;">
+                            确定
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div> 
+}
+<div id="addCommodity_3" class="addCommodity">
+    <div class="addCommodity_1 clear">
+    </div>
+    <div class="addCommodity_5">
+        <h2>
+            抱歉，您需要升级新版本才能使用！</h2>
+        <p>
+            <span class="footer_2 clear" style="margin-right: 0.5em">取消</span> <span class="footer_2"
+                id="update">立即升级</span></p>
+    </div>
+</div>
+<div class="yingc" style="display: none;">
+    <div class="item_1_s">
+        <div class="position_r">
+            <div class="yhzknum">
+            </div>
+            <div class="goods-photo">
+                <img src="" alt="" />
+                <div class="selfTake" style="">
+                    <img class="selfTakeImg" src="/Images/selftake.png" alt="自提" />
+                </div>
+            </div>
+            <div class="zk">
+            </div>
+            <div class="mb_box noDisplay" style="z-index: 121;">
+                <div class="mb">
+                </div>
+                <p class="mb_1" style="z-index: 121;">
+                    已售完</p>
+            </div>
+        </div>
+        <p class="item_title">
+            {name}</p>
+        <p class="item_price">
+            <span class="price_1">{price1}</span><span class="price_2">{price2}</span></p>
+    </div>
+    <div class="item_1 noDisplay" id="parent_item" style="background-color: #E6E6EC;">
+        <div class="item_1_s">
+            <div class="position_r">
+                <div class="yhzknum">
+                </div>
+                <div class="goods-photo">
+                    <img class='picLazyLoadImg' src='/Content/Mobile/1.png' data-original='' alt='' />
+                    <div class="selfTake" style="">
+                        <img class="selfTakeImg" src="/Images/selftake.png" alt="自提" />
+                    </div>
+                </div>
+                <div class="zk">
+                </div>
+                <div class="mb_box noDisplay" style="z-index: 121;">
+                    <div class="mb">
+                    </div>
+                    <p class="mb_1" style="z-index: 121;">
+                        已售完</p>
+                </div>
+            </div>
+            <p class="item_title double_row" style="text-align: left">
+                {name}</p>
+            <p class="item_price">
+                <span class="price_1">{price1}</span><span class="price_2">{price2}</span><span class="zcz"
+                    style="display: none">众筹</span></p>
+        </div>
+    </div>
+</div>
+<div style="height: 100px; background: #fff;">
+    <br />
+    <br />
+</div>
+<div id="fade" class="black_overlay">
+</div>
+<div id="light" class="white_content">
+    <div id="fadeContent" style="background-color: #fff6cd; position: relative; z-index: 1002;">
+        <div class="HidHeader">
+            <div style="float: right; cursor: pointer;" onclick="CloseFade();">
+                <img src="../../Content/Mobile/close.png" width="20em" height="20em" /></div>
+        </div>
+        <div style="clear: both;">
+        </div>
+        <div id="hidDivContent" class="contentImg" style="height: 310px; overflow: auto;
+            margin: 0 5px;">
+        </div>
+        <div class="HidFooter" id="gotoContent">
+            <a href="###">猛戳这里查看众筹详情</a>
+        </div>
+    </div>
+</div>
+<div id="review_clone" class="clearFloat noDisplay">
+    <div class="cmt_user">
+        <span class="user"></span><span class="tip"></span><span class="date"></span>
+    </div>
+    <div class="cmt_cnt">
+    </div>
+    <div class="cmt_att">
+    </div>
+    <div class="cmt_sku">
+        <span class="cmt_sku1"></span>
+    </div>
+</div>
+<div id="val-overlay" style="display: none;">
+    <div id="valGetDiv" style="position: fixed; top: 50%; left: 50%; margin-left: -120px;
+        margin-top: -80px; width: 240px; height: 180px; z-index: 130; background-color: #f5f5f5;
+        border-radius: 3px; box-shadow: 0 0 8px #909090;">
+        <h1 style="height: 60px; line-height: 60px; text-align: center; font-size: 16px;
+            font-weight: bolder;">
+            需要验证码</h1>
+        <div style="line-height: 20px; margin: 10px 14px; height: 46px; border-bottom: 1px solid #DDD;">
+            <input type="text" id="val-txtVali" maxlength="4" style="float: left; height: 24px;
+                width: 140px; border: 1px solid #DDD;" />
+            <img src="" title="验证码" id="val-valImg" style="float: left; margin-left: 10px; width: 60px;" />
+        </div>
+        <div style="clear: both; text-align: center; margin-top: 18px;">
+            <input type="button" id="val-cancel" value="取消" style="width: 80px; border-radius: 3px;
+                background-color: #E2E2E2; padding: 3px;" />
+            <input type="button" id="val-submit" value="提交" style="width: 80px; border-radius: 3px;
+                background-color: #ff0054; padding: 3px; color: #FFF;" />
+        </div>
+    </div>
+    <div id="okMsgDiv" style="position: fixed; top: 50%; left: 50%; margin-left: -120px;
+        margin-top: -80px; width: 240px; z-index: 130; background-color: #f5f5f5; border-radius: 3px;
+        box-shadow: 0 0 8px #909090; padding-bottom: 10px; display: none;">
+        <p style="margin-top: 18px; text-indent: 2em; line-height: 20px; margin: 10px 14px;
+            height: 46px; border-bottom: 1px solid #DDD;">
+        </p>
+        @*<div style="  position: absolute;  bottom: 0px;">
+            <input type="button" class="okMsgClose" value="知道啦" style="  width: 118px;  height: 26px;" />
+            <input type="button" id="btnGotoMyPresell" class="okMsgClose" value="我的预约" style="  width: 118px;  height: 26px;"/>
+        </div>*@
+        <div style="clear: both; text-align: center; margin-top: 18px;">
+            <input type="button" value="知道啦" class="okMsgClose" style="width: 80px; border-radius: 3px;
+                background-color: #E2E2E2; padding: 3px;" />
+            <input type="button" id="btnGotoMyPresell" class="okMsgClose" value="我的预约" style="width: 80px;
+                border-radius: 3px; background-color: #ff0054; padding: 3px; color: #FFF;" />
+        </div>
+    </div>
+    <div style="position: fixed; top: 0; left: 0; background-color: gray; width: 100%;
+        height: 100%; z-index: 128; opacity: .3;">
+    </div>
+</div>
+<div id="divNotLoginTemplate" style="display: none">
+    <div class="ui-notice">
+        <i>
+            <img src="../../Content/Mobile/redredenvelope/fail.png" alt="" style="margin: auto;
+                width: 160px;">
+        </i>
+        <p class="loginTitle">
+            商品不存在或已删除</p>
+    </div>
+</div>
+<div id="divMasRoot" style="position: fixed; bottom: 0px; z-index: 210; display: none;">
+    <iframe id="iframeMas" style="border: 0;" src="/Mobile/MultiAttributeSelector@("?appId="+Request["appId"])"></iframe>
+</div>
+@section ClientScript{
+    <script src="/Content/Mobile/touchScroll.js" type="text/javascript"></script>
+    <script type="text/javascript" language="javascript" src="https://webapi.amap.com/maps?v=1.3&key=@Jinher.AMP.BTP.Common.CustomConfig.AmapKey&plugin=AMap.CitySearch"></script>
+    <script src="/Content/Mobile/commodityDetail.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var noCommodityFlag = '@noCommodity' == "True";
+        service_type = "0x0002";
+        var isAppSet = false;
+        //是否正品会应用
+        var zphUrl = "@ViewBag.ZPHUrl";
+        var dialog4 = "";
+        var contactUrl = "";
+        var appName = "";
+        var sysname = "";
+        sessionStorage.type = "";
+        //手动关闭下载app广告,用于控制
+        var downAppFlag = false;
+        var mainScrollTop = 0;
+        var _contactObj = 0;
+//联系当前应用客服
+        //start ios调用
+
+        //多属性选择结果
+        var _masSelectedResult = new Object();
+
+        var _portalUrl = "@ViewBag.PortalUrl";
+        var conUrl = "@Jinher.AMP.BTP.Common.CustomConfig.AppDownloadUrl";
+        var _webImUrl = "@Html.Raw(Jinher.AMP.BTP.Common.CustomConfig.WebImUrl)";
+        //end ios调用
+        if (sessionStorage.appName != undefined && sessionStorage.appName != "") {
+            //document.title = sessionStorage.appName;
+        }
+
+        function GoShop(id) {
+            var str = location.href; //取得整个地址栏
+            var tempStr = str;
+            if (str.indexOf("?") != "-1") {
+                var num = str.indexOf("?")
+                str = str.substr(num + 1);
+                if (str.indexOf("commodityId=") != -1) {
+                    tempStr = tempStr.replace(str.substr(str.indexOf("commodityId=") + 12, 36), id);
+                    window.location.href = tempStr;
+                } else {
+                    tempStr += "&commodityId=" + id;
+                }
+            } else {
+                window.location.href = str + "?commodityId=" + id;
+            }
+
+        }
+
+        function loadCurPage() {
+            $("#freightTo").text(sessionStorage.province);
+            var srcType = getQueryString('SrcType');
+            if (srcType != undefined && srcType != "" && srcType != "null" && srcType != null && srcType != "undefined") {
+
+                sessionStorage.SrcType = getQueryString('SrcType');
+            }
+
+
+            var SrcTagId = getQueryString('SrcTagId');
+
+            if (SrcTagId != undefined && SrcTagId != "" && SrcTagId != "null" && SrcTagId != null && SrcTagId != "undefined") {
+                sessionStorage.SrcTagId = getQueryString('SrcTagId');
+            }
+
+            if (sessionStorage.ProductType == "appcjzy") {
+                $("#addshopcart").show();
+            } else if (sessionStorage.ProductType == "webcjzy") {
+                $("#addshopcart").show();
+            } else {
+                //第三方分享 隐藏联系商家
+                if (sessionStorage.source == "share") {
+                    $("#addshopcart").show();
+                    $("#backcomlist").show();
+                }
+            }
+
+            if (sessionStorage.AppType == "tuwen") {
+                $("#addshopcart").show();
+            }
+
+            // $("#footer").css("bottom", "5px");
+            $(".addCommodity_2").css("bottom", "5px");
+
+            sessionStorage.commodityId_2 = '';
+            sessionStorage.ADID = getQueryString('ADID');
+            sessionStorage.CPSId = getQueryString('CPSId');
+
+
+            getCommodityInfo($(document), function() {
+                var _commodityInfo = JSON.parse(sessionStorage.commodityInfo);
+                var ua = window.navigator.userAgent.toLowerCase();
+                if (ua.match(/MicroMessenger/i) == 'micromessenger') {
+                    document.title = _commodityInfo.Name;
+                }
+                //分享
+                shareCommodityDetail();
+                //组织沟通数据
+                setGoutongData();
+
+                $(".img_item img").each(function() {
+                    $(this).wrap("<div class='moveDiv' style='max-width: 375px;display:inline-block;'><div class='imgWrap' style='max-width: 375px;position: relative;'></div></div>");
+                    if ($("#selfTakeFlag").val() == 1) {
+                        $(this).after("<div class='selfTake' >\r\n<img class='selfTakeImg' style='display: block;max-width: 375px; ' src='/Images/selftake.png' alt='自提' />\r\n</div>");
+                    }
+                });
+                new ImgItem();
+                $(".moveDiv").css("display", "inline-block");
+                $(".imgWrap").css("position", "relative");
+
+                var img = $('#img');
+
+
+                var footer = $('#footer');
+                //		img.find('.title').css({
+                //			Height: img.find('.title').find('p').height()
+                //		});
+                footer.find('.footer_3').css({
+                    height: footer.height()
+                });
+                $('.footer_2').on("click", function() {
+                    sessionStorage.btntype = "goumai";
+                    DealLoginPartial.initPartialPage();
+                });
+
+                $('.item_num').keyup(function() {
+                    var commodityUpInfo = JSON.parse(sessionStorage.commodityUpInfo);
+                    $("#money_count").html(Math.abs(commodityUpInfo.realPrice * $.trim($(this).val())).toFixed(2));
+                });
+                $("#backcomlist").bind("click", function() {
+
+                    //                    if (sessionStorage.ProductType == "webcjzy") {
+                    //                        var sharepar = "&SrcType=" + sessionStorage.SrcType + "&ShareId=" + sessionStorage.ShareId + "&source=" + sessionStorage.source;
+                    //                        window.location.href = "/SetMobile/Index?setCategoryId=C9F33B9D-D90A-4634-B882-42CB8BC8B131&pageIndex=1&pageSize=10&fieldSort=0&order=1&srcAppId=" + sessionStorage.SrcTagId + "&type=tuwen" + sharepar;
+                    //                    }
+                    //                    else {
+                    sessionStorage.page = 1;
+
+                    window.location.href = urlAppendCommonParams("/Mobile/CommodityList?type=" + sessionStorage.AppType + "&shopId=" + sessionStorage.appId);
+
+                    //                    }`
+                });
+
+                //添加到购物车
+                $("#addshopcart").bind("click", function() {
+                    if (sessionStorage.isSecKill) {
+                        return;
+                    }
+
+                    if (sessionStorage.PromotionType === "1" || sessionStorage.PromotionType === "2") {
+                        return;
+                    }
+                    //行为记录->加入购物车操作
+                    logBTP(sessionStorage.SrcType, service_type, "0x0004", sessionStorage.commodityId_2 || getQueryString('commodityId'));
+
+                    sessionStorage.btntype = "gouwuche";
+                    DealLoginPartial.initPartialPage();
+                });
+
+                $('#addCommodity_3').height($(window).height()).find('.clear').on("click", function() {
+                    $('#addCommodity_3').hide();
+                });
+
+                $('#update').on("click", function() {
+                    //window.UpdateApp.update();
+                    window.location.href = "@ViewBag.BTPAppresUrl" + '/app/GetAppDetail?appId=' + sessionStorage.appId;
+                });
+
+                $('#dol').on("click", function() {
+                    window.location.href = "@ViewBag.BTPAppresUrl" + '/app/GetAppDetail?appId=' + sessionStorage.appId;
+
+                });
+                $("#ajaxLoadBlind").remove();
+                if (sessionStorage.isSecKill) {
+                    var needSeconds = parseInt(sessionStorage.startSecKillTime.split("(")[1].split(")")[0] - (new Date()).getTime());
+                    if (needSeconds > 1000) {
+                        timer(sessionStorage.startSecKillTime.split("(")[1].split(")")[0], function() {
+                            sessionStorage.isSecKill = '';
+                            $('.hover_text').text("秒杀开始！");
+                            //$(".time-item").hide();
+                        });
+
+                    } else {
+                        sessionStorage.isSecKill = '';
+                    }
+                }
+            });
+            $("#add_closed").bind("click", function() {
+                downAppFlag = true;
+            });
+            //            if (GetCrowdfundingState(getQueryString("shopId"), "crowdwin")) {
+            //                $("#crowdwin").bind("click", function () {
+            //                    CrowdfundingMessage();
+            //                });
+            //                $('#gotoContent').click(function () {
+            //                    window.location.href = '/Mobile/CrowdfundingDesc?appId=' + getQueryString("shopId");
+            //                    CloseFade();
+            //                });
+            //            }
+            $("#provinceSel").change(function() {
+                var selVal = $(this).val();
+                if (selVal) {
+
+                    $("#freightTo").text(selVal.split('_')[0]);
+                    $("#freight").text(Math.abs(selVal.split('_')[1]).toFixed(2));
+                }
+            });
+            $("#summaryEnter2").bind("click", function() {
+                //window.scrollTo(0, 0);
+                window.location.hash = "#review";
+                mainScrollTop = document.body.scrollTop;
+                window.scrollTo(0, 0);
+            });
+            $(".add_event1").bind("click", function() {
+                //window.scrollTo(0, 0);
+                window.location.hash = "#review";
+                mainScrollTop = document.body.scrollTop;
+                window.scrollTo(0, 0);
+            });
+            $(window).bind('hashchange', function() {
+                //setByHash();
+            });
+
+
+            //setByHash();
+            //            setTimeout(function () {
+            //                logBTP(sessionStorage.SrcType, service_type, "0x0001", sessionStorage.commodityId_2 || getQueryString('commodityId'));
+            //            }, 1000);
+
+
+            $("#btnDistribute51").on("click", function() {
+                sessionStorage.btntype = "distribute51";
+                DealLoginPartial.initPartialPage();
+            });
+
+            $("#divRegOrDownloadTip").on("click", function(e) {
+                if ($(e.srcElement).is("a")) {
+                    $(".swiper-notice").hide();
+                } else {
+                    if (isLogin()) {
+                        document.location.href = "/Distribute/AppDetail?appId=" + getEsAppId() + "&distributorId=";
+                    } else {
+                        sessionStorage.btntype = "pRegist";
+                        sologin();
+                    }
+                }
+            });
+            // 提醒
+            $(document).on("click", "#sendNotifications", function() {
+                //$("#sendNotifications").on("click", function () {
+                sessionStorage.btntype = "notification";
+                DealLoginPartial.initPartialPage();
+            });
+            // 购买 预约 抢购 验证
+            $('#footer').on("click", '#prmPresell', function() {
+                if (sessionStorage.PromotionState === "2") {
+                    return;
+                }
+                sessionStorage.btntype = "yuyue";
+                DealLoginPartial.initPartialPage();
+            });
+
+            //商品属性选择子页面发送通知使用。
+            window.addEventListener('message', function(e) {
+                var data = e.data;
+                //恢复窗口的滚动条。
+                $("body").css("overflow-y", "auto");
+                if (data == "close") {
+                    $("#divMasRoot").hide();
+                } else {
+                    $("#divMasRoot").hide();
+                    _masSelectedResult = e.data;
+                    //sessionStorage["seledResult_" + data.operType] = JSON.stringify(data);
+                    setSessionStorage('commodityUpInfo', 'number', data.number);
+                    setSessionStorage('commodityUpInfo', 'size', data.size);
+                    setSessionStorage('commodityUpInfo', 'color', data.color);
+                    setSessionStorage('commodityUpInfo', 'price', data.price);
+                    setSessionStorage('commodityUpInfo', 'realPrice', data.realPrice);
+                    sessionStorage.CommodityStockId = data.CommodityStockId;
+
+                    //加入购物车
+                    if (data.operType == 1) {
+                        addtoshopcartMain();
+                    }
+                    //直接购买
+                    else if (data.operType == 2) {
+                        buyNowOk();
+                    }
+                    //拼团
+                    else if (data.operType == 3) {
+
+                    }
+                }
+            }, false);
+            commonEvents();
+            assumeULike();
+        }
+
+        $(function() {
+            saveContextDTOByUrl();
+            sysname = getQueryString("sysname") || '';
+            if (!isWeiXin() && (sessionStorage.source == 'share' && sessionStorage.ProductType && sessionStorage.ProductType.indexOf('cjzy'))) {
+                $("#header").show();
+            }
+            $(".footdi").hide();
+            if (noCommodityFlag)
+                return;
+            setProvince(loadCurPage);
+        });
+
+        /**
+        * 声明图片相关事件类
+        */
+
+        function ImgItem() {
+            var min_width = document.getElementsByTagName('body')[0].clientWidth; //获取浏览器窗口宽度
+
+            var img_box = document.getElementById('img'); //获取页面中图片标签
+            var img = img_box.getElementsByClassName('img_item')[0].getElementsByTagName('img'); //获取图片标签内所有img对象
+            var moveDiv = img_box.getElementsByClassName('img_item')[0].getElementsByClassName('moveDiv');
+            var imgWrapDiv = img_box.getElementsByClassName('img_item')[0].getElementsByClassName('imgWrap'); //获取图片标签内所有img包对象
+            var img_item = img_box.getElementsByClassName('img_item')[0]; //第一个img对象
+            var imgWrap = img_box.getElementsByClassName('img_item')[0]; //第一个img div对象
+            var imgWrap_length = img_box.getElementsByClassName('img_item')[0].getElementsByClassName('imgWrap').length; //容器内img对象数量
+            var img_length = img.length;
+            var item_width = min_width * imgWrap_length; //图片容器队列宽度
+            var min_height = parseInt(min_width * .75); //最小高度
+            var max_height = min_width; //最大高度
+            var img_width; //单个图片宽度
+
+
+            /**
+            * 创建头部当前图片位置标签
+            *
+            * 标记内容为中文符号下的 · 符号(波浪线按钮)通过修改字体大小达到效果
+            *
+            * 如出现bug.将修改为英文标点的句号.
+            */
+
+            function createMakeImage() {
+                //获取插入标签容器对象
+                var make = document.getElementById('make');
+                //创建一个span对象
+                var makeBox = document.createElement('span');
+                //插入内容
+                makeBox.innerHTML = '·';
+                //遍历图片个数,生成同个数的标记
+                for (var i = 0; i < img_length; i++) {
+                    //克隆对象.
+                    var clone = makeBox.cloneNode(true);
+                    //第一位添加选中颜色
+                    if (!i) {
+                        clone.style.color = '#95040D';
+                    }
+                    //将标记对象插入容器对象内.
+                    make.appendChild(clone);
+                }
+                //获取当期标签对象的宽度,并除以2,得到的值将是居中偏移量的值.
+                make.style.cssText = 'margin-left:' + -(make.clientWidth / 2) + 'px;';
+            }
+
+            /**
+            * 设置单个图片宽度.
+            *
+            */
+
+            function setImgItemWidth() {
+                //遍历图片个数.对每个图片进行宽度设置.
+                //将宽度设置为当期窗口大小.
+                for (var i = 0; i < img_length; i++) {
+                    img[i].style.maxWidth = min_width + 'px';
+                    img[i].style.cssText = 'max-width:' + min_width + 'px;min-width:' + min_width + 'px;max-height:' + max_height + 'px;min-height:' + min_height + 'px';
+                }
+                for (var i = 0; i < imgWrap_length; i++) {
+                    moveDiv[i].style.maxWidth = min_width + 'px';
+                    moveDiv[i].style.cssText = 'max-width:' + min_width + 'px;min-width:' + min_width + 'px';
+                    imgWrapDiv[i].style.maxWidth = min_width + 'px';
+                    imgWrapDiv[i].style.cssText = 'max-width:' + min_width + 'px;min-width:' + min_width + 'px';
+                }
+                var clone_img_element = document.getElementById('clone_img_element');
+                //初始化单个图片高度
+                img_height = min_width / clone_img_element.width * clone_img_element.height;
+                //初始化单个图片宽度
+                img_width = min_width;
+                //设置图片列表最大宽度.并设置边距
+                img_item.style.cssText = 'width:' + item_width + 'px;left:0;';
+                //设置图片容器高度.该容器下部分的内容错位
+                img_box.style.height = img_height + 'px';
+            }
+
+            /**
+            * 图片拖动事件
+            */
+
+            function setImgItemEvent() {
+                var pageX; //按下时的X坐标
+                var pageY; //按下时Y坐标
+                var move; //移动偏移量
+                var moveX; //将要移动的值
+                var boxLeft; //当前容器列表left值
+                var coordinate = []; //保存图片坐标值
+                var item_number = 0; //图片移动标记.
+                var make_item = document.getElementById('make').getElementsByTagName('span'); //当前图片位置标记对象.
+                var len = moveDiv[0].offsetWidth;
+                //遍历图片个数.将图片坐标插入数组内
+                for (var i = 0; i < imgWrap_length; i++) {
+                    coordinate.push(len * i);
+                }
+
+                img_box.addEventListener('click', function(e) {
+                    var element = $(e.target);
+                    var img = element.clone();
+                    img.css({
+
+
+                        //					maxWidth: '98%',
+                        //					minWidth: '98%'
+                    
+                    });
+
+
+                    //                $('#img_show_box').show().find('.insert_img').append(img).css({
+                    //                    top: img.height() / 2,
+                    //                    left: (function () {
+                    //                        var width = img.width();
+                    //                        if (width <= $(window).width()) {
+                    //                            return 0;
+                    //                        } else {
+                    //                            return img.width() / 2
+                    //                        }
+                    //                    })()
+                    //                });
+                });
+                //更改
+                var number = 0;
+                //定时器
+                var timer = null;
+
+                function setTimer() {
+                    timer = setInterval(function() {
+                        number++;
+
+                        if (number == coordinate.length) {
+                            number = 0;
+                        }
+
+                        img_item.style.left = -coordinate[number] + 'px';
+
+                        for (var i = 0; i < make_item.length; i++) {
+                            make_item[i].style.color = '#fff';
+
+                        }
+                        //对当前图片标签进行上色.
+                        make_item[number].style.color = '#95040D';
+
+                    }, 3000)
+
+                }
+
+                setTimer()
+                $('.img_item').on('mouseover', function() {
+
+                    clearInterval(timer);
+
+                });
+                $('.img_item').on('mouseout', function() {
+
+                    setTimer();
+
+                });
+
+                $('#img_show_box').on('click', function(e) {
+                    $(this).hide().find('.insert_img').empty();
+                });
+
+                //按下时事件.
+                img_box.addEventListener('touchstart', function(e) {
+                    //			e.preventDefault();
+                    var touch = e.changedTouches[0];
+                    //获取当前容器列表的left值
+                    boxLeft = parseInt(img_item.style.left);
+                    //获取当前按下时x值
+                    pageX = touch.pageX;
+                    clearInterval(timer);
+                });
+                //移动时事件
+                img_box.addEventListener('touchmove', function(e) {
+                    e.preventDefault();
+                    var touch = e.changedTouches[0];
+                    //移动偏移量
+                    move = touch.pageX - pageX;
+                    //将要移动的值
+                    moveX = boxLeft + move;
+                    //给容器移动
+                    img_item.style.left = moveX + 'px';
+                });
+                //抬起时
+                img_box.addEventListener('touchend', function(e) {
+                    //			e.preventDefault();
+                    var minLeft = 0; //最左边距
+                    var maxRight = item_width - img_width; //最右边距
+
+                    //当移动量大于最左边距时,将图片列表容器归位
+                    if (moveX > minLeft) {
+                        img_item.style.left = minLeft;
+                    } else if (Math.abs(moveX) > maxRight) { //当最右边距超出时,重新归位
+                        img_item.style.left = -maxRight + 'px';
+                    }
+
+                    //设置相关事件
+                    //1为向左移动
+                    //2为向右移动.
+
+                    function moveEvent(type) {
+                        switch (type) {
+                        case 1:
+                            moveFun(1);
+                            break;
+                        case 2:
+                            moveFun(0);
+                            break;
+                        }
+
+//相关事件函数.
+                        //number为坐标跳转值
+
+                        function moveFun(number) {
+                            for (var i = 0; i < imgWrap_length; i++) {
+                                var moveNumber = i + number;
+                                if (moveNumber < imgWrap_length && moveNumber >= 0) {
+                                    if (Math.abs(moveX) > coordinate[i] && Math.abs(moveX) < coordinate[i + 1]) {
+                                        item_number = moveNumber;
+                                        img_item.style.left = -coordinate[moveNumber] + 'px'
+                                    }
+                                }
+                            }
+                        }
+
+                        //遍历标记容器内容.将颜色重置.
+                        for (var i = 0; i < make_item.length; i++) {
+                            make_item[i].style.color = '#fff';
+
+
+                        }
+                        //对当前图片标签进行上色.
+                        make_item[item_number].style.color = '#95040D';
+                    }
+
+                    //判断是向右移动还是向左移动.
+                    //正数为向左移动.
+                    //负数为向右移动.
+                    if (move < 0) {
+                        if (Math.abs(move) > 60) {
+                            moveEvent(1);
+                        } else {
+                            img_item.style.left = -coordinate[item_number] + 'px'
+                        }
+                    } else {
+                        if (Math.abs(move) > 60) {
+                            moveEvent(2);
+                        } else {
+                            img_item.style.left = -coordinate[item_number] + 'px'
+                        }
+                    }
+                });
+            }
+
+            function setSessionStorageItemHeightAndImgHeight() {
+                var imgs = document.createElement('img');
+                imgs.src = '/Content/Mobile/1.png?' + new Date().getTime();
+                imgs.onload = function() {
+                    var parent_item = $('#parent_item').clone().show();
+                    $('body').append(parent_item);
+                    sessionStorage.img_height = Math.round(parent_item.width() / this.width * this.height);
+                    //parent_item.find('.position_r').append(imgs);
+                    sessionStorage.item_height = parent_item.height() - 15;
+                    parent_item.remove();
+                };
+            }
+
+            //初始化对象方法.
+            (function() {
+                setImgItemWidth();
+                setImgItemEvent();
+                createMakeImage();
+
+            })();
+        }
+
+
+        function JsVilaDataNull(obj) {
+            if (obj != undefined && obj != "" && obj != "null" && obj != null && obj != "undefined" && obj) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        var _TempAppid = "";
+
+        function CrowdfundingMessage() {
+            if ($.trim($('#hidDivContent').html()) == "") {
+                getDataAjax2({
+                    type: "post",
+                    url: '/mobile/GetCrowdfundingSlogan',
+                    async: false,
+                    data: { "appId": getQueryString("shopId") },
+                    dataType: "json",
+                    callback: function(data) {
+                        $('#hidDivContent').html(decodeURIComponent(data));
+                    }
+                });
+            }
+            _TempAppid = getQueryString("shopId");
+            document.getElementById('light').style.display = 'block';
+            document.getElementById('fade').style.display = 'block';
+            //$("#light").css("height", "370px");
+
+        }
+
+
+        function CloseFade() {
+            document.getElementById('light').style.display = 'none';
+            document.getElementById('fade').style.display = 'none';
+        }
+
+        _assumeULikeUrl = decodeURIComponent("@ViewBag.AssumeULikeUrl");
+        $(function() {
+            if (DealLoginPartial == undefined) {
+                return;
+            }
+            DealLoginPartial.setCallback(function() {
+                if (sessionStorage.btntype == "gouwuche") {
+                    addToCart();
+                } else if (sessionStorage.btntype == "goumai") {
+                    buyNow();
+                } else if (sessionStorage.btntype == "diygroup") {
+                    showMasIframe(3);
+                } else if (sessionStorage.btntype == "distribute51") {
+                    //获取成为分销商设置
+                    getDataAjax({
+                        url: '/Distribute/GetDistributRuleFullDTOByAppId1',
+                        data: { "appId": getEsAppId() },
+                        callback: function(result) {
+                            if (result.Code === 0) {
+                                if (!result.Data.HasCondition || !result.Data.NeedIdentity) {
+                                    document.location.href = urlAppendCommonParams("/Distribute/CommodityDistribute?commodityId=" + getQueryString('commodityId') + "&distributorId=" + sessionStorage.distributorId);
+                                } else {
+                                    //条件页面
+                                    document.location.href = urlAppendCommonParams("/Mobile/AddDistributionIdentity?appId=" + getEsAppId());
+                                }
+                            } else {
+                                toast(result.Message);
+                            }
+                            $("#ajaxLoadBlind").remove();
+                        },
+                        beforeSend: function() {
+                            ajaxLoading('22', '');
+                        }
+                    });
+                } else if (sessionStorage.btntype == "notification") {
+                    // 验证码
+                    getDataAjax({
+                        url: '/mobile/SendNotificationsZPH',
+                        data: { "commodityId": getQueryString('commodityId'), "outPromotionId": sessionStorage.OutPromotionId, "uId": getUserId(), "sId": getSessionId(), "esAppId": getEsAppId() },
+                        callback: function(result) {
+                            if (result.Code === 0) {
+                                var txt = $("#sendNotifications").text();
+                                if (txt == "取消提醒") {
+                                    toast("取消提醒成功");
+                                    $("#sendNotifications").text("设置提醒");
+                                } else {
+                                    toast("已设置提醒，请关注");
+                                    $("#sendNotifications").text("取消提醒");
+                                }
+
+                            } else {
+                                toast(result.Message);
+                            }
+
+                            $("#ajaxLoadBlind").remove();
+                        },
+                        beforeSend: function() {
+                            ajaxLoading('22', '');
+                        }
+                    });
+                } else if (sessionStorage.btntype == "yuyue") {
+                    // 判断活动结束或者抢光了 ,结束的时候提示 已结束
+                    // 用户登录状态才能预约， 点击“立即预约” 判断是否已经预约过，已经预约提示“您已成功预约过了，无需重复预约”，没有预约弹出输入验证码页面，
+                    //输入验证码 合格后提交预约，预约成功弹出提示框 ，点击“知道啦”，关闭提示框并返回“预约活动商品列表”页；
+                    //点击“我的预约”，进入“我的预约商品列表”页； 预约失败提示失败原因；
+                    $("#val-overlay").show();
+                    $("#val-valImg").attr("src", getBtpDomain() + "mobile/GetVerifyCodeZPH?r=" + Math.random());
+                    return false;
+                } else if (sessionStorage.btntype == "contactOwner") {
+                    contactToOwner();
+                }
+            });
+            log("yjs003", "yjp003", "yjo002", getQueryString('commodityId'), "商品详情");
+        });
+    </script>
+    @Html.Raw(@Jinher.AMP.BTP.UI.Util.WebUtil.GetBehaviorRecordJs());

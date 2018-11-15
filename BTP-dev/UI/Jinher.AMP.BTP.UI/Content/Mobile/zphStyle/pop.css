@@ -1,0 +1,42 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+.content {
+    max-width: 500px;
+    width: 100%;
+    margin: 0 auto;
+    text-align:center;
+}
+.pop {
+    display: none;
+    position: absolute;
+    width: 90%;
+    max-width: 480px;
+    padding: 25px 10px 20px;
+    margin: 0 auto;
+    background-color: rgba(0, 0, 0, .8);
+    color: #fff;
+    border-radius: 3px;
+    z-index:9;
+}
+.pop .pop-body p {
+    margin-bottom:8px;
+    line-height: 1.4;
+    font-size: .8rem;
+}
+.triangle {
+    position:absolute;
+    bottom: -14px;
+    left:0;
+    line-height:0;
+    border:5px dashed transparent;
+    border-top:10px solid rgba(0,0,0,.8);
+}
+.pop-close {
+    position: absolute;
+    top: 2px;
+    right: 5px;
+    color:#fff;
+    font-size:1.2rem;
+}

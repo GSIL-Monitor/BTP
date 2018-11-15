@@ -1,0 +1,263 @@
+﻿@{
+    ViewBag.Title = "AddStore";
+    var provinceList = ViewBag.ProvinceList;
+}
+<head>
+    <script type="text/javascript">
+        document.ondragstart = function () { return false; }
+        var quSelect = "<select id=\"zoneSelect\"><option value=\"0\">区域</option></select>";
+        var shiSelect = "<select id=\"citySelect\"><option value=\"0\">城市</option></select>";
+        function closeWindow() {
+            window.location.href = "/Store/CYIndex";
+        }
+
+    </script>
+    <style type="text/css">
+		input.inp-txt{
+			height: 18px;
+			line-height: 18px;
+			border: 1px solid #B6C0CD;
+			padding: 4px 5px;
+			vertical-align: middle;
+			border-radius: 3px;
+			box-shadow: inset 1px 1px 2px #DBDBDB;
+		}
+		.btn120 {
+			display: inline-block;
+			width: 120px;
+			height: 28px;
+			line-height: 28px;
+			background: url(../../Content/default/images/btn120.png) no-repeat;
+			text-align: center;
+			vertical-align: middle;
+			color: #5F7392;
+			box-shadow: 1px 1px 2px #DBDBDB;
+		}
+	</style>
+</head>
+     <div class="box">
+        <div class="content">
+        <div>
+            <div class="tj_cont" style="height:auto;">
+                <ul>
+                    <li><span>
+                        <img src="/images/xin.png" /></span> <span>门店图片：</span>
+                        <img id="storeimg" alt="" class="tp" src="/images/promote.jpg" width="83" height="83" />
+                        <input type="hidden" value="" id="picture" />
+                    </li>
+                    <li><span>
+                        <img src="/images/xin.png" /></span> <span>门店名称：</span>
+                        <input type="text" id="StoreName" value="请输入门店名称"  onfocus="javascript:if(this.value=='请输入门店名称')this.value='';" onblur="javascript:if(this.value=='')this.value='请输入门店名称';" style="color:Gray;width:317px;height:19px;line-height:19px;" class="inp-txt"/>
+                    </li>
+                    <li><span>
+                        <img src="/images/xin.png" /></span> <span>联系电话：</span>
+                        <input type="text" id="Phone" value="多个电话以逗号或者分号隔开" onfocus="javascript:if(this.value=='多个电话以逗号或者分号隔开')this.value='';" onblur="javascript:if(this.value=='')this.value='多个电话以逗号或者分号隔开';" " style="color:Gray;width:317px;height:19px;line-height:19px;" class="inp-txt"/>
+                    </li>
+                    <li class="te">
+                        <span><img src="/images/xin.png" /></span> 
+                        <span>门店地址：</span>
+                        <input type="text" id="Address" value="门店地址" style="color:Gray;height:19px;line-height:19px;" class="inp-txt"  readonly="readonly"/>
+                        <a id="aSelectPosition" href="javascript:void(0);" style="position:relative;top:30px;left:5px;">地图选位置</a>
+                    </li>
+                     @{Html.RenderPartial("../Store/StoreSettingUI");}
+                     
+                </ul>
+            </div>
+        </div>
+        </div>
+		<div style="text-align:left;margin-top:35px;margin-left:125px;">
+			<a href="###" class="btn120" id="btnSubmit">添加</a>
+			<a href="###" class="btn120" onclick="closeWindow()" style="margin-left:15px;">取消</a>
+
+             @*地图选址坐标*@
+        <input type="hidden" id="coordinate" /> 
+		</div>
+    </div>
+    <div id="uploadDiv" class='dialog pic-edit' style="top: 50px; margin-left: -300;
+        display: none">
+        <a title="关闭" class="close" href="#nogo" onclick="closeUpload()">关闭</a>
+        <div class="dialog-hd">
+            上传图片
+        </div>
+        <div class="custom-pic">
+            <div class="custom-pic-top">
+                <input type="file" id="file_upload" name="file_upload" />
+                <p>
+                    请上传JPG、PNG格式的图片，建议上传尺寸为<br />
+                    140px*140px的图片（图片过小会导致图片效果变虚）
+                </p>
+            </div>
+            <div id="custompicdiv" class="custom-pic-bd">
+                <input type="hidden" id="x1" name="x1" value="" />
+                <input type="hidden" id="y1" name="y1" value="" />
+                <input type="hidden" id="x2" name="x2" value="" />
+                <input type="hidden" id="y2" name="y2" value="" />
+            </div>
+        </div>
+        <div class="btn-center">
+            <a class="btn120" href="#nogo" onclick="save()">上传 </a><a class="btn120" href="#nogo"
+                onclick="closeUpload()">取消 </a>
+        </div>
+    </div>
+<div id="loadImgDiv" style="overflow: hidden;width: auto;min-height: 0;height: 470px;display: none;">
+	<iframe id="contentFrame" name="contentFrame" scrolling="no" src="" height="480" width="630" frameborder="0"
+	        style="border: 0; overflow: hidden;"></iframe>
+</div>
+
+  @*店铺地址弹出框*@
+    <div id="partMapDiv" style="background-color: #F0F3F5; display: none; font-family: 微软雅黑;
+        margin: 0 auto;">
+        <iframe id="MapIframe" src="" style="width: 620px; height: 440px; border: none;"
+            frameborder="0"></iframe>
+    </div>
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/jqueryui/Timepicker/jquery-ui-timepicker-addon.min.css")" />
+<script src="/Scripts/DatePicker/jquery.ui.datepicker.js" type="text/javascript"></script>
+<script src="/Scripts/DatePicker/jquery.ui.jhdatetime.js" type="text/javascript"></script>
+<script src="/Scripts/DatePicker/jquery.ui.jhstartandenddate.js" type="text/javascript"></script>
+<script src="/Scripts/DatePicker/Timepicker/jquery-ui-timepicker-addon.min.js" type="text/javascript"></script>
+<script src="/Scripts/DatePicker/Timepicker/i18n/jquery-ui-timepicker-zh-CN.js" type="text/javascript"></script>
+
+ @{Html.RenderPartial("../Store/StoreSetting");}
+<script type="text/javascript">
+    $(function () {
+        $("#storeimg").click(function () {
+            var self = this;
+            upImageCallback.callback_1 = function (data) {
+                self.src = data;
+                $('#picture').val(data);
+                dialogImgClosed();
+            };
+            ShowUpImg({
+                imgPath: '',
+                width: '140',
+                height: '140',
+                windowTitle: '门店图片',
+                callback: 'callback_1'
+            });
+        });
+
+        $("#btnSubmit").bind("click", function () {
+            if (!window.addStore) {
+                if ($("#Address").val() == "门店地址") {
+                    $("#Address").val("");
+                }
+                var setting = GetSetting();
+                var result = Valid(setting);
+                if (result == "0") {
+                    var subData = {
+                        picture: $("#picture").val(),
+                        Name: $("#StoreName").val(),
+                        Phone: $("#Phone").val(),
+                        Setting: JSON.stringify(setting)
+                    };
+                    var sdata = $.extend(_storeDTO, subData);
+                    window.addStore = $.ajax({
+                        url: '/Store/CYAddStoreSetting',
+                        type: 'post',
+                        dataType: 'json',
+                        data: sdata,
+                        error: function () {
+                            alert("请稍后再试！");
+                            window.addStore = null;
+                        },
+                        success: function (data) {
+                            if (data.Result == true) {
+                                alert(data.Messages);
+                                setTimeout(function () {
+                                    window.location.href = "/Store/CYIndex";
+                                }, 2000);
+                            } else {
+                                alert(data.Messages);
+                                window.addStore = null;
+                            }
+                        }
+                    })
+                } else {
+                    alert(result);
+                }
+            }
+        });
+
+        $("#aSelectPosition").on("click", function () {
+            ShowLoadMap();
+        });
+
+        newSetIframeHeight();
+    });
+
+
+    function Valid(setting) {
+        if ($("#picture").val() == "") {
+            return "门店图片不能为空";
+        }
+        if ($.trim($("#StoreName").val()) == "" || $.trim($("#StoreName").val()) == "请输入门店名称") {
+            return "门店名称不能为空"
+        }
+        if ($.trim($("#StoreName").val()).length > 30) {
+            return "门店名称不能大于30个字符";
+        }
+        var phoneText = $.trim($("#Phone").val());
+        if (phoneText == "" || phoneText == "多个电话以逗号或者分号隔开") {
+            return "请填写电话";
+        }
+        else {
+            var phoneArr = phoneText.split(/;|,|；|，/);
+            var regPhone = new RegExp(/^\d{11}$/);
+            var regTel = new RegExp(/^((\d{3,4})|\d{3,4}-)?\d{7,8}(-\d{3})*$/);
+            for (var i = 0; i < phoneArr.length; i++) {
+                if ($.trim(phoneArr[i]) == 0) {
+                    continue;
+                }
+                if (regPhone.test(phoneArr[i]) || regTel.test(phoneArr[i])) {
+                    continue;
+                }
+                return "电话格式不正确！";
+            }
+        }
+        if ($.trim($("#Address").val()) == "") {
+            return "门店地址不能为空";
+        }
+        if ($.trim($("#Address").val()).length > 50) {
+            return "门店地址不能大于50";
+        }
+        return CheckSetting(setting);
+    }
+
+
+    //地图选择地址
+    function ShowLoadMap() {
+        var addresstring = $("#address").val();
+        addresstring = addresstring == undefined ? "" : addresstring;
+        $("#MapIframe").attr("src", "/Store/SignPositionMap?from=cy&address=" + addresstring + "");
+        var bodyWidth = document.documentElement.clientWidth //宽
+        //var bodyHeight = window.screen.height - 110; //高
+        var alertDivWidth = 650; //宽
+        var alertDivHeight = 500; //高
+        var left = bodyWidth / 2 - alertDivWidth / 2;
+        var top = 0;
+        try {
+            top = window.parent.getScrollTop();
+        }
+        catch (Error) {
+        }
+        top = top + 110;
+        $("#partMapDiv").jhtablebox({
+            height: 500,
+            width: 650,
+            resizable: false,
+            title: "店铺地址",
+            modal: true,
+            position: [left, top],
+            buttons: {},
+            close: function () { $("#MapIframe").attr("src", ""); }
+        });
+    }
+
+    var _storeDTO = new Object();
+
+    function closeMap(storeDTO) {
+        $("#Address").val(storeDTO.Address);
+        _storeDTO = storeDTO;
+        $("#partMapDiv").jhtablebox("close");
+    }
+</script>

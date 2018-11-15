@@ -1,0 +1,654 @@
+﻿@{
+    ViewBag.Title = "分成推广";
+    int isDividendAll = ViewBag.IsDividendAll;
+    Jinher.AMP.BTP.Deploy.CustomDTO.AppExtensionDTO appExtension = ViewBag.AppExtensionDTO;
+}
+<head>
+    <link rel="stylesheet" type="text/css" href="/Content/css/common.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.all.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/ui.jqgrid.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.jhtablebox.css" />
+    <script src="/Scripts/CommLib.js" type="text/javascript"></script>
+    <script src="/Scripts/i18n/jquery.ui-zh.js" type="text/javascript"></script>
+    <script src="/Scripts/jquery.ui.base.js" type="text/javascript"></script>
+    <script src="/Scripts/Grid/jquery.grid.base.js" type="text/javascript"></script>
+    <script src="/Scripts/TableBox/jquery.ui.jhtablebox.js" type="text/javascript"></script>
+    <script src="/Scripts/Pager/jquery.ui.jhpager.js" type="text/javascript"></script>
+    <script type="text/javascript" src="/Scripts/TableBox/jquery.ui.jhtablebox.js"></script>
+    <script type="text/javascript" src="/Scripts/Grid/jquery.grid.base.js"></script>
+    <script type="text/javascript" src="/Scripts/jquery.watermark.js"></script>
+
+    <style type="text/css">
+        .disabled
+        {
+            pointer-events: none;
+        }
+        *
+        {
+            font-size: 14px;
+        }
+        .btn120
+        {
+            display: inline-block;
+            width: 120px;
+            height: 28px;
+            line-height: 28px;
+            background: url(/Content/default/images/btn120.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+        }
+        .checkFormat
+        {
+            color: red;
+        }
+        .td-desc {
+            width: 80px;
+        }
+        .td-desc span {
+            float: right;
+            margin-right: 10px;
+        }
+    </style>
+    <script type="text/javascript">
+        function Fixed100(callvalue) {
+            if (!callvalue) {
+                return "";
+            }
+
+
+
+            var tmp = (parseFloat(callvalue) * 100).toFixed(2);
+            var result = tmp.replace(/(((?!0*$)\d)*)0*$/g, "$1");
+            result = result.replace(/\.$/, "");
+            return result;
+        }
+    </script>
+</head>
+<div style="padding: 10px 0 0 30px;">
+    <table style="font-size: 14px;">
+        <tr>
+            <td class="td-desc">
+                <span>适用范围：</span>
+            </td>
+            <td>
+                <input type="radio" id="radioAll" name="divedType" value="1" />全部商品
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="height: 10px;">
+            </td>
+        </tr>
+        <tr>
+            <td>
+            </td>
+            <td>
+                <input type="radio" id="radioPatal" name="divedType" value="0" />部分商品 <a style="margin-left: 10px"
+                    href="#" id="chooseProduct">选择商品</a>
+            </td>
+        </tr>
+    </table>
+    <div style="margin-top: 10px;">
+        <a class="btn120" style="cursor: pointer;" id="btnDelete">删除</a></div>
+</div>
+<div class="box" style="padding: 0 0 10px 0px; min-height: 700px;">
+    <div id="shareCommodity" style="margin-right: 50px; margin-top: 15px; margin-left: 22px">
+        <table id="commodityDividendTable">
+        </table>
+        <div id="pager">
+        </div>
+    </div>
+    <div id="shareAll" style="margin-left: 20px;">
+        <table style="font-size: 14px;">
+            <tr>
+                <td  class="td-desc">
+                    <span>佣金：</span>
+                </td>
+                <td>
+                    商品金额的<input type="text" id="shareAllPercent" style="width: 80px; text-align: center;
+                        border-bottom: 1px solid #ccc;" />%（订单金额不包含运费)
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div style="width: 100%; margin-top: 26px;">
+        <div style="text-align: center;">
+            <a class="btn120" style="cursor: pointer;" id="btnSave">保存</a> <a class="btn120"
+                style="cursor: pointer;" id="btnCancel">取消</a>
+        </div>
+    </div>
+    <div style="clear: both">
+    </div>
+</div>
+<div id="dividendComSelectDialog" style="display: none;">
+    <div>
+        <iframe id="dividendComSelectIframe" style="width: 100%; height: 600px; scroll: no;
+            border: 0;" scrolling="no" src=""></iframe>
+    </div>
+</div>
+<div id="ScoreSettingDiv" style="display: none;">
+    <div style="margin-bottom: 10px;">
+        <div style="font-size: 14px; line-height: 20px; margin: 2px 12px; margin-top: 20px;
+            margin-bottom: 0">
+            佣金会以积分的形式计入分销商的积分账户，故请先进行积分兑换汇率设置，再设置佣金比例</div>
+        <div class="bbtn" style="text-align: center; margin-top: 20px;">
+            <a href="javascript:;" id="ScoreSetting" class="btn120" style="margin-top: 6px;">确定</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    //加载完成时，若没有设置积分，则弹出提示并跳到积分设置页
+    var setScoreUrl = "/Payment/AddPayment" + window.location.search + "&&callBack=" + encodeURIComponent(window.location.href);
+    function closeScoreSetting() {
+        $("#ScoreSettingDiv").CloseDiv();
+    }
+    $(function () {
+        if ('@appExtension.IsCashForScore'.toLowerCase() == 'false') {
+            $("#ScoreSetting").attr("href", setScoreUrl);
+            $("#ScoreSettingDiv").OpenDiv();
+        } else {
+            //                if ($("#ScoreSetting").attr("display") != "none") {
+            //                    closeScoreSetting();  
+            //                }
+        }
+    });
+</script>
+<script type="text/javascript">
+   var appId=getQueryString('appId');
+   var showUrl= "/Commodity/CommodityDividend" +location.search;
+   var choolseUrl="/Commodity/DividendComSelect?AppId="+appId+"&CommodityName=&OnlyShareMoney=false&PageIndex=1&PageSize=65535";
+  // var htmlEmpty = "<div class='htmlEmpty'>请输入佣金</div>";
+  // var htmlSet = "<div class='htmlSet'>格式错误</div>";
+    //页面变量
+    var _pageSize = 65535;
+    var _currentPage = 1;
+    //原始数组
+    var ghcOriginalArry = [];
+    //变化数组
+    var ghcChangeArry = [];
+    //当前数组，加载时附值原始数组，之后随操作变动
+    var ghcNowArry=[];
+    //原设置类型
+    var isDividendAll = '@isDividendAll';
+    //加载变量数组
+    function refushGrid(data) {
+        $("#commodityDividendTable").jqGrid('setGridParam', { data: data });
+        //$("#commodityDividendTable")[0].grid.endReq();
+        $("#commodityDividendTable").trigger('reloadGrid');
+        if(data){
+            if(data.length >10){
+                if ($.browser.msie) {
+                    //
+                } else {
+                    $(".ui-jqgrid .ui-jqgrid-hbox").css("padding-right", "25px");
+                }
+            }
+            else{
+                if ($.browser.msie) {
+                    //
+                } else {
+                    $(".ui-jqgrid .ui-jqgrid-hbox").css("padding-right", "0");
+                }
+            }
+        }
+        //var dzc = $("#commodityDividendTable").jqGrid('getGridParam');
+    }
+    //初始时加载数据
+    function loadData() {
+        var data = { "appId": appId, "onlyShareMoney": true, "PageSize": _pageSize, "PageNumber": 1 };
+        $.ajax({
+            url: "/Commodity/GetCommodityGridJson",
+            data: data,
+            type: "post",
+            dataType: "json",
+            success: function (result) {
+                var showIds=[];
+                for(var i =0;i<result.length;i++){
+                   result[i].id= result[i].Id;
+                   showIds.push( result[i]);
+                }
+                ghcOriginalArry = showIds;
+                ghcNowArry=showIds.concat();
+                refushGrid(showIds);
+                $("#load_commodityDividendTable th").css({"height":"22px"});
+                $(".ui-jqgrid .ui-th-div-ie").css({"height":"22px"});
+            },
+            error: function (data, text) {
+                alert("没有找到数据");
+            }
+        });
+    }
+    function CloseDividendComSelect(){
+        $("#dividendComSelectDialog").jhtablebox("close");
+    }
+   function SaveDividendComSelect(obj) {
+        if (obj) {
+            for (var i = 0; i < obj.length; i++) {
+                var isHave = false;
+                for (var j = 0; j < ghcNowArry.length; j++) {
+                    if (ghcNowArry[j].Id == obj[i].Id) {
+                        isHave = true;
+                    }
+                }
+                if (!isHave) {
+                    var insertModel={};
+                    insertModel.id=obj[i].Id;
+                    insertModel.Id=obj[i].Id;
+                    insertModel.Pic=obj[i].Pic;
+                    insertModel.Name=obj[i].Name;
+                    insertModel.Price=obj[i].Price;
+                    insertModel.SharePercent=0;
+                    insertModel.Id=obj[i].Id;
+                    ghcNowArry.push(obj[i]);
+                    $("#commodityDividendTable").jqGrid("addRowData", insertModel.Id, insertModel, "first");
+                }
+            }
+            if(ghcNowArry.length >10){
+                if ($.browser.msie) {
+                    //
+                } else {
+                    $(".ui-jqgrid .ui-jqgrid-hbox").css("padding-right", "25px");
+                }
+            }
+            else{
+                if ($.browser.msie) {
+                    //
+                } else {
+                    $(".ui-jqgrid .ui-jqgrid-hbox").css("padding-right", "0");
+                }
+            }
+        }
+        $("#dividendComSelectDialog").jhtablebox("close");
+   }
+     function decimalInput(item) {
+            var reg = /^(0|[1-9][0-9]?)(\.\d{1,2}){0,1}$|^100$/;
+            return reg.test(item);
+     }
+
+    $(function () {
+       //初始显示
+        if(@isDividendAll==-1){
+         $("#shareCommodity").hide();
+            $("#shareAll").show();            
+            $("#radioAll")[0].checked=true;
+            $("#chooseProduct").addClass("disabled");
+            $("#shareAllPercent").val("");
+            $("#btnDelete").hide();
+        }
+        else if (@isDividendAll==0) {
+            $("#shareCommodity").show();
+            $("#shareAll").hide();
+            $("#radioPatal")[0].checked=true;
+            $("#chooseProduct").removeClass("disabled");
+            $("#btnDelete").show();
+        } 
+        else if(@isDividendAll==1) {
+            $("#shareCommodity").hide();
+            $("#shareAll").show();            
+            $("#radioAll")[0].checked=true;
+            $("#chooseProduct").addClass("disabled");
+            $("#shareAllPercent").val(Fixed100('@ViewBag.SharePercent'));
+            $("#btnDelete").hide();
+        }
+        //加载选择商品的地址
+        $("#dividendComSelectIframe").attr("src",choolseUrl);
+        //页面表格加载数据
+        initJqueryGrid();
+        $("#commodityDividendTable").setGridHeight(520);
+       // $("#commodityDividendTable").setGridWidth($(window).width() - 300);
+       $("#commodityDividendTable").setGridWidth($(window).width() - 200);
+       
+//       $("table.ui-jqgrid-htable").css("width","900px");
+//       $("#commodityDividendTable").css("width","900px");
+ 
+
+        loadData();
+        if ($.browser.msie) {
+             $("#load_commodityDividendTable th").css({"height":"22px"});
+             $(".ui-jqgrid .ui-th-div-ie").css({"height":"22px"});
+        } else {
+            $("table.ui-jqgrid-htable").css("width","100%");
+            $("#commodityDividendTable").css("width","100%");
+            $(".ui-jqgrid .ui-jqgrid-hbox").css("padding-right", "0");
+        }
+       
+        //选全部，还是部分
+        $("input[name=divedType]").click(function () {
+            if ($(this).val() == 1) {
+                $("#shareCommodity").hide();
+                $("#shareAll").show();
+                 $("#chooseProduct").removeClass("disabled");
+                  $("#btnDelete").hide();
+            } else {
+                $("#shareCommodity").show();
+                $("#shareAll").hide();
+                 $("#chooseProduct").removeClass("disabled");
+                  $("#btnDelete").show();
+            }
+        });
+        //取消
+        $("#btnCancel").click(function () {
+            window.location.href = showUrl;
+        });
+        //验证输入
+        $("input[type=text]").live("blur",function(){       
+            var result=$(this).val();
+            if(result=="") {
+                $(this).parents(".inputShare").children(".checkFormat").html("请输入佣金");
+                 //$(this).focus();
+                return;
+            }
+            else if(result==0){
+                 $(this).parents(".inputShare").children(".checkFormat").html("格式错误");
+                //$(this).focus();
+                return;
+            }
+            else if (!decimalInput(result)) {
+                //alert("输入格式不正确！应当输入0到100之间，不包括0的数值，最多可2位小数","25px");
+               $(this).parents(".inputShare").children(".checkFormat").html("格式错误");
+                // $(this).val("");  
+                //$(this).focus();
+                return;
+            } else {
+                 $(this).parents(".inputShare").children(".checkFormat").html("");
+            }
+        });
+        //确定
+        $("#btnSave").click(function () {
+           var isChange=false;
+           var isAlert=false;
+            var alertType = {};
+            alertType.isEmpty = false;        //是否空
+            alertType.isZero = false;         //是否0
+            alertType.isFormatError = false;  //是否格式错误
+            alertType.isSetEmpty = false;
+            alertType.isSetZero = false;
+            alertType.isSetFormatError = false;
+            alertType.isAlert = false;
+           //提交的实体类
+           var subData={};
+           subData.AppId=appId;
+           subData.CShareList=null;
+           subData.IsDividendAll=false;
+           subData.SharePercent=-1;               
+           
+            if($("input[name=divedType]:checked").val()==1){    //全部商品时
+                if($("#shareAllPercent").val()==""){
+                    isAlert=true;
+                    alert("佣金不能为空!");
+                     //$("#shareAllPercent").focus();
+                    return false;
+                }
+                if($("#shareAllPercent").val()<0){
+                    isAlert=true;
+                    alert("佣金数值不能小于0!");
+                    //$("#shareAllPercent").val("");
+                    //$("#shareAllPercent").focus();
+                    return false;
+                }
+                if (!decimalInput($("#shareAllPercent").val())) {
+                    isAlert=true;
+                    alert("输入格式不正确！应当输入0到100之间，不包括0的数值，最多可2位小数","25px");
+                    return false;
+                }
+                isChange=true;
+                 subData.CShareList=null;
+                 subData.IsDividendAll=true;
+                 subData.SharePercent=parseFloat($("#shareAllPercent").val())/100;
+            }          
+            else if($("input[name=divedType]:checked").val()==0){  //部分商品时
+               //对比原始数组，以便保存包括3方面：删除的分享佣金需要附值成0，修改的也需要保存，新加入的也要保存。 
+                var ghcNowInputList=$(".SharePercentCom");
+                //都删除了
+                if(ghcNowInputList.length==0){
+                    //根本就没数据时，直接返回
+                    if(ghcOriginalArry.length==0){
+                       if(isDividendAll == "-1"){
+                           window.location.href = showUrl;
+                       }
+                       else if(isDividendAll == "1"){
+                         isChange=true;
+                         subData.IsDividendAll=null;
+                       }                       
+                    }else{  //删除所有的数据，即分享佣金设成0
+                        isChange=true;
+                         subData.IsDividendAll=null;
+                        subData.CShareList=[];
+                         for(var i=0;i<ghcOriginalArry.length;i++){
+                            var item={};
+                            item.CommodityId=ghcOriginalArry[i].Id;
+                            item.SharePercent=0;
+                            subData.CShareList.push(item);
+                         }
+                    }
+                }
+                else if(ghcNowInputList.length>0){  //有数据时
+                   //查看是否为空
+                     ghcNowInputList.each(function(){
+                         if($(this).val()==""){
+                             isAlert=true;
+                             isChange=false;
+                             if (!alertType.isSetEmpty && !alertType.isAlert) {
+                                  alert("佣金设置不能有空值");
+                                  //$(this).focus();
+                                  alertType.isSetEmpty = true;
+                                  alertType.isAlert = true;
+                             }
+                             alertType.isEmpty = true;
+                             $(this).parents(".inputShare").children(".checkFormat").html("请输入佣金");
+                             //return false;
+                         }
+                        else if($(this).val()==0){
+                            isAlert=true;
+                            isChange=false;
+                            //$(this).val("");
+                           if (!alertType.isSetZero && !alertType.isAlert) {
+                                alert("输入格式不正确！应当输入0到100之间，不包括0的数值，最多可2位小数","25px");
+                               //$(this).focus();
+                                alertType.isSetZero = true;
+                                 alertType.isAlert = true;
+                           }
+                             alertType.isZero = true;
+                             $(this).parents(".inputShare").children(".checkFormat").html("格式错误");
+                             //return false;
+                         }
+                        else if (!decimalInput($(this).val())) {
+                               isAlert=true;
+                               isChange=false;
+                               //$(this).val("");
+                             if (!alertType.isSetFormatError && !alertType.isAlert) {
+                                  alert("输入格式不正确！应当输入0到100之间，不包括0的数值，最多可2位小数","25px");
+                                 //$(this).focus();
+                                alertType.isSetFormatError = true;
+                                   alertType.isAlert = true;
+                             }
+                             alertType.isFormatError = true;
+                              $(this).parents(".inputShare").children(".checkFormat").html("格式错误");
+                             //return false;
+                         } else {
+                             $(this).parents(".inputShare").children(".checkFormat").html("");
+                        }
+                     });
+                    if(isAlert){
+                        
+                        return false;
+                    }
+                    subData.CShareList=[];
+                    //新加与修改的
+                    ghcNowInputList.each(function(){
+                        var haveChange=true;
+                        var comId=$(this).attr("comId");
+                        var sharePercent=parseFloat($(this).val())/100;
+                        for(var j=0;j<ghcOriginalArry.length;j++){
+                            if(ghcOriginalArry[j].Id==comId){
+                                if(ghcOriginalArry[j].SharePercent==sharePercent){
+                                    haveChange=false;
+                                }
+                            }
+                        }
+                        if(haveChange){
+                            isChange=true;
+                            var item={};
+                            item.CommodityId=comId;
+                            item.SharePercent =sharePercent;
+                            subData.CShareList.push(item);
+                        }
+                    });
+                    //删除的
+                    for(var j=0;j<ghcOriginalArry.length;j++){    
+                        var isDelete=true;                    
+                         ghcNowInputList.each(function(){
+                             var comId=$(this).attr("comId");
+                             if(ghcOriginalArry[j].Id==comId){
+                                 isDelete=false;
+                             }
+                         });
+                         if(isDelete){
+                            isChange=true;
+                            var item={};
+                            item.CommodityId=ghcOriginalArry[j].Id;
+                            item.SharePercent=0;
+                            subData.CShareList.push(item);
+                         }
+                    }
+                }
+            }
+            if(isAlert){
+                return false;
+            }
+            else{
+                if(!isChange){
+                     window.location.href = showUrl;
+                }
+            }
+           if(isChange){
+                var subDataAjax = CommLib.ObjToStringWithQuot(subData);
+                  $.ajax({
+                    url: '/Commodity/SaveCommoditySharePercent',
+                    type: 'post',
+                    async: true,
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: subDataAjax,
+                    beforeSend: function () {
+                        ajaxLoading(1, '');
+                    },
+                    success: function (data) {
+                        if (data.ResultCode != 0) {
+                            alert(data.Message);
+                            return false;
+                        }
+                        $("#ajaxLoadBlind").remove();
+                        //alert("保存成功");
+                        window.location.href = showUrl;
+                    },
+                    error: function () {
+                        $("#ajaxLoadBlind").remove();   
+                        alert("保存失败");
+                        return false;                    
+                   }
+                });
+            }
+           //window.location.href = showUrl;
+        });
+        //删除
+        $("#btnDelete").click(function () {
+             var selectList= $("#commodityDividendTable").jqGrid('getGridParam','selarrrow');       
+             if(selectList){
+                 var idList=selectList.concat();
+                 for(var i=0;i<idList.length;i++){
+                     $("#commodityDividendTable").jqGrid("delRowData", idList[i]);
+                     var delIndex='';
+                     for(var j=0;j<ghcNowArry.length;j++){
+                         if(ghcNowArry[j].Id==idList[i]){
+                            delIndex=j;
+                         }
+                     }
+                     ghcNowArry.splice(delIndex,1);                    
+                 }
+             }
+              if(ghcNowArry.length >10){
+                  if ($.browser.msie) {
+                      //
+                  } else {
+                      $(".ui-jqgrid .ui-jqgrid-hbox").css("padding-right", "25px");
+                  }
+              }
+            else{
+                  if ($.browser.msie) {
+                      //
+                  } else {
+                      $(".ui-jqgrid .ui-jqgrid-hbox").css("padding-right", "0");
+                  }
+              }
+        });
+
+        //选择商品
+        $("#chooseProduct").click(function(){
+              $("#dividendComSelectDialog").jhtablebox({
+                    height: 640,
+                    width: 850,
+                    resizable: false,
+                    title: "选择商品",
+                    position: [300, 125],
+                    modal: true,
+                    closedByHide: false
+                });
+            $("#dividendComSelectDialog").parent().css({ "position": "fixed", "top": 30, "left": 100 });
+
+        });
+    });
+    //初始化JqueryGrid
+    function initJqueryGrid() {
+       
+        $("#commodityDividendTable").jqGrid({
+            colNames: ["Id","商品图片", "商品名称", "商品价格", "佣金（%）"],
+            colModel: [
+            { name: 'Id', index: 'Id', width: 0, align: "center", sortable: false, title: false,hidden:true},
+            { name: 'Pic', index: 'Pic', width: 100, align: "center", sortable: false, title: false, formatter: FormatterPic },
+            { name: 'Name', index: 'Name', width: 200, align: "center", sortable: false, title: false },
+            { name: 'Price', index: 'Price', width: 100, align: "center", sortable: false, title: false,formatter:FormatterPrice },
+            { name: 'SharePercent', index: 'SharePercent', width: 100, align: "center", sortable: false, title: false, formatter: FormatterSharePercent }
+            ],
+            viewrecords: true,
+            rowNum: _pageSize,
+            height: "100%",
+            datatype: 'local',
+            rownumbers: true,
+            autowidth: true,
+            forceFit: true,
+            scroll: false,
+            shrinkToFit: true,
+            multiselect: true,
+            gridComplete: function () {
+              newSetIframeHeight();
+            }
+        });
+        function FormatterPrice(callvalue, opts, rowdata) {
+            if(callvalue>0){
+                return getCurrency()+(parseFloat(callvalue)).toFixed(2);
+            }
+            else{
+                return "0";
+            }
+        }
+
+        function FormatterPic(callvalue, opts, rowdata) {
+            return '<img class="img" src="' + callvalue + '" width="50" height="50" />';
+        }
+
+        function FormatterSharePercent(callvalue, opts, rowdata) {
+            if (callvalue == 0) {
+                return '<div class="inputShare"><input class="SharePercentCom" comId='+rowdata.Id+' type="text" style="width:60px;border:1px solid #ccc;text-align:right;" value=""  /><span>%</span><div class="checkFormat"></div></div>';
+            }
+            return '<div class="inputShare"><input class="SharePercentCom" comId='+rowdata.Id+' type="text" style="width:60px;border:1px solid #ccc;text-align:right;" value="' + Fixed100(callvalue) + '"  /><span>%</span><div class="checkFormat"></div></div>';
+        }
+        function reRegGridEvents() {
+
+        }
+    }
+
+    function Save() {
+    }
+</script>

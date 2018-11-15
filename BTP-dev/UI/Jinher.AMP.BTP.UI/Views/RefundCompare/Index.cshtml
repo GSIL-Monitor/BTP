@@ -1,0 +1,60 @@
+﻿@{
+    //Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>抵用券退款错误信息</title>
+    <link rel="stylesheet" type="text/css" href="/Content/default/ui.jqgrid.css?ver=2fe1621998866f271fa02663c2a5551e" />
+</head>
+<body style="overflow:auto">
+
+    <div class="GridArea mt10 ml10" id="table">
+        <table id="jqgrid"></table>
+        <div id="page">
+        </div>
+    </div>
+   
+</body>
+</html>
+
+<script type="text/javascript" src="/Scripts/Grid/jquery.grid.base.js?ver=815ae060e626a32174018eb8938b69f8"></script>
+<script type="text/javascript" src="/Scripts/Pager/jquery.ui.jhpager.js?ver=5f5142506e6c4f3a0ab6879c63a50890"></script>
+<script type="text/javascript">
+    $(function () {
+
+        InitGrid();
+    });
+
+    function InitGrid() {
+
+        var data = {
+            "pageSize": 20,
+            "PageNo": 1
+        };
+
+        $("#jqgrid").jqGrid({
+            datatype: "json",
+            postData: data,
+            url: "/RefundCompare/GetRefundCompare",
+            mtype: 'Get',
+            rownumbers: true,
+            colNames: ['订单ID', '退款日期', '费用总和', '抵用券金额', '运费', '易捷币', '现金'],
+            colModel: [
+                { sortable: false, name: 'OrderId', index: 'OrderId', align: "center", width: "300px" },
+                { sortable: false, name: 'SubTime', index: 'SubTime', align: "center" },
+                { sortable: false, name: 'OrderRefundMoneyAndCoupun', index: 'OrderRefundMoneyAndCoupun', align: "center" },
+                { sortable: false, name: 'RefundYJCouponMoney', index: 'RefundYJCouponMoney', align: "center" },
+                { sortable: false, name: 'RefundFreightPrice', index: 'RefundFreightPrice', align: "center" },
+                { sortable: false, name: 'RefundYJBMoney', index: 'RefundYJBMoney', align: "center" },
+                { sortable: false, name: 'RefundMoney', index: 'RefundMoney', align: "center" }
+            ],
+            rowNum: 20,
+            pager: 'page',
+            height: 441,
+            autowidth: true
+        });
+    }
+</script>

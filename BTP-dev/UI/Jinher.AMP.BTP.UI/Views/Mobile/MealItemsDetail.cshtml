@@ -1,0 +1,648 @@
+﻿@{
+    Layout = "~/Views/Shared/_MobileLayout.cshtml";
+}
+@helper Currency()
+    {
+    @Jinher.AMP.BTP.UI.Util.MobileCookies.GetCurrency();
+}
+@section CssStyles{
+    <link rel="stylesheet" href="/dist/css/common.css">
+    <link rel="stylesheet" href="/dist/css/package.css">
+}
+@section ClientScript{
+    <script type="text/javascript" src="/dist/lib/vue.min.js"></script>
+    <script type="text/javascript" src="/dist/lib/vue-resource.min.js"></script>
+    <script type="text/javascript" src="/dist/lib/vue-mobileKit.js"></script>
+    <script type="text/javascript" src="/dist/lib/Common.js"></script>
+    <script type="text/javascript">
+        var curIndex = 0;
+        var cdata;
+        var cstockId; //选择属性id
+        var ccommId; //选择商品id
+        var cstocks = new Array(); //选择属性集合
+        var ccommIds = new Array(); //当前商品Id集合
+
+        $(function() {
+            var deviceWidth = document.documentElement.clientWidth >= 500 ? 500 : document.documentElement.clientWidth;
+            document.documentElement.style.fontSize = deviceWidth / 6.4 + 'px'; //如果设计图是320的话就除以3.2
+
+            loadItems();
+        });
+
+        function loadItems() {
+            $.ajax({
+                url: '/Mobile/GetSetMealActivitysByCommodityId?r=' + Math.random(),
+                type: 'GET',
+                dataType: 'json',
+                data: {
+                    appId: getEsAppId(),
+                    commodityId: getQueryString("commodityId")
+                },
+                async: true
+            }).done(function(data) {
+                if (data.Result) {
+                    if (data.Result.length) {
+                        cdata = data.Result;
+                        var html = "";
+                        this.lists = data.Result;
+                        for (var b = 0; b < this.lists.length; b++) {
+                            var zwI = "";
+                            if (b === 0) {
+                                zwI = "一";
+                            } else if (b === 1) {
+                                zwI = "二";
+                            } else if (b === 2) {
+                                zwI = "三";
+                            } else if (b === 3) {
+                                zwI = "四";
+                            } else if (b === 4) {
+                                zwI = "五";
+                            } else if (b === 5) {
+                                zwI = "六";
+                            } else if (b === 6) {
+                                zwI = "七";
+                            } else if (b === 7) {
+                                zwI = "八";
+                            } else if (b === 8) {
+                                zwI = "九";
+                            } else if (b === 9) {
+                                zwI = "十";
+                            } else if (b === 10) {
+                                zwI = "十一";
+                            } else if (b === 11) {
+                                zwI = "十二";
+                            } else if (b === 12) {
+                                zwI = "十三";
+                            } else if (b === 13) {
+                                zwI = "十四";
+                            } else if (b === 14) {
+                                zwI = "十五";
+                            } else if (b === 15) {
+                                zwI = "十六";
+                            } else if (b === 16) {
+                                zwI = "十七";
+                            } else if (b === 17) {
+                                zwI = "十八";
+                            } else if (b === 18) {
+                                zwI = "十九";
+                            } else if (b === 19) {
+                                zwI = "二十";
+                            }
+                            if (b === 0) {
+                                html += '<li id=' + b + ' class="tap-list active"  onclick="changeTab(' + b + ')">套餐' + zwI + '</li>';
+                            } else {
+                                html += '<li id=' + b + ' class="tap-list"  onclick="changeTab(' + b + ')">套餐' + zwI + '</li>';
+                            }
+                        }
+
+                        LoadList(0);
+                        $('#lists').html(html);
+                    }
+                }
+                $('#mask').addClass('hide');
+            }).fail(function(err) {
+                //获取数据失败的操作
+                toast('服务器繁忙，请稍后重试!');
+                $('#mask').addClass('hide');
+            });
+        }
+
+        /**
+        * 切换场次
+        */
+        function changeTab(index) {
+            cstocks = new Array();
+            ccommIds = new Array();
+            this.initTab(index, curIndex);
+            this.curIndex = index;
+        }
+
+        /**
+        * 场次tab滚动
+        */
+        function initTab(index, curIndex) {
+            if (index !== undefined && index !== curIndex) {
+                $('#' + index).addClass('active');
+                $('#' + curIndex).removeClass('active');
+            }
+            var target = document.getElementsByClassName('tap-list')[index];
+            var left = document.getElementById('lists').getBoundingClientRect().left;
+            var parent = document.getElementById('lists');
+            if (index - curIndex > 0) {
+                var next = target.nextElementSibling || target;
+                var rect = next.getBoundingClientRect();
+                var dis = rect.right - left - parent.offsetWidth;
+                if (dis > 0) {
+                    parent.scrollLeft = parent.scrollLeft + dis;
+                }
+            } else {
+                var pre = target.previousElementSibling || target;
+                var L = pre.getBoundingClientRect().left - left;
+                if (L < 0) {
+                    parent.scrollLeft = parent.scrollLeft + L;
+                }
+            }
+            LoadList(index);
+        }
+
+        /**
+        * 加载套装商品内容列表
+        */
+        function LoadList(curIndex) {
+            $('#packageList').html('');
+            var shtml = "";
+            var curData = cdata[curIndex];
+            var mealItems = curData.SetMealItemsCdtos;
+            var commodityIds = new Array();
+            var scommodityIds = new Array();
+            for (var b = 0; b < mealItems.length; b++) {
+                if ($.inArray(mealItems[b].CommodityId, commodityIds) === -1) {
+                    shtml += "<div class=\"package-list\"><div class=\"package-list-left\" onclick=\"tzCommodityPage('" + mealItems[b].CommodityId + "')\"><img src=" + mealItems[b].CommodityDto.Pic + "></div>";
+                    shtml += "<div class=\"package-list-right\"><div class=\"package-list-title\">" + mealItems[b].CommodityDto.Name + "</div>";
+                    shtml += "<del class=\"del\">  @Currency()<em id=" + mealItems[b].CommodityId + "_oprice>" + mealItems[b].CommodityDto.Price.toFixed(2) + "</em></del>";
+                    shtml += "<div id=" + mealItems[b].CommodityId + " class=\"package-list-size\" style=\"display:none\" onclick=\"sizeClick('" + mealItems[b].CommodityId + "')\">选择商品属性</div>";
+                    shtml += "<div class=\"package-list-price\"><span class=\"text-red\">@Currency()<em id=" + mealItems[b].CommodityId + "_price class=\"price\">" + (mealItems[b].CommodityDto.Price - mealItems[b].PreferentialPrice).toFixed(2) + "</em></span>";
+                    shtml += "<span class=\"pull-right\">数量：1</span></div></div></div>";
+                    commodityIds.push(mealItems[b].CommodityId);
+                } else {
+                    scommodityIds.push(mealItems[b].CommodityId);
+                }
+            }
+            $('#packageList').html(shtml);
+
+            //多属性商品 显示属性选择框 以及 sku价格区间
+            for (var b = 0; b < scommodityIds.length; b++) {
+                $('#' + scommodityIds[b]).show();
+                var oPrices = new Array();
+                var realPrices = new Array();
+                for (var i = 0; i < mealItems.length; i++) {
+                    if (mealItems[i].CommodityId === scommodityIds[b]) {
+                        var commodityStocks = mealItems[i].ComAttStockDto.CommodityStocks;
+                        for (var j = 0; j < commodityStocks.length; j++) {
+                            if (commodityStocks[j].Id === mealItems[i].ComdtyStockId) {
+                                oPrices.push(commodityStocks[j].Price.toFixed(2)); //原始价格
+                                realPrices.push((commodityStocks[j].Price - mealItems[i].PreferentialPrice).toFixed(2)); //实际价格
+                            }
+                        }
+                    }
+                }
+                realPrices.sort();
+                oPrices.sort();
+                $('#' + scommodityIds[b] + "_price").text(realPrices[0] + "~" + realPrices[realPrices.length - 1]);
+                $('#' + scommodityIds[b] + "_oprice").text(oPrices[0] + "~" + oPrices[oPrices.length - 1]);
+            }
+
+            $('#oprice').text((curData.OPrice - curData.PreferentialPrice).toFixed(2));
+            $('#preferentialPrice').text(curData.PreferentialPrice.toFixed(2));
+        }
+
+        function tzCommodityPage(commodityId) {
+            window.location.href = urlAppendCommonParams('/Mobile/CommodityDetail?commodityId=' + commodityId);
+        }
+
+/**
+        *点击属性弹出属性选择弹窗
+        */
+        function sizeClick(commodityId) {
+            $("#colorCont").html('');
+            $("#sizeCont").html('');
+            var date = cdata[curIndex];
+            var list;
+            for (var i = 0; i < date.SetMealItemsCdtos.length; i++) {
+                if (date.SetMealItemsCdtos[i].CommodityId === commodityId) {
+                    list = date.SetMealItemsCdtos[i];
+                }
+            }
+            this.popupShow = true;
+            this.curSelectPic = list.CommodityDto.Pic;
+            this.defaultPrice = list.CommodityDto.Price;
+            this.transformAttributeTitle(list);
+            this.color = [];
+            this.size = [];
+            if (this.singleAttribute == false) { //两个属性
+                for (var i = 0; i < list.ComAttStockDto.CommodityStocks.length; i++) {
+                    var commodityStocks = list.ComAttStockDto.CommodityStocks[i];
+                    if (commodityStocks.ComAttribute[0].Attribute == this.colorTitle) {
+                        this.transformAttribute(this.color, commodityStocks.ComAttribute[0], commodityStocks.ComAttribute[1], commodityStocks);
+                        this.transformAttribute(this.size, commodityStocks.ComAttribute[1], commodityStocks.ComAttribute[0], commodityStocks);
+                    } else {
+                        this.transformAttribute(this.color, commodityStocks.ComAttribute[1], commodityStocks.ComAttribute[0], commodityStocks);
+                        this.transformAttribute(this.size, commodityStocks.ComAttribute[0], commodityStocks.ComAttribute[1], commodityStocks);
+                    }
+                }
+            } else if (this.singleAttribute == true) { //单属性
+                if (list.ComAttStockDto.CommodityStocks && list.ComAttStockDto.CommodityStocks.length) {
+                    for (var i = 0; i < list.ComAttStockDto.CommodityStocks.length; i++) {
+                        var commodityStocks = list.ComAttStockDto.CommodityStocks[i];
+                        this.transformAttribute(this.color, commodityStocks.ComAttribute[0], null, commodityStocks, date);
+                    }
+                }
+            }
+            $(".modal-wrap").show();
+            $("#skuPic").attr('src', this.curSelectPic);
+            var strPrice = $("#" + commodityId + "_price").text();
+            $("#skuPrice").text(strPrice.split('~')[0]);
+
+            //单属性加载
+            var html = "";
+            for (var i = 0; i < this.color.length; i++) {
+                html += "<li id=" + this.color[i].title + " class=\"modal-content-bd-item\" onclick=\"attributeClick(" + i + ",'color')\">" + this.color[i].title + "</li>";
+            }
+            $("#colorCont").html(html);
+            if (!this.singleAttribute) {
+                //双属性加载
+                html = "";
+                for (var i = 0; i < this.size.length; i++) {
+                    html += "<li id=" + this.size[i].title + " class=\"modal-content-bd-item\" onclick=\"attributeClick(" + i + ",'size')\">" + this.size[i].title + "</li>";
+                }
+                $("#sizeCont").html(html);
+            }
+            ccommId = commodityId;
+        }
+
+        function transformAttribute(data, comAttribute1, comAttribute2, commodityStocks, cdata) {
+            if (comAttribute2 == null) { //单属性
+                var flag = commodityStocks.Stock > 0 ? false : true;
+                var price = 0;
+                for (var j = 0; j < cdata.SetMealItemsCdtos.length; j++) {
+                    if (cdata.SetMealItemsCdtos[j].ComdtyStockId === commodityStocks.Id) {
+                        price = (cdata.SetMealItemsCdtos[j].OPrice - cdata.SetMealItemsCdtos[j].PreferentialPrice).toFixed(2);
+                    }
+                }
+                var obj = { 'id': commodityStocks.Id, 'title': comAttribute1.SecondAttribute, disabled: flag, 'RealStock': commodityStocks.Stock, 'RealPrice': price, 'OPrice': commodityStocks.Price };
+                this.color.push(obj);
+            } else { //多属性
+                var flag = false;
+                var attriObj = { 'id': commodityStocks.Id, 'title': comAttribute2.SecondAttribute, 'RealStock': commodityStocks.Stock, 'RealPrice': commodityStocks.DiscountPrice };
+                var len = data.length;
+                for (var j = 0; j < len; j++) {
+                    if (data[j].title == comAttribute1.SecondAttribute) {
+                        data[j].attribute.push(attriObj);
+                        flag = true;
+                        break;
+                    }
+                }
+                if (!flag) {
+                    data[len] = { 'title': comAttribute1.SecondAttribute, 'attribute': [attriObj] };
+                }
+                for (var i = 0; i < data.length; i++) {
+                    var attribute = data[i].attribute;
+                    var flag = true;
+                    for (var k = 0; k < attribute.length; k++) {
+                        if (attribute[k].RealStock > 0) {
+                            flag = false;
+                            break;
+                        }
+                    }
+                    disabled(data, data[i].title, flag);
+                }
+            }
+        }
+
+        function transformAttributeTitle(attri) {
+            var arr = [];
+            if (attri.ComAttStockDto.ComAttibutes && attri.ComAttStockDto.ComAttibutes.length) {
+                for (var i = 0; i < attri.ComAttStockDto.ComAttibutes.length; i++) {
+                    var title = attri.ComAttStockDto.ComAttibutes[i].Attribute;
+                    if (arr.indexOf(title) < 0) {
+                        arr.push(title);
+                    }
+                }
+            }
+            if (arr.length >= 2) { //两个属性
+                this.colorTitle = arr[0];
+                this.sizeTitle = arr[1];
+                this.singleAttribute = false;
+                $("#sizeTitle").text(this.sizeTitle);
+                $("#sSku").show();
+            } else { //一个属性
+                this.singleAttribute = true;
+                this.colorTitle = arr[0];
+                this.sizeTitle = '';
+                $("#sSku").hide();
+            }
+            $("#colorTitle").text(this.colorTitle);
+        }
+
+        //点击属性按钮
+        function attributeClick(data, state) {
+            if (state == 'color') {
+                data = this.color[data];
+                if (data.title == this.colorSelect) {
+                    this.colorSelect = null;
+                } else {
+                    this.colorSelect = data.title;
+                }
+                if (this.singleAttribute) {
+                    this.curSelectPrice = data.RealPrice;
+                    this.curSelectOPrice = data.OPrice;
+                    cstockId = data.id;
+                } else {
+                    this.updateAttribue(this.colorSelect, data.attribute, this.size);
+                    if (this.colorSelect !== null && this.colorSelect !== undefined && this.sizeSelect !== null && this.sizeSelect !== undefined) {
+                        this.updatePrice(this.color, this.colorSelect, this.sizeSelect);
+                    }
+                }
+                $('#' + this.colorSelect).addClass("active");
+                $("#" + this.colorSelect).siblings().removeClass('active');
+                $("#skuPrice").text(this.curSelectPrice);
+            } else {
+                data = this.size[data];
+                if (data.title == this.sizeSelect) {
+                    this.sizeSelect = null;
+                } else {
+                    this.sizeSelect = data.title;
+                }
+                this.updateAttribue(this.sizeSelect, data.attribute, this.color);
+                if (this.colorSelect !== null && this.colorSelect !== undefined && this.sizeSelect !== null && this.sizeSelect !== undefined) {
+                    this.updatePrice(this.size, this.sizeSelect, this.colorSelect);
+                }
+                $('#' + this.sizeSelect).addClass("active");
+                $("#" + this.sizeSelect).siblings().removeClass('active');
+                $("#skuPrice").text(this.curSelectPrice);
+            }
+        }
+
+        function updateAttribue(stateSelect, attri, otherAttri) {
+            if (stateSelect == null) { //取消选中
+                for (var i = 0; i < otherAttri.length; i++) {
+                    var flag = true;
+                    for (var j = 0; j < otherAttri[i].attribute.length; j++) {
+                        if (otherAttri[i].attribute[j].RealStock > 0) {
+                            flag = false;
+                            break;
+                        }
+                    }
+                    this.disabled(otherAttri, otherAttri[i].title, flag);
+                    this.curSelectPrice = this.defaultPrice;
+                }
+            } else { //选中
+                for (var i = 0; i < attri.length; i++) {
+                    if (attri[i].RealStock <= 0) {
+                        this.disabled(otherAttri, attri[i].title, true);
+                    } else {
+                        this.disabled(otherAttri, attri[i].title, false);
+                    }
+                }
+            }
+        }
+
+        function updatePrice(attr, selectAttr1, selectAttr2) {
+            for (var i = 0; i < attr.length; i++) {
+                if (attr[i].title == selectAttr1) {
+                    var attribute = attr[i].attribute;
+                    for (var j = 0; j < attribute.length; j++) {
+                        if (attribute[j].title == selectAttr2) {
+                            cstockId = attribute[j].id;
+                            var date = cdata[curIndex];
+                            for (var d = 0; d < date.SetMealItemsCdtos.length; d++) {
+                                if (date.SetMealItemsCdtos[d].ComdtyStockId === cstockId) {
+                                    this.curSelectPrice = (date.SetMealItemsCdtos[d].OPrice - date.SetMealItemsCdtos[d].PreferentialPrice).toFixed(2);
+                                    this.curSelectOPrice = date.SetMealItemsCdtos[d].OPrice.toFixed(2);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        //设置禁用状态
+        function disabled(data, cur, state) {
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].title == cur) {
+                    data[i].disabled = state;
+                }
+            }
+        }
+
+        //点击确定按钮
+        function submit() {
+            if (this.colorSelect == null) {
+                alert('请选择' + this.colorTitle);
+                return;
+            }
+            if (!this.singleAttribute && this.sizeSelect == null) {
+                alert('请选择' + this.sizeTitle);
+                return;
+            }
+            $("#" + ccommId + "_price").text(this.curSelectPrice);
+            $("#" + ccommId + "_oprice").text(parseFloat(this.curSelectOPrice).toFixed(2));
+            var skuMes = this.colorSelect;
+            if (this.sizeSelect !== null && this.sizeSelect !== "" && this.sizeSelect !== undefined) {
+                skuMes += "," + this.sizeSelect;
+            }
+            $("#" + ccommId).text(skuMes);
+            var data = cdata[curIndex];
+            var commIds = new Array();
+            var sumOPrice = 0, sumPreferentialPrice = 0;
+            for (var i = 0; i < data.SetMealItemsCdtos.length; i++) {
+                if (data.SetMealItemsCdtos[i].ComdtyStockId === cstockId) {
+                    for (var j = 0; j < cstocks.length; j++) {
+                        if (cstocks[j].CommodityId === data.SetMealItemsCdtos[i].CommodityId) {
+                            cstocks.splice(j, 1);
+                            ccommIds.splice(j, 1);
+                        }
+                    }
+                    cstocks.push(data.SetMealItemsCdtos[i]);
+                    ccommIds.push(data.SetMealItemsCdtos[i].CommodityId);
+                } else if (data.SetMealItemsCdtos[i].CommodityId !== ccommId) {
+                    if ($.inArray(data.SetMealItemsCdtos[i].CommodityId, commIds) === -1) {
+                        if (cstocks.length > 0) {
+                            for (var j = 0; j < cstocks.length; j++) {
+                                if ($.inArray(data.SetMealItemsCdtos[i].CommodityId, ccommIds) === -1) {
+                                    sumOPrice += data.SetMealItemsCdtos[i].OPrice;
+                                    sumPreferentialPrice += data.SetMealItemsCdtos[i].PreferentialPrice;
+                                }
+                            }
+                        } else {
+                            sumOPrice += data.SetMealItemsCdtos[i].OPrice;
+                            sumPreferentialPrice += data.SetMealItemsCdtos[i].PreferentialPrice;
+                        }
+                    }
+                    commIds.push(data.SetMealItemsCdtos[i].CommodityId);
+                }
+            }
+            for (var j = 0; j < cstocks.length; j++) {
+                sumOPrice += cstocks[j].OPrice;
+                sumPreferentialPrice += cstocks[j].PreferentialPrice;
+            }
+
+            $('#oprice').text((sumOPrice - sumPreferentialPrice).toFixed(2));
+            $('#preferentialPrice').text(sumPreferentialPrice.toFixed(2));
+            this.closeModal();
+        }
+
+        function closeModal() {
+            $(".modal-wrap").hide();
+            this.colorSelect = null;
+            this.sizeSelect = null;
+        }
+
+        var isCheck = true;
+
+        function checkSku() {
+            isCheck = true;
+            var commIds = new Array();
+            var data = cdata[curIndex];
+            for (var i = 0; i < data.SetMealItemsCdtos.length; i++) {
+                if ($.inArray(data.SetMealItemsCdtos[i].CommodityId, commIds) === -1) {
+                    commIds.push(data.SetMealItemsCdtos[i].CommodityId);
+                } else {
+                    //多属性商品
+                    if ($.inArray(data.SetMealItemsCdtos[i].CommodityId, ccommIds) === -1) {
+                        isCheck = false;
+                        return false;
+                    }
+                }
+            }
+        }
+
+        //按id获取商品详细信息。
+        function getCommoditys() {
+            var commodSeled = new Array();
+            var stockIds = new Array();
+            for (var i = 0; i < cstocks.length; i++) {
+                stockIds.push(cstocks[i].ComdtyStockId);
+            }
+
+            var data = cdata[curIndex];
+            for (var i = 0; i < data.SetMealItemsCdtos.length; i++) {
+                if ($.inArray(data.SetMealItemsCdtos[i].ComdtyStockId, stockIds) !== -1 || data.SetMealItemsCdtos[i].ComdtyStockId === "00000000-0000-0000-0000-000000000000") {
+                    var cinfo = data.SetMealItemsCdtos[i].CommodityDto;
+                    cinfo.CommodityNumber = 1;
+                    cinfo.UserId = getUserId();
+                    cinfo.RealPrice = (data.SetMealItemsCdtos[i].OPrice - data.SetMealItemsCdtos[i].PreferentialPrice).toFixed(2);
+                    cinfo.DiscountPrice = (data.SetMealItemsCdtos[i].OPrice - data.SetMealItemsCdtos[i].PreferentialPrice).toFixed(2);
+
+                    var size = $("#" + cinfo.Id).text();
+                    var yan = "";
+                    var chi = "";
+                    if (size != "undefined" && size != "" && size != null && size != "选择商品属性") {
+                        if (size.split(',')[0] != "" && size.split(',')[0] != null && size.split(',')[0] != "null") {
+                            yan = size.split(',')[0] + "";
+                        }
+                        if (size.split(',')[1] != "" && size.split(',')[1] != null && size.split(',')[1] != "null") {
+                            chi = size.split(',')[1] + "";
+                        }
+                    }
+                    cinfo.SizeAndColorId = chi + "," + yan;
+                    cinfo.CommodityStockId = data.SetMealItemsCdtos[i].ComdtyStockId;
+                    cinfo.SetMealTheme = data.Theme;
+                    commodSeled.push(cinfo);
+                }
+            }
+            return commodSeled;
+        }
+
+        function buildShopCartData(commodSeled) {
+            if (commodSeled == null || commodSeled.length == 0) {
+                return;
+            }
+            //找出选中的店铺id.
+            var appIdSeled = new Array();
+            for (var i = 0; i < commodSeled.length; i++) {
+                var cartItem = commodSeled[i];
+                var appid = cartItem.AppId;
+                if (appIdSeled.indexOf(appid) > -1) {
+                    continue;
+                }
+                appIdSeled.push(appid);
+            }
+
+            var shops = new Array();
+            for (var b = 0; b < appIdSeled.length; b++) {
+                var cishop = commodSeled;
+                var shopOld = cishop[0];
+                var shop = new Object();
+                shop.AppId = shopOld.AppId;
+                shop.AppName = shopOld.AppName;
+                shop.ShoppingCartItemSDTO = cishop;
+
+                //计算app下总金额、总数量。
+                var appAmount = 0;
+                var commodityNum = 0;
+                for (var d = 0; d < cishop.length; d++) {
+                    appAmount += cishop[d].RealPrice * cishop[d].CommodityNumber;
+                    commodityNum += cishop[d].CommodityNumber;
+                }
+                appAmount = eval(appAmount).toFixed(2);
+                shop.AppAmount = appAmount;
+                shop.CommodityNum = commodityNum;
+
+                shops.push(shop);
+            }
+            return shops;
+        }
+
+        function buyBtn() {
+            //判断是否登录，未登录跳转到登录页
+            if (isLogin()) {
+                checkSku();
+                if (isCheck) {
+                    //按照购物车的逻辑
+                    //获取相关的商品详情
+                    var data = cdata[curIndex];
+                    var cinfo = getCommoditys();
+                    cinfo = buildShopCartData(cinfo);
+                    sessionStorage.ShopCartDate = JSON.stringify(cinfo);
+                    setTimeout(function() { gotoCreateOrder3("gouwuche", data.Id, parseFloat($("#oprice").html()).toFixed(2)); }, 1000);
+                } else {
+                    alert('请选择商品属性');
+                    return false;
+                }
+            } else {
+                DealLoginPartial.initPartialPage();
+            }
+        }
+    </script>
+}
+    <div id="app">
+        <!--套餐切换部分start-->
+        <div class="fixed">
+            <nav class="tap-list-wrap">
+                <ul id="lists">
+                </ul>
+            </nav>
+        </div>
+        <!--套餐切换部分end-->
+        <div class="content">
+            <!--套餐列表 start-->
+            <div id="packageList" class="package-list-wrap">
+                <div class="package-list">
+                </div>
+            </div>
+            <!--套餐列表 end-->
+        </div>
+        <div class="bottom">
+            <div class="bottom-price">
+                <span class="text-red">总价: <em>&#165;<span id="oprice">0.00</span></em></span>
+                <span style="padding-left: .2rem;">优惠: <em>&#165;<span id="preferentialPrice">0.00</span></em></span>
+            </div>
+            <a href="javascript:void(0);" class="bottom-btn" onclick="buyBtn()">立即购买</a>
+        </div>
+        <!--弹窗-->
+        <div class="modal-wrap hide">
+            <div class="modal-content">
+                <div class="modal-content-hd">
+                    <a href="javascript:void(0);" class="modal-content-close" onclick="closeModal()"></a>
+                    <img id="skuPic" class="pic">
+                    <span class="money">@Currency()<em id="skuPrice"></em></span>
+                    <span class="modal-duty"></span>
+                </div>
+                <div class="modal-content-bd">
+                    <div class="modal-content-bd-attribute">
+                        <div id="colorTitle" class="modal-content-bd-title"></div>
+                        <ul id="colorCont" class="clearfix">
+                        </ul>
+                        <div id="sSku" style="display: none">
+                            <div id="sizeTitle" class="modal-content-bd-title"></div>
+                            <ul id="sizeCont" class="clearfix">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-content-btn" onclick="submit()">确定</div>
+            </div>
+        </div>
+    </div>

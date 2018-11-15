@@ -1,0 +1,394 @@
+﻿@using System.Web
+@{
+    Layout = "~/Views/Shared/_MobileFittedLayout.cshtml";
+}
+@section LTitleHtml
+{
+    <title>付款成功</title>
+}
+<div class="container">
+    <div class="top" id="divTopImage">
+        <div class="top_info">
+            <div class="fonts">
+                </div>
+            <div class="fonts_info">
+                </div>
+        </div>
+    </div>
+    <div class="middle">
+        <p class="middle_info" id="txtShareOrderMarked">
+        </p>
+        <div class="middle_btn_containt">
+            <a href="javascript:void(0)" class="btn" onclick="scanOrder(); return false;">查看订单
+            </a><a onclick="shareOrder(); return false;" id="btnShareOrder" href="javascript:void(0)"
+                class="btn active" style="background-color: #fff;color:#e4393c;">我要晒单 </a>
+        </div>
+    </div>
+    <div class="hr_info">
+        <span class="hr"></span><span class="hr_text" style="font-size: 1rem;">更多优惠</span>
+        <span class="hr"></span>
+    </div>
+    <div class="list scroll-load" id="divCoupon">
+    </div>
+</div>
+@section CssStyles{
+    <link href="/Content/PaySuccess/css/coupon.css?v=22" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+        body, html
+        {
+            height: inherit;
+            padding-bottom: 5px;
+            background-color:#e6e6ec;
+        }
+    </style>
+}
+@section ClientScript{
+    <script type="text/javascript">
+        var pageNumber = 1;
+        var pageSize =20;
+        var getCouponUrl = "/Mobile/GetUsableCouponTemplateList";
+        var _appId = "@ViewBag.EsAppId";
+        var shopId = "@ViewBag.ShopId";
+        var _orderId = "@ViewBag.OrderId";
+        var mainOrder = "@ViewBag.MainOrder";
+        if(!_appId){
+            _appId = getEsAppId();            
+        }
+        if(!shopId){
+            shopId = sessionStorage.appId;
+        }
+        if(!_orderId)
+        {
+            _orderId = sessionStorage.current_orderId;
+        }
+        if (!mainOrder) {
+            mainOrder = sessionStorage.current_ismainorder;
+        }
+        var canLoadMore = true;
+        var oldUrl = "";
+        var paramsUrl = "";
+        var orderListUrl = "";
+        $(function () {
+            oldUrl = window.location.href;
+            paramsUrl = window.location.search.substr(1);
+            doReplaceState();
+            $("body").css("height", "inherit").css("padding-bottom", "5px");
+            $("html").css("height", "inherit").css("padding-bottom", "5px");
+            checkIsApp();
+            // initScroller();
+            setPaySuccess();
+            firstShowCoupon();
+        });
+        window.onpopstate = function () {
+            if (!isInJhApp()) return;
+            var json = window.history.state;
+            if (json && json != null && json.from && json.from == "orderlist-pay") {
+                GotoBtp();
+            }
+            if (json && json != null && json.from && json.from == "paysuccess-old0") {
+                goShoping();
+            }
+        }
+        function doReplaceState() {
+            if (!isInJhApp()) return;
+            history.replaceState({ from: "orderlist-pay" }, "待发货订单", getOrderListUrl());
+            history.pushState({ from: "paysuccess-old0" }, "付款成功", oldUrl);
+        }
+        function goOrder(url) {
+            if (!isInJhApp()) return;
+            history.pushState({ from: "orderlist-detail" }, "待发货订单", url);
+        }
+        function goConupon() {
+            if (!isInJhApp()) return;
+            history.replaceState({ from: "paysuccess-old1" }, "付款成功", oldUrl);
+        }
+        function checkIsApp() {
+            if (!isInJhApp()) {
+                $("#btnShareOrder").hide();
+            }
+        }
+        function goShopOrCommodity(obj) {
+            goConupon();
+            window.location = $(obj).attr("temphref");
+        }
+
+        function GotoBtp() {
+            var url = getOrderListUrl();
+            window.location.href = url;
+        }
+        function getOrderListUrl() {
+            if (orderListUrl == "") {
+                var url = '/Mobile/MyOrderList?type=shuaxin&orderState=1&shopId=' + shopId;
+                orderListUrl = urlAppendCommonParams(url);
+            }
+            return orderListUrl;
+        }
+    </script>
+    <script type="text/javascript">
+        /*显示处理加载的数据，事件交互处理*/
+        /*显示店铺支付成功信息*/
+        function setPaySuccess() {
+            loadPaySuccess(function (store) {
+                $("#txtShareOrderMarked").html(hasValue(store.ShareOrderMarked) ? store.ShareOrderMarked : "晒订单，有惊喜！");
+                if (hasValue(store.StorePayImage))
+                    $("#divTopImage").css("background", 'url("' + store.StorePayImage + '") no-repeat center center');
+            });
+        }
+
+        /*首次初始化加载优惠券*/
+        function firstShowCoupon() {
+            loadCoupon(function (coupon) {
+                $("#divCoupon").html(coupon);
+                if (coupon.indexOf("goShoping();return false;") > -1) {
+                    canLoadMore = false;
+                }
+                initScroller();
+            });
+        }
+
+        /*滑动底部获取更多优惠券*/
+        function loadMoreCoupon() {
+            loadCoupon(function (coupon) {
+                if (coupon.indexOf("<div></div>") == -1) {
+                    $("#divCoupon").append(coupon);
+                }
+                else {
+                    canLoadMore = false;
+                }
+            });
+        }
+
+        /* 上拉刷新，下拉更多加载数据*/
+        function initScroller() {
+            if (!canLoadMore) return;
+            //滚动加载
+            var scroller = $('#divCoupon').scrollLoad({
+                loadDownFn: function (me) { //下拉加载数据
+                    if (canLoadMore) {
+                        loadMoreCoupon();
+                    }
+                    me.resetload();
+                }
+            });
+        }
+
+        /*我要晒单==分享*/
+        function shareOrder() {
+            loadShareOrder(function (shareData) {
+                openShare(shareData);
+            });
+        }
+
+        function openShare(shareData) {
+            var base64 = new Base64();
+            var para = "{\"businessJson\":\"{\\\"Title\\\":\\\"" + shareData.shareTitle + "\\\",\\\"content\\\":\\\"" + shareData.shareContent + "\\\",\\\"ShareUrl\\\":\\\"" + shareData.shareUrl + "\\\",\\\"ImageUrl\\\":\\\"" + shareData.imgUrl + "\\\",\\\"ShareType\\\":\\\"2\\\"}\"}";
+            window.location.href = "jhoabrowser://share?args=" + base64.encode(para) + "&tag=" + base64.encode(_pageId);
+        }
+
+        /*查看订单信息*/
+        function scanOrder() {
+            var url = '/Mobile/MyOrderDetail?orderId=' + _orderId + '&shopId=' + shopId;
+            if (mainOrder == "0") {
+                url = getOrderListUrl();
+            } else {
+                url = urlAppendCommonParams(url);
+                goOrder(getOrderListUrl());
+            }
+            window.location.href = url;
+        }
+
+        /*去逛逛*/
+        function goShoping() {
+            if (isInJhApp()) {
+                window.location.href = "jhoabrowser://loadHomePage?";
+            }
+            else {
+                window.location.href = "@ViewBag.ShopHome";
+            }
+        }
+
+        /*领取优惠券操作*/
+        function bindCoupon(obj) {
+            var couponTemplateId = $(obj).attr("couponTemplateId");
+            var params = { "couponTemplateId": couponTemplateId };
+            saveBindCoupon(params, function (result) {
+                if (result.success) {
+                    $(obj).hide();
+                    $("#goShop" + couponTemplateId).show();
+                    $(obj).parent().parent().prev().addClass("used");
+                }
+                toast(result.msg);
+            });
+        }
+    </script>
+    <script type="text/javascript">
+        /*加载数据*/
+        /*获取支付成功店铺设置信息*/
+        function loadPaySuccess(callback) {
+            //            var store = { ShareOrderMarked: "晒订单，有惊喜！", StorePayImage: "" };
+            //            callback(store);
+            //参数应该用：appId
+            $.ajax({
+                type: "POST",
+                url: "/Mobile/GetShopSetting",
+                datatype: "json",
+                data: { appId: _appId },
+                success: function (result) {
+                    if (!result.success) {
+                        toast(result.msg);
+                        return;
+                    }
+                    var store = { ShareOrderMarked: "晒订单，有惊喜！", StorePayImage: "" };
+                    var appconfig = result.appConfig;
+                    if (appconfig && appconfig != null) {
+                        if (appconfig.OrderShareDesc) {
+                            store.ShareOrderMarked = appconfig.OrderShareDesc;
+                        }
+                        if (appconfig.OrderPayedPic) {
+                            store.StorePayImage = appconfig.OrderPayedPic;
+                        }
+                    }
+                    callback(store);
+                },
+                error: function (err) {
+                    toast("绑定发生异常,请重试！");
+                }
+            });
+
+        }
+        /*获取优惠券*/
+        function loadCoupon(callback) {
+            var param = { pageIndex: pageNumber, pageSize: pageSize, appId: _appId };
+            $.ajax({
+                url: getCouponUrl,
+                type: "POST",
+                data: param,
+                datatype: "html",
+                success: function (result) {
+                    pageNumber = pageNumber + 1;
+                    var coupons = result;
+                    callback(coupons);
+                    ajaxLoadingSingle.hide();
+                },
+                beforeSend: function () {
+                    ajaxLoadingSingle.show();
+                },
+                error: function (er) {
+                    ajaxLoadingSingle.hide();
+                }
+            });
+        }
+
+        /*获取晒单数据*/
+        function loadShareOrder(callback) {
+            $.ajax({
+                type: "POST",
+                url: "/Mobile/GetShareOrderInfo",
+                datatype: "json",
+                data: { orderId: _orderId },
+                success: function (result) {
+                    if (!result.success) {
+                        toast(result.msg);
+                        return;
+                    }
+                    // var shareUrl = getBtpDomain + urlAppendCommonParams("/Mobile/ShareOrder?orderId=" + _orderId);
+                    var shareUrl = getBtpDomain() + "/Mobile/ShareOrder?srcType=33&orderId=" + _orderId + "&appId=" + _appId + "&shopId=" + shopId;
+                    var share = result.share;
+                    var shareData = { shareTitle: share.ShareTitle, shareUrl: shareUrl, shareContent: "我已经购买了这个商品，还不错哦，你也快去看看吧！", imgUrl: share.ShareImgUrl, shareType: 2 };
+                    shareData.shareSquareUrl = shareUrl;
+                    shareData.message = null;
+                    shareData.actionName = null;
+                    shareData.sourceType = 8;
+                    callback(shareData);
+                },
+                error: function (err) {
+                    toast("绑定发生异常,请重试！");
+                }
+            });
+        }
+
+        /*领取优惠券持久化保存操作*/
+        function saveBindCoupon(params, callback) {
+            $.ajax({
+                type: "POST",
+                url: "/Mobile/BindCoupon",
+                datatype: "json",
+                data: params,
+                success: function (result) {
+                    callback(result);
+                },
+                error: function (err) {
+                    toast("绑定发生异常,请重试！");
+                }
+            });
+        }
+    </script>
+    <script type="text/javascript">
+        function hasValue(obj) {
+            return obj && obj != null && obj != "";
+        }
+
+        /*数据加载效果*/
+        var ajaxLoadingSingle = (function () {
+            function initLoading() {
+                var blind = $('body').find("#ajaxLoadBlind");
+                if (blind.length > 0) {
+                    return;
+                }
+                //蒙版
+                blind = $('<div></div>');
+                //蒙版相关css
+                blind.css({
+                    'position': 'fixed',
+                    'z-index': '10000',
+                    'opacity': 0.2,
+                    'backgroundColor': '#ccc',
+                    'height': '100%',
+                    'width': '100%',
+                    'top': 0,
+                    'left': 0
+                });
+                //蒙版ID值
+                blind.attr('id', 'ajaxLoadBlind');
+
+                //ajaxLoading盒子ID对象
+                var loading = $('#ajaxLoading_img');
+                loading = $('<div></div>');
+                loading.attr('id', 'ajaxLoading_img');
+                loading.css({
+                    'position': 'absolute',
+                    'z-index': '99',
+                    'left': '50%',
+                    'margin-left': '-16px',
+                    'top': '50%',
+                    'margin-top': '-16px'
+                });
+                loading.append('<img src="/Content/images/ajax-loader.gif" />');
+                //blind.css({ 'position': 'relative' });
+                blind.append(loading);
+                $('body').append(blind);
+            }
+
+            function show() {
+                initLoading();
+                var blind = $('body').find("#ajaxLoadBlind");
+                if (blind.length == 0) {
+                    return;
+                }
+                blind.show();
+            }
+            function hide() {
+                var blind = $('body').find("#ajaxLoadBlind");
+                if (blind.length == 0) {
+                    return;
+                }
+                blind.hide();
+            }
+
+            var loadingSingle = new Object();
+            loadingSingle.show = show;
+            loadingSingle.hide = hide;
+            return loadingSingle;
+        } ());
+    </script>
+}

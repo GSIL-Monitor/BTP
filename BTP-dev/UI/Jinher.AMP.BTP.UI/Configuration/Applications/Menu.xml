@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<menus>
+  <menu id="1000" name="SystemAdmin"  text="系统管理员" type="SystemadminMenu" appInfo="Jinher.JAP.BF">   
+  </menu>
+  
+  <menu id="2000" name="GroupAdmin" text=" 集团管理员" type="GroupadminMenu" appInfo="Jinher.JAP.BF">   
+  </menu>
+  
+  <menu id="3000" name="UnitAdministrator" text="单位管理员" type="UnitadminMenu" appInfo="Jinher.JAP.BF">  
+  </menu>
+  
+  <menu id="4000" name="UserMenu" text="用户菜单" type="UserMenu">
+      <menuItem id="4001" name="portal" text="主页" appIconClass="ico-sy" isLeaf="true" url="http://portal.iuoooo.com/Home/Index"></menuItem>
+      <menuItem id="4002" name="manageApp" text="应用管理" appIconClass="ico-yygl" isLeaf="true" url="http://bac.iuoooo.com/LoginSingleOn/SSOIndex">        
+      </menuItem>    
+      <menuItem id="4003" type="dynamic" isLeaf="false">
+        <menuItem id="40030001" name="newsPbulish" text="发布信息" url="http://news.iuoooo.com/NewsApp/NewsPublish" isLeaf="true" isSSOLink="true" isInternalLink="true"/>
+		<menuItem id="40030002" name="rssSubscribe" text="RSS订阅" url="http://news.iuoooo.com/NewsApp/RssSubscribe" isLeaf="true" isSSOLink="true" isInternalLink="true"/>
+		<menuItem id="40030003" name="pulishedNews" text="已发布" url="http://news.iuoooo.com/NewsApp/PublishedNews" isLeaf="true" isSSOLink="true" isInternalLink="true"/>
+      </menuItem>
+      <menuItem id="4004" name="manageAdm" text="广告管理" appIconClass="ico-gggl" isLeaf="false">
+        <menuItem id="40040001"  name="CreateAdm"  text="创建广告"   isLeaf="true" isInternalLink="true" isSSOLink="true" url="http://adm.iuoooo.com/CommercialManager/AddCommercial"></menuItem>
+        <menuItem id="40040002"  name="AdmList"  text="广告列表"   isLeaf="true" isInternalLink="true" isSSOLink="true" url="http://adm.iuoooo.com/CommercialManager/Index"></menuItem>
+      </menuItem>
+      <menuItem id="4005" name="feedbackManage" text="反馈管理" appIconClass="ico-fkgl" isLeaf="true" url="http://ufm.iuoooo.com/AppFeedbackManage/Index" isInternalLink="true" isSSOLink="true">        
+      </menuItem>
+      <menuItem id="4006" name="dss" text="统计分析" appIconClass="ico-tjfx" isLeaf="false">
+        <menuItem id="40060001" name="dssSummary" text="总况" isLeaf="true" url="http://dss.iuoooo.com/user/summary" isInternalLink="true" isSSOLink="true"></menuItem>
+        <menuItem id="40060002" name="dssApp" type="dynamic" isLeaf="true" url="http://dss.iuoooo.com/user/grow" isInternalLink="true" isSSOLink="true"></menuItem>
+      </menuItem>
+      <menuItem id="4007" name="publisherInfo" text="发布者信息" appIconClass="ico-fbzxx" isLeaf="true" url="http://cbc.iuoooo.com/Organization/Index" isInternalLink="true" isSSOLink="true"></menuItem>
+      <menuItem id="4008" name="userInfo" text="账户信息" appIconClass="ico-zhxx" isLeaf="true" isInternalLink="true" isSSOLink="true" url="http://app.iuoooo.com/UserInfo/Index"></menuItem>
+  </menu>
+</menus>

@@ -1,0 +1,561 @@
+﻿@{
+    Layout = null;
+    ViewBag.Title = "订单详情";
+    Jinher.AMP.BTP.Deploy.CustomDTO.CommodityOrderVM commodityOrderVM = ViewBag.CommodityOrder;
+}
+@helper getState(int state, int payment)
+    {
+        string pay = string.Empty;
+        switch (payment)
+        {
+            case 0:
+                pay = "金币付款";
+                break;
+            case 1:
+                pay = "货到付款";
+                break;
+            case 2:
+                pay = "支付宝(直接到账)";
+                break;
+            case 3:
+                pay = "支付宝(担保交易)";
+                break;
+            case 4:
+                pay = "U付";
+                break;
+            default:
+                break;
+        }
+        switch (state)
+        {
+            case 0:
+    <span class="on">提交订单</span><span class="xian"></span><span class="tw">等待付款</span>
+    <span class="xian"></span><span class="on">等待发货</span><span class="xian"></span><span
+        class="on">交易成功</span>
+                break;
+            case 1:
+    <span class="on">提交订单</span><span class="xian"></span><span class="on">@pay</span>
+    <span class="xian"></span><span class="tw">等待发货</span><span class="xian"></span><span
+        class="on">交易成功</span>
+                                                                      break;
+            case 2:
+    <span class="on">提交订单</span><span class="xian"></span><span class="on">@pay</span>
+    <span class="xian"></span><span class="tw">已发货</span><span class="xian"></span><span
+        class="on">交易成功</span>
+                                                                      break;
+            case 3:
+    <span class="on">提交订单</span><span class="xian"></span><span class="on">@pay</span>
+    <span class="xian"></span><span class="on">已发货</span><span class="xian"></span><span
+        class="tw">交易成功</span>
+                                                                      break;
+            case 4:
+    <span class="on">提交订单</span><span class="xian"></span><span class="on">@pay</span>
+    <span class="xian"></span><span class="on">取消订单</span><span class="xian"></span><span
+        class="tw">交易失败</span>
+                                                                      break;
+            default:
+                                                                      break;
+        }
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>订单详情</title>
+    <link rel="stylesheet" href="/Content/css/style.css" />
+    <link rel="stylesheet" href="/content/css/common.css" />
+    <style type="text/css">
+        a:link, a:visited
+        {
+            color: inherit;
+        }
+        .dcon_con div, .dxq_con .dcon_con li
+        {
+            color: #8C94A9;
+            font-size: 12px;
+        }
+        .brunw
+        {
+            width: 150px;
+            text-align: right;
+            height: 40px;
+            float: left;
+            line-height: 40px;
+            text-align: left;
+        }
+        .spfb_t_l table tr
+        {
+            height: 40px;
+        }
+        .a_ship_modify
+        {
+            width: 30px;
+            height: 20px;
+            line-height: 20px;
+            background: #97bd40;
+            border-radius: 5px;
+            display: inline-block;
+            color: #fff;
+            text-align: center;
+            margin-left: 7px;
+        }
+    </style>
+    <script type="text/javascript">
+        var rootPath = "/";
+        document.domain = "iuoooo.com";
+        //try { document.domain = "iuoooo.com"; } catch (e) { }
+        //调用父窗口方法，更新布局。
+
+        //setTimeout(function () { window.top.refreshLayout && window.top.refreshLayout() }, 100);
+            
+
+    </script>
+</head>
+<body class="clearfix">
+    <div class="box">
+        <div class="right right1">
+            <div class="dxq_title">
+                @getState(commodityOrderVM.State, commodityOrderVM.Payment)
+            </div>
+            <table style="width:100%;">
+                <tr>
+                    <td style="width:50%;">
+                        <div class="dxq_con" style="height: 222px !important;border-right:0px;">
+                            <div class="dcon_top">
+                                <p>
+                                    收货人信息</p>
+                            </div>
+                            <div class="dcon_con">
+                                <ul>
+                                    <li>
+                                        <p>@commodityOrderVM.ReceiptUserName</p>
+                                    </li>
+                                    <li>
+                                        <p>@commodityOrderVM.ReceiptPhone</p>
+                                    </li>
+                                    <li>
+                                        <p>@commodityOrderVM.Province@commodityOrderVM.City@commodityOrderVM.District @commodityOrderVM.ReceiptAddress</p>
+                                    </li>
+                                    @if (!string.IsNullOrEmpty(commodityOrderVM.RecipientsZipCode))
+                                    { <li>
+                                        <p>
+                                            买家邮编：@commodityOrderVM.RecipientsZipCode</p>
+                                    </li>
+                                    }
+                                    <li>
+                                        <p>
+                                            买家备注：@commodityOrderVM.Details</p>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="width:50%;">
+                        <div class="dxq_con" style="height: 222px !important;">
+                            <div class="dcon_top">
+                                <p>
+                                    自提点</p>
+                            </div>
+                            <div class="dcon_con">
+                                <ul>
+                                    <li>
+                                        <p>@commodityOrderVM.SelfTakeAddress</p>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <!--start 物流信息-->
+            @if (commodityOrderVM.State != 0 && commodityOrderVM.State != 1 && commodityOrderVM.State != 8 && commodityOrderVM.State != 4 && commodityOrderVM.State != 5 && commodityOrderVM.State != 6 && commodityOrderVM.State != 13)
+            {
+                <div class="dxq_con" style="height: 122px !important;">
+                    <div class="dcon_top">
+                        <p>
+                            物流信息</p>
+                    </div>
+                    <div class="dcon_con">
+                        <ul>
+                            <li>
+                                @if (!string.IsNullOrEmpty(commodityOrderVM.OrgShipExpCo) && commodityOrderVM.ShipExpCo != commodityOrderVM.OrgShipExpCo)
+                                {
+                                    <p>
+                                        <span>物流公司：</span><span id="shipExpCo">@commodityOrderVM.ShipExpCo</span><span id="orgShipExpCo">(@commodityOrderVM.OrgShipExpCo)</span>
+                                    </p>
+                                }
+                                else
+                                {
+                                    <span>物流公司：</span><span id="shipExpCo">@commodityOrderVM.ShipExpCo</span><span id="orgShipExpCo"></span>
+                                }
+                            </li>
+                            <li>
+                                @if (!string.IsNullOrEmpty(commodityOrderVM.OrgExpOrderNo) && commodityOrderVM.ExpOrderNo != commodityOrderVM.OrgExpOrderNo)
+                                {
+                                    <p>
+                                        <span>物流单号：</span> <span id="expOrderNo">@commodityOrderVM.ExpOrderNo</span><span
+                                            id="orgExpOrderNo">(@commodityOrderVM.OrgExpOrderNo)</span><a class="a_ship_modify"
+                                                id="changeExp" href="javascript:void(0)">修改</a>
+                                    </p>
+                                }
+                                else
+                                {
+                                    <p>
+                                        <span>物流单号：</span> <span id="expOrderNo">@commodityOrderVM.ExpOrderNo</span><span
+                                            id="orgExpOrderNo"></span><a class="a_ship_modify" id="changeExp" href="javascript:void(0)">修改</a>
+                                    </p>
+                          
+                                }
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            }
+            <!--end   物流信息-->
+            <!--start 发票信息-->
+            @if (commodityOrderVM.InvoiceType != 0)
+            {
+                <div class="dxq_con" style="height: 122px !important;">
+                    <div class="dcon_top">
+                        <p>
+                            发票信息</p>
+                    </div>
+                    <div class="dcon_con">
+                        <ul>
+                            <li>
+                                <p>
+                                    发票抬头：@commodityOrderVM.InvoiceTitle</p>
+                            </li>
+                            <li>
+                                <p>
+                                    发票内容：明细</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            }
+            <!--end  发票信息-->
+            <div class="dxq_con">
+                <div class="dcon_top">
+                    <p>
+                        订单信息</p>
+                </div>
+                <div class="dcon_con">
+                    <ul>
+                        <li>
+                            <p>
+                                订单编号：@commodityOrderVM.CommodityOrderCode</p>
+                        </li>
+                        <li>
+                            <p>
+                                订单 ID：<span id="orderId">@commodityOrderVM.CommodityOrderId</span></p>
+                        </li>
+                        <li>
+                            <p>
+                                下单时间: @commodityOrderVM.SubTime</p>
+                        </li>
+                        <li>
+                            <p>
+                                付款时间: @commodityOrderVM.PaymentTime</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="dxq_con" style="height: 100%">
+                <div class="dcon_top">
+                    <p>
+                        商品信息</p>
+                </div>
+                @{ var flag = true;
+                   Jinher.AMP.BTP.Deploy.CustomDTO.CommodityOrderVM commodityOrderVM_tmp;
+                }
+                @foreach (var item in commodityOrderVM.OrderItems)
+                {
+                    <div style="width: 727px; clear: both;">
+                        <div class="dcon_con">
+                            <div class="sp_one">
+                                <div class="media-object pull-left " style="position: relative; width: 80px; height: 80px;
+                                    clear: both; margin: 0; padding: 0; margin-right: 10px;">
+                                    <img src="@item.PicturesPath" width="80" height="80" alt="" style="clear:both; margin:0; padding:0; float:none;" />
+                                    @if (commodityOrderVM.SelfTakeFlag == 1)
+                                    {
+                                        <div class="selfTake" style="display: block; width: 80px; height: 80px; clear: both;
+                                            margin: 0; padding: 0">
+                                            <img class="selfTakeImg" style="display: block; width: 80px; clear: both; margin: 0;
+                                                padding: 0; float: none;" src="/Images/selftake.png" alt="自提" />
+                                        </div>
+                                    }
+                                </div>
+                                <p style="line-height: 15px;">@item.CommodityIdName</p>
+                                <span>
+                                        <text> @item.Price</text>
+                                </span><span style="color: #8C94A9;">&nbspX @item.Number</span>
+                            </div>
+                            <div class="sp_two">
+                                <p>
+                                    @foreach (var categorys in item.CommodityCategorys)
+                                    {
+                                        if (categorys != "null" && categorys != "请选择")
+                                        {
+                                        <span>@categorys</span>
+                                        }
+                                    }
+                                </p>
+                                @{
+                                    if (!string.IsNullOrEmpty(item.SizeAndColorId))
+                                    {
+                                        item.SizeAndColorId = item.SizeAndColorId.Replace("颜色", "");
+                                        item.SizeAndColorId = item.SizeAndColorId.Replace("尺寸", "");
+                                        item.SizeAndColorId = item.SizeAndColorId.Replace(":", "");
+                                        item.SizeAndColorId = item.SizeAndColorId.Replace("：", "");
+                                        string[] attrs = item.SizeAndColorId.Split(new char[] { ',', '，' });
+
+                                        string strComAttr = string.Empty;
+                                        foreach (string attr in attrs)
+                                        {
+                                            if (attr != "null" && attr != "请选择")
+                                            {
+                                                if (strComAttr != string.Empty)
+                                                {
+                                                    strComAttr = string.Format("{0} {1}", strComAttr, attr);
+                                                }
+                                                else
+                                                {
+                                                    strComAttr = attr;
+                                                }
+
+                                            }
+                                        }
+                                        if (!string.IsNullOrEmpty(strComAttr))
+                                        {
+                                    <span style="line-height: 50px; float: left;">@strComAttr</span>
+                                        }
+                                    }
+                                                    
+                                }
+                            </div>
+                        </div>
+                    </div> 
+                }
+                <div style="width: 727px; clear: both;">
+                    <div class="dcon_con" style="line-height: 20px; float: none; margin: 0; padding: 0;
+                        width: auto; height: auto;">
+                        <div class="sp_three" style="line-height: 20px; float: none; margin: 0; padding: 0;
+                            width: auto; height: auto; margin-left: 200px;">
+                            @if (commodityOrderVM != null && commodityOrderVM.State != 0)
+                            {
+                                if (flag)
+                                {
+
+                                    var online = commodityOrderVM.CurrentPrice - commodityOrderVM.GoldCoupon - commodityOrderVM.GoldPrice;
+
+                                    int bl = 0;
+                                <text> <span>实付款：@commodityOrderVM.CurrentPrice
+                                </span>(
+                                @if (online > 0)
+                                {
+                                    bl++;
+                                    <span>在线支付：@online</span>
+                                }
+                                @if (commodityOrderVM.GoldPrice > 0)
+                                {
+                                    if (bl > 0)
+                                    {
+                                    <span>，</span>
+                                    }
+                                    bl++;
+                                    <span>金币：@commodityOrderVM.GoldPrice</span>
+                                }
+                                @if (commodityOrderVM.GoldCoupon > 0)
+                                {
+                                    if (bl > 0)
+                                    {
+                                    <span>，</span>
+                                    }
+                                    bl++;
+                                    <span>代金券：@commodityOrderVM.GoldCoupon</span>
+                                }
+                                @if (commodityOrderVM.State != 0 && commodityOrderVM.State != 11 && commodityOrderVM.CouponValue > 0)
+                                {
+                                    if (bl > 0)
+                                    {
+                                    <span>，</span>
+                                    }
+                                    bl++;
+                                    <span>优惠券： @commodityOrderVM.CouponValue</span>
+                                }
+                                )
+                                </text>
+                                    
+
+                                flag = false;
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="float: left; text-align: center; width: inherit; display: none;">
+                <a class="btn120" onclick="window.close();" href="javascript:void(0)">关闭</a>
+            </div>
+        </div>
+    </div>
+    <div class="tanchu" id="shipWin" style="height: 340px; width: 485px;">
+        <div>
+            <div class="tanchu_r">
+                <div class="spfb_t_l add_spfb_t_l1" style="font-size: 14px; margin-top: 40px;">
+                    <p class="color" style="margin-left: 99px; display: none;" id="errorInfo">
+                        &nbsp;
+                    </p>
+                    <table style="color: Black;">
+                        <tr>
+                            <td class="brunw" style="width: 200px; text-align: right;">
+                                <span>请选择物流公司：</span>
+                            </td>
+                            <td>
+                                <select id="expSelect" style="width: 182px; height: 27px; line-height: 27px; color: #8c94a9;
+                                    margin-left: 10px;">
+                                    <option value="0">请选择</option>
+                                    <option value="13">申通快递</option>
+                                    <option value="2">韵达快运</option>
+                                    <option value="3">圆通速递</option>
+                                    <option value="4">中通快递</option>
+                                    <option value="5">顺丰速运</option>
+                                    <option value="6">百世汇通</option>
+                                    <option value="7">天天快递</option>
+                                    <option value="8">EMS</option>
+                                    <option value="9">宅急送</option>
+                                    <option value="10">中国邮政</option>
+                                    <option value="11">德邦</option>
+                                    <option value="12">全峰快递</option>
+                                    <option value="14">快捷快递</option>
+                                    <option value="15">京东快递</option>
+                                    <option value="1">其他物流公司</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="qtwu" style="display: none;">
+                            <td class="brunw" style="width: 200px; text-align: right;">
+                                @*<input type="checkbox" id="shipExpCheck" style="width: 15px; vertical-align: inherit;" />*@
+                                <span style="margin-left: 0px;">其他物流公司：</span>
+                            </td>
+                            <td>
+                                <input type="text" id="txtShipExp" class="txtColor" maxlength="30" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="brunw" style="width: 200px; text-align: right;">
+                                <span>请填写快递单号：</span>
+                            </td>
+                            <td>
+                                <input type="text" id="txtExpOrderNo" class="txtColor" maxlength="30" />
+                            </td>
+                        </tr>
+                    </table>
+                    <p class="color" style="margin-left: 99px;">
+                        请正确填写，以方便客户及时跟踪物流信息
+                    </p>
+                </div>
+                <div style="text-align: center;">
+                    <button class="an1" id="btnShip" onclick="shipUpdataOrder()">
+                        确定</button>
+                    <button onclick="closebtnShip()">
+                        取消</button></div>
+            </div>
+        </div>
+        <div class="shut" onclick="closebtnShip()">
+            <img src="/images/shut.png" alt="" width="7" height="7" />
+        </div>
+    </div>
+    <script type="text/javascript" src="/Scripts/jquery.js"></script>
+    <script type="text/javascript" src="/Scripts/jquery.watermark.js"></script>
+    <script>
+        document.ondragstart = function () { return false; };
+        //确定发货
+        function shipUpdataOrder() {
+            var statename = $("#btnShip").html();
+            if (statename == "提交中,请稍候") {
+                return;
+            }
+            $("#errorInfo").hide();
+            $("#errorInfo").html("");
+            var shipExp = $("#expSelect").find("option:selected").text();
+            if (shipExp == "请选择") {
+                $("#errorInfo").html("请选择快递方式");
+                $("#errorInfo").show();
+                return;
+            }
+            if ($("#txtExpOrderNo").val() == "") {
+                $("#errorInfo").html("请填写快递单号");
+                $("#errorInfo").show();
+                return;
+            }
+            if (shipExp == "其他物流公司") {
+
+                if ($("#txtShipExp").val() == "") {
+                    $("#errorInfo").html("请填写物流公司");
+                    $("#errorInfo").show();
+                    return;
+                }
+            }
+            if (shipExp == "其他物流公司") {
+                shipExp = $("#txtShipExp").val();
+            }
+            $("#btnShip").html("提交中,请稍候");
+            $.ajax({
+                url: '/CommodityOrder/ChgOrderShip/',
+                type: 'post',
+                data: { commodityOrderId: $("#orderId").text(),
+                    shipExpCo: shipExp,
+                    expOrderNo: $("#txtExpOrderNo").val()
+                },
+                success: function (data) {
+                    if (data && data.ResultCode == 0 && data.OrderShippingExt) {
+                        $("#shipExpCo").text(data.OrderShippingExt.ShipExpCo);
+                        $("#orgShipExpCo").text("(" + data.OrderShippingExt.OrgShipExpCo + ")");
+                        $("#expOrderNo").text(data.OrderShippingExt.ExpOrderNo);
+                        $("#orgExpOrderNo").text("(" + data.OrderShippingExt.OrgExpOrderNo + ")");
+                        closebtnShip();
+                    }
+                    else {
+                        $("#btnShip").html("确定");
+                        $("#errorInfo").html(data.Message);
+                        $("#errorInfo").show();
+                    }
+                },
+                error: function () {
+                    $("#btnShip").html("确定");
+                    $("#errorInfo").html("error");
+                    $("#errorInfo").show();
+                }
+            });
+        }
+        //关闭层的显示    
+        function closebtnShip() {
+            $("#shipWin").CloseDiv();
+        }
+        $(function () {
+            $("#changeExp").live("click", function () {
+                $("#btnShip").html("确定");
+                $("#txtExpOrderNo").val("");
+                $("#txtShipExp").val("");
+                $("#expSelect").val("0");
+                $(".qtwu").hide();
+                $("#shipWin").OpenDiv();
+            });
+
+            $("#expSelect").change(function () {
+                if ($(this).val() == "1") {
+                    $(".qtwu").show();
+                }
+                else {
+                    $(".qtwu").hide();
+                }
+            });
+
+        });
+        
+        
+    </script>
+</body>
+</html>

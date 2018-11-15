@@ -1,0 +1,122 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="x5-orientation" content="portrait">
+    <meta name="full-screen" content="yes">
+    <meta name="x5-fullscreen" content="true">
+    <meta name="browsermode" content="application">
+    <meta name="x5-page-mode" content="app">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="black" name="apple-mobile-web-app-status-bar-style">
+    <meta content="telephone=no" name="format-detection">
+    @RenderSection("TitleHtml", required: true)
+    <link rel="stylesheet" href="/Content/style/mobileKit-min.css" />
+    @RenderSection("CssFile", required: false)
+    @RenderSection("CssCode", required: false)
+    <script type="text/javascript">
+        document.domain = "iuoooo.com";
+    </script>
+    <script src="/content/js/mobile_libs/zepto.min.js"></script>
+  
+</head>
+<body style="font-size: .26rem;">
+
+    @RenderBody()
+    @*<script src="http://uir.iuoooo.com/api/bridge/1.0.1/bridge.js" type="text/javascript"></script>*@
+    <script src="/Content/Mobile/bridge.js" type="text/javascript"></script>
+    <script src="/Content/Mobile/Common.js" type="text/javascript"></script>
+    <script src="/content/js/mobile_libs/mobileKit.min.js"></script>
+    <script src="/content/js/mobile_libs/iscroll-probe.js"></script>
+    <script src="/Content/Mobile/allEvent.js" type="text/javascript"></script>
+    <script type="text/javascript" src="/Scripts/CookieContextDTO.js"></script>
+    <script src="/Content/Mobile/login.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+
+        $(function () {
+            hideHeader();
+            /*记录上下文信息*/
+            saveContextDTOByUrl();
+            if (JsVilaDataNull(getQueryString("shopId"))) {
+                sessionStorage.appId = getQueryString("shopId");
+            }
+        });
+
+        //目前样式有问题
+        function hideHeader() {
+            if (isWeiXin()) {
+                $(".page").find(".process-header").addClass("hide");
+            }
+        }
+        function getCYDomain() {
+            return document.location.protocol + "//" + window.location.host;
+        }
+        String.prototype.replaceAll = function (AFindText, ARepText) {
+            var raRegExp = new RegExp(AFindText, "g");
+            return this.replace(raRegExp, ARepText);
+        };
+
+    </script>
+    <script type="text/javascript">
+        /* 设置URL参数，URL里面没次参数新增，有的话替换  如果只是给URL新增参数不建议用这个，性能低*/
+        String.prototype.setUrlParam = function (param, value) {
+            var query = this;
+            if (!checkIsNullOrEmpty(self)) return query;
+            var pv = param + '=' + value;
+            var newparam = query;
+            var p = new RegExp("(^|)" + param + "=([^&]*)(|$)");
+            if (p.test(query)) {
+                var sp = query.split(param + "=");
+                var firstParam = sp[0];
+                var secondParam = sp[1];
+                if (secondParam.indexOf("&") > -1) {
+                    var lastPraam = secondParam.substring(secondParam.indexOf("&"));
+                    newparam = firstParam + pv + lastPraam;
+                } else {
+                    newparam = checkIsNullOrEmpty(firstParam) ? (firstParam + pv) : pv;
+                }
+            } else {
+                newparam = query == '' ? pv : (query + '&' + pv);
+            }
+            return newparam;
+        }
+        function addSessionToUrl(url) {
+            try {
+                var contextDTO = getContextDTO();
+                if (contextDTO && checkIsNullOrEmpty(contextDTO.userId)) {
+                    url += "&userId=" + contextDTO.userId + "&sessionId=" + contextDTO.sessionId + "&changeOrg=" + contextDTO.changeOrg
+                }
+                else {
+                    url += "&userId=" + getQueryString('userId') + "&sessionId=" + getQueryString('sessionId') + "&changeOrg=" + getQueryString('changeOrg')
+                }
+            }
+            catch (e) {
+            }
+            return url;
+        }
+        //JS验证 不是有效的值
+        function checkIsNullOrEmpty(obj) {
+            if (obj != undefined && obj != "" && obj != "null" && obj != null && obj != "undefined" && obj) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        Array.prototype.find = function (call) {
+            var self = this;
+            var items = new Array();
+            for (var i = 0; i < self.length; i++) {
+                if (call(self[i])) items.push(self[i]);
+            }
+            return items;
+        };
+    </script>
+    @RenderSection("ScriptFile", required: false)
+    @RenderSection("ScriptCode", required: false)
+</body>
+</html>

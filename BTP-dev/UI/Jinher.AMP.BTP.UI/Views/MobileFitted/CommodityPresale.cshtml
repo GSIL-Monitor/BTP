@@ -1,0 +1,328 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="x5-orientation" content="portrait">
+    <meta name="full-screen" content="yes">
+    <meta name="x5-fullscreen" content="true">
+    <meta name="browsermode" content="application">
+    <meta name="x5-page-mode" content="app">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="black" name="apple-mobile-web-app-status-bar-style">
+    <meta content="telephone=no" name="format-detection">
+    <title>预约/预定商品详情</title>
+    <link rel="stylesheet" href="/Scripts/h5New/libs/swiper/swiper.css?@DateTime.Now" />
+    <link rel="stylesheet" href="/Scripts/h5New/libs/mobileKit/mobileKit-min.css?@DateTime.Now" />
+    <link rel="stylesheet" href="/Content/Mobile/zphStyle/applicationDownloadBanner.css?@DateTime.Now" />
+    <link href="/Content/Mobile/CommodityPresale/css/style.css?@DateTime.Now" rel="stylesheet" />
+</head>
+<body>
+    <header id="header" class="header border-bottom">
+        <div class="header-content">
+            <img class="back" src="/Content/Mobile/CommodityPresale/images/yj-angle-left.png">
+            <div class="title">
+                <a class="detail-nav selected" href="javascript: void(0);" data-type="item">商品</a>
+                <a class="detail-nav" href="javascript: void(0);" data-type="eval">评价</a>
+                <a class="detail-nav" href="javascript: void(0);" data-type="detail">详情</a>
+            </div>
+            <a href="#" class="shouye">
+                <img src="/Content/Mobile/CommodityPresale/images/yj-shouye.png">
+            </a>
+            <a href="javascript:void(0)" class="share hide">
+                <img src="/Content/Mobile/CommodityPresale/images/yj-share.png">
+                <span class="share-text">有礼</span>
+            </a>
+
+        </div>
+    </header>
+    <!--底部导航 start-->
+    <nav class="nav-wrap">
+        <div class="nav-right">
+            <a class="nav-btn yellow" href="javascript: void(0)" id="customer">客服</a>
+            <a class="nav-btn LJYY" href="javascript: void(0)">立即预约</a>
+            <a class="nav-btn hide" href="javascript: void(0)">立即预定</a>
+        </div>
+    </nav>
+    <!--底部导航 end-->
+    <div class="page">
+        <div id="item" class="content">
+            <!--轮播图start-->
+            <section class="swiper-container" id="swiper">
+                <div id="swiper-wrapper" class="swiper-wrapper">
+                    <!-- 默认图片-->
+                    <div class="swiper-slide"><a class="swiper-slide-pic" href="javascript:void(0);"><img src="/Content/Mobile/com_default.png" /></a></div>
+                </div>
+                <div class="swiper-pagination"></div>
+            </section>
+            <!--轮播图end-->
+            <!--预约/预购 start-->
+            <section class="detail-info-header">
+                <div class="detail-info-left">
+                    <div class="price-wrap">
+                        <span class="price" id="price">
+                        </span>
+                        <div class="state">
+                            <span class="state-pic">
+                                <img src="/Content/Mobile/CommodityPresale/images/yuyue-icon.png">
+                            </span>
+                            <span class="state-text">预约</span>
+                        </div>
+                        <!--<span class="presell-num">1732人已定</span>-->
+                    </div>
+                    <div class="detail-info-left-bottom">
+                        <del class="old-price" id="olderPrice"></del>
+                        <span class="freight" id="freight">快递:包邮</span>
+                    </div>
+                </div>
+                <!-- <div class="detail-info-right">
+                    <div class="text">距离结束还剩</div>
+                    <div class="countdown"><span class="countdown-time">03</span>:<span class="countdown-time">03</span>:<span class="countdown-time">03</span></div>
+                </div>-->
+            </section>
+            <!--预约/预购 end-->
+            <!--商品信息start-->
+            <section class="goods">
+                <div class="goods-title">
+                    <span class="tag">自营</span>
+                    <span class="title" id="title"></span>
+                </div>
+                <div class="goods-price hide">
+                    <div class="price">
+                        <span class="goods-new-price">
+                            ￥
+                            <em class="num">999.9</em>
+                        </span>
+                        <del class="goods-old-price"></del>
+                    </div>
+                    <div id="freight" class="freight">满99元包邮</div>
+                </div>
+            </section>
+            <!--商品信息end-->
+            <!--预约说明 start-->
+            <section class="desc-wrap border-bottom">
+                <div class="desc-hd">
+                    <span class="desc-hd-title">说明</span>
+                    <span class="desc-hd-text">限时预约，预约成功后等待开抢</span>
+                </div>
+                <div class="desc-bd">
+                    <ul class="desc-lists">
+                        <li class="item">
+                            <div class="item-pic">
+                                <img src="/Content/Mobile/CommodityPresale/images/qianggou-icon.png">
+                            </div>
+                            <div class="item-text">抢购资格</div>
+                        </li>
+                        <li class="item">
+                            <div class="item-pic">
+                                <img src="/Content/Mobile/CommodityPresale/images/kaiqiangxiadan-icon.png">
+                            </div>
+                            <div class="item-text">开抢下单</div>
+                        </li>
+                        <li class="item">
+                            <div class="item-pic">
+                                <img src="/Content/Mobile/CommodityPresale/images/dengdaifahuo-icon.png">
+                            </div>
+                            <div class="item-text">等待发货</div>
+                        </li>
+                        <li class="item">
+                            <div class="item-pic">
+                                <img src="/Content/Mobile/CommodityPresale/images/yugouwancheng-icon.png">
+                            </div>
+                            <div class="item-text">预售完成</div>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+            <!--说明 end-->
+            <!--预售说明 start-->
+            <section class="desc-wrap border-bottom hide">
+                <div class="desc-hd">
+                    <span class="desc-hd-title">说明</span>
+                    <span class="desc-hd-text">预计发货时间：2018-12-12</span>
+                </div>
+                <div class="desc-bd">
+                    <ul class="desc-lists">
+                        <li class="item">
+                            <div class="item-pic">
+                                <img src="/Content/Mobile/CommodityPresale/images/qianggou-icon.png">
+                            </div>
+                            <div class="item-text">选择商品</div>
+                        </li>
+                        <li class="item">
+                            <div class="item-pic">
+                                <img src="/Content/Mobile/CommodityPresale/images/kaiqiangxiadan-icon.png">
+                            </div>
+                            <div class="item-text">下单</div>
+                        </li>
+                        <li class="item">
+                            <div class="item-pic">
+                                <img src="/Content/Mobile/CommodityPresale/images/dengdaifahuo-icon.png">
+                            </div>
+                            <div class="item-text">等待发货</div>
+                        </li>
+                        <li class="item">
+                            <div class="item-pic">
+                                <img src="/Content/Mobile/CommodityPresale/images/yugouwancheng-icon.png">
+                            </div>
+                            <div class="item-text">预售完成</div>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+            <!--说明 end-->
+            <section class="select border-bottom">
+                <!--服务start-->
+                <section class="service" onclick="DETAIL.showModal('#server-modal')" id="Service">
+                    <span class="title">服务</span>
+                    <div class="service-list-wrap" id="ServiceTitle">
+                    </div>
+                    <img class="service-angle" src="/Content/Mobile/CommodityPresale/images/yj-angle-right.png">
+                </section>
+                <!--服务end-->
+                <!--分销 start-->
+                <section class="parameters">
+                    <span class="title">我要分销</span>
+                    <div class="parameters-lists"></div>
+                    <img class="parameters-angle" src="/Content/Mobile/CommodityPresale/images/yj-angle-right.png">
+                </section>
+                <!--分销 end-->
+                <!--已选 start-->
+                <section class="sku" onclick="DETAIL.showModal('#size-modal')" id="Selected">
+                    <span class="title">已选</span>
+                    <div class="sku-lists">
+                        <span class="sku-list-item"></span>
+                    </div>
+                    <img class="sku-angle" src="/Images/yj-angle-right.png">
+                </section>
+                <!--已选 end-->
+            </section>
+
+            <!--无商品评价 start-->
+            <!--无商品评价 end-->
+            <!--商品评价 start-->
+            <section id="eval" class="detail-evaluate border-bottom">
+                <div id="evalhide" class="evaluate-header hide ">
+                    <div class="title">暂无评价</div>
+                    <div class="goods-evaluate">
+                        <img src="/Images/yj-angle-right-red.png">
+                    </div>
+                </div>
+                <div id="evalshow" class="evaluate-header">
+                    <div class="title">商品评价<span class="count">(68)</span></div>
+                    <div class="goods-evaluate">
+                        <span id="recevied"></span>
+                        <img src="/Images/yj-angle-right-red.png" />
+                    </div>
+                </div>
+                <div id="evaluate" class="evaluate-lists swiper-container">
+                </div>
+            </section>
+            <!--商品评价 end-->
+            <!--商品详情-->
+            <section id="detail" class="detail-wrap">
+                <h2 id="DetailsH" class="detail-header">商品详情</h2>
+                <div id="DetailsD" class="detail-list">
+                </div>
+                <h2 id="AftersaleH" class="detail-header">商品售后</h2>
+                <div id="AftersaleD" class="detail-list">
+                </div>
+            </section>
+        </div>
+
+        <!--店铺服务弹窗-->
+        <div id="server-modal" class="modal-wrap hide">
+            <div class="modal-wrap-content modal-server">
+                <div class="modal-content-header">
+                    <span class="modal-header-title">店铺服务</span>
+                    <img class="modal-close" src="/Content/Mobile/CommodityPresale/images/guanbi.png" onclick="DETAIL.hideModal('#server-modal')">
+                </div>
+                <div class="modal-bd" id="servermod">
+                    <ul class="server-list" id="ServiceContent"></ul>
+                </div>
+                <div class="modal-bt">
+                    <div class="modal-btn" onclick="DETAIL.hideModal('#server-modal')">确定</div>
+                </div>
+            </div>
+        </div>
+        <!--属性弹窗-->
+        <div id="size-modal" class="modal-wrap hide">
+            <div class="modal-wrap-content modal-size">
+                <div class="modal-content-header">
+                    <img class="pic" id="pic" src="http://placehold.it/80x80">
+                    <div class="container">
+                        <p class="price">￥<span id="money"></span></p>
+                        <div class="text" id="IsStock"></div>
+                    </div>
+                    <img class="modal-close" src="/Content/Mobile/CommodityPresale/images/guanbi.png" onclick="DETAIL.hideModal('#size-modal')">
+                </div>
+                <div class="modal-bd" id="modal-bd">
+                </div>
+                <div class="modal-bt">
+                    <div class="modal-btn yellow">加入购物车</div>
+                    <div class="modal-btn LJYY">立即预约</div>
+                    <div class="modal-btn hide">确定</div>
+                </div>
+            </div>
+        </div>
+        <!--预约成功弹窗-->
+        <div id="confirm" class="confirm-wrap hide">
+            <div class="confirm-content">
+                <div class="confirm-hd" id="confirm-text">商品预约成功，您已经获得抢购资格，请关注抢购时间</div>
+                <div class="confirm-bt">
+                    <a href="javascript:DETAIL.hideModal('#confirm')" class="confirm-btn">知道了</a>
+                    <a href="javascript: void(0)" class="confirm-btn" id="appointment-btn-submit">我的预约</a>
+                </div>
+            </div>
+        </div>
+        <!--验证码弹窗-->
+        <div id="identify-modal" class="confirm-wrap hide">
+            <div class="confirm-content">
+                <div class="confirm-hd">
+                    <div class="code-wrap">
+                        <input id="validCodeText" class="code-input" type="text" placeholder="请输入验证码">
+                        <img class="code-img" id="validCodeImg" src="/Mobile/GetVerifyCodeZPH">
+                    </div>
+                </div>
+                <div class="confirm-bt">
+                    <a href="javascript:DETAIL.hideModal('#identify-modal')" class="confirm-btn">取消</a>
+                    <a href="javascript: void(0)" class="confirm-btn" id="Submit">提交</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="mask" class="mask">
+        <div class="ui-loading-block">
+            <div class="ui-loading-cnt">
+                <i class="fa fa-spinner fa-spin fa-2x"></i>
+                <p>正在加载...</p>
+            </div>
+        </div>
+    </div>
+    <script src="/Scripts/base64.js" type="text/javascript"></script>
+    <script src="/Scripts/h5New/libs/zepto.min.js"></script>
+    <script src="/Scripts/h5New/libs/mobileKit/mobileKit.min.js"></script>
+    <script src="/Scripts/h5New/libs/swiper/swiper.min.js"></script>
+    <script src="/Content/Mobile/fastclick.min.js"></script>
+    <script src="http://dss.iuoooo.com/Scripts/bury/mercury.js"></script>
+    <script src="/Scripts/h5New/common/Common.js"></script>
+    <script src="/Scripts/h5New/common/login.js"></script>
+    <script type="text/javascript" language="javascript" src="https://webapi.amap.com/maps?v=1.3&key=c0d798fe31257ef4b30987221f01a625&plugin=AMap.CitySearch"></script>
+    <script type="text/javascript" src="@HttpContext.Current.Request.Url.Scheme://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+    <script src="/Scripts/h5New/wxshare.js?@DateTime.Now"></script>
+    @*<script src="/Scripts/h5New/detail.js?@DateTime.Now"></script>*@
+    <script src="/Content/Mobile/CommodityPresale/js/index.js"></script>
+    <script src="/Scripts/CookieContextDTO.js?@DateTime.Now"></script>
+    <script>
+         var zphUrl = "@ViewBag.ZPHUrl";
+        var SNSUrl = "@Jinher.AMP.BTP.Common.CustomConfig.SNSUrl";
+        log("yjs003", "yjp003", "yjo002", getQueryString('commodityId'), "商品详情");
+    </script>
+</body>
+</html>

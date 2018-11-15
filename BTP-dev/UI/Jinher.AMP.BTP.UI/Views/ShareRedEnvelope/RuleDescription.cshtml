@@ -1,0 +1,218 @@
+﻿@{
+   
+    ViewBag.Title = "RuleDescription";
+}
+<html>
+<head>
+    <title>规则说明</title>
+  
+    <script type="text/javascript">
+        function win(url, obj, width, height) {
+            return window.showModalDialog(url, obj || window, "center=1;dialogWidth=" + (width || 970) + "px;dialogHeight=" + (height || 620) + "px;")
+        }
+    </script>
+    <link href="/Scripts/ueditor_mini/themes/default/css/umeditor.min.css" type="text/css"
+        rel="stylesheet" />
+    <script type="text/javascript" src="/Scripts/ueditor_mini/umeditor.config.js"></script>
+    <script type="text/javascript" src="/Scripts/ueditor_mini/umeditor.min.js"></script>
+    <script type="text/javascript" src="/Scripts/ueditor_mini/lang/zh-cn/zh-cn.js"></script>
+    <script type="text/javascript" src="/Scripts/ueditor_mini/dialogs/link/link.js"></script>
+    <script type="text/javascript" src="/Scripts/ueditor_mini/dialogs/image/image.js"></script>
+    <style type="text/css">
+    .txtColor{ color : #8c94a9;}
+    .floa2 h1,
+		.floa1 h1,
+		.floa11 h1,
+		.bbtn h1{
+			font-size: 14px;
+			color: #8c94a9;
+			padding-bottom: 5px;
+			border-bottom: 1px solid #DDDDDD;	
+		}
+		.close{
+			margin-top: 10px;
+			float: right;
+			display: inline-block;
+			*zoom:1;
+			*display: inline;
+			width: 7px;
+			height: 7px;
+			color:transparent;
+			background: url(/Images/shut.png) center no-repeat;
+		}
+		.floa11 ul,
+		.floa1 ul,
+		.floa2 ul {
+			padding: 0px 0 10px 10px;
+		}
+		.floa11 ul li,
+		.floa1 ul li
+		.floa2 ul li{
+			margin-top: 5px;
+			color:#8c94a9;
+		}
+		.addfloa2{
+			display: none; 
+			z-index: 3;
+			padding: 5px 10px;
+			height:auto;
+			border:1px solid #B8BFCF;
+			
+			-webkit-border-radius: 3px;
+			-moz-border-radius: 3px;
+			border-radius: 3px;
+		}
+		.btn120 {
+			display: inline-block;
+			width: 120px;
+			height: 28px;
+			line-height: 28px;
+			background: url(../Content/default/images/btn120.png) no-repeat;
+			text-align: center;
+			vertical-align: middle;
+			color: #5F7392;
+			box-shadow: 1px 1px 2px #DBDBDB;
+		}
+	   .createtable {  
+            border: 1px solid #B1CDE3;  
+            padding:0;   
+            margin:0 auto;  
+            border-collapse: collapse;  
+            width:100%;
+        }  
+          
+     .createtable td {  
+            border: 1px solid #B1CDE3;  
+            background: #fff;  
+            font-size:12px;  
+            padding: 3px 3px 3px 8px;  
+            color: #4f6b72;  
+        } 
+    </style>
+    <script type="text/javascript">
+
+        $(function () {
+
+
+            var mess = "@ViewBag.RuleDescription.Description";
+            if (mess != null) {
+                ue.setContent(decodeURIComponent(mess));
+            } else {
+                ue.setContent('');
+            }
+
+
+        });
+
+        function toSave() {
+
+            var con = ue.getContent();
+            con = con.replace(/<\/?(img)[^>]*>|&nbsp;/ig, "");
+            if (con.length > 0
+			&& con.length > 5000) {
+                return "描述内容不能超过5000个字符。";
+            }
+
+            $.ajax({
+                url: '/ShareRedEnvelope/AddRuleDescription',
+                type: 'post',
+                data: { Mess: encodeURIComponent(con), appId: getQueryString('appId') },
+
+                success: function(data) {
+                    var psource = sessionStorage.source == "share" ? "?source=share&appId=" + getQueryString('appId') : "?appId=" + getQueryString('appId');
+                    if (data.Result == "0") {
+                        //$("#Des").show();
+                        //decodeURI(con);
+                        //$("#Des").html(decodeURIComponent(con));
+                        window.location.href = "/ShareRedEnvelope/ShowEditeRuleDescription" + psource;
+
+
+                    } else {
+                        alert(data.Messages);
+                    }
+
+
+                },
+                error: function(msg) {
+
+                    alert("请稍后再试！");
+                    try {
+                        console.log(msg.responseText);
+                    } catch (e) {
+                    }
+                }
+            });
+        }
+
+        function closeWindow() {
+
+            ue.setContent('');
+
+        }
+    </script>
+</head>
+<body>
+    <div class="spfb_b1">
+        <div class="spfb_b1t">
+            <span class="zihao1">描述内容</span>
+        </div>
+        <div id="textDiv" class="item" style="padding-left: 0px;">
+            <script type="text/plain" id="myEditor"></script>
+        </div>
+    </div>
+    <div class="butt" style="text-align: center; width: 98%; margin-top: 20px; margin: 20px;">
+        <a href="javascript:;" class="btn120" id="btnSubmit" onclick="toSave()">保存</a> <a
+            href="javascript:;" class="btn120" onclick="closeWindow()" style="margin-left: 20px;">
+            取消</a>
+    </div>
+</body>
+<div id="Des" style="display: none; border: 1px solid black;">
+</div>
+</html>
+<script type="text/javascript">
+
+
+    var ue = UM.getEditor('myEditor', {
+        //这里可以选择自己需要的工具按钮名称
+        toolbar: ['undo redo | bold italic underline strikethrough | forecolor | removeformat |',
+            'insertorderedlist insertunorderedlist | selectall cleardoc | paragraph fontsize',
+            '| justifyleft justifycenter justifyright justifyjustify |',
+            'link unlink | image | horizontal fullscreen'],
+        //focus时自动清空初始化时的内容
+        autoClearinitialContent: false,
+        //是否开启字数统计
+
+        wordCount: true,
+        //允许的最大字符数
+        maximumWords: 2000,
+        //关闭elementPath
+        elementPathEnabled: true,
+        //默认的编辑区域高度
+        initialFrameHeight: 300,
+        //宽度 
+        initialFrameWidth: "100%",
+        //自适应高度
+        autoHeightEnabled: false,
+        //工具条保持不动
+        autoFloatEnabled: false,
+        zIndex: 4,
+        //更多其他参数，请参考umeditor.config.js中的配置项
+        filterRules: function () {
+            return {
+                //$:{}表示不保留任何属性
+                p: { $: {} },
+                h3: { $: {} },
+                h2: { $: {} },
+                img: function (node) {
+                    var src = node.getAttr('src');
+                    node.setAttr();
+                    node.setAttr({ 'src': src })
+                },
+                //黑名单，以下标签及其子节点都会被过滤掉
+                '-': 'script style meta iframe embed object'
+            }
+        } ()
+    });
+
+    
+</script>

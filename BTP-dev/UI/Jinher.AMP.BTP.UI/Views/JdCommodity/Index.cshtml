@@ -1,0 +1,729 @@
+﻿@using System.Web
+@using System.Web.Script.Serialization
+@{
+    ViewBag.Title = "同步第三方商品信息";
+    Layout = "~/Views/Shared/_Vue2Layout.cshtml";
+}
+
+<div class="content">
+    <div id="listWithFiltersPage">
+        <div class="content-inner">
+            <div id="bread" class="breadcrumb">
+                <span>商品列表</span>
+                <span> > </span>
+                <span style="color:red">商品信息同步列表</span>
+                <a class="back" href="javascript:window.history.back();">
+                    <img src="/Content/images/wx-back.png" /><span>&nbsp;返回上一级</span>
+                </a>
+            </div>
+            <!-- filters start -->
+            <div class="filters">
+                <el-form :inline="true" :model="searchForm" :rules="searchFormRules" ref="searchForm">
+                    <el-form-item label="备注编码：" prop="JDCode">
+                        <el-input v-model="searchForm.JDCode"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="success" @@click="handleSearch()" :disabled="isDisabled">查询</el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
+            <div class="operations">
+                <el-button size="small" type="primary" @@click="handleAutoCom" :disabled="isDisabled">自动同步商品信息</el-button>
+                <el-button size="small" type="danger" @@click="handleDelAll" :disabled="isDisabled">删除</el-button>
+                <el-button size="small" type="primary" @@click="handleCreating" :disabled="isDisabled">新增</el-button>
+                <el-button size="small" type="primary" @@click="handleImport" :disabled="isDisabled">导入</el-button>
+                <el-button size="small" type="primary" @@click="handleExport" :disabled="isDisabled">导出</el-button>
+                <el-button size="small" type="primary" @@click="handleSync" v-if="IsYPK=='True'" :disabled="isDisabled">全量同步</el-button>
+            </div>
+            <el-table :data="tableData" class="scrollbar" max-height="860" element-loading-text="拼命加载中" v-loading="loading" stripe @@selection-change="SelectCheck">
+                <el-table-column type="index" lable="序号" width="60"></el-table-column>
+                <el-table-column type="selection" width="55"></el-table-column>
+                <el-table-column prop="JDCode" label="备注编码" min-width="120"></el-table-column>
+                <el-table-column prop="CategoryName" label="商品类目" min-width="200"></el-table-column>
+                <el-table-column prop="VideoName" label="商城品类" min-width="100"></el-table-column>
+                <el-table-column prop="TaxClassCode" label="税收编码" min-width="120"></el-table-column>
+                <el-table-column prop="TaxRate" label="销项税" min-width="100"></el-table-column>
+                <el-table-column prop="InputRax" label="进项税" min-width="100"></el-table-column>
+                <el-table-column prop="Price" label="商品售价" min-width="100" v-if="IsYPK=='True'"></el-table-column>
+            </el-table>
+            <div class="pagination-wrapper" v-show="!loading">
+                <el-pagination layout="total, sizes, prev, pager, next, jumper" @@size-change="handleSizeChange" @@current-change="handleCurrentChange" :total="total" :current-page="page" :page-sizes="[10, 20, 50, 100]" :page-size="pageSize">
+                </el-pagination>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="tempyijie">
+    <template>
+        <el-dialog title="第三方商品信息导入" :visible.sync="ImportDialogVisible" :before-close="handleImportClose">
+            <span style="color:crimson">*</span> 提示：亲，为了保证您数据导入顺利，请您使用我们提供的模板！<a v-if="IsYPK=='False'" style="color:royalblue" href="/Content/ExcelTemplate/商品表模板.xlsx">点击下载导入模板</a><a v-if="IsYPK=='True'" style="color:royalblue" href="/Content/ExcelTemplate/商品列表模板.xlsx">点击下载导入模板</a><br><br>
+            <el-upload class="upload-demo"
+                       ref="upload"
+                       action="/JdCommodity/ImportExcel"
+                       :on-preview="handlePreview"
+                       :on-remove="handleRemove"
+                       :on-error="onerror"
+                       :on-success="onsuccess"
+                       :file-list="fileList"
+                       :limit="1"
+                       :auto-upload="false">
+                <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+                <el-button style="margin-left: 10px;" size="small" type="success" @@click="submitUpload">上   传</el-button>
+                <div slot="tip" class="el-upload__tip">只能上传.xlsx文件</div>
+            </el-upload>
+            <div v-if="YPKDisplay" style="text-align:center;"><span>提示：成功导入{{SuccessCount}}条记录，失败{{FaildCount}}条</span><br><a v-if="FaildCount>0" style="color:royalblue;" v-bind:href="['/Content/ExcelTemplate/ExceptionExcel/'+FilePath]">点击查看失败原因</a></div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @@click="ImportDialogVisible=false;YPKDisplay=false">取 消</el-button>
+            </span>
+        </el-dialog>
+    </template>
+</div>
+<div class="tempyijie">
+    <template>
+        <el-dialog title="新建商品" :visible.sync="CreatingVisible">
+            <el-form style="width:500px;" label-width="180px" :model="CreateForm" :rules="CreateFormRules" ref="CreateForm">
+                <el-form-item label="备注编码：" prop="JDCode">
+                    <el-input v-model="CreateForm.JDCode" placeholder="请输入备注编码"></el-input>
+                </el-form-item>
+                <el-form-item label="商品类目：" prop="CategoryName">
+                    <el-select v-model="CreateForm.CategoryName" multiple filterable allow-create default-first-option placeholder="请选择文章标签">
+                        <el-option v-for="item in options5" :key="item.Name" :label="item.Name" :value="item.Name"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="商城品类：" prop="VideoName ">
+                    <el-select v-model="CreateForm.VideoName" placeholder="请选择">
+                        <el-option v-for="item in options"
+                                   :key="item.Id"
+                                   :label="item.Name"
+                                   :value="item.Name">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="税收编码：" prop="TaxClassCode">
+                    <el-input v-model="CreateForm.TaxClassCode" @@focus="handleSelectTax()" placeholder="请输选择税收编码"></el-input>
+                </el-form-item>
+                <el-form-item label="销项税：" prop="TaxRate">
+                    <el-input v-model="CreateForm.TaxRate" placeholder="请输入销项税"></el-input>
+                </el-form-item>
+                <el-form-item label="进项税：" prop="InputRax">
+                    <el-input v-model="CreateForm.InputRax" placeholder="请输入进项税"></el-input>
+                </el-form-item>
+                <el-form-item label="商品售价：" prop="Price" v-if="IsYPK=='True'">
+                    <el-input v-model="CreateForm.Price" placeholder="请输入商品售价"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="success" @@click="handleSubmit()">提交</el-button>
+                    <el-button type="success" @@click="CreatingVisible=false">取消</el-button>
+                </el-form-item>
+                <br>
+                <br>
+            </el-form>
+        </el-dialog>
+    </template>
+</div>
+<div class="tempyijie">
+    <template>
+        <el-dialog title="选择税收编码" :visible.sync="taxrateDialogVisible" width="60%">
+            <div class="content-inner">
+                <!-- filters start -->
+                <div class="filters">
+                    <el-form :inline="true" :model="taxrateForm" ref="taxrateForm">
+                        <el-form-item label="商品和服务名称：" prop="name">
+                            <el-input size="mini" style="width:150px;" v-model="taxrateForm.name"></el-input>
+                        </el-form-item>
+                        <el-form-item label="增值税税率：" prop="taxrate">
+                            <el-select size="mini" style="width:100px;" v-model="taxrateForm.taxrate">
+                                <el-option label="全部" value=""></el-option>
+                                <el-option v-for="item in taxOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button size="mini" type="success" @@click="taxhandleSearch()">查询</el-button>
+                        </el-form-item>
+                    </el-form>
+                </div>
+                <el-table ref="singleTable" :data="taxtableData" highlight-current-row @@current-change="TaxhandleCurrentChange" style="width: 100%">
+                    <el-table-column type="index" width="40">
+                    </el-table-column>
+                    <el-table-column property="Name" label="商品和服务名称" width="200">
+                    </el-table-column>
+                    <el-table-column property="Code" label="税收编码" width="280">
+                    </el-table-column>
+                    <el-table-column property="TaxRate" label="增值税税率" width="170">
+                    </el-table-column>
+                </el-table>
+                <div class="pagination-wrapper" v-show="!loading">
+                    <el-pagination layout="total, sizes, prev, pager, next, jumper" @@size-change="taxhandleSizeChange" @@current-change="taxhandleCurrentChange" :total="taxtotal" :current-page="taxpage" :page-sizes="[10, 20, 50, 100]" :page-size="taxpageSize">
+                    </el-pagination>
+                </div>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button :pull='6' @@click="setCurrent()">确  定</el-button>
+                <el-button :pull='6' @@click="taxrateDialogVisible=false">取 消</el-button>
+            </span>
+        </el-dialog>
+    </template>
+</div>
+<div class="tempyijie">
+    <template>
+        <el-dialog title="异常数据" :visible.sync="ErrorDataVisible" :before-close="handleImportClose">
+            <div v-if="YPKDisplay" style="text-align:center;">
+                <span>提示：成功同步{{SuccessCount}}条记录，失败{{FaildCount}}条</span> 失败原因：<br />
+                <ol class="elol">
+                    <li style="word-wrap:break-word;" v-for="item in ExcepitonDatas">skuId:{{item.SkuId}} 失败原因:{{item.Remark}}<br /></li>
+                </ol>
+            </div>
+            <div v-if="NullPriceDatas&&NullPriceDatas.length>0">
+                <p style="color:crimson;font-size:15px">商品价格为空，请核实-备注编码：</p>
+                <ol class="elol">
+                    <li v-for="item in NullPriceDatas">{{ item }}</li>
+                </ol>
+            </div>
+            <div v-if="NullTaxDatas&&NullTaxDatas.length>0">
+                <p style="color:crimson;font-size:15px">商品税率为空，请核实-备注编码：</p>
+                <ol class="elol">
+                    <li v-for="item in NullTaxDatas">{{ item }}</li>
+                </ol>
+            </div>
+            <div v-if="InvalidDatas&&InvalidDatas.length>0">
+                <p style="color:crimson;font-size:15px">商品池中不存在-备注编码：</p>
+                <ol class="elol">
+                    <li v-for="item in InvalidDatas">{{ item }}</li>
+                </ol>
+            </div>
+            <div v-if="RepeatDatas&&RepeatDatas.length>0">
+                <p style="color:crimson;font-size:15px">店铺商品中已存在-备注编码：</p>
+                <ol class="elol">
+                    <li v-for="item in RepeatDatas">{{item}}</li>
+                </ol>
+            </div>
+            <div v-if="JdRepeatDatas&&JdRepeatDatas.length>0">
+                <p style="color:crimson;font-size:15px">列表已存在-备注编码：</p>
+                <ol class="elol">
+                    <li v-for="item in JdRepeatDatas">{{item}}</li>
+                </ol>
+            </div>
+            <div v-if="UpdataDatas&&UpdataDatas.length>0">
+                <p style="color:crimson;font-size:15px">更新商品信息-备注编码：</p>
+                <ol class="elol">
+                    <li v-for="item in UpdataDatas">{{item}}</li>
+                </ol>
+            </div>
+            <div v-if="NoCategoryDatas&&NoCategoryDatas.length>0">
+                <p style="color:crimson;font-size:15px">未挂载至商品类目-备注编码：</p>
+                <ol class="elol">
+                    <li v-for="item in NoCategoryDatas">{{item}}</li>
+                </ol>
+            </div>
+            <div v-if="NoPinLeiDatas&&NoPinLeiDatas.length>0">
+                <p style="color:crimson;font-size:15px">未挂载至商城品类-备注编码：</p>
+                <ol class="elol">
+                    <li v-for="item in NoPinLeiDatas">{{item}}</li>
+                </ol>
+            </div>
+
+            <span slot="footer" class="dialog-footer">
+                <el-button @@click="ErrorDataVisible=false;YPKDisplay=false">关  闭</el-button>
+            </span>
+        </el-dialog>
+    </template>
+</div>
+@section Script{
+    <script>
+    function CheckJdCode (rule, value, callback) {
+            if (value === '') {
+                callback(new Error('备注编码不能为空~'));
+            }
+            else if(value.length>30){
+                callback(new Error('备注编码最大长度为8位~'));
+            }
+            else {
+                callback();
+            }
+        }
+     function CheckCategory (rule, value, callback) {
+        if (value.length==0) {
+            callback(new Error('商城类目不能为空~'));
+        }
+        else {
+            callback();
+        }
+    }
+    function CheckInnerCategory (rule, value, callback) {
+        if (value==='') {
+            callback(new Error('商城品类不能为空~'));
+        }
+        else {
+            callback();
+        }
+    }
+    function CheckTax (rule, value, callback) {
+        if (value === '') {
+            callback(new Error('税收编码不能为空~'));
+        }
+        else {
+            callback();
+        }
+    }
+
+    function CheckTaxRate(rule, value, callback) {
+        if (value === '') {
+            callback(new Error('销项税不能为空~'));
+        } else if (!/(^[0-9]{1,9}$)|(^[0-9]{1,9}[\.]{1}[0-9]{1,2}$)/.test(value)){
+             callback(new Error('请填写正确的金额最多保留2位小数~'));
+        }
+        else {
+            callback();
+        }
+    }
+    function CheckInputRate(rule, value, callback) {
+        if (value === '') {
+            callback(new Error('进项税不能为空~'));
+        } else if (!/(^[0-9]{1,9}$)|(^[0-9]{1,9}[\.]{1}[0-9]{1,2}$)/.test(value)){
+             callback(new Error('请填写正确的金额最多保留2位小数~'));
+        }
+        else {
+            callback();
+        }
+    }
+    function CheckPrice(rule, value, callback) {
+        if (value === '') {
+            callback(new Error('商品售价不能为空~'));
+        } else if (!/(^[0-9]{1,9}$)|(^[0-9]{1,9}[\.]{1}[0-9]{1,2}$)/.test(value)) {
+            callback(new Error('请填写正确的金额最多保留2位小数~'));
+        }
+        else {
+            callback();
+        }
+    }
+var defaultVue = new Vue({
+        el: '#app',
+        data: {
+            searchForm: {
+            JDCode:''
+            },
+            searchFormRules: {
+            JDCode: [
+                { max:8, message: '最多输入8个字符', trigger: 'blur' }
+            ]
+            },
+            CreateForm:{
+                JDCode: '',
+                CategoryName:[],
+                VideoName:'',
+                TaxClassCode:'',
+                TaxRate:'',
+                InputRax: '',
+                Price:''
+            },
+            CreateFormRules:{
+                JDCode: [{ validator: CheckJdCode, trigger: 'blur' }],
+                VideoName:[{ validator: CheckInnerCategory, trigger: 'blur' }],
+                CategoryName: [{ validator: CheckCategory, trigger: 'blur' }],
+                TaxClassCode: [{ validator: CheckTax, trigger: 'blur' }],
+                TaxRate:[{ validator: CheckTaxRate, trigger: 'blur' }],
+                InputRax: [{ validator: CheckInputRate, trigger: 'blur' }],
+                Price: [{ validator: CheckPrice, trigger: 'blur' }]
+            },
+            taxrateForm:{
+                name:'',
+                taxrate:''
+            },
+            options5: [],
+            AppId: '@ViewBag.AppId',
+            IsYPK: '@ViewBag.IsYPK',
+            SuccessCount: 0,
+            FaildCount: 0,
+            FilePath: '',
+            YPKDisplay: false,
+            isDisabled: false,
+            loading: true,
+            tableData: [],
+            total: 0,
+            page: 1,
+            pageSize: 20,
+            currentRow: {},
+            Ids: [],
+            CreatingVisible:false,
+            ImportDialogVisible:false,
+            taxrateDialogVisible:false,
+            Taxloading:true,
+            taxtableData:[],
+            taxtotal: 0,
+            taxpage: 1,
+            taxpageSize: 20,
+            radio:'',
+            options:[],
+            selectedOptions2:[],
+            taxOptions: [{
+                value:0,
+                label: '0%'
+            }, {
+                value:0.06,
+                label: '6%'
+            }, {
+                value:0.10,
+                label: '10%'
+            },{
+                value:0.16,
+                label: '16%'
+            }],
+            fileList: [],
+            ErrorDataVisible:false,
+            RepeatDatas:[],
+            JdRepeatDatas:[],
+            InvalidDatas:[],
+            NoCategoryDatas: [],
+            NoPinLeiDatas: [],
+            UpdataDatas:[],
+            NullPriceDatas: [],
+            ExcepitonDatas: [],
+            NullTaxDatas: []
+        },
+        methods: {
+                handleSearch: function () {
+                    this.$refs['searchForm'].validate(function (valid) {
+                        if (valid) {
+                            defaultVue.handleCurrentChange(1);
+                        }
+                    });
+                },
+                handleSizeChange: function (val) {
+                    this.pageSize = val;
+                    this.handleCurrentChange(1);
+                },
+                handleCurrentChange: function (page) {
+                    this.page = page || this.page;
+                    this.fetchData();
+                },
+                fetchData: function () {
+                    this.loading = true;
+                    var postData = {
+                        JDCode:this.searchForm.JDCode,
+                        PageSize: this.pageSize,
+                        PageIndex: this.page
+
+                    };
+                    this.$http.post('@Url.Action("GetData")', postData).
+                    then(function (res) {
+                        defaultVue.loading = false;
+                        if (res.body.isSuccess) {
+                            defaultVue.tableData = res.body.Data.List;
+                            defaultVue.total = res.body.Data.Count;
+                        } else {
+                            defaultVue.$message.error(res.body.Message);
+                        }
+                    });
+                },
+                handleCreating: function () {
+                this.CreatingVisible=true;
+                this.options= @Html.Raw(ViewBag.InnerCategoryList);
+                this.options5= @Html.Raw(ViewBag.CategoryList);
+                },
+                SelectCheck(val) {
+                    this.Ids = [];
+                    multipleSelection = [];
+                    for (var i = 0; i < val.length; i++) {
+                        this.Ids.push(val[i].Id);
+                        multipleSelection.push({
+                            Id: val[i].Id,
+                            Percent: val[i].Percent
+                        });
+                    }
+                    this.SelectCount = val.length;
+                },
+                handleExport:function () {
+                    window.location.href = "@Url.Action("ExportJdCommodity")?JDCode="+this.searchForm.JDCode+"&AppId="+this.AppId;
+                },
+                handleImport:function() {
+                    this.ImportDialogVisible = true;
+                },
+                handleSubmit: function () {
+                        var postData = {
+                            JDCode:this.CreateForm.JDCode,
+                            CategoryName:this.CreateForm.CategoryName.join(','),
+                            VideoName:this.CreateForm.VideoName,
+                            TaxClassCode:this.CreateForm.TaxClassCode,
+                            TaxRate:this.CreateForm.TaxRate,
+                            InputRax: this.CreateForm.InputRax,
+                            Price: this.CreateForm.Price
+                        };
+                        this.$refs["CreateForm"].validate((valid) => {
+                        if (valid) {
+                            this.$http.post('@Url.Action("Create")', postData).
+                            then(function (res) {
+                                if (res.body.isSuccess) {
+                                    defaultVue.$message.success('添加成功');
+                                    this.CreatingVisible=false;
+                                    this.fetchData();
+                                } else {
+                                    defaultVue.$message.error(res.body.Message);
+                                }
+                            });
+                        } else {
+                            return false;
+                        }
+                    });
+                },
+                TaxhandleCurrentChange:function(val) {
+                    this.currentRow = val;
+                },
+                setCurrent:function(){
+                    if(this.currentRow.Code==null){
+                         defaultVue.$message.error('至少选择一个');
+                    }else{
+                        this.CreateForm.TaxClassCode=this.currentRow.Code;
+                        this.taxrateDialogVisible=false;
+                    }
+                },
+                handleSelectTax:function(){
+                    this.taxrateDialogVisible=true;
+                    this.obtainData();
+                },
+                taxhandleSearch: function () {
+                    this.$refs['taxrateForm'].validate(function (valid) {
+                        if (valid) {
+                            defaultVue.taxhandleCurrentChange(1);
+                        }
+                    });
+                },
+                taxhandleSizeChange: function (val) {
+                    this.taxpageSize = val;
+                    this.taxhandleCurrentChange(1);
+                },
+                taxhandleCurrentChange: function (taxpage) {
+                    this.taxpage = taxpage || this.taxpage;
+                    this.obtainData();
+                },
+                obtainData: function () {
+                    this.Taxloading = true;
+                    var postData = {
+                        name:this.taxrateForm.name,
+                        taxrate:this.taxrateForm.taxrate,
+                        PageSize: this.taxpageSize,
+                        PageIndex: this.taxpage
+                    };
+                    this.$http.post('@Url.Action("SearchSingleCode")', postData).
+                    then(function (res) {
+                        defaultVue.Taxloading = false;
+                        if (res.body.ResultCode>0) {
+                            defaultVue.taxtableData = res.body.Data;
+                            defaultVue.taxtotal = res.body.ResultCode;
+                        } else {
+                            defaultVue.$message.error(res.body.Message);
+                        }
+                    });
+                },
+                handleChange:function(value) {
+                    console.log(value);
+                },
+                handleAutoCom: function () {
+                     var postData = {
+                        Ids:this.Ids,
+                        appId:this.AppId
+                    };
+                    if (this.Ids.length > 0) {
+                        this.$confirm('您确认要同步商品信息么？', '提示', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning',
+                            modalAppendToBody: false
+                        }).then(() => {
+                            this.$http.post('@Url.Action("AutoSyncCommodity")', postData).
+                                then(function (res) {
+                                    if (res.body.isSuccess) {
+                                        if (this.IsYPK == 'True') {
+                                            if (res.body.Data.NoCategoryData.length > 0) {
+                                                this.NoCategoryDatas = res.body.Data.NoCategoryData;
+                                                this.NoPinLeiDatas = res.body.Data.NoPinLeiData;
+                                                this.UpdataDatas = res.body.Data.RepeatData;
+                                            }
+                                            this.YPKDisplay = true;
+                                            this.ErrorDataVisible = true;
+                                            this.ExcepitonDatas = res.body.Data.ExceptionData;
+                                            this.SuccessCount = res.body.Data.SuccessCount;
+                                            this.FaildCount = res.body.Data.FaildCount;
+                                            defaultVue.fetchData();
+                                            defaultVue.$message.success('同步成功');
+                                        }
+                                        else {
+                                            if (res.body.Data.NoCategoryData.length > 0) {
+                                                this.NoCategoryDatas = res.body.Data.NoCategoryData;
+                                                this.NoPinLeiDatas = res.body.Data.NoPinLeiData;
+                                                this.UpdataDatas = res.body.Data.RepeatData;
+                                                this.ErrorDataVisible = true;
+                                            }
+                                            defaultVue.fetchData();
+                                            defaultVue.$message.success('同步成功');
+                                        }
+                                    } else {
+                                        defaultVue.$message.error(res.body.Message);
+                                    }
+                                });
+                        }).catch(() => {
+
+                        });
+                    }
+                    else {
+                        defaultVue.$message.error('至少选择一项');
+                    }
+                },
+                handleSync: function () {
+                        var loading;
+                        var postData = {
+                        appId:this.AppId
+                    };
+                            this.$confirm('您确认要同步本店铺的所有商品数据吗？', '提示', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning',
+                            modalAppendToBody: false
+                            }).then(() => {
+                                if (this.IsYPK == 'True') {
+                                    this.isDisabled = true;
+                                    loading = this.$loading({
+                                        lock: true,
+                                        text: '数据同步中请稍后！',
+                                        spinner: 'el-icon-loading',
+                                        background: 'rgba(0, 0, 0, 0.7)'
+                                    });
+                                }
+                                this.$http.post('@Url.Action("AutoYPKSyncCommodity")', postData).
+                                then(function (res) {
+                                    if (res.body.isSuccess) {
+                                        if (this.IsYPK == 'True') {
+                                            loading.close();
+                                            this.isDisabled = false;
+                                            if (res.body.Data.NoCategoryData.length > 0) {
+                                                this.NoCategoryDatas = res.body.Data.NoCategoryData;
+                                                this.NoPinLeiDatas = res.body.Data.NoPinLeiData;
+                                                this.UpdataDatas = res.body.Data.RepeatData;
+                                            }
+                                            this.YPKDisplay = true;
+                                            this.ErrorDataVisible = true;
+                                            this.ExcepitonDatas = res.body.Data.ExceptionData;
+                                            this.SuccessCount = res.body.Data.SuccessCount;
+                                            this.FaildCount = res.body.Data.FaildCount;
+                                            defaultVue.fetchData();
+                                        }
+                                        else {
+                                            if (res.body.Data.NoCategoryData.length > 0) {
+                                                this.NoCategoryDatas = res.body.Data.NoCategoryData;
+                                                this.NoPinLeiDatas = res.body.Data.NoPinLeiData;
+                                                this.UpdataDatas = res.body.Data.RepeatData;
+                                                this.ErrorDataVisible = true;
+                                            }
+                                            defaultVue.fetchData();
+                                            defaultVue.$message.success('同步成功');
+                                        }
+                                    } else {
+                                        if (this.IsYPK == 'True') {
+                                            loading.close();
+                                        }
+                                        defaultVue.$message.error(res.body.Message);
+                                    }
+                                });
+                        }).catch(() => {
+                            this.isDisabled = false;
+                        });
+                },
+                submitUpload:function(){
+                    this.$refs.upload.submit()
+                },
+                handleRemove:function(file, fileList) {
+                    console.log(file, fileList);
+                },
+                handlePreview:function(file) {
+                    console.log(file);
+                },
+                onerror:function(err, file, fileList){
+                    console.log(file);
+                },
+                onsuccess:function(err, file, fileList){
+                  if(err.ResultCode==1){
+                        this.RepeatDatas=err.Data.RepeatData||[];
+                        this.InvalidDatas=err.Data.InvalidData||[];
+                        this.JdRepeatDatas=err.Data.JdRepeatData||[];
+                        this.NullPriceDatas = err.Data.NullPriceData || [];
+                        this.NullTaxDatas = err.Data.NullTaxData || [];
+                        this.ErrorDataVisible=true;
+                        defaultVue.fetchData();
+                        this.fileList=[];
+                    }else if(err.ResultCode==2){
+                        alert(err.Message);
+                        this.fileList=[];
+                    }else{
+                      if (err.Data.NullPriceData != null && err.Data.NullPriceData.length > 0)
+                        {
+                            this.NullPriceDatas=err.Data.NullPriceData||[];
+                            this.ErrorDataVisible=true;
+                            defaultVue.fetchData();
+                            this.fileList=[];
+                      }
+                      else if (err.Data.NullTaxData != null && err.Data.NullTaxData.length > 0)
+                      {
+                          this.NullTaxDatas = err.Data.NullTaxData || [];
+                          this.ErrorDataVisible = true;
+                          defaultVue.fetchData();
+                          this.fileList = [];
+                      }
+                        else
+                        {
+                            //易派客导入成功
+                            if (this.IsYPK == 'True') {
+                                alert(err.Message);
+                                this.SuccessCount = err.Data.SuccessCount;
+                                this.FaildCount = err.Data.FaildCount;
+                                this.FilePath = err.Data.FilePath;
+                                this.YPKDisplay = true;
+                                defaultVue.fetchData();
+                                this.fileList = [];
+                            }
+                            else {
+                                alert(err.Message);
+                                this.ImportDialogVisible = false;
+                                defaultVue.fetchData();
+                                this.fileList = [];
+                            }
+                        }
+                    }
+                },
+                handleDelAll:function() {
+                    var postData = {
+                        Ids:this.Ids
+                    };
+                    if (this.Ids.length > 0) {
+                    this.$confirm('您确认要删除选中活动吗？', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning',
+                        modalAppendToBody: false
+                    }).then(() => {
+                            this.$http.post('@Url.Action("DeleteAll")', postData).
+                            then(function (res) {
+                                if (res.body.isSuccess) {
+                                    defaultVue.fetchData();
+                                    defaultVue.$message.success('删除成功');
+                                } else {
+                                    defaultVue.$message.error(res.body.Message);
+                                }
+                            });
+                    }).catch(() => {
+
+                    });
+                    }
+                    else {
+                        defaultVue.$message.error('至少选择一项');
+                    }
+            },
+            handleImportClose(done) {
+                this.YPKDisplay = false;
+                done();
+            }
+        },
+        mounted: function () {
+            this.fetchData();
+        }
+})
+    </script>
+}

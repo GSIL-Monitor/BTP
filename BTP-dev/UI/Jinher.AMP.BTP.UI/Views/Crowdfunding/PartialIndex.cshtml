@@ -1,0 +1,411 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using System.Web
+@{
+    Layout = null;
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.CommodityOrderVM> commodityOrderList = ViewBag.UserCrowdfundingOrders;
+}
+@helper getPayment(int payment)
+    {
+        switch (payment)
+        {
+            case 0:
+    <text>（金币支付）</text>
+                break;
+            case 1:
+    <text>（货到付款）</text>
+                break;
+            case 2:
+    <text>（支付宝直接到账）</text>
+                break;
+            case 3:
+    <text>（支付宝担保交易）</text>
+                break;
+            case 4:
+    <text>（U付）</text>   
+                break;
+            default:
+    <text></text>
+                break;
+        }
+}
+@helper getTimeState(Jinher.AMP.BTP.Deploy.CustomDTO.CommodityOrderVM order)
+    {
+        switch (order.State)
+        {
+            case 0:
+    <text>提交订单时间：@order.SubTime</text>
+            break;
+            case 1:
+            if (order.Payment != 1)
+            {
+    <text>付款时间：@order.PaymentTime</text>
+            }
+            else
+            {
+    <text>提交订单时间：@order.SubTime</text>
+            }
+            break;
+            case 2:
+    <text>发货时间：@order.ShipmentsTime</text>
+          break;
+            case 3:
+    <text>成交时间：@order.ConfirmTime</text>
+          break;
+            case 4:
+    <text>取消订单时间：@order.ConfirmTime</text>
+            break;
+            case 5:
+    <text>取消订单时间：@order.ConfirmTime</text>
+            break;
+            case 6:
+    <text>交易失败时间：@order.ConfirmTime</text>
+            break;
+            case 7:
+    <text>交易失败时间：@order.ConfirmTime</text>
+            break;
+            case 8:
+    <text>申请退款时间：@order.RefundTime</text>
+            break;
+            case 9:
+    <text>申请退款时间：@order.RefundTime</text>
+            break;
+            case 10:
+    <text>达成协议时间：@order.AgreementTime</text>
+            break;
+            case 11:
+    <text>付款时间：@order.PaymentTime</text>
+          break;
+            case 12:
+    <text>达成协议时间：@order.ConfirmTime</text>
+            break;
+            default:
+            break;
+        }
+}
+<input type="hidden" id="rowcounts" value="@ViewBag.Count"/>
+<table class="dgl_bot" style="color: #8C94A9;">
+    <thead>
+        <tr class="t_tr1" style="color: #8C94A9;">
+            <td width="5">
+            </td>
+            <td>
+               
+                商品名称
+            </td>
+            <td width="10%">
+                单价（元）
+            </td>
+            <td width="10%">
+                数量
+            </td>
+            <td width="10%">
+                买家
+            </td>
+            <td width="10%">
+                交易状态<input type="hidden" id="states" value='' />
+            </td>
+            <td width="15%">
+                实收款（元）<input type="hidden" id="prices" value='' />
+            </td>
+            <td width="5">
+            </td>
+        </tr>
+        <tr class="sep-row">
+            <td colspan="8">
+            </td>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            int num = 0;
+        }
+        @if (commodityOrderList ==null)
+        {
+            <tr>
+                <td colspan="20" style="text-align: center;">
+                    <span style="color: Gray">暂无数据</span>
+                </td>
+            </tr>
+        }
+        else
+        {
+            foreach (Jinher.AMP.BTP.Deploy.CustomDTO.CommodityOrderVM commodityOrderVM in commodityOrderList)
+            {
+            <tr class="dgl_bot_header">
+                <td class="left_sep">
+                </td>
+                <td colspan="6">
+                   
+                    <span class="ml15 addColor">订单编号：@commodityOrderVM.CommodityOrderCode</span>
+                    <span class="ml50 addColor">@getTimeState(commodityOrderVM)</span> <span style=" float:right; margin-right:8px;cursor:pointer;" class="ml50 addColor"  onclick="ContactCustomer('@commodityOrderVM.CommodityOrderId','@commodityOrderVM.AppId','@commodityOrderVM.UserId')">
+                      
+                    </span>
+                </td>
+                <td class="right_sep">
+                </td>
+            </tr>                        
+
+  if (commodityOrderVM.OrderItems != null && commodityOrderVM.OrderItems.Count > 0)
+  {
+      var count = commodityOrderVM.OrderItems.Count;
+      var orderItems = commodityOrderVM.OrderItems;
+
+      for (var i = 0; i < count; i++)
+                                                                                                                                                            {
+                                                                                                                                                                Jinher.AMP.BTP.Deploy.CustomDTO.OrderItemsVM orderItem = orderItems[i];
+            <tr class="dgl_bot_con">
+                <td class="left_sep">
+                </td>
+                <td align="left">
+                    <div class="com_img ml15">
+                        <img src="@orderItem.PicturesPath" width="81" height="83" />
+                    </div>
+                    <div class="com_info">
+                        <div class="com_name">
+                            @orderItem.CommodityIdName
+                        </div>
+                        <div class="com_attr">
+                            @foreach (var item in orderItem.CommodityCategorys)
+                            {
+                                if (item != "null" && item != "请选择")
+                                {
+                                <span>@item</span>
+                                }
+                            }<br />
+                            @{
+                            if (!string.IsNullOrEmpty(orderItem.SizeAndColorId))
+                            {
+                                orderItem.SizeAndColorId = orderItem.SizeAndColorId.Replace("颜色", "");
+                                orderItem.SizeAndColorId = orderItem.SizeAndColorId.Replace("尺寸", "");
+                                orderItem.SizeAndColorId = orderItem.SizeAndColorId.Replace(":", "");
+                                orderItem.SizeAndColorId = orderItem.SizeAndColorId.Replace("：", "");
+                                List<string> attrs = orderItem.SizeAndColorId.Split(new char[] { ',', '，' }).ToList();
+                                foreach (string attr in attrs)
+                                {
+                                    if (attr != "null" && attr != "请选择")
+                                    {
+                                <span>@attr</span>
+                                    }
+                                }
+                            }
+                                                    
+                            }
+                        </div>
+                    </div>
+                </td>
+                <td align="center" class="com_price">
+                    @Jinher.AMP.BTP.UI.Util.WebUtil.GetCurrency()@orderItem.Price
+                </td>
+                <td align="center">@orderItem.Number
+                </td>
+                @if (i == 0)
+                {
+                    <td align="center" rowspan="@count" class="left_border">@commodityOrderVM.ReceiptUserName
+                    </td>     
+                    <td align="center" rowspan="@count" class="left_border">
+                        <p>
+                            @switch (commodityOrderVM.State)
+                            {
+                                case 0:
+                                <text><span>待付款</span>
+                               
+                                </text>                                                
+                                                                                             break;
+                                case 1:
+                                <text><span>待发货</span><br />
+                                </text>
+                               
+                              
+                                                                                             break;
+                                case 2:
+                                                                                             if (commodityOrderVM.Payment == 1)
+                                                                                             {//货到付款
+                                <text><span>已发货</span><br />
+                                </text>
+                               
+                            
+                                                                                             }
+                                                                                             else
+                                                                                             {
+                                <text>已发货</text>
+                                                                                             };
+                                                                                             break;
+                                case 3:
+                                <text>交易成功</text>
+                                                                                             break;
+                                case 4:
+                                <text>交易失败</text>
+                                                                                             break;
+                                case 6:
+                                <text>交易失败</text>
+                                                                                             break;
+                                case 8:
+                                <text><span>退款中</span><br />
+                                </text>
+                                                          break;
+                                case 9:
+                                <text>退款中</text>
+                                                                                             break;
+                                case 7:
+                                <text>已退款</text>
+                                                                                             break;
+                                case 10:
+                                <text>退款中</text>
+                                                                                             break;
+                                case 5:
+                                <text>交易失败</text>
+                                                                                             break;
+                                case 11:
+                                <text><span>待发货</span><br />
+                              
+                                </text>
+                                                                                              break;
+                                case 12:
+                                <text>处理退款中</text>
+                                                                                              break;
+
+                            }
+                        </p>
+                    </td>
+                    <td align="center" rowspan="@count" class="left_border">
+                        <p class="parentElement">
+                            <input class="hiddprice" type="hidden" value="@(commodityOrderVM.Price + commodityOrderVM.Freight)" />
+                            @if (commodityOrderVM.State == 0)
+                            {
+                                if (commodityOrderVM.IsModifiedPrice == true)
+                                {
+                                <text> <font class="yprice" style="text-decoration: line-through;">@Jinher.AMP.BTP.UI.Util.WebUtil.GetCurrency()@(commodityOrderVM.Price + commodityOrderVM.Freight)
+                                </font>
+                                <br />
+                                </text>
+                                }
+                                <text> <span class="find_1">@Jinher.AMP.BTP.UI.Util.WebUtil.GetCurrency()@commodityOrderVM.CurrentPrice</span>
+                                @if (commodityOrderVM.IsModifiedPrice == true)
+                                {
+                                <img src="/Content/images/update.png" alt="" width="17" height="17" />
+                                }
+                                <br />
+                                
+                                </text>
+                             
+                            }
+                            else
+                            {
+                                if (commodityOrderVM.State != 4 && commodityOrderVM.State != 5)
+                                {
+                                <text>@Jinher.AMP.BTP.UI.Util.WebUtil.GetCurrency()@commodityOrderVM.CurrentPrice@getPayment(commodityOrderVM.Payment)</text>                                                    
+                                }
+                                else
+                                {
+                                <text>@Jinher.AMP.BTP.UI.Util.WebUtil.GetCurrency()@commodityOrderVM.CurrentPrice</text>
+                                <br />
+                                  if (commodityOrderVM.MessageToBuyer != null)
+                                  {
+                                      if (commodityOrderVM.MessageToBuyer.Length > 30)
+                                      {
+                                          var str = 15;
+                                          var commo = commodityOrderVM.MessageToBuyer;
+                                          var fcount = commodityOrderVM.MessageToBuyer.Length / 15;
+                                          for (var y = 0; y < fcount; y++)
+                                          {
+                                              commo = commo.Insert(str, "\n");
+                                              str = str + 16;
+
+                                          }
+                                <text><span title="@commo">(@commodityOrderVM.MessageToBuyer.Substring(0, 30)
+                                </span>...)
+                                </text>
+                                      }
+                                      else
+                                      {
+                                <text>(@commodityOrderVM.MessageToBuyer)</text>
+                                      }
+                                  }
+                                }
+                            }
+                            @if (commodityOrderVM.State == 8 || commodityOrderVM.State == 9 || commodityOrderVM.State == 7)
+                            {
+                                if (commodityOrderVM.State == 8)
+                                {
+                                <text><p>
+                                    客户申请退款</p></text>
+                                }
+                                if (commodityOrderVM.State == 9)
+                                {
+                                <text><p>
+                                    客户申请退款/退货</p></text>
+                                }
+
+                            }
+                            else
+                            {
+                                if (commodityOrderVM.State == 10)
+                                {
+                                <text><p>
+                                    已达成协议
+                                </p>
+                                </text> 
+                                    if (commodityOrderVM.RefundExpCo != null && commodityOrderVM.RefundExpCo != "")
+                                    {
+                                <text><a href="javascript:;" id="refundexp" orpayment="@commodityOrderVM.Payment"  orderid="@commodityOrderVM.CommodityOrderId" orstate= "@commodityOrderVM.State">退货物流信息</a></text>
+                                    }
+
+                                }
+
+                            }
+                            @{
+                                <br />
+                            if (commodityOrderVM.IsModifiedPrice == false)
+                            {
+                                <text> <span class="spanFreight">含运费 @commodityOrderVM.Freight 元 </span>
+                                </text>
+                            }
+                            }
+                            @if (commodityOrderVM.State == 3)
+                            {
+                                <br />
+                                <text> <span>支付众销佣金 @commodityOrderVM.Commission 元 </span></text>
+                            }
+                        </p>
+                    </td>
+                    <td align="center" rowspan="@count" class="right_sep">
+                    </td>
+                }
+            </tr>
+                                                                                                                                                                                                                                                                   }
+                                                                                                                                                                                                                                                               }
+            <tr class="sep-row">
+                <td colspan="8">
+                </td>
+            </tr>
+            }
+        }
+    </tbody>
+</table>
+<script type="text/javascript">
+    if (window.parent) {
+        $(window.parent.document).scrollTop(0);
+    }
+
+    $(document).ready(function () {
+        $("#allCheck").on('click', function () {
+            var s = document.getElementsByName("itemCheckBox");
+            if ($(this).prop('checked')) {
+                for (var i = 0; i < s.length; i += 1)
+                    s[i].checked = "checked";
+            } else {
+                for (var i = 0; i < s.length; i += 1)
+                    s[i].checked = "";
+            }
+        });
+        $("input[name=itemCheckBox]").bind("click", function () {
+            if ($("input[name=itemCheckBox]").length == $("input[name=itemCheckBox]:checked").length) {
+                $("#allCheck").attr("checked", 'true')
+            }
+            else {
+                $("#allCheck").removeAttr("checked")
+            }
+        });
+    })
+</script>

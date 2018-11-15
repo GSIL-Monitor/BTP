@@ -1,0 +1,2387 @@
+/*
+ * jQuery UI CSS Framework 1.8.14
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Theming
+ */
+/*@import "jquery.ui.base.css";
+@import "jquery.ui.theme.css";*/
+
+/*
+ * jQuery UI CSS Framework 1.8.14
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Theming/API
+ */
+
+/* Layout helpers
+----------------------------------*/
+.ui-helper-hidden { display: none; }
+.ui-helper-hidden-accessible { position: absolute !important; clip: rect(1px 1px 1px 1px); }
+.ui-helper-reset { margin: 0; padding: 0; border: 0; outline: 0; line-height: 1.3; text-decoration: none; font-size: 100%; list-style: none; }
+.ui-helper-clearfix:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+.ui-helper-clearfix { display: inline-block; }
+/* required comment for clearfix to work in Opera \*/
+* html .ui-helper-clearfix { height:1%; }
+.ui-helper-clearfix { display:block; }
+/* end clearfix */
+.ui-helper-zfix { width: 100%; height: 100%; top: 0; left: 0; position: absolute; opacity: 0; filter:Alpha(Opacity=0); }
+
+
+/* Interaction Cues
+----------------------------------*/
+.ui-state-disabled { cursor: default !important; }
+
+
+/* Icons
+----------------------------------*/
+
+/* states and images */
+.ui-icon { display: block; text-indent: -99999px; overflow: hidden; background-repeat: no-repeat; }
+
+
+/* Misc visuals
+----------------------------------*/
+
+/* Overlays */
+.ui-widget-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+/*
+ * jQuery UI Resizable 1.8.14
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Resizable#theming
+ */
+.ui-resizable { position: relative;}
+.ui-resizable-handle { position: absolute;font-size: 0.1px;z-index: 99999; display: block; }
+.ui-resizable-disabled .ui-resizable-handle, .ui-resizable-autohide .ui-resizable-handle { display: none; }
+.ui-resizable-n { cursor: n-resize; height: 7px; width: 100%; top: -5px; left: 0; }
+.ui-resizable-s { cursor: s-resize; height: 7px; width: 100%; bottom: -5px; left: 0; }
+.ui-resizable-e { cursor: e-resize; width: 7px; right: -5px; top: 0; height: 100%; }
+.ui-resizable-w { cursor: w-resize; width: 7px; left: -5px; top: 0; height: 100%; }
+.ui-resizable-se { cursor: se-resize; width: 12px; height: 12px; right: 1px; bottom: 1px; }
+.ui-resizable-sw { cursor: sw-resize; width: 9px; height: 9px; left: -5px; bottom: -5px; }
+.ui-resizable-nw { cursor: nw-resize; width: 9px; height: 9px; left: -5px; top: -5px; }
+.ui-resizable-ne { cursor: ne-resize; width: 9px; height: 9px; right: -5px; top: -5px;}
+
+/*
+ * jQuery UI Selectable 1.8.14
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Selectable#theming
+ */
+.ui-selectable-helper { position: absolute; z-index: 100; border:1px dotted black; }
+
+
+/*
+ * jQuery UI Accordion 1.8.14
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Accordion#theming
+ */
+/* IE/Win - Fix animation bug - #4615 */
+.ui-accordion { width: 100%; }
+.ui-accordion .ui-accordion-header { cursor: pointer; position: relative; margin-top: 1px; zoom: 1; }
+.ui-accordion .ui-accordion-li-fix { display: inline; }
+.ui-accordion .ui-accordion-header-active { border-bottom: 0 !important; }
+.ui-accordion .ui-accordion-header a { display: block; font-size: 1em; padding: .5em .5em .5em .7em; }
+.ui-accordion-icons .ui-accordion-header a { padding-left: 2.2em; }
+.ui-accordion .ui-accordion-header .ui-icon { position: absolute; left: .5em; top: 50%; margin-top: -8px; }
+.ui-accordion .ui-accordion-content { padding: 1em 2.2em; border-top: 0; margin-top: -2px; position: relative; top: 1px; margin-bottom: 2px; overflow: auto; display: none; zoom: 1; }
+.ui-accordion .ui-accordion-content-active { display: block; }
+
+/*
+ * jQuery UI Autocomplete 1.8.14
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Autocomplete#theming
+ */
+
+.ui-autocomplete.ui-menu { position: absolute; cursor: default; overflow-y: auto; /* 防止出现水平滚动条 */ overflow-x: hidden; /* 内容与右侧滚动条的距离 */ padding-right: 0px; max-height: 170px; }	
+
+/* workarounds */
+* html .ui-autocomplete { width:1px; } /* without this, the menu expands to 100% in IE6 */
+.ui-autocomplete-menu-li-hover { background-color:#4c8ad4; color:#ffffff; }
+
+.ui-autocomplete-one-element
+{
+    float:left;
+    white-space:nowrap;
+    border-width:0px;
+    position:relative;
+    height:16px;
+    color:Gray;
+    line-height:16px;
+}
+
+.ui-autocomplete-one-element .ui-autocomplete-now-input
+{
+     width:100%;
+     border-width:0px;
+     position:absolute;
+     outline:none;     
+     padding:0;
+     height:16px;
+     line-height:16px;
+     *+margin-top:1px;
+     margin-top:1px\0;
+     zoom:1;
+}
+
+.ui-autocomplete-element-separate
+{
+    width:4px;
+    border-width:0px;
+    float:left;
+    display:block;
+    height:16px;
+}
+
+/*多选自动完成控件的div样式
+----------------------------------------------------------*/
+.ui-autocomplete-div
+{
+    padding:1px 3px; 
+    border:1px solid Gray;
+    width:300px; 
+    height:auto; 
+    font-size:12px; 
+    color:Gray;
+    line-height:16px;
+    word-wrap:break-word;
+    word-break:break-all;
+    white-space:normal;
+    position:relative;
+    overflow:hidden;
+    background-color:White;
+}
+
+/*
+ * jQuery UI Button 1.8.14
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Button#theming
+ */
+.ui-button {  padding: 0 0 0 5px; cursor: pointer; text-align: center; overflow: visible;height:20px;min-width:40px;background:url('images/button.png');background-position:0 0;border:0;outline:none;white-space:nowrap;display:inline-block; color:#333333;} /* the overflow property removes extra width in IE */
+.ui-button-focus
+{
+    background-position: 0 -160px;
+}
+.ui-button-focus .ui-button-text
+{
+    background-position: right -180px;
+}
+.ui-button-hover
+{
+    background-position: 0 -40px;
+}
+.ui-button-hover .ui-button-text
+{
+    background-position: right -60px;    
+}
+.ui-button-active
+{   
+    background-position: 0 -80px;
+}
+.ui-button-active .ui-button-text
+{
+    background-position: right -100px;
+    color:#333333;
+}
+.ui-button-disabled 
+{
+    background-position:0 -120px;    
+}
+.ui-button-disabled .ui-button-text
+{
+    background-position:right -140px;
+}
+.ui-button-input{border:0;}
+a.ui-button{background:transparent;border:0;color:#005fc2; text-decoration:none;}
+a:hover .ui-button{ text-decoration:underline;}
+a.ui-button .ui-button-text{background:transparent;border:0;}
+a:hover.ui-button{ text-decoration:underline;color:#fc6600;}
+.ui-button-icon-only { width: 2.2em; } /* to make room for the icon, a width needs to be set here */
+button.ui-button-icon-only { width: 2.4em; } /* button elements seem to need a little more width */
+.ui-button-icons-only { width: 3.4em; } 
+button.ui-button-icons-only { width: 3.7em; } 
+
+/*button text element */
+.ui-button-text { display: block;background:url('images/button.png');background-position:right -20px; padding:0 10px 0 5px;height:20px;line-height:18px;line-height:22px\9;margin:0;}
+.ui-button-icon-only .ui-button-text, .ui-button-icons-only .ui-button-text { padding: 2px; text-indent: -9999999px; }
+.ui-button-text-icon-primary .ui-button-text, .ui-button-text-icons .ui-button-text { padding: 2px 10px 2px 20px; }
+.ui-button-text-icon-secondary .ui-button-text, .ui-button-text-icons .ui-button-text { padding:2px 20px 2px 10px; }
+.ui-button-text-icons .ui-button-text { padding-left: 2.1em; padding-right: 2.1em; }
+/* no icon support for input elements, provide padding by default */
+input.ui-button { padding: .4em 1em; }
+
+/*button icon element(s) */
+.ui-button-icon-only .ui-icon, .ui-button-text-icon-primary .ui-icon, .ui-button-text-icon-secondary .ui-icon, .ui-button-text-icons .ui-icon, .ui-button-icons-only .ui-icon { position: absolute; top: 50%; margin-top: -8px; }
+.ui-button-icon-only .ui-icon { left: 50%; margin-left: -8px; }
+.ui-button-text-icon-primary .ui-button-icon-primary, .ui-button-text-icons .ui-button-icon-primary, .ui-button-icons-only .ui-button-icon-primary { left: .5em; }
+.ui-button-text-icon-secondary .ui-button-icon-secondary, .ui-button-text-icons .ui-button-icon-secondary, .ui-button-icons-only .ui-button-icon-secondary { right: .5em; }
+.ui-button-text-icons .ui-button-icon-secondary, .ui-button-icons-only .ui-button-icon-secondary { right: .5em; }
+
+/*button sets*/
+.ui-buttonset { margin-right: 7px; }
+.ui-buttonset .ui-button { margin-left: 0; margin-right: -.3em; }
+
+/* workarounds */
+button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra padding in Firefox */
+.notfirstbutton{margin-left:8px;}
+
+/*
+ * jQuery UI Dialog 1.8.14
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Dialog#theming
+ */
+.ui-dialog { position: absolute; padding: .2em; width: 300px; overflow: hidden; }
+.ui-dialog .ui-dialog-titlebar { padding: .4em 1em; position: relative;  }
+.ui-dialog .ui-dialog-title { float: left; margin: .1em 16px .1em 0; } 
+.ui-dialog .ui-dialog-titlebar-close { position: absolute; right: .3em; top: 50%; width: 19px; margin: -10px 0 0 0; padding: 1px; height: 18px; }
+.ui-dialog .ui-dialog-titlebar-close span { display: block; margin: 1px; }
+.ui-dialog .ui-dialog-titlebar-close:hover, .ui-dialog .ui-dialog-titlebar-close:focus { padding: 0; }
+.ui-dialog .ui-dialog-content { position: relative; border: 0; padding: .5em 1em; background: none; overflow: auto; zoom: 1; }
+.ui-dialog .ui-dialog-buttonpane { text-align: left; border-width: 1px 0 0 0; background-image: none; margin: .5em 0 0 0; padding: .3em 1em .5em .4em; }
+.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset { float: right; }
+.ui-dialog .ui-dialog-buttonpane button { margin: .5em .4em .5em 0; cursor: pointer; }
+.ui-dialog .ui-resizable-se { width: 14px; height: 14px; right: 3px; bottom: 3px; }
+.ui-draggable .ui-dialog-titlebar { cursor: move; }
+/*
+ * jQuery UI Slider 1.8.14
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Slider#theming
+ */
+.ui-slider { position: relative; text-align: left; background:url(images/imageupload.png) no-repeat 0px -20px;}
+.ui-slider .ui-slider-handle { outline:none; position: absolute; z-index: 2; width: 1.2em; height: 1.6em; cursor: default;  background:url(images/imageupload.png) no-repeat -81px -1px; }
+.ui-slider .ui-slider-handle-hover { background:url(images/imageupload.png) no-repeat -101px -1px; } 
+.ui-slider .ui-slider-range { position: absolute; z-index: 1; font-size: .7em; display: block; border: 0; background-position: 0 0;}
+
+.ui-slider-horizontal { height: .5em; width:120px;}
+.ui-slider-horizontal .ui-slider-handle { top: -.6em; margin-left: -.6em; }
+.ui-slider-horizontal .ui-slider-range { top: 0; height: 100%; }
+.ui-slider-horizontal .ui-slider-range-min { left: 0; }
+.ui-slider-horizontal .ui-slider-range-max { right: 0; }
+
+.ui-slider-vertical { width: .8em; height: 100px; }
+.ui-slider-vertical .ui-slider-handle { left: -.3em; margin-left: 0; margin-bottom: -.6em; }
+.ui-slider-vertical .ui-slider-range { left: 0; width: 100%; }
+.ui-slider-vertical .ui-slider-range-min { bottom: 0; }
+.ui-slider-vertical .ui-slider-range-max { top: 0; }
+
+.ui-slider-minbtn { outline:none; position: absolute; z-index: 2; width: 1.6em; height: 1.6em; margin-left: -26px;  top: -.5em; cursor: default;  background:url(images/imageupload.png) no-repeat -1px -1px; }
+.ui-slider-maxbtn { outline:none; position: absolute; z-index: 2; width: 1.6em; height: 1.6em; margin-left: 130px;  top: -.5em; cursor: default;  background:url(images/imageupload.png) no-repeat -41px -1px; }
+.ui-slider .ui-slider-minbtn-hover { background:url(images/imageupload.png) no-repeat -21px -1px; } 
+.ui-slider .ui-slider-maxbtn-hover { background:url(images/imageupload.png) no-repeat -61px -1px; } 
+
+/*
+ * jQuery UI Tabs 1.8.14
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Tabs#theming
+ */
+.ui-tabs { position: relative; padding: 0; zoom: 1; } /* position: relative prevents IE scroll bug (element with position: relative inside container with overflow: auto appear as "fixed") */
+.ui-tabs .ui-tabs-nav { margin: 0; padding: 0 0 0 10px; }
+/*.ui-tabs .ui-tabs-nav li { list-style: none; float: left; position: relative; top: 1px; margin: 0 .2em 1px 0; border-bottom: 0 !important; padding: 0; white-space: nowrap; }
+.ui-tabs .ui-tabs-nav li a { float: left; padding: .5em 1em; text-decoration: none; }
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected { margin-bottom: 0; padding-bottom: 1px; }
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected a, .ui-tabs .ui-tabs-nav li.ui-state-disabled a, .ui-tabs .ui-tabs-nav li.ui-state-processing a { cursor: text; }
+.ui-tabs .ui-tabs-nav li a, .ui-tabs.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-selected a { cursor: pointer; } *//* first selector in group seems obsolete, but required to overcome bug in Opera applying cursor: text overall if defined elsewhere... */
+/*.ui-tabs .ui-tabs-panel { display: block; border-width: 0; padding: 10px; background: none; }
+.ui-tabs .ui-tabs-hide { display: none !important; }*/
+
+.ui-tabs-nav-li { list-style: none; float: left; position: relative; top: 1px; margin: 0; border-bottom: 0 !important; padding: 0 0 0 10px; white-space: nowrap;background:url(images/normaltable.png) 0 -60px no-repeat; }
+.ui-tabs-nav-li a
+{
+    height:15px;
+    display:block;
+    background:url(images/normaltable.png) right -90px no-repeat;   
+    padding:5px 12px 5px 0; 
+    text-decoration:none;
+    color:Black;
+}
+.ui-state-hover{background:url(images/normaltable.png) 0 -120px no-repeat;}
+.ui-tabs-nav .ui-state-hover a{background:url(images/normaltable.png) right -150px no-repeat;}
+.ui-tabs-selected
+{
+    background:url(images/normaltable.png) 0 0px no-repeat;
+}
+.ui-tabs-nav .ui-tabs-selected a
+{
+    background:url(images/normaltable.png) right -30px no-repeat;   
+}
+.ui-tabs-panel{padding:10px;}
+.ui-tabs-hide{display:none;}
+/*
+ * jQuery UI Datepicker 1.8.14
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Datepicker#theming
+ */
+.ui-datepicker { width:210px; padding:0; display: none; font-size: 12px; background:white; overflow:hidden; }
+.ui-datepicker .ui-datepicker-header { position:relative; height:35px; border:1px solid #cfdfef;}
+.ui-datepicker .ui-datepicker-prev, .ui-datepicker .ui-datepicker-next { position:absolute; top: 9px; width: 8px; height: 13px; }
+.ui-datepicker .ui-datepicker-prev-hover, .ui-datepicker .ui-datepicker-next-hover { top: 10px; }
+.ui-datepicker .ui-datepicker-prev { left:10px; }
+.ui-datepicker .ui-datepicker-next { right:10px; }
+.ui-datepicker .ui-datepicker-prev-hover { left:10px;}
+.ui-datepicker .ui-datepicker-next-hover { right:10px;}
+.ui-datepicker .ui-datepicker-prev span, .ui-datepicker .ui-datepicker-next span { display: block; position: absolute; }
+.ui-datepicker .ui-datepicker-title { margin: 0 2.3em; line-height: 1.8em; text-align: center;}
+.ui-datepicker .ui-datepicker-title select { font-size:1em; margin:6px 0; }
+.ui-datepicker select.ui-datepicker-month-year {width: 100%;}
+.ui-datepicker select.ui-datepicker-month, ui-datepicker select.ui-datepicker-year { width: 65px; margin-left: 5px;}
+
+.ui-datepicker-border{ width: 208px;  border:1px solid #cfdfef; overflow:hidden; border-top:0;}
+
+.ui-datepicker table {width: 208px; font-size: 1em;border-collapse: collapse; margin:0 0 .4em;}
+.ui-datepicker th { padding: 0; text-align: center; font-weight: bold; border: 0; height:20px; overflow:hidden; }
+.ui-datepicker td { border: 0; padding: 0; overflow:hidden;}
+.ui-datepicker td a { text-decoration: none; text-align:center; overflow:hidden; display:block;}
+.ui-datepicker .ui-datepicker-buttonpane { background-image: none; margin: .7em 0 0 0; padding:0 .2em; border-left: 0; border-right: 0; border-bottom: 0; border-top:0; }
+.ui-datepicker .ui-datepicker-buttonpane button { float: right; margin: .5em .2em .4em; cursor: pointer; padding: .2em .6em .3em .6em; width:auto; overflow:visible; }
+.ui-datepicker .ui-datepicker-buttonpane button.ui-datepicker-current { float:left; }
+
+/* with multiple calendars */
+.ui-datepicker.ui-datepicker-multi { width:auto; }
+.ui-datepicker-multi .ui-datepicker-group { float:left; }
+.ui-datepicker-multi .ui-datepicker-group table { width:100%; margin:0 auto .4em; }
+.ui-datepicker-multi-2 .ui-datepicker-group { width:50%; }
+.ui-datepicker-multi-3 .ui-datepicker-group { width:33.3%; }
+.ui-datepicker-multi-4 .ui-datepicker-group { width:25%; }
+.ui-datepicker-multi .ui-datepicker-group-last .ui-datepicker-header { border-left-width:0; }
+.ui-datepicker-multi .ui-datepicker-group-middle .ui-datepicker-header { border-left-width:0; }
+.ui-datepicker-multi .ui-datepicker-buttonpane { clear:left; }
+.ui-datepicker-row-break { clear:both; width:100%; font-size:0em; }
+
+/* RTL support */
+.ui-datepicker-rtl { direction: rtl; }
+.ui-datepicker-rtl .ui-datepicker-prev { right: 2px; left: auto; }
+.ui-datepicker-rtl .ui-datepicker-next { left: 2px; right: auto; }
+.ui-datepicker-rtl .ui-datepicker-prev:hover { right: 1px; left: auto; }
+.ui-datepicker-rtl .ui-datepicker-next:hover { left: 1px; right: auto; }
+.ui-datepicker-rtl .ui-datepicker-buttonpane { clear:right; }
+.ui-datepicker-rtl .ui-datepicker-buttonpane button { float: left; }
+.ui-datepicker-rtl .ui-datepicker-buttonpane button.ui-datepicker-current { float:right; }
+.ui-datepicker-rtl .ui-datepicker-group { float:right; }
+.ui-datepicker-rtl .ui-datepicker-group-last .ui-datepicker-header { border-right-width:0; border-left-width:1px; }
+.ui-datepicker-rtl .ui-datepicker-group-middle .ui-datepicker-header { border-right-width:0; border-left-width:1px; }
+
+/*customer*/
+.ui-datepicker-header-new{ background: url(images/tablebox.png) 0 -121px repeat-x; } /*color: #222;font-weight: bold;*/
+
+.ui-datepicker table thead {background:#edf1f9; height:20px; }
+.ui-datepicker table thead span {color:#4e8cb1 } 
+.ui-datepicker table tbody { border-top: 1px solid #CFDFEF }
+.ui-datepicker table tbody td { width:28px; height:22px; overflow:hidden;}
+.ui-datepicker table tfoot tr { height: 25px;}
+
+
+.ui-datepicker .ui-datepicker-today{background: url(images/nor_calendar.png) -30px -20px no-repeat;color:#fff;}
+.ui-datepicker .ui-datepicker-current-day{background: url(images/nor_calendar.png) 0 -20px no-repeat; color:#fff;}
+
+.ui-datepicker .td-right{ border-right:1px solid #cfdfef; }
+.ui-datepicker .td-bottom{ border-bottom:1px solid #cfdfef; }
+
+.tfootInput{width:50px; margin:4px;}
+
+/* IE6 IFRAME FIX (taken from datepicker 1.5.3 */
+.ui-datepicker-cover {
+    display: none; /*sorry for IE5*/
+    display/**/: block; /*sorry for IE5*/
+    position: absolute; /*must have*/
+    z-index: -1; /*must have*/
+    filter: mask(); /*must have*/
+    top: -4px; /*must have*/
+    left: -4px; /*must have*/
+    width: 200px; /*must have*/
+    height: 200px; /*must have*/
+}
+.ui-expander-bar
+{
+    height:10px;    
+    width:500px;
+    margin:0 auto;
+    background-image:url(images/expande.png);
+}
+
+.ui-expander-open
+{
+    background-position:center 0;
+    margin-top:-3px;
+}
+
+.ui-expander-closed
+{
+    /*background:url(images/expander_close.png) no-repeat center;*/
+    background-position:center -20px;
+    margin-top:0;
+}
+
+.ui-expander-open-mouseenter
+{
+   /* background:url(images/expander_open_mouseenter.png) no-repeat center;*/
+   background-position:center -10px;
+}
+
+.ui-expander-closed-mouseenter
+{
+    /*background:url(images/expander_close_mouseenter.png) no-repeat center;*/
+    background-position:center -30px;
+}
+
+/*
+ * jQuery UI jhtablebox 
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ */
+
+.ui-jhtablebox { position: absolute; width: 300px; overflow: hidden; font-size:12px; }
+.ui-jhtablebox button { width: 80px; }
+.ui-jhtablebox-shadow{-webkit-box-shadow: #999 3px 3px 3px;-moz-box-shadow: #999 3px 3px 3px;box-shadow: #999 3px 3px 3px;}
+.ui-jhtablebox .ui-jhsingletablebox-titlebar  
+{
+    margin-left:5px;
+    margin-right:5px;
+    padding: 6px 5px 3px 5px; 
+    position: relative; 
+    font:bold 14px; 
+    color:#5292b8;    
+    background:url(images/tablebox.png) 0 -440px repeat-x;    
+    height:21px;
+}
+.ui-jhtablebox-top .ui-jhsingletablebox-titlebar  
+{
+    margin-left:5px;
+    margin-right:5px;
+    padding: 6px 5px 3px 5px; 
+    position: relative;     
+    font-weight:bold;
+    font-size:14px; 
+    color:#5292b8;    
+    background:url(images/tablebox.png) 0 -210px repeat-x;    
+    height:21px;
+}
+
+.ui-jhsingletablebox-leftcorner
+{
+    width:5px;
+    height:30px;
+    float:left;
+    background:url(images/tablebox.png) -150px -260px no-repeat;    
+}
+
+.ui-jhtablebox-top .ui-jhsingletablebox-leftcorner
+{
+    width:5px;
+    height:30px;
+    float:left;
+    background:url(images/tablebox.png) -150px 0 no-repeat;    
+}
+
+.ui-jhsingletablebox-rightcorner
+{
+    width:5px;
+    height:30px;
+    float:right;
+    background:url(images/tablebox.png) -160px -260px no-repeat;    
+}
+
+
+.ui-jhtablebox-top .ui-jhsingletablebox-rightcorner
+{
+    width:5px;
+    height:30px;
+    float:right;
+    background:url(images/tablebox.png) -160px 0 no-repeat;    
+}
+
+.ui-jhtablebox .ui-dialog-title { float: left; font-weight:bold;} 
+/*.ui-jhsingletablebox .ui-dialog-titlebar-close { position: absolute; right: 7px; top: 50%; width: 21px; margin: -10px 0 0 0; height: 19px; }*/
+.ui-jhtablebox .ui-dialog-titlebar-button { float:right; width: 21px; margin: 0; height: 20px; }
+.ui-jhtablebox .ui-dialog-titlebar-button span { display: block; }
+.ui-jhtablebox-content { position: relative; border: 0; overflow: hidden;clear:both;}
+.ui-jhtablebox-top .ui-jhtablebox-content { position: relative; border: 0; overflow: hidden;border-left:1px solid #aad3eb;border-right:1px solid #aad3eb;border-bottom:1px solid #aad3eb;background:#fdfdfd;}
+.ui-jhtablebox .ui-dialog-buttonpane { text-align: left; /*background:#f1fbfe;*/ margin: 0; padding: 0 0 12px 0;border-left:1px solid #aad3eb;border-right:1px solid #aad3eb;border-bottom:1px solid #aad3eb;border-top:0;text-align:center; }
+/*.ui-jhsingletablebox .ui-dialog-buttonpane .ui-dialog-buttonset { float: right; }*/
+.ui-jhtablebox .ui-dialog-buttonpane button { margin:0 4px; cursor: pointer; }
+.ui-jhtablebox .ui-resizable-se { width: 14px; height: 14px; right: 3px; bottom: 3px; }
+.ui-draggable .ui-jhsingletablebox-titlebar { cursor: move; }
+
+.ui-jhtablebox-button-content{position: relative; border: 0; padding: 10px; overflow: auto; zoom: 1;border-left:1px solid #aad3eb;border-right:1px solid #aad3eb;border-bottom:0;background:white;clear:both;}
+/*.ui-jhtablebox .ui-widget-content{border-top:0;}*/
+
+.ui-tabs-header
+{
+	height:50px;	
+}
+.ui-draggable .ui-tabs-header { cursor: move; }
+.ui-tabs-title
+{
+	background:url(images/tablebox.png) no-repeat 0px -260px;
+	height:50px;
+	width:125px;
+	float:left;
+}
+.ui-jhtablebox-top .ui-tabs-title
+{
+	background:url(images/tablebox.png) no-repeat 0px 0px;
+	height:50px;
+	width:125px;
+	float:left;
+}
+.ui-tabs-title-pic
+{
+	
+	width:24px;
+	height:24px;
+	margin-top:12px;
+	margin-left:14px;
+	float:left;
+	
+}
+.ui-tabs-title-name
+{
+	font-weight:bold;
+	font-size:14px;
+	float:left;
+	margin-top:16px;
+	margin-left:8px;
+	color:#5292b8;
+	display:inline;
+}
+.ui-jhtablebox-top .ui-jhtablebox-tabs
+{
+	height:50px;
+	background-image:url(images/tablebox.png);
+	background-repeat:repeat-x;
+	background-position:0px -120px;
+	margin-left:115px;
+	margin-right:5px;
+	padding-left:6px;
+}
+.ui-jhtablebox-tabs
+{
+	height:50px;
+	background-image:url(images/tablebox.png);
+	background-repeat:repeat-x;
+	background-position:0px -380px;
+	margin-left:115px;
+	margin-right:5px;
+	padding-left:6px;
+}
+.ui-tabs-minbtn
+{
+	float:right;
+	margin-top:5px;
+	margin-right:2px;	
+}
+.ui-tabs-minbtnhover
+{
+	float:right;
+	margin-top:5px;
+	margin-right:2px;
+	display:inline;
+	
+}
+.ui-tabs-closebtn
+{
+	float:right;
+	margin-top:5px;
+}
+.ui-tabs-closebtnhover
+{
+	float:right;
+	margin-top:5px;
+	
+}
+.span
+{
+	float:right;
+}
+
+.ui-jhtablebox-tabs-container
+{
+	height:50px;
+	overflow:hidden;	
+	position:relative;
+}
+.ui-jhtablebox-tabs-content
+{
+    height: 50px; margin-top: 0; padding: 0; overflow: hidden;border-left:1px solid #99CCCC;position:relative;
+}
+.ui-tabs-content-inside
+{
+    padding:10px 20px;
+    margin:0 auto;
+    text-align:center;
+    line-height:25px;
+}
+.ui-jhtablebox-tabs-content-border
+{
+    border-right:1px solid #99CCCC;
+}
+.ui-jhtablebox-tabs-next
+{
+	float:right;
+	background:url(images/tablebox.png) no-repeat -80px -180px;
+	width:12px;
+	height:20px;
+    margin:14px 6px 0 4px;
+    cursor:pointer;
+}
+.ui-jhtablebox-tabs-next-hover
+{
+	background:url(images/tablebox.png) no-repeat -100px -180px;
+}
+.ui-jhtablebox-tabs-next-click
+{
+   background:url(images/tablebox.png) no-repeat -120px -180px;	
+}
+.ui-jhtablebox-tabs-next-disabled
+{
+    background:url(images/tablebox.png) no-repeat -140px -180px;
+}
+.ui-jhtablebox-tabs-prev
+{
+	float:left;
+	background:url(images/tablebox.png) no-repeat 0px -180px;
+	width:12px;
+	height:20px;
+	margin-top:14px;	
+	padding:0 3px;
+	cursor:pointer;
+}
+.ui-jhtablebox-tabs-prev-hover
+{
+	background:url(images/tablebox.png) no-repeat -20px -180px;
+}
+.ui-jhtablebox-tabs-prev-click
+{
+	background:url(images/tablebox.png) no-repeat -40px -180px;
+}
+.ui-jhtablebox-tabs-prev-disabled
+{
+    background:url(images/tablebox.png) no-repeat -60px -180px;
+}
+
+
+.ul-li-bg-common
+{
+	background:url(images/tablebox.png) no-repeat -200px -320px;
+	height:50px; 
+	width:100px;
+	
+}
+.ul-li-bg-current
+{
+	background:url(images/tablebox.png) no-repeat 0px -320px;
+	height:50px; 
+	width:99px;
+	font-weight:bold;
+}
+
+.ul-li-bg-hover
+{
+	background:url(images/tablebox.png) no-repeat -100px -320px;
+	height:50px; 
+	width:99px;
+}
+
+.ui-jhtablebox-top .ul-li-bg-common
+{
+	background:url(images/tablebox.png) no-repeat -200px -60px;
+	height:50px; 
+	width:100px;
+	
+}
+.ui-jhtablebox-top .ul-li-bg-current
+{
+	background:url(images/tablebox.png) no-repeat 0px -60px;
+	height:50px; 
+	width:99px;
+	font-weight:bold;
+}
+
+.ui-jhtablebox-top .ul-li-bg-hover
+{
+	background:url(images/tablebox.png) no-repeat -100px -60px;
+	height:50px; 
+	width:99px;
+}
+
+.ui-jhtablebox-tabs-content ul
+{
+	list-style:none;
+	margin:0px;
+	padding:0px;
+	overflow:hidden;
+	position:relative;
+}
+.ui-jhtablebox-top .ui-jhtablebox-tab-li
+{
+	float:left;
+	border-right:1px solid #99CCCC;
+	height:50px; 
+	width:99px;
+	cursor:pointer;
+}
+.ui-jhtablebox-tab-li
+{
+	float:left;
+	border-right:1px solid #b8d5e1;
+	height:50px; 
+	width:99px;
+	cursor:pointer;
+}
+.ui-jhtablebox-tab-li-icon
+{
+	margin-top:13px;
+	display:block;
+	margin-left:5px;
+	vertical-align:middle;
+	float:left;
+	width:24px;
+	height:24px;
+}
+.ui-jhtablebox-tab-li-text
+{
+	margin-top:19px;
+	display:inline;
+	float:left;
+	width:auto;
+	font-size:12px;
+	color:#5292b8;
+	max-width:60px;
+	overflow: hidden;  
+	white-space:nowrap;
+}
+.ui-jhtablebox-tab-li-icon-default
+{
+    background: url("../base/images/ico_24.png") no-repeat 0 -30px;
+}
+.ui-jhtablebox-tab-li-icon-default-on
+{
+    background: url("../base/images/ico_24.png") no-repeat 0 -60px;
+}
+.ui-jhtablebox-top .ui-tabs-right
+{
+	background:url(images/tablebox.png) no-repeat -135px 0px;
+	height:50px;
+	width:5px;
+	float:right;
+}
+
+.ui-tabs-right
+{
+	background:url(images/tablebox.png) no-repeat -135px -260px;
+	height:50px;
+	width:5px;
+	float:right;
+}
+
+.ui-jhtablebox-top .ui-tabs-content
+{
+	clear:both;
+	margin-left:3px;
+	border-left:1px solid #aad3eb;
+	border-right:1px solid #aad3eb;
+	border-bottom:1px solid #aad3eb;
+}
+
+.ui-tabs-content
+{
+	clear:both;
+	margin-left:3px;
+	border-left:1px solid #b8d5e1;
+	border-right:1px solid #b8d5e1;
+	border-bottom:1px solid #b8d5e1;
+}
+
+.frame
+{
+    margin:0px;    
+}
+
+.ui-jhtablebox-title-button-area{float:right;padding-top:5px;height:45px;
+	background-image:url(images/tablebox.png);
+	background-repeat:repeat-x;
+	background-position:0px -380px;
+	margin-left:0;
+}
+
+.ui-jhtablebox-top .ui-jhtablebox-title-button-area{float:right;padding-top:5px;height:45px;
+	background-image:url(images/tablebox.png);
+	background-repeat:repeat-x;
+	background-position:0px -120px;
+	padding-left:0;
+	/**margin-left:0;*/
+}
+.ui-jhtablebox-tab-button-hide
+{
+    background:none;
+}
+
+.ui-jhtablebox-tabs-next.ui-jhtablebox-tab-button-hide
+{
+    display:none;
+}
+
+.ui-jhtablebox-mask
+{
+    z-index:1;
+    position:absolute;
+    background:#98d5ff;
+    opacity: .0;filter:Alpha(Opacity=0);
+}
+
+
+.ui-toolbar-left-container 
+{
+    padding:0px;
+    margin:0 0px 0px 8px;
+    list-style:none;
+    overflow:hidden;
+}
+.ui-toolbar-left-containerli
+{
+    float:left;
+	width:24px;
+	height:24px;
+	margin-right:3px;
+	
+	margin-top:3px;
+}
+.ui-toolbar-left-containerli span
+{
+    width:16px;
+    height:16px;
+    display:block;
+    margin:4px;
+    
+}
+.ui-toolbar-right-container 
+{
+    padding:0px;
+    margin-left:8px;
+    list-style:none;
+    overflow:hidden;
+    margin-top:2px;
+}
+.ui-toolbar-right-containerli
+{
+    float:right;
+	width:24px;
+	height:24px;
+	margin-right:8px;
+	margin-top:3px;
+}
+.ui-toolbar-right-containerli span
+{
+    width:16px;
+    height:16px;
+    display:block;
+    margin:4px;
+    
+}
+.ui-toolbar-left-showhide
+{
+	background:#FFF;
+    word-break:break-all;
+    display:none;
+    position:absolute;
+    z-index:10000;
+    border:1px solid #eeeeee;
+}
+.ui-toolbar-left-showhideul
+{
+    padding:0px;
+    margin:0px;
+    list-style:none;
+    background:#FFF;
+}
+.ui-toolbar-left-showhideulli
+{
+    float:left;
+	width:24px;
+	height:24px;
+	margin-right:8px;
+	margin-top:8px;
+ 
+}
+.ui-toolbar-right-showhide
+{
+	background:#FFF;
+    word-break:break-all;
+    display:none;
+    border:1px solid #eeeeee;
+    position:absolute;
+    z-index:10000;
+}
+
+.ui-toolbar-right-showhideul
+{
+    padding:0px;
+    margin:0px;
+    list-style:none;
+}
+.ui-toolbar-right-showhideulli
+{
+    float:right;
+	width:24px;
+	height:24px;
+	margin-right:8px;
+	margin-top:8px;
+}
+.ui-toolbar-li-hover
+{
+    background:url(../base/images/main_frame.png) no-repeat -270px 0px;
+}
+.ui-toolbar-li-hoverli
+{
+    margin-right:4px;
+}
+.leftshowhide
+    {
+         background:url(../base/images/main_frame.png) no-repeat -100px -180px;
+         float:left;
+	width:12px;
+	height:12px;
+	margin-right:8px;
+	margin-top:10px;
+    }
+.ui-toolbar-span
+{
+    float:left;
+	width:16px;
+	height:16px;
+	margin-top:4px;
+	margin-left:4px;
+}
+
+.searchParent
+{
+	width:330px;
+	height:30px;
+	background:url(../base/images/main_frame.png) no-repeat  0px -70px;
+	line-height:30px;
+}
+.searchParent .searchtext
+{
+   height:18px;
+	width:180px;
+	margin-top:3px;
+	float:left;
+	line-height:18px;
+	display:none; 
+	padding:0px;
+	border:1px solid #999999;
+}
+.searchtextContent
+{
+    font-size:12px;
+    width:182px;
+	margin-left:15px;
+	float:left;
+	line-height:30px;
+	display:inline;
+}
+.searchbtn
+{
+    float:right; 
+    display:inline; 
+    margin-top:5px; 
+    margin-right:10px; 
+    width:18px; 
+    height:16px;
+}
+.searchgeneral
+{
+    height:21px;
+    width:332px;
+	background:url(../base/images/se_text_bg.png) no-repeat  0px 0px;
+}
+.searchgeneral_cm
+{
+    height:21px;
+    width:230px;
+    border: 1px solid #B3B9BD;
+    border-bottom: 1px solid #F4F4F4;
+}
+.searchgeneraltext
+{
+    width:200px;
+    border:0px;
+    height:17px;
+    line-height:17px;
+    margin:2px;
+    padding:0px;
+    float:right;
+    outline:none;
+}
+.searchgeneralbtn
+{
+    float:right;
+    width:25px;
+    height:21px;
+}
+.searchgeneralbtn_cm
+{
+    float: right;
+    width: 25px;
+    height: 21px;
+    background: url(../base/images/main_frame.png) no-repeat -170px -140px;
+    margin-top: 2px;
+}
+.searchParent .input-nobg
+{
+    background:none;
+    padding:1px 0 0 1px;
+    border:none;
+}
+
+/*搜索模块*/
+.searchModule
+{
+    float:left;
+    width:90px;   
+	display:inline;
+	margin-left:10px;
+	font-size:13px; 
+	text-align:center;
+	cursor:pointer;
+	position:relative;
+}
+.searchModule_g
+{
+     height:21px;
+     line-height:21px;
+     margin:0px;    
+}
+.searchModuleName
+{
+     width:95px;
+     display:block;
+} 
+.searchModule_ul
+{
+    margin:0px;
+    padding:0px;
+    position:absolute;
+    display:none;
+    top:30px;
+    left:4px;
+    list-style:none;
+    width:90px;
+}
+.searchModule_ul li
+{
+    /*background-position: -13px -10px;*/
+    background-position: -13px -38px;
+    width: 90px;
+    height: 25px;
+    float: left;
+    background-image: url('../base/images/main_frame.png');
+    line-height: 25px; 
+    /*color:White;*/
+}
+.searchModule_ul_g
+{
+    margin:0px;
+    padding:0px;
+    position:absolute;
+    display:none;
+    top:21px;
+    left:4px;
+    list-style:none;
+    width:90px;
+    z-index:1000;
+}
+.searchModule_ul_g li
+{
+    background-position: -2px -22px;
+    /*background-position: -2px -41px;*/
+    width: 90px;
+    height: 17px;
+    float: left;
+    background-image: url('../base/images/se_text_bg.png');
+    line-height: 17px; /*color:White;*/
+    border:1px solid white;
+    z-index:1000;
+}
+
+/*
+ * jQuery UI Progressbar @VERSION
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Progressbar#theming
+ */
+.ui-progressbar 
+{
+    border:1px solid #666666;
+    background-color:#666666;
+     text-align: left; }
+.ui-progressbar .ui-progressbar-value {height:100%; background-color:#66ccff; }
+
+.jhtooltip-custom .arrowheadparent
+{
+	height:6px;
+	margin-top:-5px;
+}
+.arrowheadparentdown
+{
+	height:8px;
+	margin-top:-1px;
+	position:absolute;
+	width:100%;
+}
+.jhtooltip-custom .arrowheadstop
+{
+	background:url(../base/images/main_frame.png) no-repeat -70px -160px;
+	height:6px;
+	width:14px;
+}
+.jhtooltip-custom .tooltipcontent
+{
+	border:2px solid #73ace5;
+	background:url(../base/images/tooltip-blue.png) repeat-x;
+	background-color:#FFFFFF;
+}
+.jhtooltip-mainframe
+{
+	padding:0px;
+}
+.jhtooltip-custom .arrowheadsdown
+{
+	background:url(../base/images/main_frame.png) no-repeat -90px -162px;
+	height:10px;
+	width:14px;
+}
+.jhtooltip-embed-noneArrow
+{
+	border:1px solid #ffdb9b;
+	background:#fffaf1;
+	text-align:center;
+	font-size:12px;
+	vertical-align:middle;
+}
+
+.tooltipcontent
+{
+	border:1px solid #ffdb9b;
+	background:#fffaf1;
+}
+.arrowheadstop
+{
+	background:url(../base/images/main_frame.png) no-repeat -130px -160px;
+	height:8px;
+	width:14px;
+	margin:0 auto;
+}
+.arrowheadparent
+{
+    margin-top:-7px;
+	height:8px;
+	position:absolute;
+}
+
+.arrowheadsdown
+{
+	background:url(../base/images/main_frame.png) no-repeat -110px -160px;
+	height:8px;
+	width:14px;
+	margin:0 auto;
+}
+
+.ui-jhtooltip-close
+{
+    position:absolute;
+    right:0;
+    display:block;
+    width:12px;
+    height:12px;
+    background:url(../base/images/main_frame.png) no-repeat -360px -160px;
+    cursor:pointer;    
+    margin:3px 2px 0 0;
+}
+
+.jhtooltip-hasTopArrow
+{
+    padding-top:8px;    
+}
+.jhtooltip-message{padding:0 10px;line-height:22px;display:block;}
+
+.ui-jhimagesbrowser
+{
+    margin:0 auto;    
+}
+.ui-jhimagesbrowser-leftButton
+{
+    background:url("../base/images/main_frame.png") -210px -100px;
+    width:22px;
+    height:80px;
+    display:block;
+    float:left;
+}
+.ui-jhimagesbrowser-leftButton-hover
+{
+    background-position: -240px -100px;   
+}
+.ui-jhimagesbrowser-leftButton-mousedown
+{
+    background-position: -270px -100px;   
+}
+.ui-jhimagesbrowser-leftButton-disabled
+{
+     background-position: -300px -100px;   
+}
+.ui-jhimagesbrowser-rightButton
+{
+    background:url("../base/images/main_frame.png") -210px -180px;
+    width:22px;
+    height:80px;
+    display:block;
+    float:left;
+}
+.ui-jhimagesbrowser-rightButton-hover
+{
+    background-position: -240px -180px;   
+}
+.ui-jhimagesbrowser-rightButton-mousedown
+{
+    background-position: -270px -180px;   
+}
+.ui-jhimagesbrowser-rightButton-disabled
+{
+     background-position: -300px -180px;   
+}
+.ui-jhimagesbrowser-imageContainer
+{ 
+    float:left;
+    overflow:hidden;
+    display:block;
+    position:relative;
+}
+
+.ui-jhimagesbrowser-image-ul
+{
+    position:relative;
+    list-style:none;
+    padding:0;
+    margin:0;
+}
+
+.ui-jhimagesbrowser-image-li
+{
+    float:left;
+    padding:5px;
+    margin:0 10px;
+    text-align:center;
+    line-height:9px;
+    position:relative;
+    border:1px solid transparent;
+}
+
+.ui-jhimagesbrowser-hover
+{
+    background:#e8f8ff;
+    border:1px solid #aad3eb;
+    cursor:pointer;
+}
+.ui-jhimagesbrowser-selected
+{
+    background:#e8f8ff;
+    border:1px solid #aad3eb;
+    cursor:pointer;
+}
+.ui-jhimagesbrowser-title
+{
+    margin-top:5px;
+    display:block;
+}
+.ui-jhimagesbrowser-addButton
+{
+    display:block;
+    background:#e8f8ff url("images/add.png") center center no-repeat;
+    overflow:hidden;
+    position:relative;
+}
+
+.ui-jhsimpleuploader-file
+{
+    font-size:87px;    
+    FILTER: alpha(opacity=0);
+    opacity: 0;  
+	margin:0 0 0 -285px;	
+	font-size:99px\9;	
+	margin:0 0 0 -490px\9;
+	*margin:0 0 0 -489px;
+	OVERFLOW: hidden;
+	CURSOR: pointer;	  
+}
+.ui-jhimagesbrowser-closeBtton
+{
+    display:block;
+    width:25px;
+    height:25px;
+    position:absolute;
+    right:5px;
+    top:5px;
+    background:url("../base/images/main_frame.png") -129px -170px;
+}
+
+.ui-jhpager{padding:0;font-size:12px;}
+.ui-jhpager-button
+{
+    width:16px;
+    height:16px;
+    background-image:url('../base/images/main_frame.png');
+    margin:5px 0 0 5px;    
+    text-indent:-9999px;
+    display:block;
+    float:left;
+    cursor:pointer;
+}
+.ui-jhpager-firstPageButton
+{
+    background-position: -330px -180px;
+}
+.ui-jhpager-firstPageButton-hover
+{
+    background-position: -330px -200px;
+}
+.ui-jhpager-firstPageButton-mousedown
+{
+    background-position: -330px -220px;
+}
+.ui-jhpager-firstPageButton-disabled
+{
+    background-position: -330px -240px;
+    cursor:default;
+}
+
+.ui-jhpager-prevPageButton
+{
+    background-position: -350px -180px;
+}
+.ui-jhpager-prevPageButton-hover
+{
+    background-position: -350px -200px;
+}
+.ui-jhpager-prevPageButton-mousedown
+{
+    background-position: -350px -220px;
+}
+.ui-jhpager-prevPageButton-disabled
+{
+    background-position: -350px -240px;
+    cursor:default;
+}
+
+.ui-jhpager-nextPageButton
+{   
+    background-position:-370px -180px;
+}
+.ui-jhpager-nextPageButton-hover
+{
+    background-position:-370px -200px;
+}
+.ui-jhpager-nextPageButton-mousedown
+{
+    background-position:-370px -220px;
+}
+.ui-jhpager-nextPageButton-disabled
+{
+    background-position:-370px -240px;
+    cursor:default;
+}
+.ui-jhpager-lastPageButton
+{
+    background-position:-388px -180px;
+}
+.ui-jhpager-lastPageButton-hover
+{
+    background-position:-388px -200px;
+}
+.ui-jhpager-lastPageButton-mousedown
+{
+    background-position:-388px -220px;
+}
+.ui-jhpager-lastPageButton-disabled
+{
+    background-position:-388px -240px;
+    cursor:default;
+}
+.ui-jhpager-pager
+{
+    float:left;
+    margin:5px 0 0 5px;    
+}
+.ui-jhpager-skip
+{
+    display:block;
+    float:left;
+    margin:3px 5px 0 10px;
+}
+.ui-jhpager-skip-input
+{
+    -webkit-appearance: textfield;
+    background-color: white;
+    border: 2px inset;
+    border-image-source: initial;
+    border-image-slice: initial;
+    border-image-width: initial;
+    border-image-outset: initial;
+    border-image-repeat: initial;
+    -webkit-rtl-ordering: logical;
+    -webkit-user-select: text;
+    cursor: auto;
+    margin:0 5px;
+    width:40px;    
+    height:14px;
+}
+.ui-jhpager-skip-button
+{
+    margin-top:1px;  
+    *margin:0;  
+    float:left;
+}
+
+.ui-dialog-searchbar{padding:0 0 5px 0;}
+.ui-dialog-detail-content{overflow:auto;border:1px solid #aad3eb;padding:5px 10px;}
+.ui-dialog-buttonbar{margin-top:10px;padding:0;text-align:right;}
+.ui-jhCommonRef{padding:10px;}
+.tree a.online{color:#0093f0;}
+/*
+Uploadify v2.1.0
+Release Date: August 24, 2009
+
+Copyright (c) 2009 Ronnie Garcia, Travis Nickels
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+.uploadifyQueueItem {
+	font: 11px Verdana, Geneva, sans-serif;
+	border: 2px solid #E5E5E5;
+	background-color: #F5F5F5;
+	margin-top: 5px;
+	padding: 10px;
+	width: 350px;
+}
+.uploadifyError {
+	border: 2px solid #FBCBBC !important;
+	background-color: #FDE5DD !important;
+}
+.uploadifyQueueItem .cancel {
+	float: right;
+}
+.uploadifyProgress {
+	background-color: #FFFFFF;
+	border-top: 1px solid #808080;
+	border-left: 1px solid #808080;
+	border-right: 1px solid #C5C5C5;
+	border-bottom: 1px solid #C5C5C5;
+	margin-top: 10px;
+	width: 100%;
+}
+.uploadifyProgressBar {
+	background-color: #0099FF;
+	width: 1px;
+	height: 3px;
+}
+.divuploadparent
+{
+    clear:both;
+}
+.imgspan
+{
+	float:left;
+	width:20px; 
+	height:20px;
+	display:block;
+}
+.imgspanupload
+{
+    background:url(../base/images/main_frame.png) no-repeat -160px -240px;	 
+    background-position:-160px -240px;
+}
+.imgspanwait
+{
+     background:url(../base/images/main_frame.png) no-repeat -160px -240px;	 
+    background-position:-180px -240px;
+}
+.imgspancommplet
+{
+    background:url(../base/images/main_frame.png) no-repeat -160px -240px;	 
+    background-position:-140px -240px;
+}
+.divspan
+{
+	float:left;
+	font-size:12px;
+}
+.divprocessbar
+{
+	float:left;
+	margin-top:5px;
+	margin-left:5px;
+}
+.divpercentage
+{
+    float:left;
+    font-size:12px;
+    margin-left:10px;
+}
+.divdelete
+{
+    float:left;
+     font-size:12px;
+    margin-left:10px;
+}
+.divmsg
+{
+    color:Silver;
+    float:left;
+    font-size:12px;
+    display: block;
+    margin-left:8px;
+}
+
+  .Calendarparent
+    {
+        width:652px;
+        height:368px;
+    }
+    .Calendardivtitle
+    {
+        width:650px;
+        height:28px;
+        border:1px solid #649fc7;
+        background:url(images/attendance_calendar.png) repeat-x 0px 0px; 
+    }
+	.Calendardivprev
+	{
+		float:left;
+		margin-left:28px;
+		margin-top:5px;
+		width:15px;
+		height:18px;
+		background:url(images/attendance_calendar.png) no-repeat 0px -60px;
+		cursor:pointer;
+	}
+	.Calendardivprevhover
+	{
+	    background:url(images/attendance_calendar.png) no-repeat -20px -60px;
+	}
+	.Calendardivdate
+	{
+		text-align:center;
+		line-height:28px;
+		vertical-align:middle;
+		float:left;
+		height:28px;
+		font-size:20px;
+		font-family:"黑体";
+		font-weight:bold;
+		color:#FFF;
+		width:566px;
+	}
+	.Calendardivnext
+	{
+		float:left;
+		margin-top:5px;
+		width:15px;
+		height:18px;
+		background:url(images/attendance_calendar.png) no-repeat -40px -60px;
+		cursor:pointer;
+	}
+	.Calendardivnexthover
+	{
+	    background:url(images/attendance_calendar.png) no-repeat -60px -60px;
+	}
+	.Calendardivnextdisabled
+	{
+	    background:url(images/attendance_calendar.png) no-repeat -100px -60px;
+	    cursor:default;
+	}
+	.Calendradivweek
+	{
+		clear:both;
+		width:100%;
+		height:20px;
+		background:url(images/attendance_calendar.png) repeat-x 0px -40px;	
+		
+	}
+	.Calendradivweek span
+	{
+		font-size:12px;
+		font-family:"黑体";
+		font-weight:bold;
+		height:20px;
+		text-align:center;
+		line-height:20px;
+		vertical-align:middle;
+		color:#FFF;	
+		width:93px;
+		height:20px;
+		display:block;
+		float:left;
+	}
+	.Calendradivdate
+	{
+		height:651px;
+		border-left:1px solid #aeb7bf;
+		height:318px;
+	}
+	.Calendradivdate span
+	{
+		width:92px;
+		height:52px;
+		border-bottom:1px solid #aeb7bf;
+		border-right:1px solid #aeb7bf;
+		float:left;
+		display:block;
+		
+	}
+	.pqtui
+	{
+	    font-family:"宋体";
+	    font-size: 12px;
+	    display:block;
+	    height:12px;	    
+	    margin:16px 0px 0px 32px;
+	    padding:0px;
+	    text-align:left;
+	    line-height:16px;
+	}
+	.pdaterq
+	{
+	    width:26px;
+	    height:20px;
+	    float:left;
+	    text-align:right;
+	    font-size:20px;
+		display:block;
+		margin:3px 0px 0px 0px;
+	    padding:0px;
+		font-family:Verdana;
+	}
+	.otherdate
+	{
+		 background-color:#f5f5f5;
+		color:#bdbdbd;
+	}
+	.currentdate
+	{
+		background-color:#e6e6e6;
+		color:#333333;
+	}
+	.datehover
+	{
+	    background-color:#ffffff;
+		color:#333333;
+	}
+	.currentday
+	{
+		background:url(images/attendance_calendar.png) no-repeat 0px -80px;	
+		color:#ffffff;
+	}
+	.dateclick
+	{
+		background:url(images/attendance_calendar.png) no-repeat 0px -140px;	
+		color:#ffffff;
+	}
+	
+	/*
+ * jQuery UI jhdropdownlist 1.8.14
+ *
+ */
+
+.ui-jhdropdownlist 
+{
+    height:18px;
+    border:1px solid #c7d8e3;         
+    background-color:#ffffff;    
+    font-size:12px;
+    display:inline-block;
+    position:relative;
+    zoom:1; 
+    *display: inline; 
+    _height: 18px;
+
+}
+
+.ui-jhdropdownlist-disabled
+{
+    border:1px solid #b3b9bd;         
+    background-color:#eeeeee;
+    color:#666666;
+}
+
+.ui-jhdropdownlist .ui-jhdropdownlist-text
+{
+    border:0px;
+    line-height:16px;
+    margin:0px;
+    padding:1px 1px 1px 5px;
+    color:#333333;
+    width:1px;
+    height:16px;
+    overflow:hidden;
+    text-align: left;
+}
+.ui-jhdropdownlist-btn
+{
+    margin-right:0px;
+    width:16px;
+    height:18px;
+    margin-top:0px;
+    background:url(../default/images/jhdropdownlist.png) no-repeat  0px 0px;    
+    position:absolute;
+    right:0px;
+    top:0px;
+}
+
+.ui-jhdropdownlist-btn-mouseover
+{
+    background:url(../default/images/jhdropdownlist.png) no-repeat  0px -20px;
+}
+
+.ui-jhdropdownlist-btn-mousedown
+{
+    background:url(../default/images/jhdropdownlist.png) no-repeat  0px -40px;
+}
+
+.ui-jhdropdownlist-btn-disabled
+{
+    background:url(../default/images/jhdropdownlist.png) no-repeat  0px -60px;
+}
+
+.ui-menu .ui-menu-item { font-size:12px;  padding-right: 0px; }
+.ui-jhtag-input
+{
+    height:18px;
+    border: 1px solid #b3b9bd;
+    background-color: #ffffff;
+    color: #999999;
+    font: 12px 宋体;
+    line-height:18px;
+}
+
+.ui-jhtag-tagswindow
+{
+    width:225px;
+    height:140px;
+    border: 1px solid #73ace5;
+    background-color: #f8fdff;
+    display:block;
+    margin:0px 0px 2px 0px;
+    position:absolute;
+}
+
+.ui-jhtag-tags
+{
+    border: 1px solid transparent;
+    display:block;
+    font-family: 微软雅黑;
+    padding: 2px 4px;
+    font-size:10px;
+    position: absolute;
+    margin:5px;
+    overflow:hidden;    
+}
+
+.ui-jhtag-tags-hover
+{
+    border: 1px solid #c0e8fb;
+    background-color: #e9f8ff;
+}
+.ui-jhimageupload
+{
+    padding:10px;
+}
+
+.ui-jhimageupload-content
+{
+    margin: 0px 0px 0px 0px;    
+}
+
+.ui-jhimageupload-reuploadbar
+{
+    width: 100%;
+    margin : 0px 0px 8px 0px;
+}
+
+.ui-jhimageupload-imagearea
+{
+    border:1px solid #b8d5e1;
+    text-align:center;    
+    position: relative;
+}
+
+.imagearea-noportrait
+{
+    overflow-y: scroll;
+    overflow-x: hidden;    
+}
+
+.ui-jhimageupload-buttonbar
+{
+    margin-top:8px;
+    padding:0;
+    text-align:right;
+    height:30px;
+}
+
+.ui-jhimageupload-fileinput
+{
+    width:70px; 
+    height:22px; 
+    opacity:0; 
+    outline:none; 
+    position:absolute;
+    -moz-opacity:0;
+    filter:alpha(opacity: 0);
+    left:10px;
+    top:10px;
+    font-size:xx-large;
+    overflow:hidden;
+}
+
+.ui-jhimageupload-image
+{
+    border-width:0px;
+    position: relative;
+    background-color: White;
+    text-align: center;
+}
+
+.ui-jhimageupload-slider
+{
+    border-width:0px;
+    position: relative;
+}
+
+.ui-jhimageupload-okbtn
+{
+   margin-left: 10px;
+}
+
+.ui-jhimageupload-cancelbtn
+{
+    margin-left: 8px;
+}
+
+@charset "utf-8";
+/* CSS Document */
+.jhscroll-bottom{ height:16px; width:200px; position:absolute;}
+.jhscroll-right{ height:100px; width:16px; position:absolute;}
+/* bottom bar */
+.jhsb-lArrow,.jhsb-rArrow{ float:left; overflow:hidden; width:17px; height:16px; background:url(images/jhsbArrow.jpg) no-repeat;}
+.jhsb-lArrow{ background-position:0 -120px;}
+.jhsb-rArrow{ background-position:0 -180px;}
+.jhsb-bcenter{ background:#f0f0f0; width:100px; float:left; height:16px; overflow:hidden;}
+.jhsb-bcenter .jhbc-left,.jhsb-bcenter .jhbc-right{ background:url(images/jhsb-xRound.jpg) no-repeat; width:2px; height:16px; overflow:hidden; position:absolute;}
+.jhsb-bcenter .jhArrow{ width:30px; position:relative; background:url(images/jhsbbg-x.jpg) repeat-x;}
+.jhsb-bcenter .jhbc-left{ left:0;}
+.jhsb-bcenter .jhbc-right{ background-position:-9px 0; right:0; bottom:0;}
+.jhsb-bcenter .jhbc-center{ width:100%; background:url(images/jhsbbg-xcenter.jpg) no-repeat center 0; height:16px;}
+
+/* right bar */
+.jhsb-tArrow,.jhsb-bArrow{ float:left; overflow:hidden; width:16px; height:17px; background:url(images/jhsbArrow.jpg) no-repeat;}
+.jhsb-tArrow{ background-position:0 0;}
+.jhsb-bArrow{ background-position:0 -60px;}
+.jhsb-rcenter{ background:#f0f0f0; height:100px; float:left; width:16px; overflow:hidden;}
+.jhsb-rcenter .jhbc-top,.jhsb-rcenter .jhbc-bottom{ background:url(images/jhsb-yRound.jpg) no-repeat; width:16px; height:2px; overflow:hidden; position:absolute;}
+.jhsb-rcenter .jhArrow{ position:relative; background:url(images/jhsbbg-y.jpg) repeat-y; width:16px;}
+.jhsb-rcenter .jhbc-top{ top:0;}
+.jhsb-rcenter .jhbc-bottom{ background-position:0 -9px; left:0; bottom:0;}
+.jhsb-rcenter .jhbc-middle{ height:100%; background:url(images/jhsbbg-ycenter.jpg) no-repeat 0 center; width:16px;}
+
+/* 竖向滚轮鼠标移上样式 */
+.jh-ver-hover .jhbc-top{ background-position:0 -3px;}
+.jh-ver-hover .jhbc-middle,.jhsb-rcenter .jh-ver-hover{ background-position:-18px center;}
+.jh-ver-hover .jhbc-bottom{ background-position:0 -12px;}
+/* 竖向滚轮鼠标点击样式 */
+.jh-ver-down .jhbc-top{ background-position:0 -6px;}
+.jh-ver-down .jhbc-middle,.jhsb-rcenter .jh-ver-down{ background-position:-36px center;}
+.jh-ver-down .jhbc-bottom{ background-position:0 -15px;}
+
+/* 横向滚轮鼠标移上样式 */
+.jh-lev-hover .jhbc-top{ background-position:-3px 0;}
+.jh-lev-hover .jhbc-center,.jhsb-bcenter .jh-lev-hover{ background-position:center -18px;}
+.jh-lev-hover .jhbc-bottom{ background-position:-21px 0;}
+/* 横向滚轮鼠标点击样式 */
+.jh-lev-down .jhbc-top{ background-position:-6px 0;}
+.jh-lev-down .jhbc-center,.jhsb-bcenter .jh-lev-down{ background-position:center -36px;}
+.jh-lev-down .jhbc-bottom{ background-position:-15px 0;}
+
+
+
+.calendarweek{color:#666; font-size:12px;font-family:none;}
+
+.calendarweek-day-bg{background-color:#fcfcfc}
+.calendarweek-weekend-bg{background-color:#f1f1f1}
+.calendarweek-current-day-bg{background-color:#75d2fe; }
+.calendarweek-current-read-bg{background-color:#ffe972; }
+.calendarweek-hover-bg{background-color:#fff9c6}
+.calendarweek-date-error-bg{ color:#bd0000;}
+
+.calendarweek-next 
+{
+    float:left;    
+    width:15px;
+	height:20px;
+	margin:14px 0 0 14px;
+	cursor:pointer;  
+    background:url(images/tablebox.png) no-repeat -80px -181px;
+}
+.calendarweek-next-hover{ background-position:-100px -181px; }
+.calendarweek-next-click{ background-position:-120px -181px; }
+.calendarweek-next-disabled{ background-position:-140px -181px;cursor:default;}
+.calendarweek-prev 
+{
+    float:left;
+    width:15px;
+	height:20px;
+	margin:14px 14px 0 0;
+	cursor:pointer;
+	background:url(images/tablebox.png) no-repeat 0px -181px; 
+}
+.calendarweek-prev-hover{background-position:-20px -181px;}
+.calendarweek-prev-click{background-position:-40px -181px;}
+.calendarweek-prev-disabled{background-position:-60px -181px;}
+
+.calendarweek-last{ border-right:1px solid #b0cee6 }
+.calendarweek-center{float:left;}
+.calendarweek-center-month{float:left;font-family:宋体;font-weight:bold;font-size:12px;width:32px; height:36px; border-left:1px solid #b0cee6;
+    border-top:1px solid #b0cee6; border-bottom:1px solid #b0cee6;padding-top:6px;margin:0 auto;text-align:center;color:#60a0c6;}
+
+.calendarweek-year
+{
+    font-size:12px;
+    width:32px;
+    height:15px;
+    padding-bottom:1px;
+    text-align:center;
+    border-left:1px solid #b0cee6;
+    border-top:1px solid #b0cee6;
+    font-weight:bold;
+    font-family:Verdana;
+}
+
+.calendarweek-week
+{
+    width:32px;
+    height:15px;
+    text-align:center;
+    border-left:1px solid #b0cee6;
+    border-bottom:1px solid #b0cee6;
+    border-top:1px solid #b0cee6;
+}
+
+.calendarweek-date
+{
+    font-weight:bold;
+    text-align:center;
+    cursor:pointer;
+    width:32px;
+    height:21px;
+    padding-top:5px;
+    border-left:1px solid #b0cee6;
+    border-bottom:1px solid #b0cee6;
+    font-family:Verdana;
+    font-size:12px;
+}
+
+@charset "utf-8";
+/* CSS Document */
+/* 复选框 -- 未选中时 */
+.jhui-check{ background:url(images/check_radio.png) -18px 1px; width:16px; height:16px; overflow:hidden; display:inline-block; #display:inline; zoom:1;}
+.jhui-check-hover{ background-position:-18px -19px;}
+.jhui-check-down{ background-position:-18px -39px;}
+.jhui-check-checked{ background-position:-18px -59px;}
+/* 复选框 -- 选中时 */
+.jhui-checked-hover{ background-position:-18px -79px;}
+.jhui-checked-down{ background-position:-18px -99px;}
+/* 复选框 -- 不可编辑 */
+.jhui-check-dis{ background-position:-18px -119px;}
+.jhui-check-dis-checked{ background-position:-18px -139px;}
+
+/* 单选框 -- 未选中时 */
+.jhui-radio{ background:url(images/check_radio.png) 2px 1px; width:16px; height:16px; overflow:hidden; display:inline-block; #display:inline; zoom:1;}
+.jhui-radio-hover{ background-position:2px -19px;}
+.jhui-radio-down{ background-position:2px -39px;}
+.jhui-radio-checked{ background-position:2px -59px;}
+/* 单选框 -- 选中时 */
+.jhui-radio-checked-hover{ background-position:2px -79px;}
+.jhui-radio-checked-down{ background-position:2px -99px;}
+/* 单选框 -- 不可编辑 */
+.jhui-radio-dis{ background-position:2px -119px;}
+.jhui-radio-dis-checked{ background-position:2px -139px;}
+
+/*
+ * jQuery UI CSS Framework 1.8.14
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Theming/API
+ *
+ * To view and modify this theme, visit http://jqueryui.com/themeroller/
+ */
+
+
+/* Component containers
+----------------------------------*/
+.ui-widget {}
+.ui-widget .ui-widget { font-size: 1em; }
+.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button { font-family: Verdana,Arial,sans-serif/*{ffDefault}*/; font-size: 1em; }
+.ui-widget-content { border: 1px solid #CCD3DC/*{borderColorContent}*/; background: #ffffff/*{bgColorContent}*/ url(images/ui-bg_flat_75_ffffff_40x100.png)/*{bgImgUrlContent}*/ 50%/*{bgContentXPos}*/ 50%/*{bgContentYPos}*/ repeat-x/*{bgContentRepeat}*/; }
+.ui-widget-content a { color: #222222/*{fcContent}*/; }
+.ui-widget-header { border: 1px solid #aad3eb; background: #cccccc url(images/grid-bg.png) 0 0 repeat-x; color: #222222; font-weight: bold; }
+.ui-widget-header a { color: #222222/*{fcHeader}*/; }
+
+/* Interaction states
+----------------------------------*/
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default { border: 1px solid #CCD3DC; background: #f6f6f6 url(images/th.png) top repeat-x; font-weight: normal/*{fwDefault}*/; color: #555555/*{fcDefault}*/; }
+.ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited { color: #555555/*{fcDefault}*/; text-decoration: none; }
+
+.ui-widget-header .ui-state-hover,.ui-widget-header .ui-state-focus{ border: 1px solid #aad3eb/*{borderColorHover}*/; background: #dadada/*{bgColorHover}*/ url(images/grid-bg.png) 0 -30px repeat-x/*{bgHoverRepeat}*/; font-weight: normal/*{fwDefault}*/; color: #212121/*{fcHover}*/; }
+.ui-widget-content .ui-state-hover,  .ui-widget-content .ui-state-focus
+{
+    border: 1px solid #aad3eb/*{borderColorHover}*/; background: #f3fcff; font-weight: normal/*{fwDefault}*/; color: #212121/*{fcHover}*/;
+} 
+.ui-state-hover a, .ui-state-hover a:hover { color: #212121/*{fcHover}*/; text-decoration: none; }
+.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active { border: 1px solid #aaaaaa/*{borderColorActive}*/; background: #ffffff/*{bgColorActive}*/ url(images/ui-bg_glass_65_ffffff_1x400.png)/*{bgImgUrlActive}*/ 50%/*{bgActiveXPos}*/ 50%/*{bgActiveYPos}*/ repeat-x/*{bgActiveRepeat}*/; font-weight: normal/*{fwDefault}*/; color: #212121/*{fcActive}*/; }
+.ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited { color: #212121/*{fcActive}*/; text-decoration: none; }
+.ui-widget :active { outline: none; }
+
+/* Interaction Cues
+----------------------------------*/
+.ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight  {border: 1px solid #aad3eb/*{borderColorHighlight}*/; background: #e0f5ff; color: #363636/*{fcHighlight}*/; }
+.ui-state-highlight a, .ui-widget-content .ui-state-highlight a,.ui-widget-header .ui-state-highlight a { color: #363636/*{fcHighlight}*/; }
+.ui-state-error, .ui-widget-content .ui-state-error, .ui-widget-header .ui-state-error {border: 1px solid #cd0a0a/*{borderColorError}*/; background: #fef1ec/*{bgColorError}*/ url(images/ui-bg_glass_95_fef1ec_1x400.png)/*{bgImgUrlError}*/ 50%/*{bgErrorXPos}*/ 50%/*{bgErrorYPos}*/ repeat-x/*{bgErrorRepeat}*/; color: #cd0a0a/*{fcError}*/; }
+.ui-state-error a, .ui-widget-content .ui-state-error a, .ui-widget-header .ui-state-error a { color: #cd0a0a/*{fcError}*/; }
+.ui-state-error-text, .ui-widget-content .ui-state-error-text, .ui-widget-header .ui-state-error-text { color: #cd0a0a/*{fcError}*/; }
+.ui-priority-primary, .ui-widget-content .ui-priority-primary, .ui-widget-header .ui-priority-primary { font-weight: bold; }
+.ui-priority-secondary, .ui-widget-content .ui-priority-secondary,  .ui-widget-header .ui-priority-secondary { /* opacity: .7; filter:Alpha(Opacity=70); */ color:#bebebe; font-weight: normal; }
+.ui-state-disabled, .ui-widget-content .ui-state-disabled, .ui-widget-header .ui-state-disabled {color:#999999;}
+
+/* Icons
+----------------------------------*/
+
+/* states and images */
+.ui-icon { width: 16px; height: 16px; background-image: url(images/ui-icons_222222_256x240.png)/*{iconsContent}*/; }
+.ui-widget-content .ui-icon {background-image: url(images/ui-icons_222222_256x240.png)/*{iconsContent}*/; }
+.ui-widget-header .ui-icon {background-image: url(images/ui-icons_222222_256x240.png)/*{iconsHeader}*/; }
+.ui-state-default .ui-icon { background-image: url(images/ui-icons_888888_256x240.png)/*{iconsDefau lt}*/; }
+.ui-state-active .ui-icon {background-image: url(images/ui-icons_454545_256x240.png)/*{iconsActive}*/; }
+.ui-state-highlight .ui-icon {background-image: url(images/ui-icons_2e83ff_256x240.png)/*{iconsHighlight}*/; }
+.ui-state-error .ui-icon, .ui-state-error-text .ui-icon {background-image: url(images/ui-icons_cd0a0a_256x240.png)/*{iconsError}*/; }
+
+/* positioning */
+.ui-icon-carat-1-n { background-position: 0 0; }
+.ui-icon-carat-1-ne { background-position: -16px 0; }
+.ui-icon-carat-1-e { background-position: -32px 0; }
+.ui-icon-carat-1-se { background-position: -48px 0; }
+.ui-icon-carat-1-s { background-position: -64px 0; }
+.ui-icon-carat-1-sw { background-position: -80px 0; }
+.ui-icon-carat-1-w { background-position: -96px 0; }
+.ui-icon-carat-1-nw { background-position: -112px 0; }
+.ui-icon-carat-2-n-s { background-position: -128px 0; }
+.ui-icon-carat-2-e-w { background-position: -144px 0; }
+.ui-icon-triangle-1-n { background-position: 0 -16px; }
+.ui-icon-triangle-1-ne { background-position: -16px -16px; }
+.ui-icon-triangle-1-e { background-position: -32px -16px; }
+.ui-icon-triangle-1-se { background-position: -48px -16px; }
+.ui-icon-triangle-1-s { background-position: -64px -16px; }
+.ui-icon-triangle-1-sw { background-position: -80px -16px; }
+.ui-icon-triangle-1-w { background-position: -96px -16px; }
+.ui-icon-triangle-1-nw { background-position: -112px -16px; }
+.ui-icon-triangle-2-n-s { background-position: -128px -16px; }
+.ui-icon-triangle-2-e-w { background-position: -144px -16px; }
+.ui-icon-arrow-1-n { background-position: 0 -32px; }
+.ui-icon-arrow-1-ne { background-position: -16px -32px; }
+.ui-icon-arrow-1-e { background-position: -32px -32px; }
+.ui-icon-arrow-1-se { background-position: -48px -32px; }
+.ui-icon-arrow-1-s { background-position: -64px -32px; }
+.ui-icon-arrow-1-sw { background-position: -80px -32px; }
+.ui-icon-arrow-1-w { background-position: -96px -32px; }
+.ui-icon-arrow-1-nw { background-position: -112px -32px; }
+.ui-icon-arrow-2-n-s { background-position: -128px -32px; }
+.ui-icon-arrow-2-ne-sw { background-position: -144px -32px; }
+.ui-icon-arrow-2-e-w { background-position: -160px -32px; }
+.ui-icon-arrow-2-se-nw { background-position: -176px -32px; }
+.ui-icon-arrowstop-1-n { background-position: -192px -32px; }
+.ui-icon-arrowstop-1-e { background-position: -208px -32px; }
+.ui-icon-arrowstop-1-s { background-position: -224px -32px; }
+.ui-icon-arrowstop-1-w { background-position: -240px -32px; }
+.ui-icon-arrowthick-1-n { background-position: 0 -48px; }
+.ui-icon-arrowthick-1-ne { background-position: -16px -48px; }
+.ui-icon-arrowthick-1-e { background-position: -32px -48px; }
+.ui-icon-arrowthick-1-se { background-position: -48px -48px; }
+.ui-icon-arrowthick-1-s { background-position: -64px -48px; }
+.ui-icon-arrowthick-1-sw { background-position: -80px -48px; }
+.ui-icon-arrowthick-1-w { background-position: -96px -48px; }
+.ui-icon-arrowthick-1-nw { background-position: -112px -48px; }
+.ui-icon-arrowthick-2-n-s { background-position: -128px -48px; }
+.ui-icon-arrowthick-2-ne-sw { background-position: -144px -48px; }
+.ui-icon-arrowthick-2-e-w { background-position: -160px -48px; }
+.ui-icon-arrowthick-2-se-nw { background-position: -176px -48px; }
+.ui-icon-arrowthickstop-1-n { background-position: -192px -48px; }
+.ui-icon-arrowthickstop-1-e { background-position: -208px -48px; }
+.ui-icon-arrowthickstop-1-s { background-position: -224px -48px; }
+.ui-icon-arrowthickstop-1-w { background-position: -240px -48px; }
+.ui-icon-arrowreturnthick-1-w { background-position: 0 -64px; }
+.ui-icon-arrowreturnthick-1-n { background-position: -16px -64px; }
+.ui-icon-arrowreturnthick-1-e { background-position: -32px -64px; }
+.ui-icon-arrowreturnthick-1-s { background-position: -48px -64px; }
+.ui-icon-arrowreturn-1-w { background-position: -64px -64px; }
+.ui-icon-arrowreturn-1-n { background-position: -80px -64px; }
+.ui-icon-arrowreturn-1-e { background-position: -96px -64px; }
+.ui-icon-arrowreturn-1-s { background-position: -112px -64px; }
+.ui-icon-arrowrefresh-1-w { background-position: -128px -64px; }
+.ui-icon-arrowrefresh-1-n { background-position: -144px -64px; }
+.ui-icon-arrowrefresh-1-e { background-position: -160px -64px; }
+.ui-icon-arrowrefresh-1-s { background-position: -176px -64px; }
+.ui-icon-arrow-4 { background-position: 0 -80px; }
+.ui-icon-arrow-4-diag { background-position: -16px -80px; }
+.ui-icon-extlink { background-position: -32px -80px; }
+.ui-icon-newwin { background-position: -48px -80px; }
+.ui-icon-refresh { background-position: -64px -80px; }
+.ui-icon-shuffle { background-position: -80px -80px; }
+.ui-icon-transfer-e-w { background-position: -96px -80px; }
+.ui-icon-transferthick-e-w { background-position: -112px -80px; }
+.ui-icon-folder-collapsed { background-position: 0 -96px; }
+.ui-icon-folder-open { background-position: -16px -96px; }
+.ui-icon-document { background-position: -32px -96px; }
+.ui-icon-document-b { background-position: -48px -96px; }
+.ui-icon-note { background-position: -64px -96px; }
+.ui-icon-mail-closed { background-position: -80px -96px; }
+.ui-icon-mail-open { background-position: -96px -96px; }
+.ui-icon-suitcase { background-position: -112px -96px; }
+.ui-icon-comment { background-position: -128px -96px; }
+.ui-icon-person { background-position: -144px -96px; }
+.ui-icon-print { background-position: -160px -96px; }
+.ui-icon-trash { background-position: -176px -96px; }
+.ui-icon-locked { background-position: -192px -96px; }
+.ui-icon-unlocked { background-position: -208px -96px; }
+.ui-icon-bookmark { background-position: -224px -96px; }
+.ui-icon-tag { background-position: -240px -96px; }
+.ui-icon-home { background-position: 0 -112px; }
+.ui-icon-flag { background-position: -16px -112px; }
+.ui-icon-calendar { background-position: -32px -112px; }
+.ui-icon-cart { background-position: -48px -112px; }
+.ui-icon-pencil { background-position: -64px -112px; }
+.ui-icon-clock { background-position: -80px -112px; }
+.ui-icon-disk { background-position: -96px -112px; }
+.ui-icon-calculator { background-position: -112px -112px; }
+.ui-icon-zoomin { background-position: -128px -112px; }
+.ui-icon-zoomout { background-position: -144px -112px; }
+.ui-icon-search { background-position: -160px -112px; }
+.ui-icon-wrench { background-position: -176px -112px; }
+.ui-icon-gear { background-position: -192px -112px; }
+.ui-icon-heart { background-position: -208px -112px; }
+.ui-icon-star { background-position: -224px -112px; }
+.ui-icon-link { background-position: -240px -112px; }
+.ui-icon-cancel { background-position: 0 -128px; }
+.ui-icon-plus { background-position: -16px -128px; }
+.ui-icon-plusthick { background-position: -32px -128px; }
+.ui-icon-minus { background-position: -48px -128px; }
+.ui-icon-minusthick { background-position: -64px -128px; }
+.ui-icon-close { background-position: -80px -128px; }
+.ui-icon-closethick { background-position: -96px -128px; }
+.ui-icon-key { background-position: -112px -128px; }
+.ui-icon-lightbulb { background-position: -128px -128px; }
+.ui-icon-scissors { background-position: -144px -128px; }
+.ui-icon-clipboard { background-position: -160px -128px; }
+.ui-icon-copy { background-position: -176px -128px; }
+.ui-icon-contact { background-position: -192px -128px; }
+.ui-icon-image { background-position: -208px -128px; }
+.ui-icon-video { background-position: -224px -128px; }
+.ui-icon-script { background-position: -240px -128px; }
+.ui-icon-alert { background-position: 0 -144px; }
+.ui-icon-info { background-position: -16px -144px; }
+.ui-icon-notice { background-position: -32px -144px; }
+.ui-icon-help { background-position: -48px -144px; }
+.ui-icon-check { background-position: -64px -144px; }
+.ui-icon-bullet { background-position: -80px -144px; }
+.ui-icon-radio-off { background-position: -96px -144px; }
+.ui-icon-radio-on { background-position: -112px -144px; }
+.ui-icon-pin-w { background-position: -128px -144px; }
+.ui-icon-pin-s { background-position: -144px -144px; }
+.ui-icon-play { background-position: 0 -160px; }
+.ui-icon-pause { background-position: -16px -160px; }
+.ui-icon-seek-next { background-position: -32px -160px; }
+.ui-icon-seek-prev { background-position: -48px -160px; }
+.ui-icon-seek-end { background-position: -64px -160px; }
+.ui-icon-seek-start { background-position: -80px -160px; }
+/* ui-icon-seek-first is deprecated, use ui-icon-seek-start instead */
+.ui-icon-seek-first { background-position: -80px -160px; }
+.ui-icon-stop { background-position: -96px -160px; }
+.ui-icon-eject { background-position: -112px -160px; }
+.ui-icon-volume-off { background-position: -128px -160px; }
+.ui-icon-volume-on { background-position: -144px -160px; }
+.ui-icon-power { background-position: 0 -176px; }
+.ui-icon-signal-diag { background-position: -16px -176px; }
+.ui-icon-signal { background-position: -32px -176px; }
+.ui-icon-battery-0 { background-position: -48px -176px; }
+.ui-icon-battery-1 { background-position: -64px -176px; }
+.ui-icon-battery-2 { background-position: -80px -176px; }
+.ui-icon-battery-3 { background-position: -96px -176px; }
+.ui-icon-circle-plus { background-position: 0 -192px; }
+.ui-icon-circle-minus { background-position: -16px -192px; }
+.ui-icon-circle-close { background-position: -32px -192px; }
+.ui-icon-circle-triangle-e { background-position: -48px -192px; }
+.ui-icon-circle-triangle-s { background-position: -64px -192px; }
+.ui-icon-circle-triangle-w { background-position: -80px -192px; }
+.ui-icon-circle-triangle-n { background-position: -96px -192px; }
+.ui-icon-circle-arrow-e { background-position: -112px -192px; }
+.ui-icon-circle-arrow-s { background-position: -128px -192px; }
+.ui-icon-circle-arrow-w { background-position: -144px -192px; }
+.ui-icon-circle-arrow-n { background-position: -160px -192px; }
+.ui-icon-circle-zoomin { background-position: -176px -192px; }
+.ui-icon-circle-zoomout { background-position: -192px -192px; }
+.ui-icon-circle-check { background-position: -208px -192px; }
+.ui-icon-circlesmall-plus { background-position: 0 -208px; }
+.ui-icon-circlesmall-minus { background-position: -16px -208px; }
+.ui-icon-circlesmall-close { background-position: -32px -208px; }
+.ui-icon-squaresmall-plus { background-position: -48px -208px; }
+.ui-icon-squaresmall-minus { background-position: -64px -208px; }
+.ui-icon-squaresmall-close { background-position: -80px -208px; }
+.ui-icon-grip-dotted-vertical { background-position: 0 -224px; }
+.ui-icon-grip-dotted-horizontal { background-position: -16px -224px; }
+.ui-icon-grip-solid-vertical { background-position: -32px -224px; }
+.ui-icon-grip-solid-horizontal { background-position: -48px -224px; }
+.ui-icon-gripsmall-diagonal-se { background-position: -64px -224px; }
+.ui-icon-grip-diagonal-se { background-position: -80px -224px; }
+
+.ui-datepicker .ui-icon,.ui-datepicker-next .ui-icon { width:8px; height:13px; }
+
+.ui-datepicker-prev .ui-icon { background: url(images/nor_calendar.png) 0 0 no-repeat;}
+.ui-datepicker-prev .ui-icon-prve-hover { background: url(images/nor_calendar.png) -10px 0 no-repeat;}
+
+.ui-datepicker-next .ui-icon { background: url(images/nor_calendar.png) -20px 0 no-repeat;}
+.ui-datepicker-next .ui-icon-next-hover { background: url(images/nor_calendar.png) -30px 0 no-repeat;}
+
+.ui-datepicker .ui-state-highlight {border: 0/*{borderColorHighlight}*/;  background:none; color: #363636/*{fcHighlight}*/; }
+.ui-datepicker .ui-state-active { border: 0/*{borderColorActive}*/; background: none; font-weight: normal/*{fwDefault}*/; color: #212121/*{fcActive}*/; }
+.ui-datepicker .ui-state-default{ border:0; background:none; }
+.ui-datepicker span.ui-state-default{color: #ccd3dc;text-align: center;overflow: hidden;display: block;}
+
+/* Misc visuals
+----------------------------------*/
+
+/* Corner radius */
+/*.ui-corner-all, .ui-corner-top, .ui-corner-left, .ui-corner-tl { -moz-border-radius-topleft: 4px; -webkit-border-top-left-radius: 4px; -khtml-border-top-left-radius: 4px; border-top-left-radius: 4px; }
+.ui-corner-all, .ui-corner-top, .ui-corner-right, .ui-corner-tr { -moz-border-radius-topright: 4px; -webkit-border-top-right-radius: 4px; -khtml-border-top-right-radius: 4px; border-top-right-radius: 4px; }
+.ui-corner-all, .ui-corner-bottom, .ui-corner-left, .ui-corner-bl { -moz-border-radius-bottomleft: 4px; -webkit-border-bottom-left-radius: 4px; -khtml-border-bottom-left-radius: 4px; border-bottom-left-radius: 4px; }
+.ui-corner-all, .ui-corner-bottom, .ui-corner-right, .ui-corner-br { -moz-border-radius-bottomright: 4px; -webkit-border-bottom-right-radius: 4px; -khtml-border-bottom-right-radius: 4px; border-bottom-right-radius: 4px; }
+*/
+
+.ui-corner-all{  -webkit-border-radius:3px; -moz-border-radius: 3px; border-radius: 3px; }
+.ui-corner-top{-webkit-border-radius:3px 3px 0 0; -moz-border-radius: 3px 3px 0 0; border-radius: 3px 3px 0 0; }
+.ui-corner-bottom{-webkit-border-radius:0 0 3px 3px; -moz-border-radius: 0 0 3px 3px; border-radius: 0 0 3px 3px; }
+
+/*.ui-corner-all{  -webkit-border-radius:3px; -moz-border-radius: 3px; border-radius: 3px; behavior: url(../../Content/base/pie.htc);zoom:1;}*/
+/*.ui-corner-top{-webkit-border-radius:3px 3px 0 0; -moz-border-radius: 3px 3px 0 0; border-radius: 3px 3px 0 0; behavior: url(../../Content/base/pie.htc);}
+.ui-corner-bottom{-webkit-border-radius:0 0 3px 3px; -moz-border-radius: 0 0 3px 3px; border-radius: 0 0 3px 3px; behavior: url(../../Content/base/pie.htc);}*/
+/* Overlays */
+.ui-widget-overlay { background: #aaaaaa/*{bgColorOverlay}*/ url(images/ui-bg_flat_0_aaaaaa_40x100.png)/*{bgImgUrlOverlay}*/ 50%/*{bgOverlayXPos}*/ 50%/*{bgOverlayYPos}*/ repeat-x/*{bgOverlayRepeat}*/; opacity: .3;filter:Alpha(Opacity=30)/*{opacityOverlay}*/; }
+.ui-widget-shadow { margin: -8px/*{offsetTopShadow}*/ 0 0 -8px/*{offsetLeftShadow}*/; padding: 8px/*{thicknessShadow}*/; background: #aaaaaa/*{bgColorShadow}*/ url(images/ui-bg_flat_0_aaaaaa_40x100.png)/*{bgImgUrlShadow}*/ 50%/*{bgShadowXPos}*/ 50%/*{bgShadowYPos}*/ repeat-x/*{bgShadowRepeat}*/; opacity: .3;filter:Alpha(Opacity=30)/*{opacityShadow}*/; -moz-border-radius: 8px/*{cornerRadiusShadow}*/; -khtml-border-radius: 8px/*{cornerRadiusShadow}*/; -webkit-border-radius: 8px/*{cornerRadiusShadow}*/; border-radius: 8px/*{cornerRadiusShadow}*/; }
+
+.ui-tabbox-icon{background-image:url(images/tablebox.png);width: 21px; height: 20px;}
+
+.ui-tabbox-icon-close{ background-position:-66px -240px;}
+.ui-tabbox-icon-revert{ background-position: 0 -240px;}
+.ui-tabbox-icon-max{ background-position: -22px -240px;}
+.ui-tabbox-icon-min{ background-position: -44px -240px;}
+
+.ui-tabbox-icon-hover { background-position: -90px -240px;}
+.ui-tabbox-icon-mousedown { background-position: -120px -240px;}
+
+/* menu
+----------------------------------*/
+
+/*
+ * jQuery UI Menu 1.8.14
+ *
+ */
+.ui-menu { list-style:none; padding: 2px; margin: 0; display:block; max-height: 168px;  position:absolute; overflow-x: hidden; overflow-y:auto;}
+
+.ui-menu .ui-menu-item { height:21px; font-size:12px; overflow:hidden; /*padding-right:23px; *//*其他浏览器 *//* padding-right:2px\0; *//*IE8*/ }
+/*@media all and (-webkit-min-device-pixel-ratio:10000), not all and (-webkit-min-device-pixel-ratio:0)
+ {Opera
+    .ui-menu .ui-menu-item { font-size:12px; padding-right:2px;}
+ }*/
+.ui-menu .ui-menu-item a,.ui-jqgrid .ui-menu .ui-menu-item a { text-decoration:none; display:block; padding:2px; line-height :17px; zoom:1; height:17px; color:Black;text-align:left;}
+.ui-menu .ui-menu-item a.ui-state-hover, .ui-menu .ui-menu-item a.ui-state-active { font-weight: normal; margin: 0px; }
+.ui-menu .ui-menu-item a:hover,.ui-jqgrid .ui-menu .ui-menu-item a:hover { background-color:#4c8ad4; border-style:none; border-width:0px; color:#ffffff;text-decoration:none; }
+
+.tree-node>span{display:block;}
+.userselect-content { overflow: auto; border-top: 1px solid #AAD3EB; border-bottom: 1px solid #AAD3EB; border-right: 1px solid #AAD3EB; border-left:0; padding: 5px 10px; }
+.largebutton { width:80px; }
+.jhtable{display:table;}
+.jhtable-row{display:table-row;}
+.jhtable-cell{display:table-cell;}
+.input-error{background:#fff2f2;color:#ff0000;}
+.ui-input-empty{color:#999999;}

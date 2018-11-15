@@ -1,0 +1,398 @@
+﻿@{
+ViewBag.Title = ViewBag.Name;
+Layout = "~/Views/Shared/_VueLayout.cshtml";
+}
+
+<div class="breadcrumb">
+    <span>入驻管理</span>
+    <span> > </span>
+    <span style="color:red">商家管理</span>
+    <a class="back" href="@Url.Action("SettlementManageShop", "SettlementManage")?appId=@ViewBag.appId&userId=@ViewBag.userId">
+        <img  src="/Content/images/wx-back.png" /><span>&nbsp;返回上一级</span>
+    </a>
+</div>
+
+<div class="content">
+<div id="listWithFiltersPage">
+<div class="content-inner">
+<!-- filters start -->
+<div class="filters">
+<el-form :inline="true" :model="searchForm" ref="searchForm">
+    <el-form-item   label="App名称：" prop="AppName">
+        <el-input  v-model="searchForm.AppName"></el-input>
+    </el-form-item>
+    <el-form-item>
+        <el-button type="primary" v-on:click="Search">查询</el-button>
+    </el-form-item>
+</el-form>
+</div>
+
+<el-table :data="tableData" style="width: 100%" max-height='460' element-loading-text="拼命加载中" v-loading="loading" border stripe>
+<el-table-column type="index" lable="序号" width="70"></el-table-column>
+<el-table-column prop="AppName" label="APP名称" min-width="150">
+    <template scope="scope">
+        {{scope.row.AppName}}
+    </template>
+</el-table-column>
+<el-table-column prop="Commission" label="基础佣金比例" min-width="150">
+    <template scope="scope">
+        {{scope.row.Commission|percent}}
+    </template>
+</el-table-column>
+<el-table-column prop="Type" label="商家类型" min-width="200">
+    <template scope="scope">
+        <div v-show="!scope.row.edit">
+             {{RN.getMallType(scope.row.Type)}}
+             &nbsp;&nbsp;&nbsp;&nbsp;
+             <el-button type="primary" size="mini" v-on:click="ShangjiaType(scope.$index, scope.row)">修&nbsp;&nbsp;改</el-button>
+        </div>
+        <div v-show="scope.row.edit">
+            <el-select v-model="Type" size="small" style="width:100px;" placeholder="请选择">
+                <el-option
+                v-for="item in mallTypeOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+                </el-option>
+            </el-select>
+             &nbsp;&nbsp;&nbsp;&nbsp;
+            <el-button type="primary" size="mini" v-on:click="SaveShangjiaType(scope.$index, scope.row)" >确&nbsp;&nbsp;认</el-button>
+        </div>
+    </template>
+</el-table-column>
+<el-table-column prop="StateShow" label="审核状态" min-width="150">
+    <template scope="scope">
+        {{scope.row.StateShow}}
+    </template>
+</el-table-column>
+<el-table-column prop="ApplyContent" label="审核意见" min-width="150">
+    <template scope="scope">
+        {{scope.row.ApplyContent}}
+    </template>
+</el-table-column>
+<el-table-column label="操作" width="100">
+    <template scope="scope">
+        <el-button v-if="scope.row.State==0" type="primary" size="mini" @@click="updateState(scope.$index, scope.row)" >审核</el-button>
+        <el-button v-if="scope.row.State==1" type="primary" size="mini" @@click="updateState(scope.$index, scope.row)" >取消入驻确认</el-button>
+        <el-button v-if="scope.row.State==2" type="primary" size="mini" @@click="updateState(scope.$index, scope.row)" >挂起入驻</el-button>
+        <el-button v-if="scope.row.State==4" type="primary" size="mini" @@click="updateState(scope.$index, scope.row)" >恢复入驻</el-button>
+     </template>
+</el-table-column>
+</el-table>
+<div class="pagination-wrapper" v-show="!loading">
+<el-pagination layout="total, sizes, prev, pager, next, jumper" @@size-change="handleSizeChange" @@current-change="handleCurrentChange" :total="total" :current-page="page" :page-sizes="[10, 20, 50, 100]" :page-size="pageSize" >
+</el-pagination>
+</div>
+
+<el-dialog title="商家入驻审核" v-model="dialogFormVisible">
+<el-form :inline="true" :label-position="labelPosition" label-width="100px" :rules="rules" :model="form" ref="form">
+<el-form-item label="审核状态:" prop="State">
+<el-select v-model="form.State"  style="width:400px;" placeholder="请选择">
+    <el-option label="通过" value="2"></el-option>
+    <el-option label="不通过" value="3"></el-option>
+</el-select>
+</el-form-item>
+
+<div style="margin: 10px 0;"></div>
+<el-form-item label="审核意见:" prop="ApplyContent">
+    <el-input type="textarea"  :rows="5" v-model="form.ApplyContent"   maxlength="200"  style="width:400px;"></el-input>
+</el-form-item>
+<div style="margin: 10px 0;"></div>
+<el-form-item label="基础佣金比例:" prop="Commission">
+    <el-input v-model="form.Commission"  style="width:400px;">
+    <el-button slot="append">%</el-button>
+    </el-input>
+</el-form-item>
+<el-form-item label="商家类型:" prop="Type">
+<el-select v-model="form.Type"  style="width:400px;" placeholder="请选择">
+    <el-option
+    v-for="item in mallTypeOptions"
+    :key="item.value"
+    :label="item.label"
+    :value="item.value">
+    </el-option>
+</el-select>
+</el-form-item>
+</el-form>
+<div slot="footer" class="dialog-footer">
+<el-button @@click="dialogFormVisible = false">取 消</el-button>
+<el-button type="primary" @@click="handleSave()">确 定</el-button>
+</div>
+</el-dialog>
+
+</div>
+</div>
+</div>
+
+@section Script{
+<script type="text/javascript">
+var StateValue=null;
+Vue.filter('datetime', function (value) {
+return moment(value).format("YYYY-MM-DD HH:mm:ss"); 
+});
+
+Vue.filter('percent',function(value){
+return value + '%';
+});
+
+var CheckState= function(rule, value, callback){
+        StateValue=value
+        if (value=="")
+        {
+            callback(new Error('请选择审核状态'));
+        }
+        else
+        {
+            callback();
+        }
+    };
+
+    var CheckApplyContent = function(rule, value, callback){
+            if (StateValue==2)
+            {
+                if (value.length>200) 
+                {   
+
+                    callback(new Error('审核意见最多可输入200字'));
+                }
+                else {
+                    callback();
+                }
+            }
+            else {
+                if (value === '') {
+                    callback(new Error('审核意见不能为空'));
+                }
+                else if (value.length>200) {
+                    callback(new Error('审核意见最多可输入200字'));
+                }
+                else{
+                    callback();
+                }
+            }
+    };
+
+    var CheckCommission=function(rule, value, callback){
+            if (StateValue==2)
+            {
+            if (value === '') 
+            {
+                callback(new Error('基础佣金比例不能为空'));
+            }
+            }
+            if (isNaN(value)) {
+                callback(new Error('请输入数字'));
+            }
+            else if (Number(value)<0) {
+                callback(new Error('请输入正数'));
+            }
+            else if(Number(value)>100){
+                callback(new Error('佣金比例不能大于100'));
+            }
+            else if(!/^\d+(\.\d{1,2})?$/.test(Number(value))){
+                callback(new Error('请输入两位小数内的正数'));
+            }
+            else {
+                callback();
+            }
+    };
+
+    var CheckType=function(rule, value, callback){
+           if (value==""){
+              callback(new Error('请选择商家类型'));
+            }
+            else{
+              callback();
+            }
+    };
+
+var defaultVue = new Vue({
+    el: '#app',
+    data:{
+    searchForm:{
+        AppName: ''
+    },
+    form:{
+        Id:'',
+        State:'',
+        ApplyContent:'',
+        Commission:'',
+        AppId:'',
+        AppName:'',
+        Type:''
+    },
+    rules:{
+    State:[{ validator: CheckState, trigger: 'change'}],
+    ApplyContent:[{ validator: CheckApplyContent, trigger: 'blur'}],
+    Commission:[{ validator: CheckCommission, trigger: 'blur'}],
+    Type:[{ validator: CheckType, trigger: 'change'}]
+    },
+    loading: false,
+    tableData: [],
+    total:0,
+    page:1,
+    pageSize:20,
+    createDialog: false,
+    dialogFormVisible:false,
+    labelPosition:'right',
+    Type:'',
+    mallTypeOptions: RN.mallTypeOptions
+},
+methods: {
+
+Search:function() 
+{
+    this.fetchData();
+},
+handleSizeChange:function(val)
+{
+    this.pageSize =val;
+    this.fetchData();
+},
+handleCurrentChange:function(page) 
+{
+    this.page=page||this.page;
+    this.fetchData();
+},
+fetchData:function(){
+    
+    this.$http.post('@Url.Action("GetUserMallAppy", "MallApply")',{PageIndex:this.page,PageSize:this.pageSize,AppName:this.searchForm.AppName,EsAppId:'@ViewBag.appId'}).then(function(res){
+        this.tableData= res.body.data;
+        this.total=res.body.count;
+    }).catch(function(response){
+        
+        var start=response.body.indexOf("<title>"); 
+        var end=response.body.indexOf("</title>"); 
+        var str=response.body.substring(start+7,end);
+            this.$message({
+                showClose: true,
+                message:str,
+                type: 'error'
+                });
+    });                  
+                        
+},
+handleSave:function(){
+    var flag=null;
+    this.$refs['form'].validate(function(valid){
+        if (valid) {
+            flag=true;
+        }
+        else{
+            flag= false;
+            return false;
+        } 
+    });
+    if(flag==true){
+       this.updateMallApply();   
+       this.dialogFormVisible = false;
+       this.$refs['form'].resetFields();
+    }
+},
+updateMallApply:function(){
+    var data={Id:this.form.Id,State:this.form.State,AppId:this.form.AppId,AppName:this.form.AppName,ApplyContent:this.form.ApplyContent,Commission:this.form.Commission,UserId:'@ViewBag.userId',Type:this.form.Type};
+            this.$http.post('@Url.Action("UpdateState", "MallApply")',data).then(function(res){
+            this.fetchData();
+            if (res.body.data.isSuccess==true) 
+            {
+                this.$message({
+                showClose: true,
+                message:res.body.data.Message,
+                type: 'success'
+            });
+            
+            }
+            else 
+            {
+                this.$message({
+                showClose: true,
+                message: res.body.data.Message,
+                type: 'error'
+                });
+                
+            }
+    }).catch(function(response){});
+},
+updateState:function(index,row){ 
+    var flag=null;
+    var state=null;
+    var message=null;
+    this.form.Id=row.Id;
+    this.form.AppId=row.AppId;
+    this.form.AppName=row.AppName;
+    switch(row.State){
+        case 0 : state=2;this.dialogFormVisible = true; break;
+        case 1 : state=5;message="确认要取消"+row.AppName+"入驻吗？"; break;
+        case 2 : state=4;message="确认要挂起"+row.AppName+"入驻吗？"; break;
+        case 3 : break;
+        case 4 : state=2;message="确认要恢复"+row.AppName+"入驻吗？"; break;
+        case 5 : break;
+    }
+    if (row.State!=0) {
+        this.$confirm(message, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+        }).then(function(res) {
+           defaultVue.update(row.Id,state);
+        }).catch(function(response){});
+    }
+},
+update:function(id,state){
+    this.$http.post('@Url.Action("UpdateState","MallApply")',{Id:id,State:state}).then(function(res){
+            this.fetchData();
+            if (res.body.data.isSuccess==true) 
+            {
+                this.$message({
+                showClose: true,
+                message:res.body.data.Message,
+                type: 'success'
+                });
+                
+            }
+            else 
+            {
+                this.$message({
+                showClose: true,
+                message: res.body.data.Message,
+                type: 'error'
+                });
+                
+            }
+    }).catch(function(response){
+        this.fetchData();
+    });  
+    
+ },
+ ShangjiaType:function(index, row){
+    Vue.set(row,"edit",true);
+ },
+ SaveShangjiaType:function(index,row){
+    Vue.set(row,"edit",false);
+    this.$http.post('@Url.Action("SaveShangjiaType","MallApply")',{Id:row.Id,Type:this.Type}).then(function(res){
+            this.fetchData();
+    }).catch(function(response){
+        this.fetchData();
+        var start=response.body.indexOf("<title>"); 
+        var end=response.body.indexOf("</title>"); 
+        var str=response.body.substring(start+7,end);
+            this.$message({
+                showClose: true,
+                message:str,
+                type: 'error'
+                });
+
+    });  
+ }
+
+},
+mounted:function() {
+   ///初始化
+  this.fetchData();
+}
+})
+</script>
+}
+
+
+

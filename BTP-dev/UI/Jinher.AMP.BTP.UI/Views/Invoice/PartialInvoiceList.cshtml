@@ -1,0 +1,337 @@
+﻿@using System.Collections.Generic
+@using System.Web
+@{
+    Layout = null;
+    ViewBag.Title = "PartialInvoiceList";
+    Jinher.AMP.BTP.Deploy.CustomDTO.InvoiceResultDTO invoiceDataList = ViewBag.InvoiceInfoList;
+}
+@helper getCategoryName(int category)
+    {
+        switch (category)
+        {
+            case 1:
+    @:增值税普通发票
+                break;
+            case 2:
+    @:电子发票
+                break;
+            case 4:
+    @:增值税专用发票
+                break;
+            default:
+                break;
+        }
+}
+@helper getInvoiceTypeName(int invoiceType)
+    {
+        switch (invoiceType)
+        {
+            case 0:
+    @:不开发票
+                break;
+            case 1:
+    @:个人
+                break;
+            case 2:
+    @:公司
+                break;
+            default:
+                break;
+        }
+}
+@helper getStateName(int state)
+    {
+        switch (state)
+        {
+            case 0:
+    @:待付款
+                break;
+            case 1:
+    @:待开票
+                break;
+            case 2:
+    @:已开票
+                break;
+            case 3:
+    @:已发出
+                break;
+            case 4:
+    @:已作废
+                break;
+            default:
+                break;
+        }
+}
+<input type="hidden" id="rowcounts" value="@invoiceDataList.Count"/>
+<table id="InvoiceList" class="invoiceTable">
+    <tbody>
+        @if (invoiceDataList != null && invoiceDataList.Count > 0)
+        {
+            var i = 1;
+            foreach (var invoiceData in invoiceDataList.InvoiceInfoList)
+            {
+            <tr id="@invoiceData.Id">
+                <td class="xuHao" style="text-align: center; width: 2em;">
+                    <input type="checkbox" name="dataRow" data-id="@invoiceData.Id" data-state="@invoiceData.State" />
+                </td>
+                <td style="text-align: center; width: 3em;">
+                    <span>@i</span>
+                </td>
+                <td class="leiXing" style="text-align: center; width: 6em;">
+                    @getCategoryName(invoiceData.Category)
+                </td>
+                <td class="taiTou" style="text-align: center; width: 10em;">
+                    @if (invoiceData.InvoiceType == 1)
+                    {
+                        @:个人
+                    }
+                    else if (invoiceData.InvoiceType == 2)
+                    {
+                        @invoiceData.InvoiceTitle
+                    }
+                    else
+                    {
+                        @:个人
+                    }
+                </td>
+                <td class="lasuirenshibiehao" style="text-align: center; width: 10em;">
+                   @invoiceData.Code                                                              
+                </td>
+                <td class="neiRong" style="text-align: center; width: 9em;">
+                    @if (invoiceData.Category == 4)
+                    {
+                        <a href="javascript:void(0)" onclick="showVatInvoiceProofDetailShow('@invoiceData.SubId')">
+                            点击查看增票资质</a>
+                    }
+                    else
+                    {
+                        @invoiceData.InvoiceContent
+                    }
+                </td>
+                <td class="shouPiaoRenXinXi" style="width: 12em;">
+                    @if (invoiceData.Category == 2)
+                    {
+                        <div>@invoiceData.ReceiptPhone</div>
+                        <div>@invoiceData.ReceiptEmail</div>
+                    }
+                    else
+                    {
+                        <div>@invoiceData.commodityOrderInfo.ReceiptUserName</div>
+                        <div>@invoiceData.commodityOrderInfo.ReceiptPhone</div>
+                    }
+                </td>
+                <td class="shouPiaoRenDiZhi" style="width: 12em;">
+                    <div>@invoiceData.commodityOrderInfo.Address</div>
+                </td>
+                <td class="jinE" style="text-align: center; width: 5em;">
+                    <div>
+                        @Jinher.AMP.BTP.UI.Util.WebUtil.GetCurrency()@invoiceData.commodityOrderInfo.RealPrice.ToMoney()</div>
+                    <div>
+                        @{
+                    string showPayText = string.Empty;
+                    string paymentName = Jinher.AMP.BTP.UI.Models.PaySourceVM.GetPaymentName(invoiceData.commodityOrderInfo.Payment);
+                    if (invoiceData.commodityOrderInfo.Payment == 0)
+                    {
+                        List<string> tmpList = new List<string>();
+                        if (invoiceData.commodityOrderInfo.GoldPrice > 0)
+                        {
+                            tmpList.Add("金币支付 " + @Jinher.AMP.BTP.UI.Util.WebUtil.GetCurrency() + invoiceData.commodityOrderInfo.GoldPrice.ToMoney());
+                        }
+                        if (invoiceData.commodityOrderInfo.GoldCoupon > 0)
+                        {
+                            tmpList.Add("代金券 " + @Jinher.AMP.BTP.UI.Util.WebUtil.GetCurrency() + invoiceData.commodityOrderInfo.GoldCoupon.ToMoney());
+                        }
+
+                        if (tmpList.Count > 1)
+                        {
+                            showPayText = "（" + string.Join("，", tmpList) + "）";
+                        }
+                        else if (tmpList.Count == 1)
+                        {
+                            if (invoiceData.commodityOrderInfo.GoldCoupon > 0)
+                            {
+                                showPayText = "（代金券）";
+                            }
+                            else
+                            {
+                                showPayText = "（" + paymentName + "）";
+                            }
+                        }
+                        else
+                        {
+                            showPayText = "";
+                        }
+                    }
+                    else if (invoiceData.commodityOrderInfo.Payment == 1)
+                    {
+                        showPayText = paymentName;
+                    }
+                    else
+                    {
+                        List<string> tmpList = new List<string>();
+                        if (invoiceData.commodityOrderInfo.GoldPrice > 0)
+                        {
+                            tmpList.Add("金币支付 " + @Jinher.AMP.BTP.UI.Util.WebUtil.GetCurrency() + invoiceData.commodityOrderInfo.GoldPrice.ToMoney());
+                        }
+                        if (invoiceData.commodityOrderInfo.GoldCoupon > 0)
+                        {
+                            tmpList.Add("代金券 " + @Jinher.AMP.BTP.UI.Util.WebUtil.GetCurrency() + invoiceData.commodityOrderInfo.GoldCoupon.ToMoney());
+                        }
+                        decimal online = invoiceData.commodityOrderInfo.RealPrice - invoiceData.commodityOrderInfo.GoldCoupon - invoiceData.commodityOrderInfo.GoldPrice;
+                        if (online > 0)
+                        {
+                            tmpList.Add(paymentName.Replace("直接到账", "").Replace("担保交易", "") + @Jinher.AMP.BTP.UI.Util.WebUtil.GetCurrency() + online.ToMoney());
+                        }
+                        if (tmpList.Count > 1)
+                        {
+                            showPayText = "（" + string.Join("，", tmpList) + "）";
+                        }
+                        else if (tmpList.Count == 1 && online > 0)
+                        {
+                            showPayText = "（" + paymentName.Replace("直接到账", "").Replace("担保交易", "") + "）";
+                        }
+                        else
+                        {
+                            showPayText = "";
+                        }
+                    }
+                        }
+                        @showPayText
+                    </div>
+                </td>
+                <td class="dingDan" style="text-align: center; width: 12em;">
+                    <a id="tzinfor" href="javascript:void(0)" target="_self" tzinfors="/CommodityOrder/CommodityOrderDetail?commodityOrderId=@invoiceData.CommodityOrderId">@invoiceData.commodityOrderInfo.Code</a>
+                    <div>
+                        @switch (@invoiceData.commodityOrderInfo.State)
+                        {
+                            case 0:
+                            <span>待付款</span>
+                                break;
+                            case 1:
+                            <span>待发货</span>
+                                break;
+                            case 2:
+                            <span>已发货</span>
+                                break;
+                            case 3:
+                                switch (@invoiceData.commodityOrderInfo.StateAfterSales)
+                                {
+                                    case -1:
+                            <span>交易成功</span>
+                                        break;
+                                    case 3:
+                            <span>交易成功</span>
+                                        break;
+                                    case 5:
+                            <span>退款中</span>
+                                        break;
+                                    case 7:
+                            <span>已退款</span>
+                                        break;
+                                    case 10:
+                            <span>退款中</span>
+                                        break;
+                                    case 12:
+                            <span>处理退款中</span>
+                                        break;
+                                    case 15:
+                            <span>交易成功</span>
+                                        break;
+                                    default:
+                            <span>交易成功</span>
+                                        break;
+                                }
+                                break;
+                            case 4:
+                            <span>交易失败</span>
+                                break;
+                            case 5:
+                            <span>交易失败</span>
+                                break;
+                            case 6:
+                            <span>交易失败</span>
+                                break;
+                            case 7:
+                            <span>已退款</span>
+                                break;
+                            case 8:
+                            <span>退款中</span>
+                                break;
+                            case 9:
+                            <span>退款中</span>
+                                break;
+                            case 10:
+                            <span>退款中</span>
+                                break;
+                            case 11:
+                            <span>待发货</span>
+                                break;
+                            case 12:
+                            <span>处理退款中</span>
+                                break;
+                            case 13:
+                            <span>出库中</span>
+                                break;
+                            case 14:
+                            <span>退款中</span>
+                                break;
+                            default:
+                            <span></span>
+                                break;
+                        }
+                    </div>
+                </td>
+                <td class="zhuangTai" style="text-align: center; width: 5em;">
+                    @getStateName(invoiceData.State)
+                </td>
+                <td class="caoZuo" style="text-align: center; width: 6em;">
+                    @if (invoiceData.State == 1)
+                    {
+                        <div>
+                            <a href="javascript:;" class="setState2" data-id="@invoiceData.Id">置为已开票</a></div>
+                        <div>
+                            <a href="javascript:;" class="setState4" data-id="@invoiceData.Id">置为已作废</a></div>
+                        <div>
+                            <a href="javascript:;" class="setState3" style="display: none;" data-id="@invoiceData.Id">
+                                置为已发出</a></div>
+                    }
+                    else if (invoiceData.State == 2)
+                    {
+                        <div>
+                            <a href="javascript:;" class="setState2"  style="display: none;" data-id="@invoiceData.Id">
+                                置为已开票</a></div>
+                        <div>
+                            <a href="javascript:;" class="setState4"  style="display: none;" data-id="@invoiceData.Id">
+                                置为已作废</a></div>
+                        <a href="javascript:;" class="setState3" data-id="@invoiceData.Id">置为已发出</a>
+                    }
+                </td>
+                <td class="beiZhu" style="text-align: center; width: 7em;">
+                    @if (string.IsNullOrWhiteSpace(invoiceData.Remark))
+                    {
+                        <div class="remark" title="">
+                        </div>
+                        <a href="javascript:;" class="addNote" data-id="@invoiceData.Id">添加</a>
+                        <a href="javascript:;" class="editNote" style="display: none;" data-id="@invoiceData.Id">
+                            编辑</a>
+                    }
+                    else
+                    {
+                        <div class="remark" title="@System.Web.HttpContext.Current.Server.UrlDecode(invoiceData.Remark)">@System.Web.HttpContext.Current.Server.UrlDecode(invoiceData.Remark)</div>
+                        <a href="javascript:;" class="addNote" style="display: none;" data-id="@invoiceData.Id">
+                            添加</a>
+                        <a href="javascript:;" class="editNote" data-id="@invoiceData.Id">编辑</a>
+                    }
+                </td>
+            </tr>
+                    i++;
+            }
+        }
+    </tbody>
+</table>
+<script type="text/javascript">
+    if (window.parent) {
+        $(window.parent.document).scrollTop(0);
+    }
+    $(".remark").dotdotdot();
+</script>

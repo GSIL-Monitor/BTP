@@ -1,0 +1,1564 @@
+﻿@using System.Web.Script.Serialization;
+@{
+    ViewBag.Title = "AddFreight";
+
+    var provinceList = ViewBag.ProvinceList;
+    Jinher.AMP.BTP.Deploy.CustomDTO.FreightDTO freight = ViewBag.Freight;
+
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.FreightPartialFreeExtDTO> pfList = freight.PartialFreeList;
+
+    var ffCount = freight.FirstCount;
+    var fnCount = freight.NextCount;
+    if (freight.PricingMethod == 0)
+    {
+        ffCount = decimal.Round(freight.FirstCount, 0);
+        fnCount = decimal.Round(freight.NextCount, 0);
+    }
+
+
+    JavaScriptSerializer js = new JavaScriptSerializer();
+
+    string pfListJsonString = js.Serialize(pfList);
+    pfListJsonString = HttpUtility.UrlEncode(pfListJsonString);
+
+
+}
+<head>
+    <style type="text/css">
+        input.inp-txt
+        {
+            height: 18px;
+            line-height: 18px;
+            border: 1px solid #B6C0CD;
+            padding: 4px 5px;
+            vertical-align: middle;
+            border-radius: 3px;
+            box-shadow: inset 1px 1px 2px #DBDBDB;
+        }
+        .btn120
+        {
+            display: inline-block;
+            width: 120px;
+            height: 28px;
+            line-height: 28px;
+            background: url(../../Content/default/images/btn120.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+        }
+        .t_trNew
+        {
+            height: 30px;
+        }
+        .t_tr_tdHead
+        {
+            width: 100%;
+            text-align: left;
+            padding-left: 10px;
+            border-bottom: none;
+            color: #6d819a;
+            font-size: 16px;
+            font-weight: 100;
+            overflow: hidden;
+        }
+        .lab
+        {
+            float:left;    
+            text-align:left;
+        }
+        .t_trNew a.state
+        {
+            color: #409FFF;
+        }
+        .t_trNew a.state:hover
+        {
+            color: #80BDE3;
+        }
+        
+        .txtColor {
+		color: #8c94a9;
+	}
+
+	.floa2 h1,
+	.floa1 h1,
+	.floa11 h1,
+	.bbtn h1 {
+		font-size: 14px;
+		color: #8c94a9;
+		padding-bottom: 5px;
+		border-bottom: 1px solid #DDDDDD;
+	}
+
+	.close {
+		margin-top: 10px;
+		float: right;
+		display: inline-block;
+		*zoom: 1;
+		*display: inline;
+		width: 7px;
+		height: 7px;
+		color: transparent;
+		background: url('/Images/shut.png') center no-repeat;
+	}
+
+	.floa11 ul,
+	.floa1 ul,
+	.floa2 ul {
+		padding: 0 0 10px 10px;
+	}
+
+	.floa11 ul li,
+	.floa1 ul li
+	.floa2 ul li {
+		margin-top: 5px;
+		color: #8c94a9;
+	}
+
+	.addfloa2 {
+		display: none;
+		padding: 5px 10px;
+		height: auto;
+		border: 1px solid #B8BFCF;
+
+		-webkit-border-radius: 3px;
+		-moz-border-radius: 3px;
+		border-radius: 3px;
+	}
+
+	.btn120 {
+		display: inline-block;
+		width: 120px;
+		height: 28px;
+		line-height: 28px;
+		background: url('/Content/default/images/btn120.png') no-repeat;
+		text-align: center;
+		vertical-align: middle;
+		color: #5F7392;
+		box-shadow: 1px 1px 2px #DBDBDB;
+	}
+	.province
+	{
+	    width:130px;
+	    height:20px;
+	    float:left;
+	    padding:2px 2px 2px 2px;
+	}
+	 .none{ display: none; }
+	 .blank-line { height: 10px; }
+	 
+	 .range-freight-table { border: 1px #D7D7D7 solid; text-align: center; }
+	 .range-freight-table th { background-color: #D7D7D7; padding: 5px; }
+	 .range-freight-table td { }
+	 .range-freight-table td [type="text"]{ width: 80px; margin: 15px 5px 5px 5px; text-align: center; }
+	 .range-freight-table tfoot td { margin-top: 20px; padding: 10px; text-align: left; }
+    </style>
+    <script src="../../Scripts/CommLib.js" type="text/javascript"></script>
+    <script type="text/javascript">
+
+        var isRangeFreight = @(freight.IsRangeFreight.ToString().ToLower())
+            , groupIds = [];
+
+        function getQueryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]); return null;
+        }
+        function GroupReturnUrl() {
+            var url = "";
+            var flag = getQueryString("flag");
+            if (flag == "add") {
+                url = "?flag=add";
+                if (getQueryString("state")) {
+                    url = url + "&state=" + getQueryString("state");
+                    if (getQueryString("appId")) {
+                        url = url + "&appId=" + getQueryString("appId");
+                    }
+                }
+                else if (getQueryString("appId")) {
+                    url = url + "&appId=" + getQueryString("appId");
+                }
+            }
+            else if (flag == "edit") {
+                url = "?flag=edit";
+                if (getQueryString("commodityId")) {
+                    url = url + "&commodityId=" + getQueryString("commodityId");
+                }
+                if (getQueryString("state")) {
+                    url = url + "&state=" + getQueryString("state");
+                }
+            }
+            else {
+
+            }
+            return url;
+        }
+        var $tdLabel = null;
+        var hiddenProvinceCodes = null;
+        var _pricingMethodTEXT = { FeeType: "件数", FeeUnit: "件", FeeUnitEng: "个", FeeUnitDefault: "件" , Inner: "",Outter:"满",  FeeTypeValue:0};
+        var _pfDefault = {Id:"00000000-0000-0000-0000-000000000000",FreightTo:"未指定地区",FreeType:"0",FreePrice:"0",FreeCount:"0",FreightTemplateId:"00000000-0000-0000-0000-000000000000",DestinationCodes:""};
+        var _pfListJson = [];
+        var _tableId = "";
+        $(document).ready(function () {
+             var pfListJsonString = decodeURIComponent("@pfListJsonString");
+             this._pfListJson = $.parseJSON(pfListJsonString);
+             if(this._pfListJson == null)
+             {
+                this._pfListJson = new Array();
+             }
+
+            //快递方式追加明细
+            $("input[name='fMethod']:checked").parent().append($("#freightPart"));
+            CliRadio();
+
+            $('input[name="radioPricingMethod"][value="@freight.PricingMethod"]').attr("checked", "checked").click();
+            if (@freight.PricingMethod == 0) {
+                _pricingMethodTEXT = { FeeType: "件数", FeeUnit: "件", FeeUnitEng: "个", FeeUnitDefault: "件" ,Inner:"",Outter:"满",  FeeTypeValue:0};
+            }
+            else if (@freight.PricingMethod == 1) {
+                _pricingMethodTEXT = { FeeType: "重量", FeeUnit: "重", FeeUnitEng: "kg", FeeUnitDefault: "kg",Inner: "内",Outter:"在", FeeTypeValue:1};
+            }
+            $('span[af-tag="FeeUnit"]').html(_pricingMethodTEXT.FeeUnit);
+            $('span[af-tag="FeeUnitEng"]').html(_pricingMethodTEXT.FeeUnitEng);
+            $('span[af-tag="FeeType"]').html(_pricingMethodTEXT.FeeType);
+            $('span[af-tag="FeeUnitDefault"]').html(_pricingMethodTEXT.FeeUnitDefault); 
+            //todo:件数相关的值精确到2位，5位太长。
+            //c# foreach改为js,控制FeeUnit、FeeUnitEng。。。
+            //包邮类型：0不包邮，1包邮，2部分包邮
+            if(@freight.ExpressType == 2)
+            {
+                $("#chkPartialFree").attr("checked","checked");
+                 $("#partialFreeTable").show();
+            }
+            else
+            {
+                $("#chkPartialFree").removeAttr("checked");
+                $("#partialFreeTable").hide();
+            }
+
+            if(this._pfListJson != null && this._pfListJson.length > 0)
+            {
+                var pfLen = this._pfListJson.length;
+                for(var i= 0; i < pfLen;i++)
+                {
+                    AddPartialFree(this._pfListJson[i]);
+                }
+            }
+            else
+            {
+                AddPartialFree();
+            }
+            //选中包邮条件.
+            $("#partialFreeTable tbody tr").each(function (i, item) {
+                var id = $(item).find("td").eq(2).find("input:hidden").val();
+                var pfJson = window.document._pfListJson.GetFirstElement("Id",id);
+                if(pfJson != null)
+                {
+                    //包邮条件:0件数(重量:kg); 1,金额 ; 2件数(重量)+金额
+                    var ft = pfJson.FreeType;
+                    $(item).find("td").eq(1).find('select option[value="'+ft+'"]').attr("selected","selected");
+                    $(item).find("td").eq(1).find('div[af-tag*="freightFree"]').hide();
+                    $(item).find("td").eq(1).find('div[af-tag="freightFree' + ft + '"]').show();
+                }
+             });
+
+             //控制部分包邮显示。
+            $("#chkPartialFree").on("change", function () {
+                var chkpf = $("#chkPartialFree").attr("checked");
+                if (chkpf == "checked") {
+                    $("#partialFreeTable").show();
+                }
+                else {
+                    $("#partialFreeTable").hide();
+                }
+            });
+
+            loadRangeTemplate();
+        });
+        function ClickCheckbox(e) {
+            $(e).parent().append($("#freightPart"));
+        }
+        function DelFreightDetail(e) {
+            if (!confirm("是否删除运费明细?")) {
+                return;
+            }
+            var postData = {};
+            postData.Id = $(e).parent().find("input").val();
+            if (postData.Id == "00000000-0000-0000-0000-000000000000") {
+                $(e).parent().parent().remove();
+            }
+            $.ajax({
+                url: '/Freight/DelFreightDetail',
+                type: 'post',
+                data: postData,
+                dataType: 'json',
+                success: function (data) {
+                    if (data.ResultCode == "0") {
+                        $(e).parent().parent().remove();
+                    }
+                    else {
+                        alert(data.Message);
+                    }
+                },
+                error: function () {
+                    alert('删除运费明细失败');
+                }
+            });
+
+
+        }
+        function ValidInputPrice(e) {
+            var val = $.trim($(e).val());
+            if (val == "") {
+                $(e).val('0.00');
+                alert('运费不能为空');
+                return;
+            }
+            if (!/^\d+(\.\d{2})?$/.test(val)) {
+                if (!/^\d+(\.\d{1})?$/.test(val)) {
+                    $(e).val('0.00');
+                    alert("请填写正确的价格最多保留2位小数");
+                    return;
+                }
+            }
+            if (val < 0) {
+                $(e).val('0.00');
+                alert('运费不可为负数');
+                return;
+            }
+        }
+        function ValidInputAmount(e) {
+            var val = $.trim($(e).val());
+            if (val == "") {
+                $(e).val('0.00');
+                alert('金额不能为空');
+                return;
+            }
+            if (!/^\d+(\.\d{2})?$/.test(val)) {
+                if (!/^\d+(\.\d{1})?$/.test(val)) {
+                    $(e).val('0.00');
+                    alert("请填写正确的金额最多保留2位小数");
+                    return;
+                }
+            }
+            if (val < 0) {
+                $(e).val('0.00');
+                alert('金额不可为负数');
+                return;
+            }
+        }
+        function ValidInputCount(e) {
+            var val = $.trim($(e).val());
+            if (val == "") {
+                $(e).val('1');
+                alert(_pricingMethodTEXT.FeeType + '不可为空');
+                return;
+            }
+            if ((!/^\d+?$/.test(val)  && _pricingMethodTEXT.FeeTypeValue ==0) ||
+                (isNaN(val) && _pricingMethodTEXT.FeeTypeValue ==1)) {
+                $(e).val('1');
+                alert("请填写正确的" + _pricingMethodTEXT.FeeType);
+                return;
+            }
+            if (val <= 0) {
+                $(e).val('1');
+                alert(_pricingMethodTEXT.FeeType + "必须大于0");
+                return;
+            }
+        }
+        function OpenProvinceDiv(e, tableId) {
+            this._tableId = tableId;
+             ClearProvinceTip();
+            //清空选中项
+            $("input[name='checkProvince']:checked").each(function () {
+                $(this).attr("checked", false);
+            });
+             $("#chkAllProvince").removeAttr("checked");
+            $tdLabel = $(e).parent().find("label").first();
+             hiddenProvinceCodes = $(e).parent().find("input:hidden").first();
+            var ltext = $.trim($tdLabel.text());
+            if (ltext != "未指定地区") {
+                var provinceArray = ltext.split(",");
+                for (i = 0; i < provinceArray.length; i++) {
+                    $("input:checkbox[value='" + provinceArray[i] + "']").attr('checked', 'true');
+                }
+            }
+
+            var top = $(e).offset().top - 322;
+            var left = $(e).offset().left - 280;
+            var height = $(e).height();
+            $("#provinceDIV").css({ "top": top + height, "left": left }).show();
+            $("#idBigDiv").show();
+            $("#provinceDIV").show();
+        }
+        function CloseProvinceDiv() {
+            $("#idBigDiv").hide();
+            $("#provinceDIV").hide();
+        }
+
+        //选中所有省份。
+        function CheckAllProvince(e)
+        {
+            var chked = $(e).attr("checked");
+            var isChk = chked == "checked" ? true:false;
+             $("input[name='checkProvince']").each(function () {
+                $(this).attr("checked", isChk);
+            });
+        }
+        //添加模板明细
+        function AddFreightDetail() {
+            var $tr = $("#idTableNone tr").clone();
+            $("#freightDetailTable tbody").append($tr);
+        }
+        function CliRadio() {
+            var val = $("input[name='isFreeExt']:checked").val();
+            if (val == "1") {
+                $("#li3").hide();
+                $("#li4").hide();
+                $("#li5").hide();
+                $("#li6").hide();
+                $("#li7").hide();
+                $("#li8").hide();
+
+                $(".rangeFreight,.areaFreight").hide();
+            }
+            if (val == "0") {
+
+                if (isRangeFreight) {
+                    $("#li4,#li5,#li6,#li8").hide();
+                    $("#li3,#li7,.rangeFreight,.areaFreight").show();
+                }
+                else {
+                    $("#li3").show();
+                    $("#li4").show();
+                    $("#li5").show();
+                    $("#li6").show();
+                    $("#li7").show();
+                    $("#li8").show();
+                }
+            }
+        }
+        function ReturnSelectedProvinces(tableId) {
+            var freeType = tableId == "partialFreeTable" ? $tdLabel.parents("tr").find("td").eq(1).find("select option:selected").val() : "";
+            var selectedProvinces = "";
+            $("#" + tableId).find(".t_trNew").not($tdLabel.parent().parent()).each(function () {
+                var fti = $(this).find("td").eq(1).find("select option:selected").val();
+                if ((tableId != "partialFreeTable") || (tableId == "partialFreeTable" && freeType == fti)) {
+                    var labelText = $.trim($(this).find("td").first().find("label").text());
+                    if (labelText != "未指定地区") {
+                        selectedProvinces = selectedProvinces + ',' + labelText;
+                    }
+                }
+            });
+            return selectedProvinces;
+        }
+        function ProcinceTip(tipText) {
+            $("#idProvinceTip").text(tipText);
+            $("#idProvinceTip").show();
+        }
+        function ClearProvinceTip() {
+            $("#idProvinceTip").text('');
+            $("#idProvinceTip").hide();
+        }
+
+        function getSelectedProvinceCodes(groupId) {
+            var value = $("#" + groupId).children().last().children().first().find(":hidden").val();
+            return value.split(",");
+        }
+
+        function allCheckedProvinceCodes(excludeGroupId) {
+            var codes = [];
+            for (var i = 0; i < groupIds.length; i++) {
+                if (groupIds[i] == excludeGroupId) {
+                    continue;
+                }
+                codes = codes.concat(getSelectedProvinceCodes(groupIds[i]));
+            }
+            return codes;
+        }
+
+        function SaveProvince() {
+
+            if ($("#pricingMethodByRange").is(":checked")) {
+
+                var $checkedProvinces = $("input[name='checkProvince']:checked")
+                    , checkedLen = $checkedProvinces.length
+                    , provinceCodes = []
+                    , provinceNames = []
+                    , breakEach = false
+                    , allProvinceCodes = allCheckedProvinceCodes(this._tableId);
+
+                if (checkedLen < 1) {
+                    ProcinceTip("请选择省份!");
+                    return;
+                }
+
+                $checkedProvinces.each(function () {
+                    var code = $(this).attr("id");
+
+                    if ($.inArray(code, allProvinceCodes) > -1) {
+                        ProcinceTip("选择的省份(" + $(this).val() + ")已设置运费！");
+                        breakEach = true;
+                        return false;
+                    }
+
+                    provinceCodes.push(code);
+                    provinceNames.push($(this).val());
+                });
+
+                if (breakEach) {
+                    return;
+                }
+
+                $("#" + this._tableId).children().last().children().first().find("label").text(provinceNames.join(",")).next().val(provinceCodes.join(","));
+
+                CloseProvinceDiv();
+                return;
+            }
+
+           var seledP = ReturnSelectedProvinces(this._tableId);
+
+            var chklen = $("input[name='checkProvince']:checked").length;
+
+            var SelectProvince = "";
+            var seledCodes = "";
+            $("input[name='checkProvince']:checked").each(function () {
+                var sp = $(this).val();
+                if (seledP.indexOf(sp) == -1) {
+                    SelectProvince += sp + ',';
+                    seledCodes += $(this).attr("id") + ",";
+                }
+            });
+
+            if (seledCodes.length > 0) {
+                SelectProvince = SelectProvince.substr(0, SelectProvince.length - 1);
+                seledCodes = seledCodes.substr(0, seledCodes.length - 1);
+            }
+            if (SelectProvince == "") {
+                if (chklen == 0) {
+                    ProcinceTip("请选择省份!");
+                }
+                else if (_tableId == "freightDetailTable") {
+                    ProcinceTip("选择的省份已设置运费！");
+                }
+                else if (_tableId == "partialFreeTable") {
+                    ProcinceTip("选择的省份已设置相同包邮条件！");
+                }
+                return;
+            }
+            hiddenProvinceCodes.val(seledCodes);
+            $tdLabel.text(SelectProvince);
+            CloseProvinceDiv();
+        }
+        //修改运费模板
+        function SaveFreight() {
+
+            if (isRangeFreight) {
+                saveRangeFreight();
+                return;
+            }
+
+            //模板编号
+            var id = $("#FreightTemplateId").val();
+            //模板名称
+            var storeName = $.trim($("#StoreName").val());
+            //是否包邮
+            var isFreeExt = $("input[name='isFreeExt']:checked").val();
+            //首件
+            var firstCount = $.trim($("#idFirstCount").val());
+            //收费
+            var firstPrice = $.trim($("#idFirstPrice").val());
+            //续件
+            var nextCount = $.trim($("#idNextCount").val());
+            //续费
+            var nextPrice = $.trim($("#idNextPrice").val());
+            //快递方式
+            var freightMethod = $("input[name='fMethod']:checked").val();
+            //运费模板明细
+            var freightDetailList = GroupFreightDetail();
+            //如果包邮
+            //部分包邮信息。
+            var pfList = getPartialFree();
+           
+            var chkpf = $("#chkPartialFree").attr("checked");
+
+            var pm =  $('input[name="radioPricingMethod"]:checked').val(); 
+
+            if (storeName == "" || storeName == "请输入模板名称") {
+                alert('请输入模板名称');
+                return;
+            }
+            if (isFreeExt == "0") {
+                if (ValidFreightTo()) {
+                    alert("请指定区域");
+                    return;
+                }
+            }
+           var freightTemp = { FreightTo: "", Name: storeName, IsFreeExp: 0, FirstCount: 1, FirstCountPrice: 0, NextCount: 1, NextCountPrice: 0, FreightMethod: 0, AppId: "@freight.AppId", PricingMethod: 0 };
+            freightTemp.Id = id;
+
+             if (isFreeExt != 1) 
+             {
+                freightTemp.Name = storeName;
+                freightTemp.IsFreeExp = isFreeExt;
+                freightTemp.FirstCount = firstCount;
+                freightTemp.FirstCountPrice = firstPrice;
+                freightTemp.NextCount = nextCount;
+                freightTemp.NextCountPrice = nextPrice;
+                freightTemp.FreightMethod = freightMethod;
+                freightTemp.FreightDetailList = freightDetailList;
+                freightTemp.AppId = "@freight.AppId";
+
+                 //计价方式：0按件数，1按重量，2按体积
+                freightTemp.PricingMethod = pm;
+
+                //包邮类型：0不包邮，1包邮，2部分包邮
+                if (chkpf == "checked") {
+                    freightTemp.ExpressType = 2;
+                }
+                else {
+                    freightTemp.ExpressType = 0;
+                }
+                
+                //没有选中“指定条件包邮”则不保存部分包邮。
+                if(freightTemp.ExpressType != 2)
+                {
+                    pfList = [];
+                }
+            }
+            else
+            {
+                 freightTemp.ExpressType = 1;
+                //如果包邮
+                freightDetailList = [];
+                pfList = [];
+            }
+
+
+
+            
+            if (pfList != null) {
+                var isPfVal = true;
+                for (var a = 0; a < pfList.length; a++) {
+                    var pf = pfList[a];
+                    //包邮条件:0件数(重量:kg); 1,金额 ; 2件数(重量)+金额
+                    if (pf.FreeType == 0) {
+                        if (pf.FreeCount <= 0) {
+                            isPfVal = false;
+                            break;
+                        }
+                    }
+                    else if (pf.FreeType == 1) {
+                        if (pf.FreePrice <= 0) {
+                            isPfVal = false;
+                            break;
+                        }
+                    }
+                    else if (pf.FreeType == 2) {
+                        if (pf.FreeCount <= 0 || pf.FreePrice <= 0) {
+                            isPfVal = false;
+                            break;
+                        }
+                    }
+                }
+                if (!isPfVal) {
+                     alert("请设置包邮条件！");
+                    return;
+                }
+            }
+
+            var postData = {};
+            postData.Freight = freightTemp;
+            postData.DetailList = freightDetailList;
+            postData.PartialFreeList = pfList;
+            var subData = CommLib.ObjToStringWithQuot(postData);
+
+            $.ajax(
+            {
+                url: '/Freight/UpdateFreightAndDetail',
+                type: 'post',
+                data: subData,
+                dataType: 'json',
+                contentType: "application/json",
+                success: function (data) {
+                    if (data.ResultCode != "0") {
+                        alert(data.Message);
+                    }
+                    else {
+                        alert("更新运费模板成功");
+                        setTimeout(function () {
+                            window.location.href = "/Freight/Index" + GroupReturnUrl();
+                        }, 2000);
+                    }
+                },
+                error: function () {
+                    alert('保存运费模板失败');
+                }
+            });
+        }
+
+        //保存区间运费模板
+        function saveRangeFreight() {
+            var data = {
+                templateId: "@(freight.Id)",
+                appId: "@(freight.AppId)",
+                userId: "@(Request.QueryString["userId"])",
+                name: $.trim($("#StoreName").val()),
+                freeExpress: parseInt($.trim($("#idIsFreeExtNo:checked").val())) == 1,
+                freights:[]
+            };
+
+            if (!data.name || data.name === "请输入模板名称") {
+                alert('请输入模板名称');
+                return;
+            }
+
+            var freights = computeFreights($(".rangeFreight").children().eq(2).children().eq(1).children());
+
+            var message = "";
+            var specificGroupElements = $(".areaFreight").find(".container")
+                .children()
+                .each(function(index, group){
+                    
+                    var $this = $(this)
+                        , $groupHead = $this.children().eq(1).children().eq(1).prev()
+                        , $freightElements = $this.children().eq(1).children().eq(2).children()
+                        , provinceCodes = $this.children().eq(1).children().first().children().eq(1).val();
+                        
+                    if(!$groupHead.find(":hidden").val()){
+                        message = "未对指定地区的第" + (index + 1) + "组区块指定地区";
+                        return false;   
+                    }
+
+                    freights = freights.concat(computeFreights($freightElements, provinceCodes));
+                });
+            
+            if (message) {
+                alert(message);
+                return;
+            }
+
+            data.freights = freights;
+
+            console.info(data);
+
+            $.ajax({
+                url: '/freight/rangeFreightTemplate',
+                type: 'POST',
+                data: JSON.stringify(data),
+                dataType: 'json',
+                contentType: "application/json",
+                success: function (data) {
+                    if (data.ResultCode != "0") {
+                        alert(data.Message);
+                    }
+                    else {
+                        alert('保存运费模板成功');
+                        setTimeout(function () {
+                            window.location.href = "/Freight/Index" + GroupReturnUrl();
+                        }, 2000);
+                    }
+                },
+                error: function () {
+                    alert('保存运费模板失败');
+                }
+            });
+        }
+
+        function GroupFreightDetail() {
+            var detailList = new Array();
+            $("#freightDetailTable").find(".t_trNew").each(function (i, item) {
+                var tds = $(item).find("td");
+                var fdetail = new Object();
+                fdetail.FreightTo = $.trim(tds.eq(0).find("label").text());
+                fdetail.DestinationCodes = $.trim(tds.eq(0).find("input:hidden").val());
+                fdetail.FirstCount = $.trim(tds.eq(1).find("input").val());
+                fdetail.FirstCountPrice = $.trim(tds.eq(2).find("input").val());
+                fdetail.NextCount = $.trim(tds.eq(3).find("input").val());
+                fdetail.NextCountPrice = $.trim(tds.eq(4).find("input").val());
+                fdetail.Id = $.trim(tds.eq(5).find("input").val());
+                 if (fdetail.FreightTo != "未指定地区") {
+                detailList.push(fdetail);
+                }
+            });
+            return detailList;
+        }
+
+        
+        //部分免费
+        function getPartialFree() {
+            var pfList = new Array();
+            $("#partialFreeTable tbody tr").each(function (i, item) {
+
+                var tds = $(item).find("td");
+
+                var pf = new Object();
+                pf.DestinationCodes = $.trim(tds.eq(0).find("input:hidden").val());
+
+                //包邮条件:0件数(重量:kg); 1,金额 ; 2件数(重量)+金额
+                pf.FreeType = $.trim(tds.eq(1).find("select option:selected").val());
+                if (pf.FreeType == 0) {
+                    pf.FreePrice = 0;
+                    pf.FreeCount = $.trim(tds.eq(1).find('div[af-tag="freightFree0"] input').val());
+                }
+                else if (pf.FreeType == 1) {
+                    pf.FreePrice = $.trim(tds.eq(1).find('div[af-tag="freightFree1"] input').val());
+                    pf.FreeCount = 0;
+                }
+                else if (pf.FreeType == 2) {
+                    var ffInput = tds.eq(1).find('div[af-tag="freightFree2"] input');
+                    pf.FreePrice = $.trim(ffInput.eq(1).val());
+                    pf.FreeCount = $.trim(ffInput.eq(0).val());
+                }
+                pf.Id = $.trim(tds.eq(2).find("input:hidden").val());
+
+                if (pf.FreightTo != "未指定地区") {
+                    pfList.push(pf);
+                }  
+
+            });
+            return pfList;
+        }
+        function ValidFreightTo() {
+            var valid = false;
+            $("#freightDetailTable").find(".t_trNew").each(function () {
+                var freight = $.trim($(this).find("td").eq(0).find("label").text());
+                if (freight == "未指定地区") {
+                    valid = true;
+                }
+            });
+            var chkpf = $("#chkPartialFree").attr("checked");
+            if (chkpf == "checked") {
+                $("#partialFreeTable tbody tr").each(function (i, item) {
+                    var f = $.trim($(item).find("td").eq(0).find("label").text());
+                    if (f == "未指定地区") {
+                        valid = true;
+                    }
+                });
+            }
+            return valid;
+        }
+        function closeWindow() {
+            var url = GroupReturnUrl();
+            window.location.href = "/Freight/Index" + url;
+        }
+
+        
+        function AddPartialFree(pf) {
+            var $tr = $("#partialFreeTemplateTable tbody").html();
+            var fullInfo ={};
+            if(pf == undefined)
+            {
+               pf = _pfDefault;
+            }
+            var pmtClone = CommLib.clone(_pricingMethodTEXT);
+            var ext = $.extend(pmtClone,pf);
+            $tr = $tr.format(ext);
+            $("#partialFreeTable tbody").append($tr);
+        }
+        function deletePartialFree(e) {
+            var cdel = confirm("确定要删除当前部分包邮信息吗？");
+            if(!cdel)
+            {
+                return; 
+            }
+            $(e).parents("tr").remove(); 
+
+              //默认显示一个。
+            if ($("#partialFreeTable tbody tr").length == 0) {
+                AddPartialFree();
+            }
+        }
+        function selectPartialFreeConditionChanged(e) {
+            var ffType = $(e).find("option:selected").val();
+            $(e).parent("div").find('div[af-tag*="freightFree"]').hide();
+            $(e).parent("div").find('div[af-tag="freightFree' + ffType + '"]').show();
+        }
+        
+        //计算区间运费
+        function computeFreights(freightElements, provinceCodes, specific) {
+
+            if(!specific){
+                specific = false;
+            }
+
+            if(!provinceCodes){
+                provinceCodes = "";
+            }
+
+            var freights = [];
+            if (freightElements) {
+
+                $.each(freightElements, function(index, row){
+                    var $this = $(this)
+                        , schema = { 
+                            provinceCodes: provinceCodes
+                            , isSpecific: specific
+                            , min: 0
+                            , max: 0
+                            , cost: 0 
+                         };
+                    schema.min = parseInt($this.children().eq(1).children().first().val());
+                    schema.max = parseInt($this.children().eq(3).children().first().val());
+                    schema.cost = parseInt($this.children().eq(4).children().first().val());
+
+                    freights.push(schema);
+                });
+            }
+            return freights;
+        }
+
+        //添加一组默认运费的区间费用
+        function addDefaultRangeCost(sender) {
+
+            var $sender = $(sender)
+                , $table = $sender.closest("table")
+                , $container = $table.find("tbody")
+                , $template = $table.find("tfoot").children().eq(1)
+                , nowCount = $container.children().length;
+
+            if (nowCount >= 10) {
+                alert("最多可设置10个层级");
+                return;
+            }
+
+            $template.clone().appendTo($container).removeAttr("class style").show().children().eq(0).text(++nowCount);
+        }
+
+        //移除一组默认运费的区间费用
+        function removeDefaultRangeCost(sender) {
+
+            if (!confirm("确定要删除吗？")) {
+                return;
+            }
+
+            var $sender = $(sender)
+                , $targetTr = $sender.parent().parent()
+                , $siblings = $targetTr.siblings();
+
+            $targetTr.remove();
+
+            $siblings.each(function (index) {
+                $(this).children().eq(0).text(index + 1);
+            });
+        }
+
+        function removeSpecificGroup(sender){
+            var groupCls = ".specific-freight-group"
+                , $sender = $(sender);
+
+            if (confirm("确定要删除吗？")) {
+
+                var $group = $sender.closest(".specific-freight-group");
+
+                var index = $.inArray($group.attr("id"), groupIds);
+                if (index > -1) {
+                    groupIds.splice(index, 1);
+                }
+                $sender.closest(groupCls).remove();
+            }
+        }
+
+        function createId(prefix) {
+            return prefix + Math.random().toString().substring(2);
+        }
+
+        //添加一组特定地区的运费模板
+        function addSpecificAreaFreight(sender) {
+
+            var groupId = createId("specificArea")
+                , $template = $("#specificGroupTemplate")
+                , $container = $("li.areaFreight").find(".container")
+                , $table = null;
+
+            var $clone = $template.clone();
+
+            groupIds.push(groupId);
+
+            $table = $clone.children().last();
+
+            $table.children().first().find("a").click(function () { OpenProvinceDiv(this, groupId); });
+
+            $container.append($clone.removeAttr("style").attr({ "id": groupId }).addClass("groupFreight").show());
+        }
+
+        function loadRangeTemplate(){
+            
+            console.log("fn:load-range-template");
+
+            var $container = $(".areaFreight").find(".container");
+
+            if($container.children().length > 0){
+                $container.parent().show();
+                $container.children().each(function(){
+                    var groupId = createId("update-specific");
+                    groupIds.push(groupId);
+                    $(this).attr({ id: groupId }).show().children().last().children().first().find("a").click(function () { OpenProvinceDiv(this, groupId); });
+                });
+            }
+        }
+    </script>
+</head>
+@if (freight != null)
+{
+    string FreeEx = "";
+    string noFreeEx = "";
+    if (freight.ExpressType == 1)
+    {
+        FreeEx = "checked=\"checked\"";
+    }
+    else
+    {
+        noFreeEx = "checked=\"checked\"";
+    }
+
+    string KD = "";
+    string EMS = "";
+    string PY = "";
+    if (freight.FreightMethod == 0)
+    {
+        KD = "checked=\"checked\"";
+    }
+    else if (freight.FreightMethod == 1)
+    {
+        EMS = "checked=\"checked\"";
+    }
+    else
+    {
+        PY = "checked=\"checked\"";
+    }
+    <input id="FreightTemplateId" type="hidden" value="@freight.Id" />
+    <div class="box" style="min-height: 1300px;">
+        <div class="content">
+            <div>
+                <div class="tj_cont" style="height: auto;">
+                    <ul>
+                        <li><span>模板名称：</span>
+                            <input type="text" id="StoreName" value="@freight.Name" onfocus="javascript:if(this.value=='请输入模板名称')this.value='';"
+                                onblur="javascript:if(this.value=='')this.value='请输入模板名称';" maxlength="50" style="color: Gray;
+                                width: 317px; height: 19px; line-height: 19px;" class="inp-txt" />
+                        </li>
+                        <li><span>是否包邮：</span>
+                            <input onclick="CliRadio()" style="width: 15px; border: none;" type="radio" name="isFreeExt"
+                                id="idIsFreeExtNo" value="0" @noFreeEx /><label for="idIsFreeExtNo" style="float: left;
+                                    margin: 25px 10px 0 0;">不包邮</label>
+                            <input onclick="CliRadio()" style="width: 15px; border: none;" type="radio" name="isFreeExt"
+                                id="idIsFreeExtYes" value="1" @FreeEx  /><label for="idIsFreeExtYes" style="float: left;
+                                    margin: 25px 10px 0 0;">包邮</label>
+                        </li>
+                        <li id="li7"><span>计价方式：</span>
+                            <input id="idJS" style="width: 15px; border: none;" type="radio" name="radioPricingMethod"
+                                value="0" disabled="disabled" />
+                            <label for="idJS" style="float: left; margin: 25px 10px 0 0;">
+                                按件数</label>
+                            <input id="idZL" style="width: 15px; border: none;" type="radio" name="radioPricingMethod"
+                                value="1" disabled="disabled" />
+                            <label for="idZL" style="float: left; margin: 25px 10px 0 0;">
+                                按重量</label>
+                            <input id="idTJ" style="width: 15px; border: none; display: none;" type="radio" name="radioPricingMethod"
+                                value="2" disabled="disabled" /><label for="idTJ" style="float: left; margin: 25px 10px 0 0;
+                                    display: none;">按体积</label>
+                            <input id="pricingMethodByRange" style="width: 15px; border: none;" type="radio"
+                                name="radioPricingMethod" value="3" disabled="disabled" />
+                            <label for="pricingMethodByRange" style="float: left; margin: 25px 10px 0 0;">
+                                按区间（店铺区间运费模板与其他计价方式不能同时存在，且一个店铺只能添加一个区间运费模板）</label>
+                        </li>
+                        <li id="li3"><span>运送方式：</span> <span>除指定地区外,其余地区的运费采用"默认运费"</span> </li>
+                        <li id="li4"><span style="width: 67px;"></span>
+                            <input value="0" onclick="ClickCheckbox(this)" type="radio" id="idKD" name="fMethod"
+                                @KD  style="width: 15px; margin-top: 1px; border: none;" /><span style="margin: 5px 10px 0 0;">快递</span>
+                            <br />
+                            <div class="manag_bot" style="width: 80%;" id="freightPart">
+                                <div id="content_makes" style="margin-top: 10px; padding-left: 75px;">
+                                    <table border="0" cellspacing="0" cellpadding="0" class="m_talbe m_talbe2">
+                                        <tr class="t_tr1">
+                                            <td style="text-align: left; border-bottom: none; text-align: left;">
+                                                默认运费：<input id="idFirstCount" onblur="ValidInputCount(this)" type="text" style="width: 110px;
+                                                    float: none; margin-top: 1px;text-align:center;" value="@ffCount" /><span af-tag="FeeUnitDefault"
+                                                        style="float: none; margin: 0px;">件</span>内&nbsp;&nbsp;&nbsp;&nbsp;
+                                                <input id="idFirstPrice" onblur="ValidInputPrice(this)" type="text" style="width: 110px;
+                                                    float: none; margin-top: 1px;text-align:center;" value="@freight.FirstCountPrice" />元&nbsp;&nbsp;&nbsp;&nbsp;
+                                                每增加：<input
+                                                        id="idNextCount" onblur="ValidInputCount(this)" type="text" style="width: 110px;
+                                                        float: none; margin-top: 1px;text-align:center;" value="@fnCount" /><span af-tag="FeeUnitDefault"
+                                                            style="float: none; margin: 0px;">件</span> &nbsp;&nbsp;&nbsp;&nbsp;增加运费:<input
+                                                            id="idNextPrice" onblur="ValidInputPrice(this)" type="text" style="width: 110px;
+                                                            float: none; margin-top: 1px;text-align:center;" value="@freight.NextCountPrice" />元
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding-top: 20px;">
+                                                <table border="0" cellspacing="0" cellpadding="0" class="m_talbe m_talbe2" id="freightDetailTable">
+                                                    <tr class="t_tr1">
+                                                        <td style="width: 400px;">
+                                                            运送到
+                                                        </td>
+                                                        <td>
+                                                            首<span af-tag="FeeUnit" style="float: none; margin: 0px;">件</span>(<span af-tag="FeeUnitEng"
+                                                                style="float: none; margin: 0px;">个</span>)
+                                                        </td>
+                                                        <td>
+                                                            运费(元)
+                                                        </td>
+                                                        <td>
+                                                            续<span af-tag="FeeUnit" style="float: none; margin: 0px;">件</span>(<span af-tag="FeeUnitEng"
+                                                                style="float: none; margin: 0px;">个</span>)
+                                                        </td>
+                                                        <td>
+                                                            运费(元)
+                                                        </td>
+                                                        <td>
+                                                            操作
+                                                        </td>
+                                                    </tr>
+                                                    @if (freight.FreightDetailList != null && freight.FreightDetailList.Count > 0)
+                                                    {
+                                                        foreach (Jinher.AMP.BTP.Deploy.FreightTemplateDetailDTO detail in freight.FreightDetailList)
+                                                        {
+                                                            var firstCount = detail.FirstCount;
+                                                            var nextCount = detail.NextCount;
+                                                            if (freight.PricingMethod == 0)
+                                                            {
+                                                                firstCount = decimal.Round(detail.FirstCount, 0);
+                                                                nextCount = decimal.Round(detail.NextCount, 0);
+                                                            }
+                                                            
+                                                        <tr class="t_trNew">
+                                                            <td style="width: 400px;">
+                                                                <label class="lab">
+                                                                    @detail.FreightTo</label>
+                                                                <input type="hidden" value="@detail.DestinationCodes" />
+                                                                <a href="#" class="state" style="float: right; padding-right: 5px;" onclick="OpenProvinceDiv(this,'freightDetailTable')">
+                                                                    编辑</a>
+                                                            </td>
+                                                            <td>
+                                                                <input onblur="ValidInputCount(this)" type="text" style="float: none; width: 60px;
+                                                                    height: 20px; line-height: 20px; margin-top: 1px; text-align: center;" value="@firstCount" />
+                                                            </td>
+                                                            <td>
+                                                                <input onblur="ValidInputPrice(this)" type="text" style="float: none; width: 60px;
+                                                                    height: 20px; line-height: 20px; margin-top: 1px; text-align: center;" value="@detail.FirstCountPrice" />
+                                                            </td>
+                                                            <td>
+                                                                <input onblur="ValidInputCount(this)" type="text" style="float: none; width: 60px;
+                                                                    height: 20px; line-height: 20px; margin-top: 1px; text-align: center;" value="@nextCount" />
+                                                            </td>
+                                                            <td>
+                                                                <input onblur="ValidInputPrice(this)" type="text" style="float: none; width: 60px;
+                                                                    height: 20px; line-height: 20px; margin-top: 1px; text-align: center;" value="@detail.NextCountPrice" />
+                                                            </td>
+                                                            <td>
+                                                                <input type="hidden" value="@detail.Id" />
+                                                                <a href="#" class="state" onclick="DelFreightDetail(this)">删除</a>
+                                                            </td>
+                                                        </tr>
+                                                        }
+                                                    }
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr class="t_trNew">
+                                            <td style="padding-top: 20px; text-align: left; padding-bottom: 5px; padding-left: 5px;">
+                                                <a href="#" class="state" onclick="AddFreightDetail()">为指定地区城市设置运费</a>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </li>
+                        <li id="li5"><span style="width: 67px;"></span>
+                            <input value="1" onclick="ClickCheckbox(this)" type="radio" id="idEMS" name="fMethod"
+                                style="width: 15px; margin-top: 1px; border: none;" @EMS /><span style="margin: 5px 10px 0 0;">EMS</span>
+                            <br />
+                        </li>
+                        <li id="li6"><span style="width: 67px;"></span>
+                            <input value="2" onclick="ClickCheckbox(this)" type="radio" id="idPY" name="fMethod"
+                                style="width: 15px; margin-top: 1px; border: none;" @PY /><span style="margin: 5px 10px 0 0;">平邮</span>
+                            <br />
+                        </li>
+                        <li id="li8">
+                            <div class="manag_bot" style="width: 80%;">
+                                <div id="content_makes" style="margin-top: 10px; padding-left: 75px;">
+                                    <div>
+                                        <input type="checkbox" id="chkPartialFree" style="width: 16px; height: 16px; display: inline-block;
+                                            margin-top: 4px;" />
+                                        <label for="chkPartialFree">
+                                            指定条件包邮</label>
+                                    </div>
+                                    <table border="0" cellspacing="0" cellpadding="0" class="m_talbe m_talbe2" id="partialFreeTable"
+                                        style="margin-top: 6px; display: none;">
+                                        <thead>
+                                            <tr class="t_tr1">
+                                                <td style="width: 400px;">
+                                                    选择地区
+                                                </td>
+                                                <td>
+                                                    设置包邮条件
+                                                </td>
+                                                <td>
+                                                    操作
+                                                </td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="rangeFreight none"><span style="width: 67px;"></span>
+                            <div class="blank-line">
+                            </div>
+                            <table class="range-freight-table" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th width="80px">
+                                            层级
+                                        </th>
+                                        <th colspan="3">
+                                            购买金额（元）
+                                        </th>
+                                        <th>
+                                            运费
+                                        </th>
+                                        <th style="width: 100px;">
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var detail in freight.DefaultRangeFreightDetails)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @(freight.DefaultRangeFreightDetails.IndexOf(detail) + 1)
+                                            </td>
+                                            <td>
+                                                <input type="text" name="min" value="@(detail.Min)" />
+                                            </td>
+                                            <td>
+                                                &nbsp;&nbsp;~&nbsp;&nbsp;
+                                            </td>
+                                            <td>
+                                                <input type="text" name="min" value="@(detail.Max)" />
+                                            </td>
+                                            <td>
+                                                <input type="text" name="cost" value="@(detail.Cost)" />
+                                            </td>
+                                            <td>
+                                                @if (freight.DefaultRangeFreightDetails.IndexOf(detail) != 0)
+                                                {
+                                                <a href="javascript:;" onclick="removeDefaultRangeCost(this)">删除</a>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="6">
+                                            <hr />
+                                            <a href="javascript:;" onclick="addDefaultRangeCost(this);">+ 新增一级</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="template" style="display: none;">
+                                        <td>
+                                        </td>
+                                        <td>
+                                            <input type="text" name="min" value="" />
+                                        </td>
+                                        <td>
+                                            &nbsp;&nbsp;~&nbsp;&nbsp;
+                                        </td>
+                                        <td>
+                                            <input type="text" name="min" value="" />
+                                        </td>
+                                        <td>
+                                            <input type="text" name="cost" value="" />
+                                        </td>
+                                        <td>
+                                            <a href="javascript:;" onclick="removeDefaultRangeCost(this)">删除</a>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </li>
+                        <li class="areaFreight none"><span style="width: 67px;"></span>
+                            <div class="blank-line">
+                            </div>
+                            <a href="javascript:;" onclick="addSpecificAreaFreight(this);">为指定地区设置运费 </a>
+                            <div class="container" style="margin-left: 77px;">
+                                @foreach (var group in freight.SpecificRangeFreightDetails)
+                                {
+                                    <div class="specific-freight-group" style="display: none;">
+                                        <div class="blank-line" style="height: 20px;">
+                                        </div>
+                                        <table class="range-freight-table" cellspacing="0">
+                                            <caption>
+                                                <label style="float: left;">
+                                                    @(string.Join("、", group.ProvinceNames))</label>
+                                                <input type="hidden" value="@(group.ProvinceCodes)" />
+                                                <a href="javascript:;" style="float: right; margin-right: 10px;">编辑</a>
+                                            </caption>
+                                            <thead>
+                                                <tr>
+                                                    <th width="80px">
+                                                        层级
+                                                    </th>
+                                                    <th colspan="3">
+                                                        购买金额（元）
+                                                    </th>
+                                                    <th>
+                                                        运费
+                                                    </th>
+                                                    <th style="width: 100px;">
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var detail in group.Details)
+                                                {
+                                                    <tr>
+                                                        <td>
+                                                            @(group.Details.IndexOf(detail) + 1)
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" name="min" value="@(detail.Min)" />
+                                                        </td>
+                                                        <td>
+                                                            &nbsp;&nbsp;~&nbsp;&nbsp;
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" name="min" value="@(detail.Max)" />
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" name="cost" value="@(detail.Cost)" />
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="6">
+                                                        <hr />
+                                                        <a href="javascript:;" onclick="addDefaultRangeCost(this);">新增一级</a> <a href="javascript:;"
+                                                            onclick="removeSpecificGroup(this);" style="float: right;">删除</a>
+                                                    </td>
+                                                </tr>
+                                                <tr id="template" style="display: none;">
+                                                    <td>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="min" value="" />
+                                                    </td>
+                                                    <td>
+                                                        &nbsp;&nbsp;~&nbsp;&nbsp;
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="min" value="" />
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="cost" value="" />
+                                                    </td>
+                                                    <td>
+                                                        <a href="javascript:;" onclick="removeDefaultRangeCost(this)">删除</a>
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                }
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div style="text-align: left; margin-top: 35px; margin-left: 125px;">
+            <a href="###" class="btn120" id="btnSubmit" onclick="SaveFreight()">保存</a> <a href="###"
+                class="btn120" onclick="closeWindow()" style="margin-left: 15px;">取消</a>
+        </div>
+        <div class="floa11 addfloa2" id="provinceDIV" style="width: 560px; z-index: 10003;">
+            <!--gyy -->
+            <h1>
+                <a href="javascript:;" class="close" onclick="CloseProvinceDiv()"></a><span>选择区域</span>
+            </h1>
+            <div style="overflow-y: auto; height: 220px;">
+                @{
+                                foreach (var tempObject in provinceList)
+                                {
+                    <div class="province">
+                        <input type="checkbox" name="checkProvince" id="@tempObject.Code" value="@tempObject.Name" /><label for="@tempObject.Code">@tempObject.Name</label></div>
+                
+                                }
+                }
+            </div>
+            <div class="bbtn" style="text-align: center;">
+                <h1>
+                </h1>
+                <div style="color: red; display: none;" id="idProvinceTip">
+                </div>
+                <a href="javascript:;" id="savecolor" onclick="SaveProvince()" class="btn120" style="margin-top: 6px;">
+                    确定</a> <a href="javascript:;" id="savecolor" onclick="CloseProvinceDiv()" class="btn120"
+                        style="margin-top: 6px;">取消</a> <span style="position: relative; left: -382px; top: 5px;">
+                            <input type="checkbox" id="chkAllProvince" onclick="CheckAllProvince(this);" /><label
+                                for="chkAllProvince">全选</label>
+                        </span>
+            </div>
+        </div>
+        <div id="idBigDiv" class="ui-widget-overlay" style="display: none; position: absolute;
+            top: 0px; left: 0px; opacity: 0.3; width: 100%; height: 100%; z-index: 10002;"
+            divbox_scrolltop="0" divbox_scrollleft="0" htmloverflow="visible">
+        </div>
+        <table border="0" cellspacing="0" cellpadding="0" class="m_talbe m_talbe2" id="idTableNone"
+            style="display: none;">
+            <tr class="t_trNew">
+                <td style="width: 400px;">
+                    <label class="lab">
+                        未指定地区</label>
+                    <input type="hidden" />
+                    <a href="#" class="state" style="float: right; padding-right: 5px;" onclick="OpenProvinceDiv(this,'freightDetailTable')">
+                        编辑</a>
+                </td>
+                <td>
+                    <input onblur="ValidInputCount(this)" type="text" style="float: none; width: 60px;
+                        height: 20px; line-height: 20px; margin-top: 1px; text-align: center;" value="1" />
+                </td>
+                <td>
+                    <input onblur="ValidInputPrice(this)" type="text" style="float: none; width: 60px;
+                        height: 20px; line-height: 20px; margin-top: 1px; text-align: center;" value="0.00" />
+                </td>
+                <td>
+                    <input onblur="ValidInputCount(this)" type="text" style="float: none; width: 60px;
+                        height: 20px; line-height: 20px; margin-top: 1px; text-align: center;" value="1" />
+                </td>
+                <td>
+                    <input onblur="ValidInputPrice(this)" type="text" style="float: none; width: 60px;
+                        height: 20px; line-height: 20px; margin-top: 1px; text-align: center;" value="0.00" />
+                </td>
+                <td>
+                    <input type="hidden" value ="@Guid.Empty.ToString()" />
+                    <a href="#" class="state" onclick="DelFreightDetail(this)">删除</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+}
+<table border="0" cellspacing="0" cellpadding="0" class="m_talbe m_talbe2" id="partialFreeTemplateTable"
+    style="display: none;">
+    <tr class="t_trNew">
+        <td style="width: 400px; padding: 4px;">
+            <label class="lab">
+                {FreightTo}</label>
+            <input type="hidden" value="{DestinationCodes}" />
+            <a href="#" class="state" style="float: right; padding-right: 5px;" onclick="OpenProvinceDiv(this,'partialFreeTable')">
+                编辑</a>
+        </td>
+        <td>
+            <div style="text-align: left; width: 60%; margin: 10px auto;">
+                <select onchange="selectPartialFreeConditionChanged(this);" style="width: 149px;
+                    height: 28px;">
+                    @*包邮条件:0件数(重量:kg); 1,金额 ; 2件数(重量)+金额 *@
+                    <option value="0">{FeeType}</option>
+                    <option value="1">金额</option>
+                    <option value="2" style="display: none;">金额+{FeeType}</option>
+                </select>
+                <div af-tag="freightFree0">
+                    {Outter}<input type="text" value="{FreeCount}" style="float: none; width: 80px; height: 24px;
+                        margin-left: 4px; margin-right: 4px; margin-top: 6px;" onblur="ValidInputCount(this)" />
+                    {FeeUnitDefault}{Inner}包邮</div>
+                <div af-tag="freightFree1" style="display: none;">
+                    满<input type="text" onblur="ValidInputAmount(this);" value="{FreePrice}" style="float: none;
+                        width: 80px; height: 24px; margin-left: 4px; margin-right: 4px; margin-top: 6px;" />元包邮</div>
+                <div af-tag="freightFree2" style="display: none;">
+                    {Outter}<input type="text" value="{FreeCount}" style="float: none; width: 80px; height: 24px;
+                        margin-left: 4px; margin-right: 4px; margin-top: 6px;" onblur="ValidInputCount(this)" />{FeeUnitDefault}{Inner}，
+                    <input type="text" value="{FreePrice}" style="float: none; width: 80px; height: 24px;
+                        margin-left: 4px; margin-right: 4px; margin-top: 6px;" onblur="ValidInputAmount(this);" />元以上包邮</div>
+            </div>
+        </td>
+        <td>
+            <input type="hidden" value="{Id}" />
+            <a href="javascript:void(0);" onclick="deletePartialFree(this);">删除</a>
+            <br />
+            <a href="javascript:void(0);" onclick="AddPartialFree();">添加</a>
+        </td>
+    </tr>
+</table>
+<div id="specificGroupTemplate" class="specific-freight-group" style="display: none;">
+    <div class="blank-line" style="height: 20px;">
+    </div>
+    <table class="range-freight-table" cellspacing="0">
+        <caption>
+            <label style="float: left;">
+                未指定地区</label>
+            <input type="hidden" />
+            <a href="javascript:;" style="float: right; margin-right: 10px;">编辑</a>
+        </caption>
+        <thead>
+            <tr>
+                <th width="80px">
+                    层级
+                </th>
+                <th colspan="3">
+                    购买金额（元）
+                </th>
+                <th>
+                    运费
+                </th>
+                <th style="width: 100px;">
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    1
+                </td>
+                <td>
+                    <input type="text" name="min" value="0" />
+                </td>
+                <td>
+                    &nbsp;&nbsp;~&nbsp;&nbsp;
+                </td>
+                <td>
+                    <input type="text" name="min" value="88" />
+                </td>
+                <td>
+                    <input type="text" name="cost" value="12" />
+                </td>
+                <td>
+                </td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="6">
+                    <hr />
+                    <a href="javascript:;" onclick="addDefaultRangeCost(this);">新增一级</a> <a href="javascript:;"
+                        onclick="removeSpecificGroup(this);" style="float: right;">删除</a>
+                </td>
+            </tr>
+            <tr id="template" style="display: none;">
+                <td>
+                </td>
+                <td>
+                    <input type="text" name="min" value="" />
+                </td>
+                <td>
+                    &nbsp;&nbsp;~&nbsp;&nbsp;
+                </td>
+                <td>
+                    <input type="text" name="min" value="" />
+                </td>
+                <td>
+                    <input type="text" name="cost" value="" />
+                </td>
+                <td>
+                    <a href="javascript:;" onclick="removeDefaultRangeCost(this)">删除</a>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>

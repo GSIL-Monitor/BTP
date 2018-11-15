@@ -1,0 +1,162 @@
+﻿@model List<Jinher.AMP.BTP.UI.Controllers.SettleAccountsController.ExportViewModel>
+@{
+    Layout = null;
+    ViewBag.Title = ViewBag.Name;
+}
+@helper GetStatusDesc(int status)
+    {
+    if (status == 0)
+    {
+    @:待结算
+    }
+    else if (status == 1)
+    {
+    @:等待商家确认
+    }
+    else if (status == 2)
+    {
+    @:待打款
+    }
+    else if (status == 3)
+    {
+    @:已结算
+    }
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>对账单</title>
+    <style type="text/css">
+        body
+        {
+            font-size: 13px;
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI" , Roboto, "Helvetica Neue" , Arial, "PingFang SC" , "Hiragino Sans GB" , "Microsoft YaHei" , sans-serif;
+            line-height: 1.42857143;
+            color: #333333;
+            background-color: #fff;
+        }
+        
+        table
+        {
+            width: 100%;
+        }
+        
+        body > section + section
+        {
+            margin-top: 80px;
+        }
+        
+        .header .title
+        {
+            font-weight: 700;
+            font-size: 18px;
+            text-align: center;
+            margin: 20px;
+        }
+        
+        .orderInfo .title
+        {
+            font-size: 16px;
+            color: white;
+            width: 100px;
+            text-align: center;
+            padding: 8px 15px;
+            background-color: rgb(0, 153, 255);
+        }
+        
+        
+        .orderInfo table
+        {
+            border-right: 1px solid rgb(121, 121, 121);
+            border-bottom: 1px solid rgb(121, 121, 121);
+        }
+        
+        .orderInfo table th
+        {
+            border-left: 1px solid rgb(121, 121, 121);
+            border-top: 1px solid rgb(121, 121, 121);
+        }
+        
+        .orderInfo table td
+        {
+            text-align: center;
+            border-left: 1px solid rgb(121, 121, 121);
+            border-top: 1px solid rgb(121, 121, 121);
+        }
+    </style>
+</head>
+<body>
+    @foreach (var m in Model)
+    {
+        <section>
+        <div class="header">
+            <div class="title">【 @(ViewBag.IsMall ? m.SettleAccount.AppName : m.SettleAccount.EsAppName) 】- 结算单</div>
+            <table cellspacing="10">
+                <tr>
+                    <td>结算单号： @m.SettleAccount.Code</td>
+                    <td>结算截止日期： @m.SettleAccount.AmountDate.ToString("yyyy-MM-dd")</td>
+                    <td>结算状态： @GetStatusDesc(m.SettleAccount.State)</td>
+                </tr>
+                <tr>
+                    <td>订单总额： ￥@m.SettleAccount.OrderAmount.ToString("f2")</td>
+                    <td>实收款总额： ￥@m.SettleAccount.OrderRealAmount.ToString("f2")</td>
+                    <td>商家结算金额：<span @Html.Raw(m.SettleAccount.SettleStatue ? "" : "style=\"color:red;\"")>￥@m.SettleAccount.SellerAmount.ToString("f2")</span></td>
+                </tr>
+                @if (ViewBag.IsMall)
+                {
+                    <tr>
+                        <td>App名称：@m.SettleAccount.AppName</td>
+                        <td>商家类型： @Jinher.AMP.BTP.Common.MallTypeHelper.GetMallTypeString(m.SettleAccount.SellerType)</td>
+                        <td>银行账号： @m.ChargeAccount.BankAccount</td>
+                    </tr>
+                    <tr>
+                        <td>开户名称： @m.ChargeAccount.AccountName</td>
+                        <td colspan="2">开户行名称： @m.ChargeAccount.BankName </td>
+                    </tr>
+                }
+                else
+                {
+                    <tr>
+                        <td>商家类型： @Jinher.AMP.BTP.Common.MallTypeHelper.GetMallTypeString(m.SettleAccount.SellerType)</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                }
+            </table>
+        </div>
+        <div style="height:10px;"></div>
+        <div class="orderInfo">
+            <div class="title">订单列表</div>
+            <table cellspacing="0" cellpadding="10px;">
+                <tr style="background-color:rgb(215, 215, 215);">
+                    <th>序号</th>
+                    <th>订单编号</th>
+                    <th>下单时间</th>
+                    <th>订单金额</th>
+                    <th>实收款</th>
+                    <th>订单结算金额</th>
+                </tr>
+                @{
+                int count = 0;
+                foreach (var o in m.OrderInfoes)
+                {
+                    count++;
+                <tr>
+                    <td>@count</td>
+                    <td>@o.OrderCode</td>
+                    <td>@o.OrderSubTime.ToString("yyyy-MM-dd")</td>
+                    <td>￥@o.OrderAmount.ToString("f2")</td>
+                    <td>￥@o.OrderRealAmount.ToString("f2")</td>
+                    <td>￥@o.SellerAmount.ToString("f2")</td>
+                </tr>
+                }
+                }
+            </table>
+        </div>
+    </section>
+    }
+</body>
+</html>

@@ -1,0 +1,76 @@
+﻿@{
+    ViewBag.Title = "TestTmp";
+    Layout = null;
+}
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link href="/Content/css/style.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="/Scripts/jquery.js"></script>
+    <title>缓存管理</title>
+    <style type="text/css">
+        ul li
+        {
+            display: block;
+            margin: 10px;
+            margin-bottom: 12px;
+        }
+        .cacheButton
+        {
+            border: 1px solid #bfcfda;
+            border-radius: 5px;
+            -moz-border-radius: 5px; /* Old Firefox */
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+            background: #f2f4f7;
+            padding: 3px 8px;
+            margin-bottom: 10px;
+        }
+        .cacheButton span
+        {
+            color: #0000ff;
+        }
+        .con
+        {
+            margin:10px;
+        }
+    </style>
+    <script type="text/javascript">
+        $(function () {
+            //消息测试
+            $("#messageTest").click(function () {
+                $.ajax({
+                    url: "/Test/PublishOrderMessage",
+                    data: { id: $.trim($("#id").val()), userids: $.trim($("#userids").val()), appId: $.trim($("#appId").val()), contentCode: $.trim($("#contentCode").val()), messages: $.trim($("#messages").val()), contentCode: $.trim($("#contentCode").val()) },
+                    type: "post",
+                    dataType: "json",
+                    success: function (data) {
+                        //alert("发送成功");
+                    },
+                    error: function (data, text) {
+                        //alert("操作失败");
+                    }
+                });
+            });
+
+        });
+    </script>
+</head>
+<body>
+ <div class="con">
+    // public void PublishOrderMessage(string id, string userids, Guid appId, string messages, string contentCode)
+    <p style="margin-bottom: 5px;">
+        消息测试</p>
+    <div>
+       <div>id:<input type="text" id="id" value="7F4C5B30-94E6-47B4-BBDA-0D70112293B6" /></div>
+       <div>userid:<input type="text" id="userids" value="7b5421a6-0b28-40db-9517-5af1bd0e5b79" /></div>
+       <div>appId:<input type="text" id="appId" value="1375AD99-DE3B-4E93-80D5-5B96E1588967" /></div> 
+        <div>contentCode:<input type="text" id="contentCode" value="BTP002" /></div>
+       <div> messages:</div>
+       <div><textarea id="messages" rows="20" cols="20" style="width: 500px; height: 400px;"></textarea></div>
+       <div><input type="button" id="messageTest" value="提交" style=" border:1px solid #ccc;" /></div> 
+    </div>
+    </div>
+</body>
+</html>

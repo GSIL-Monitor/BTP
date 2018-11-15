@@ -1,0 +1,403 @@
+﻿@{
+    ViewBag.Title = "结算管理";
+    Layout = "~/Views/Shared/_VueLayout.cshtml";
+}
+
+@section Css {
+    <style>
+        .el-row {
+            margin-bottom: 20px;
+        }
+        .el-row:last-child {
+            margin-bottom: 0;
+        } 
+    </style>
+}
+
+<div class="breadcrumb">
+    <span>入驻管理</span>
+    <span> > </span>
+    <span style="color:red">结算管理 </span>
+    <a class="back" href="javascript:window.history.back();">
+        <img src="/Content/images/wx-back.png" /><span>&nbsp;返回上一级</span>
+    </a>
+</div>
+<div class="content">
+    <div id="listWithFiltersPage">
+        <div class="content-inner">
+            <!-- filters start -->
+            <div class="filters">
+                <el-form :inline="true" :model="searchForm" :rules="searchrules" ref="searchForm">
+                    <el-form-item label="供应商：" prop="SupplierName">
+                        <el-input v-model="searchForm.SupplierName"></el-input>
+                    </el-form-item>
+                    <el-form-item label="App名称：" prop="AppName">
+                        <el-input v-model="searchForm.AppName"></el-input>
+                    </el-form-item>
+                    <el-form-item label="商家类型：" prop="SellerType">
+                        <el-select v-model="searchForm.SellerType">
+                            <el-option label="全部" value=""></el-option>
+                            <el-option v-for="item in mallTypeOptions" :key="item.value" :label="item.label" :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="结算截止日期：" prop="AmountDate">
+                    <el-date-picker v-model="searchForm.AmountDate" type="date" placeholder="选择日期"></el-date-picker>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @@click="handleSearch">查询</el-button>
+                        <a class="el-button el-button--text" href="@Url.Action("history",new {appId = Request.QueryString["appId"], userId = Request.QueryString["userId"]})">查看历史结算单</a>
+                        <el-button type="text" @@click="importDialogVisible=true">重新核算订单</el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
+            <div class="operations">
+                <el-button size="small" type="primary" @@click="createMutiple">生成结算单</el-button>  
+            </div>
+
+            <el-table :data="tableData" style="width: 100%" element-loading-text="拼命加载中" v-loading="loading" border stripe @@selection-change="handleSelectionChange">
+                <el-table-column type="selection" :selectable="canSelect" width="55"></el-table-column>
+                <el-table-column type="index" lable="序号" width="60"></el-table-column>
+                <el-table-column prop="SupplierName" label="供应商" min-width="130"></el-table-column>
+                <el-table-column prop="AppName" label="App名称" min-width="120">
+                    <template scope="scope">
+                        <el-button type="text" @@click="viewBankInfo(scope.row)">{{scope.row.AppName}}</el-button>                       
+                    </template>
+                </el-table-column>
+                <el-table-column prop="SellerType" label="商家类型" min-width="100">
+                    <template scope="scope">
+                        {{RN.getMallType(scope.row.SellerType)}}
+                    </template>
+                </el-table-column>
+                <el-table-column prop="OrderAmount" label="订单总额" min-width="100">
+                    <template scope="scope">
+                        <el-button type="text" @@click="viewOrder(scope.row)">{{scope.row.OrderAmount}}</el-button>                       
+                    </template>
+                </el-table-column>
+                <el-table-column prop="SellerAmount" label="商家结算金额 " min-width="110">
+                    <template scope="scope">
+                        <span v-if="scope.row.SettleStatue && scope.row.SellerAmount > 0">{{scope.row.SellerAmount}}</span>
+                        <span v-else style="color:red">{{scope.row.SellerAmount}}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="结算截止日期" min-width="110" :formatter="dateFormat"></el-table-column>
+                <el-table-column label="结算状态" min-width="90" :formatter="statusFormat"></el-table-column>
+                <el-table-column label="操作" width="280" align="center">
+                    <template scope="scope">
+                        <el-button :disabled="scope.row.State!=0" type="primary" size="mini" @@click="create(scope.$index, scope.row)">生成结算单</el-button>
+                        <el-button :disabled="scope.row.State!=2" type="success" size="mini" @@click="updatePaidStatus(scope.$index, scope.row)">置为已打款</el-button>
+                        <el-button :disabled="scope.row.State==0" type="info" size="mini" @@click="details(scope.row.Id)">查看结算单</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <div class="pagination-wrapper" v-show="!loading">
+                <el-pagination layout="total, sizes, prev, pager, next, jumper" @@size-change="handleSizeChange" @@current-change="handleCurrentChange" :total="total" :current-page="page" :page-sizes="[10, 20, 50, 100]" :page-size="pageSize" >
+                </el-pagination>
+            </div>
+        </div>
+    </div>
+</div>
+
+<template>
+    <el-dialog :title="bankInfoDialogData.Title" :visible.sync="bankInfoDialogVisible" size="tiny">
+        <div>
+            <el-row>
+                <el-col :span="8"><div>银行账号：</div></el-col>
+                <el-col :span="16"><div>{{bankInfoDialogData.BankAccount}}</div></el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="8"><div>开户名称：</div></el-col>
+                <el-col :span="16"><div>{{bankInfoDialogData.AccountName}}</div></el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="8"><div>开户行名称：</div></el-col>
+                <el-col :span="16"><div>{{bankInfoDialogData.BankName}}</div></el-col>
+            </el-row>
+        </div>
+        <span slot="footer" class="dialog-footer">
+            <el-button @@click="bankInfoDialogVisible = false">关 闭</el-button>
+        </span>
+    </el-dialog>
+</template>
+
+<template>
+    <el-dialog title="订单列表" :visible.sync="orderDialogVisible">
+        <div>
+            <el-table :data="orderDialogData.tableData" style="width: 100%" element-loading-text="拼命加载中" v-loading="orderDialogData.loading" border stripe>
+                <el-table-column type="index" lable="序号" width="60" align="center"></el-table-column>
+                <el-table-column prop="OrderCode" label="订单编号" min-width="158"></el-table-column>
+                <el-table-column prop="OrderSubTime" label="下单时间" min-width="100" :formatter="orderSubTimeFormat"></el-table-column>
+                <el-table-column prop="OrderAmount" label="订单金额 " min-width="90"></el-table-column>
+                <el-table-column label="订单结算金额" min-width="110">
+                        <template scope="scope">
+                            <span v-if="scope.row.Successed">{{scope.row.SellerAmount}}</span>
+                            <span v-else style="color:red">{{scope.row.SellerAmount}}</span>
+                        </template>
+                </el-table-column>
+            </el-table>
+            <div class="pagination-wrapper" v-show="!orderDialogData.loading">
+                <el-pagination layout="total, sizes, prev, pager, next, jumper" @@size-change="orderHandleSizeChange" @@current-change="orderHandleCurrentChange" :total="orderDialogData.total" :current-page="orderDialogData.page"  :page-size="orderDialogData.pageSize" :page-sizes="[10, 20, 50, 100]">
+                </el-pagination>
+            </div>
+        </div>
+        <span slot="footer" class="dialog-footer">
+            <el-button @@click="orderDialogVisible = false">关 闭</el-button>
+        </span>
+    </el-dialog>
+</template>
+
+<template>
+    <div element-loading-text="正在生成结算单..." v-loading.fullscreen.lock="fullscreenLoading"></div>
+</template>
+
+<template>
+    <el-dialog title="重新核算订单" :visible.sync="importDialogVisible" size="tiny">
+        <el-form ref="importForm" :model="importForm" :rules="importFormRules" label-width="80px">
+            <el-form-item label="订单时间" prop="AmountDate">
+                <el-date-picker type="daterange" v-model="importForm.AmountDate" type="date" placeholder="选择日期范围" style="width:210px"></el-date-picker>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @@click="onImportSubmit" :loading="loadingImport">立即导入</el-button>
+                <el-button @@click="importDialogVisible=false">关 闭</el-button>
+            </el-form-item>
+        </el-form>
+    </el-dialog>
+</template>
+
+@section Script{
+    <script>
+        var currentDate = new Date();
+        var defaultVue = new Vue({
+            el: '#app',
+            data: {
+                searchForm: {
+                    SupplierName:'',
+                    AppName: '',
+                    SellerType:'',
+                    AmountDate: moment(new Date()).format("YYYY-MM-DD")
+                },
+                searchrules: {
+                    AppName: [
+                        { max: 30, message: '最多输入30个字', trigger: 'change' }
+                    ],
+                    AmountDate:[{required:true,message:'请选择结算截止日期'}]
+                },
+                loading: false,
+                fullscreenLoading: false,
+                tableData: [],
+                total:0,
+                page:1,
+                pageSize:20,
+                selectedIds: [],
+                createDialog: false,
+                bankInfoDialogVisible: false,
+                bankInfoDialogData:{},
+                orderDialogVisible:false,
+                orderDialogData:{
+                    loading: false,
+                    fullscreenLoading: false,
+                    tableData: [],
+                    total:0,
+                    page:1,
+                    pageSize:20
+                },
+                importDialogVisible: false,
+                loadingImport: false,
+                importForm: {
+                    AmountDate:[new Date(currentDate.getTime() - 3600 * 1000 * 24 * 30), currentDate],
+                },
+                importFormRules: {
+                    AmountDate:[{required:true,message:'请选择订单日期范围'}]
+                },
+                mallTypeOptions: RN.mallTypeOptions
+            },
+            methods: {
+                handleSelectionChange: function(val) {
+                    var tempArr = new Array();
+                    val.forEach(function(v) {
+                        if(v.State==0) tempArr.push(v.Id);
+                    });
+                    this.selectedIds = tempArr;
+                },
+                handleSearch: function() {
+                    this.$refs['searchForm'].validate(function(valid) {
+                        if (valid) {
+                            defaultVue.page = 1;
+                            defaultVue.fetchData();
+                        } else {
+                            console.log('error submit!!');
+                        }
+                    });
+                },
+                handleSizeChange: function(val){
+                    this.pageSize =val;
+                    this.page=1;
+                    this.fetchData();
+                },
+                handleCurrentChange: function(page) {
+                    this.page=page||this.page;
+                    this.fetchData();
+                },
+                fetchData: function(){
+                    this.loading = true;
+                    this.$http.post('@Url.Action("GetMallData")', {
+                        PageSize:this.pageSize, 
+                        Page:this.page, 
+                        SupplierName:this.searchForm.SupplierName,
+                        AppName:this.searchForm.AppName,
+                        SellerType:this.searchForm.SellerType,
+                        AmountDate:this.searchForm.AmountDate }).
+                    then(function(res) {
+                        defaultVue.loading = false;
+                        if(res.body.isSuccess){
+                            defaultVue.tableData = res.body.Data.List;
+                            defaultVue.total = res.body.Data.Count;
+                        } else {
+                            defaultVue.$message.error(res.body.Message);
+                        }
+                    });
+                },
+                canSelect: function(row, index) {
+                    return row.State == 0;
+                },
+                dateFormat: function(row, column) { 
+                    return moment(row.AmountDate).format("YYYY-MM-DD"); 
+                },
+                statusFormat: function(row, column){
+                    switch(row.State){
+                        case 0 : return '待结算';
+                        case 1 : return '等待商家确认';
+                        case 2 : return '待打款';
+                        case 3 : return '已结算';
+                        default : return '';
+                    }                   
+                },
+                // 生成结算单
+                create: function($index, row){
+                      this.$http.post('@Url.Action("Create")', {Ids:[row.Id]}).then(function(res) {
+                        if(res.body.isSuccess) {
+                            defaultVue.$message.success('生成结算单成功');
+                            row.State = 1;
+                        } else {
+                            defaultVue.$message.error(res.body.Message);
+                        }
+                    });
+                },
+                createMutiple: function(){
+                    if(this.selectedIds.length == 0){
+                        this.$message.warning('请选择要结算的商家');
+                        return;
+                    }
+                    this.$confirm('确认要给选择的商家结算吗？', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'}).
+                    then(function() {
+                        defaultVue.$http.post('@Url.Action("Create")', {Ids:defaultVue.selectedIds}).then(function(res) {
+                            if(res.body.isSuccess) {
+                                defaultVue.$message.success('生成结算单成功');
+                                defaultVue.fetchData(1);
+                            } else {
+                                defaultVue.$message.error(res.body.Message);
+                            }
+                        });
+                    }).catch(function(){});
+                },
+                // 查看银行信息
+                viewBankInfo: function(row){
+                    this.$http.get('@Url.Action("GetAppInfo")/'+row.AppId).then(function(res) {
+                        if(res.body.isSuccess) {
+                            defaultVue.bankInfoDialogVisible = true;
+                            defaultVue.bankInfoDialogData.Title = row.AppName + '--银行信息';
+                            defaultVue.bankInfoDialogData.AccountName = res.body.Data.AccountName;
+                            defaultVue.bankInfoDialogData.BankAccount = res.body.Data.BankAccount;
+                            defaultVue.bankInfoDialogData.BankName = res.body.Data.BankName;
+                        } else {
+                            defaultVue.$message.error(res.body.Message);
+                        }
+                    });
+                },
+                // 查看结算单
+                details: function(id){
+                    window.location.href="@Url.Action("Details")/"+id;
+                },
+                // 置为已打款
+                updatePaidStatus: function($index, row){
+                    this.$confirm('您确定要置为已打款吗？', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'}).
+                    then(function() {
+                        defaultVue.$http.post('@Url.Action("UpdatePaidStatus")', {Id:row.Id}).then(function(res) {
+                            if(res.body.isSuccess) {
+                                defaultVue.$message.success('操作成功');
+                                defaultVue.tableData.splice($index,1);
+                            } else {
+                                defaultVue.$message.error(res.body.Message);
+                            }
+                        });
+                    }).catch(function(){});
+                },
+                // 订单列表方法
+                viewOrder: function(row){
+                    this.orderDialogData.id = row.Id;
+                    this.orderHandleSizeChange(20);
+                    this.orderDialogVisible = true;
+                },
+                orderHandleSizeChange: function(val){
+                    this.orderDialogData.pageSize = val;
+                    this.orderDialogData.page = 1;
+                    this.orderFetchData();
+                },
+                orderHandleCurrentChange: function(page) {
+                    this.orderDialogData.page = page || this.page;
+                    this.orderFetchData();
+                },
+                orderFetchData: function(){
+                    this.orderDialogData.loading = true;
+                    this.$http.post('@Url.Action("GetOrderInfoes")', {
+                        Id:this.orderDialogData.id,
+                        PageSize:this.orderDialogData.pageSize, 
+                        Page:this.orderDialogData.page }).
+                    then(function(res) {
+                        defaultVue.orderDialogData.loading = false;
+                        if(res.body.isSuccess){
+                            defaultVue.orderDialogData.tableData = res.body.Data.List;
+                            defaultVue.orderDialogData.total = res.body.Data.Count;
+                        } else {
+                            defaultVue.$message.error(res.body.Message);
+                        }
+                    });
+                },
+                orderSubTimeFormat: function(row, column) { 
+                    return moment(row.OrderSubTime).format("YYYY-MM-DD"); 
+                },
+                onImportSubmit:function(){
+                    this.$refs['importForm'].validate(function(valid) {
+                        if (valid) {
+                            defaultVue.loadingImport = true;
+                            defaultVue.$http.post('@Url.Action("Import")', {
+                                StartDate: defaultVue.importForm.AmountDate[0],
+                                EndDate: defaultVue.importForm.AmountDate[1]})
+                            .then(function(res) {
+                                if(res.body.isSuccess) {
+                                    defaultVue.importDialogVisible = false;
+                                    defaultVue.loadingImport = false;
+                                    defaultVue.$message.success('导入成功');
+                                    defaultVue.fetchData();
+                                } else {
+                                    defaultVue.$message.error(res.body.Message);
+                                }
+                            }, function(err){
+                                defaultVue.loadingImport = false;
+                            });
+                        } 
+                    });
+                }
+            },
+            mounted: function () {
+                this.fetchData();
+            }
+        })
+    </script>
+}

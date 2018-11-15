@@ -1,0 +1,218 @@
+﻿<div style="display: none;">
+    <ul id="tempWorkTime">
+        <li id="li_{Id}" tag="{tag}"><span>
+            <img src="/images/xin.png" /></span> <span style="visibility: {Text};">营业时间：</span>
+            <span>
+                <select id="s_h_{Id}" class="select inp-txt " style="width: 50px;">
+                    {SHours}
+                </select>时
+                <select id="s_m_{Id}" class="select inp-txt " style="width: 50px;">
+                    {SMins}
+                </select>分&nbsp;&nbsp;至&nbsp;&nbsp;
+                <select id="e_h_{Id}" class="select inp-txt " style="width: 50px;">
+                    {EHours}
+                </select>时
+                <select id="e_m_{Id}" class="select inp-txt " style="width: 50px;">
+                    {EMins}
+                </select>分 </span><a onclick="DelWorkTime('li_{Id}')" href="javascript:void(0);"
+                    style="position: relative; top: 25px; left: 5px; visibility: {Del}">删除</a>
+        </li>
+    </ul>
+</div>
+<script type="text/javascript">
+    $(function () {
+
+        $("#txtDeliveryS").datetimepicker();
+        $("#txtDeliveryE").datetimepicker();
+
+        var _hidstore = $("#StoreId");
+        if (_hidstore && _hidstore.length > 0) {
+            SetSetting();
+        }
+        else {
+            InitSelect(0, 1);
+        }
+    });
+
+    function CheckSetting(setting) {
+        if (!/^\d+(\.\d{2})?$/.test(setting.DeliveryAmount)) {
+            if (!/^\d+(\.\d{1})?$/.test(setting.DeliveryAmount)) {
+                return "请填写正确的起送价格";
+            }
+        }
+        if (!/^\d+(\.\d{2})?$/.test(setting.DeliveryFee)) {
+            if (!/^\d+(\.\d{1})?$/.test(setting.DeliveryFee)) {
+                return "请填写正确的配送费价格";
+            }
+        }
+        if (setting.DeliveryRange == "") {
+            return "请输入配送范围";
+        }
+
+        for (var i = 0; i < setting.WorkTimes.length; i++) {
+            var wt = setting.WorkTimes[i];
+            if (DateParse(wt.stime) >= DateParse(wt.etime)) {
+                return "营业截止时间不能早于开始时间";
+            }
+        }
+
+        if (setting.FreeAmount != "") {
+            if (!/^\d+(\.\d{2})?$/.test(setting.FreeAmount)) {
+                if (!/^\d+(\.\d{1})?$/.test(setting.FreeAmount)) {
+                    return "请填写正确的免配送费金额";
+                }
+            }
+        }
+
+        return "0";
+    }
+
+    function GetSetting() {
+        var setting = {};
+        setting.DeliveryRange = $("#txtDeliveryRange").val();
+        setting.DeliveryAmount = $("#txtDeliveryAmount").val();
+        setting.DeliveryFee = $("#txtDeliveryFee").val();
+        setting.Id = oldSetting == null ? "" : oldSetting.CateringSetting.Id;
+        setting.AppId = oldSetting == null ? "" : oldSetting.CateringSetting.AppId;
+        setting.StoreId = oldSetting == null ? "" : oldSetting.CateringSetting.StoreId;
+
+        setting.FreeAmount = $("#txtFreeAmount").val();
+        setting.DeliveryFeeStartT = $("#txtDeliveryS").val();
+        setting.DeliveryFeeEndT = $("#txtDeliveryE").val();
+        setting.DeliveryFeeDiscount = $("#txtDeliveryDis").val();
+
+        var _workTimes = [];
+        $("li[tag='worktime']").each(function () {
+            var ids = $(this).attr("id");
+            var i = ids.split('_')[1];
+            var stime = { hour: $("#s_h_" + i).val(), min: $("#s_m_" + i).val() };
+            var etime = { hour: $("#e_h_" + i).val(), min: $("#e_m_" + i).val() };
+            _workTimes.push({ stime: stime, etime: etime });
+        });
+        setting.WorkTimes = _workTimes;
+        return setting;
+    }
+    var oldSetting = null;
+    function SetSetting() {
+        $.ajax({
+            url: '/Store/GetStoreSetting',
+            type: 'post',
+            dataType: 'json',
+            data: { storeId: $("#StoreId").val() },
+            error: function () {
+            },
+            success: function (data) {
+                if (data.Result == true) {
+                    var setting = data.setting;
+                    $("#txtDeliveryRange").val(setting.CateringSetting.DeliveryRange);
+                    $("#txtDeliveryAmount").val(setting.CateringSetting.DeliveryAmount);
+                    $("#txtDeliveryFee").val(setting.CateringSetting.DeliveryFee);
+                    if (setting.CateringSetting.FreeAmount != 0) {
+                        $("#txtFreeAmount").val(setting.CateringSetting.FreeAmount);
+                    }
+                    $("#txtDeliveryS").val(doDateFormat(setting.CateringSetting.DeliveryFeeStartT));
+                    $("#txtDeliveryE").val(doDateFormat(setting.CateringSetting.DeliveryFeeEndT));
+                    if (setting.CateringSetting.DeliveryFeeDiscount != 0) {
+                        $("#txtDeliveryDis").val(setting.CateringSetting.DeliveryFeeDiscount);
+                    }
+
+                    var workTimes = setting.CYBusinessHours;
+                    InitSelect(0, workTimes.length);
+                    MaxLen = workTimes.length;
+                    for (var i = 0; i < MaxLen; i++) {
+                        var stime = ChangeDateFormat(workTimes[i].openingTime);
+                        var etime = ChangeDateFormat(workTimes[i].closingTime);
+                        $("#s_h_" + i).val(stime.hour);
+                        $("#s_m_" + i).val(stime.min);
+                        $("#e_h_" + i).val(etime.hour);
+                        $("#e_m_" + i).val(etime.min);
+                    }
+                    oldSetting = setting;
+
+                } else {
+                    alert(data.Message)
+                }
+            }
+
+        })
+    }
+
+    function doDateFormat(cellval) {
+        if (cellval == undefined || cellval == null || cellval == "") return "";
+        var state = 1;
+        try {
+            var date = new Date(parseInt(cellval.replace("/Date(", "").replace(")/", ""), 10));
+            var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+            var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+            var hour = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+            var minu = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+            if (state == 1) {
+                return date.getFullYear() + "-" + month + "-" + currentDate + " " + hour + ":" + minu;
+            } else {
+                return date.getFullYear() + "-" + month + "-" + currentDate;
+            }
+        } catch (e) {
+            return "";
+        }
+    }
+
+    var option = '<option value="{value}">{text}</option>';
+    function CreateOption(len) {
+        var html = "";
+        for (var i = 0; i < len; i++) {
+            var v = i < 10 ? ("0" + i) : i;
+            html += option.replace("{value}", v).replace("{text}", v);
+        }
+        return html;
+    }
+    var MaxLen = 1;
+    function InitSelect(s, len) {
+        var t_html = $("#tempWorkTime").html();
+        var html = "";
+        var h_html = CreateOption(24);
+        var m_html = CreateOption(60);
+        for (var i = s; i < len; i++) {
+            html += t_html.replaceAll("{Id}", i)
+                          .replaceAll("{SHours}", h_html)
+                          .replaceAll("{SMins}", m_html)
+                          .replaceAll("{EHours}", h_html)
+                          .replaceAll("{EMins}", m_html)
+                          .replaceAll("{tag}", "worktime")
+                          .replaceAll("{Text}", i == 0 ? "visible" : "hidden")
+                          .replaceAll("{Del}", i == 0 ? "hidden" : "visible");
+        }
+
+        $("#addworkTime").before(html);
+    }
+
+    function DelWorkTime(id) {
+        $("#" + id).remove();
+    }
+    function AddWrokTime() {
+        InitSelect(MaxLen, MaxLen + 1);
+        MaxLen++;
+    }
+
+    // 转换时间格式
+    function ChangeDateFormat(dateTime) {
+        var date = new Date(parseInt(dateTime.replace("/Date(", "").replace(")/", ""), 10));
+        var hour = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+        var min = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+        return { hour: hour, min: min };
+    }
+
+
+    function DateParse(hm) {
+        var DateStr = "2016-12-20" + " " + hm.hour + ":" + hm.min;
+        DateStr = DateStr.replaceAll("-", "/");
+        var converted = Date.parse(DateStr);
+        var myDate = new Date(converted);
+        return myDate;
+    }
+
+    String.prototype.replaceAll = function (AFindText, ARepText) {
+        var raRegExp = new RegExp(AFindText, "g");
+        return this.replace(raRegExp, ARepText);
+    };
+
+</script>

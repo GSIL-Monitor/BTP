@@ -1,0 +1,47 @@
+﻿@{
+    ViewBag.Title = ViewBag.Name;
+}
+<style type="text/css">
+    .nav_right
+    {
+        width: 100%;
+        height: 100%;
+        float: left;
+        overflow: hidden;
+    }
+    
+    .nav_block
+    {
+        width: 100px;
+        height: 100px;
+        display: inline-block;
+        margin-left: 100px;
+        margin: 20px 0px 0px 100px;
+        float: left;
+    }
+    .spn
+    {
+        margin-top: 5px;
+        display: inline-block;
+        margin-left: 10px;
+    }
+</style>
+<body>
+    <div class="nav_right">
+        <div class="nav_block">
+            <a href="@Url.Action("Index", "MallApply")?appId=@ViewBag.appId&userId=@ViewBag.userId">
+                <img src="../../Content/images/入驻申请.png" style="width: 80px; height: 80px;" />
+            </a><span class="spn">入驻申请</span>
+        </div>
+        <div class="nav_block">
+            <a href="@Url.Action("SellerIndex", "AppCommission")?appId=@ViewBag.appId&userId=@ViewBag.userId">
+                <img src="../../Content/images/佣金设置.png" style="width: 80px; height: 80px;" />
+            </a><span class="spn">佣金查看</span>
+        </div>
+        <div class="nav_block">
+            <a href="@Url.Action("Index", "SettleAccounts")?appId=@ViewBag.appId&userId=@ViewBag.userId">
+                <img src="../../Content/images/结算管理.png" style="width: 80px; height: 80px;" />
+            </a><span class="spn">结算管理</span>
+        </div>
+    </div>
+</body>

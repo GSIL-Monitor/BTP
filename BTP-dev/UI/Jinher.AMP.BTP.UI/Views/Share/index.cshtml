@@ -1,0 +1,50 @@
+﻿@{
+    Layout = null;
+    ViewBag.Title = "商品分享";
+    Jinher.AMP.BTP.Deploy.CommodityDTO commodity = ViewBag.com;
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>商品分享</title>
+    <link href="/Content/css/style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div class="box">
+        <div class="content content1">
+            <div class="right2 right22">
+                <ul>
+                    @*<li class="one"><span class="one1">
+                        <img src="/Images/app_pic1.jpg" /></span> <span>
+                            <img src="/Images/app_pic2.jpg" /></span>
+                        <h1>
+                            韩都衣舍</h1>
+                        <p>
+                            <img src="/Images/app_pic3.jpg" /></p>
+                    </li>
+                    <li class="two"><span>
+                        <img src="/Images/app_pic4.jpg" /></span>
+                        <p>
+                            韩都衣舍</p>
+                        <button>
+                            下载</button>
+                    </li>*@
+                    <li class="three">
+                        <ul>
+                            <li class="one2">@commodity.Name</li>
+                            <li class="one3"><span>销量：@commodity.Salesvolume</span> <span>收藏量：@commodity.TotalCollection</span>
+                            </li>
+                            <li class="one4">
+                                <img src="@commodity.PicturesPath" /></li>
+                        </ul>
+                    </li>
+                    <li class="four"><span class="L">
+                        <img src="/Images/app_pic7.jpg" /></span> <span class="R">
+                            <img src="/Images/app_pic9.jpg" /></span> </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

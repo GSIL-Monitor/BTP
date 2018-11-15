@@ -1,0 +1,25 @@
+﻿@{
+    ViewBag.Title = "ViewPage1";
+    Layout = null;
+}
+<script type="text/javascript" src="http://testbtp.iuoooo.com/Scripts/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript">
+        jQuery(document).ready(function () {
+            $.ajax({
+                type: "get",
+                async: true,
+                url: "http://testbtp.iuoooo.com/test/ReturnJson",
+                dataType: "jsonp",
+                success: function (json) {
+                    $("#spanName").html(json.name);
+                    $("#spanAge").html(json.age);
+                },
+                error: function (err) {
+                    alert('fail');
+                }
+            });
+        });
+</script>
+
+<div>姓名：<span id="spanName"></span></div>
+<div>年龄：<span id="spanAge"></span></div>

@@ -1,0 +1,210 @@
+﻿@{
+    ViewBag.Title = "历史结算单";
+    Layout = "~/Views/Shared/_VueLayout.cshtml";
+}
+<div class="breadcrumb">
+    <span>入驻管理</span>
+    <span> > </span>
+    <span>结算管理</span>
+    <span> > </span>
+    <span style="color:red">历史结算单</span>
+    <a class="back" href="javascript:window.history.back();">
+        <img src="/Content/images/wx-back.png" /><span>&nbsp;返回上一级</span>
+    </a>
+</div>
+<div class="content">
+    <div id="listWithFiltersPage">
+        <div class="content-inner">
+            <!-- filters start -->
+            <div class="filters">
+                <el-form :inline="true" :model="searchForm" :rules="searchFormRules" ref="searchForm">
+                    <el-form-item label="商城名称：" prop="EsAppName">
+                        <el-input v-model="searchForm.EsAppName"></el-input>
+                    </el-form-item>
+                    <el-form-item label="商家类型：" prop="SellerType">
+                        <el-select v-model="searchForm.SellerType">
+                            <el-option label="全部" value=""></el-option>
+                            <el-option v-for="item in mallTypeOptions" :key="item.value" :label="item.label" :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="结算时间：" prop="AmountDate">
+                        <el-date-picker type="daterange" v-model="searchForm.AmountDate" type="date" placeholder="选择日期范围" :picker-options="pickerOptions" style="width:210px"></el-date-picker>
+                    </el-form-item>
+                    <el-form-item label="结算结果：" prop="SettleStatue">
+                        <el-select v-model="searchForm.SettleStatue">
+                            <el-option  v-for="item in settleStatueOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @@click="handleSearch">查询</el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
+
+            <el-table :data="tableData" style="width: 100%" element-loading-text="拼命加载中" v-loading="loading" border stripe>
+                <el-table-column type="index" lable="序号" width="60"></el-table-column>
+                <el-table-column prop="EsAppName" label="商城名称" min-width="130"></el-table-column>
+                <el-table-column prop="SellerType" label="商家类型" min-width="100">
+                    <template scope="scope">
+                        {{RN.getMallType(scope.row.SellerType)}}
+                    </template>
+                </el-table-column>
+                <el-table-column label="结算日期" min-width="110" :formatter="dateFormat"></el-table-column>
+                <el-table-column prop="OrderAmount" label="订单总额" min-width="90"></el-table-column>
+                <el-table-column prop="SellerAmount" label="商家结算金额 " min-width="110">
+                    <template scope="scope">
+                        <span v-if="scope.row.SettleStatue && scope.row.SellerAmount > 0">{{scope.row.SellerAmount}}</span>
+                        <span v-else style="color:red">{{scope.row.SellerAmount}}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="结算结果" min-width="90">
+                    <template scope="scope">
+                        <span v-if="scope.row.SettleStatue">结算成功</span>
+                        <span v-else style="color:red">结算异常</span>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="Remark" label="备注"></el-table-column>
+                <el-table-column label="操作" width="80" align="center">
+                    <template scope="scope">
+                        <el-button type="info" size="mini" @@click="handleDetails(scope.row.Id)">查看详情</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <div class="pagination-wrapper" v-show="!loading">
+                <el-pagination layout="total, sizes, prev, pager, next, jumper" @@size-change="handleSizeChange" @@current-change="handleCurrentChange" :total="total" :current-page="page" :page-sizes="[10, 20, 50, 100]" :page-size="pageSize" >
+                </el-pagination>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Script{
+    <script>
+        var currentDate = new Date();
+        var defaultVue = new Vue({
+            el: '#app',
+            data: {
+                settleStatueOptions:[{
+                    value:'',label:'全部'
+                },{
+                    value:'true',label:'结算成功'
+                },{
+                    value:'false',label:'结算异常'
+                }],
+                searchForm: {
+                    EsAppName: '',
+                    SellerType:'',
+                    AmountDate:[new Date(currentDate.getTime() - 3600 * 1000 * 24 * 30), currentDate],
+                    SettleStatue:'',
+                },
+                searchFormRules: {
+                    EsAppName: [
+                        { max: 30, message: '最多输入30个字', trigger: 'change' }
+                    ]
+                },
+                pickerOptions:{
+                    shortcuts: [{
+                        text: '最近一周',
+                        onClick: function(picker) {
+                            var end = new Date();
+                            var start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '最近一个月',
+                        onClick: function(picker) {
+                            var end = new Date();
+                            var start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '最近三个月',
+                        onClick: function(picker) {
+                            var end = new Date();
+                            var start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }]
+                },
+                loading: false,
+                tableData: [],
+                total:0,
+                page:1,
+                pageSize:20,
+                selectedIds: [],
+                editDialog: false,
+                editRowIndex:'',
+                editForm:{
+                    SettleStatue:'true',
+                    Remark:''
+                },
+                editFormRules: {
+                    SettleStatue: [
+                        { required:true, message:'请选择结算结果' }
+                    ],
+                    Remark:[
+                        { required:true, message:'请输入备注内容' },
+                        { max: 100, message: '最多输入100个字', trigger: 'change' }
+                    ]
+                },
+                mallTypeOptions: RN.mallTypeOptions
+            },
+            methods: {
+                handleSizeChange: function(val) {
+                    this.pageSize = val;
+                    this.page = 1;
+                    this.fetchData();
+                },
+                handleCurrentChange: function(page) {
+                    this.page = page || this.page;
+                    this.fetchData();
+                },
+                handleSearch: function() {
+                    this.$refs['searchForm'].validate(function(valid) {
+                        if (valid) {
+                            defaultVue.page=1;
+                            defaultVue.fetchData();
+                        } else {
+                            console.log('error submit!!');
+                        }
+                    });
+                },
+                fetchData: function() {
+                    this.loading = true;
+                    var data = {
+                        PageSize:this.pageSize, 
+                        PageIndex:this.page,
+                        EsAppName:this.searchForm.EsAppName,
+                        SellerType:this.searchForm.SellerType,
+                        SettleStatue:this.searchForm.SettleStatue};
+                    if(this.searchForm.AmountDate[0]) data["StartDate"] = this.searchForm.AmountDate[0];
+                    if(this.searchForm.AmountDate[1]) data["EndDate"] = this.searchForm.AmountDate[1];
+                    this.$http.post('@Url.Action("GetSellerHistoryData")', data).
+                    then(function(res) {
+                        defaultVue.loading = false;
+                        if(res.body.isSuccess){
+                            defaultVue.tableData = res.body.Data.List;
+                            defaultVue.total = res.body.Data.Count;
+                        } else {
+                            defaultVue.$message.error(res.body.Message);
+                        }
+                    });
+                },
+                dateFormat: function(row, column) { 
+                    return moment(row.AmountDate).format("YYYY-MM-DD"); 
+                },            
+                // 查看结算单
+                handleDetails: function(id) {
+                    window.location.href = "@Url.Action("Details")/"+id;
+                }
+            },
+            mounted: function() {
+                this.fetchData();
+            }
+        })
+    </script>
+}

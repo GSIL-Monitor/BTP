@@ -1,0 +1,262 @@
+﻿@using Jinher.JAP.MVC
+@using Jinher.JAP.MVC.UIJquery
+@using Jinher.JAP.MVC.UIJquery.Validate
+@using Jinher.JAP.Common.TypeDefine
+@{
+   
+    Layout = "~/Views/Shared/_btpLayout.cshtml";
+}
+@section Css{
+    <link href="/Content/css/style.css" rel="stylesheet" type="text/css" />
+    @{Html.jQuery().StyleSheetRegistrar().DefaultGroup(group => group.Add("default/jquery.ui.all.css").Add("default/ui.jqgrid.css"));}
+}
+<style type="text/css">
+    .ui-jqgrid tr.jqgrow td
+    {
+        white-space: normal;
+    }
+    
+      .item
+        {
+            line-height: 28px;
+            margin-bottom: 10px;
+            min-height: 28px;
+            padding-left: 10px;
+        }
+        
+        .lable
+        {
+            display: block;
+            float: left;
+            width: 125px;
+            line-height: 28px;
+            padding-right: 5px;
+            margin-left: -130px;
+            _display: inline;
+            text-align: right;
+        }
+        input.inp-txt
+        {
+            height: 18px;
+            line-height: 18px;
+            border: 1px solid #B6C0CD;
+            padding: 4px 5px;
+            vertical-align: middle;
+            border-radius: 3px;
+            box-shadow: inset 1px 1px 2px #DBDBDB;
+        }
+        .btn120
+        {
+            display: inline-block;
+            width: 120px;
+            height: 28px;
+            line-height: 28px;
+            background: url(../Content/default/images/btn120.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+        }
+        .floa2 h1,
+		.bbtn h1{
+			font-size: 14px;
+			color: #8c94a9;
+			padding-bottom: 5px;
+			border-bottom: 1px solid #DDDDDD;	
+		}
+		.close{
+			margin-top: 10px;
+			float: right;
+			display: inline-block;
+			*zoom:1;
+			*display: inline;
+			width: 7px;
+			height: 7px;
+			color:transparent;
+			background: url(/Images/shut.png) center no-repeat;
+		}
+		
+		
+		.floa2 ul {
+			padding: 0px 0 10px 10px;
+		}
+		
+		.floa2 ul li{
+			margin-top: 5px;
+			color:#8c94a9;
+		}
+		.addfloa2{
+			display: none; 
+			z-index: 3;
+			padding: 5px 10px;
+			height:auto;
+			border:1px solid #B8BFCF;
+			
+			-webkit-border-radius: 3px;
+			-moz-border-radius: 3px;
+			border-radius: 3px;
+		}
+		
+		/*erci*/
+		.btn60
+        {
+            display: inline-block;
+            width: 60px;
+            height: 28px;
+            line-height: 28px;
+            background: url(../Content/default/images/btn60.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+        }
+    
+</style>
+<div class="box" style="padding-left: 20px; margin-bottom: 30px; overflow-x: hidden;
+    overflow-y: auto; width: 100%;">
+    <div class="content">
+        <div style="margin-top: 10px; height: 100px; margin-left: 22px; margin-bottom:2px;">
+            <span></span>
+            <textarea id="MainOrderIds" rows="5" cols="50" style="text-align: center; vertical-align: middle">
+          
+            </textarea>
+            <a class="btn60" id="search" href="javascript:;" onclick="seach()" style="/*margin-left: 10px;
+                */">查询</a> <span style="margin-left: 100px;">非代运营电商记录，不予显示</span>
+        </div>
+    </div>
+    <div id="clsContent" style="margin-right: 50px; margin-top: 15px; margin-left: 22px">
+        <table id="AppTradeInfoTable">
+        </table>
+        <div id="pager1">
+        </div>
+    </div>
+</div>
+<div style="display: none;">
+    <div id="UserOrderMess" style="padding: 10px 10px 10px 10px; overflow: auto; margin: 0 auto;">
+        <div id="content_make">
+            <div id="dataDIV">
+            </div>
+        </div>
+        <div id="pager">
+        </div>
+    </div>
+</div>
+@section ClientScript{
+    <script src="/Content/Business/BusinessAllEvent.js"></script>
+    <script src="/Scripts/jquery.cookie.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        //  一次最多可查10条记录，以分号分隔
+        $(function () {
+
+            //开始
+            var data = { "mainOrderIds": "" };
+            $("#AppTradeInfoTable").jqGrid({
+                url: "/CommodityOrder/GetMainOrdersPay",
+                mtype: "post",
+                datatype: "json",
+                postData: data,
+                colNames: ["对账订单id", "电商订单id", "app名称", "交易时间", "到款金额", "退款金额"],
+                colModel: [
+            { name: 'AccountIdString', index: 'AccountIdString', width: '20%', align: "center", sortable: false, title: false },
+            { name: 'O2OId', index: 'O2OId', width: '20%', align: "center", sortable: false, title: false },
+            { name: 'AppName', index: 'AppName', width: '14%', align: "center", sortable: false, title: false },
+            { name: 'PaymentTime', index: 'PaymentTime', width: '14%', align: "center", sortable: false, title: false },
+            { name: 'RealPrice', index: 'RealPrice', width: '14%', align: "center", sortable: false, title: false },
+            { name: 'RefundPrice', index: 'RefundPrice', width: '14%', align: "center", sortable: false, title: false }
+
+            ],
+                rowNum: 100, pager: "pager1",
+                height: "100%",
+                rownumbers: true,
+                autowidth: true,
+                forceFit: true,
+                scroll: false,
+                shrinkToFit: true,
+                jsonReader: { repeatitems: true },
+                gridComplete: function () {
+                    refreshEnd();
+                    newSetIframeHeight();
+                    //清空表
+                    $("#MainOrderIds").val("");
+                }
+            });
+
+            onresize = function () {
+                $("#AppTradeInfoTable").setGridWidth(document.body.clientWidth - 76);
+                try { parent.refreshLayout(); } catch (error) { }
+            }
+
+            //结束
+
+        });
+
+
+
+
+
+        //调整列表的高度
+        function refreshEnd() {
+            if (typeof window.parent.refreshLayout === 'function') {
+                window.parent.refreshLayout();
+            }
+        }
+
+
+
+        //查询
+        function seach() {
+            var mainOrderIds = $.trim($("#MainOrderIds").val());
+
+            if (mainOrderIds == "") {
+                alert("请输入要查的ID");
+                return;
+            }
+
+            var regGuid = /^\s*([A-F0-9]{8}(-[A-F0-9]{4}){3}-[A-F0-9]{12})\s*[;；]?\s*$|^\s*([A-F0-9]{8}([A-F0-9]{4}){3}[A-F0-9]{12})\s*[;；]?\s*$|^\s*((([A-F0-9]{8}(-[A-F0-9]{4}){3}-[A-F0-9]{12})|([A-F0-9]{8}([A-F0-9]{4}){3}[A-F0-9]{12}))\s*[;；]\s*)+(([A-F0-9]{8}(-[A-F0-9]{4}){3}-[A-F0-9]{12})|([A-F0-9]{8}([A-F0-9]{4}){3}[A-F0-9]{12}))\s*[;；]?\s*$/gi;
+
+            if (!regGuid.test(mainOrderIds)) {
+                alert("输入格式错误，请输入按分号分隔的ID");
+                return;
+            }
+
+            //长度不能超过10
+            var realLength = 0;
+            var regEmpty = new RegExp("\\s", "gmi");
+            mainOrderIds = mainOrderIds.replace(regEmpty, "");
+            mainOrderIds = mainOrderIds.replace("；", ";");
+            var m = mainOrderIds.split(";");
+            realLength = m.length;           
+            if (m[m.length - 1] == "") {
+                realLength = realLength - 1;
+            }
+            if (realLength > 10) {
+                alert("输入错误，一次最多可查10条数据");
+                return;
+            }
+
+            var data = { "mainOrderIds": mainOrderIds };
+            $('#AppTradeInfoTable').jqGrid(
+                'setGridParam', {
+                    datatype: "json",
+                    postData: data,
+                    url: "/CommodityOrder/GetMainOrdersPay",
+                    mtype: "post"
+                }
+            );
+            $('#AppTradeInfoTable').trigger("reloadGrid", [{ page: 1}]);
+        }
+
+    </script>
+}
+@section Script{
+    @{Html.jQuery().ScriptRegistrar().DefaultGroup(group => group.Add("jquery.extend.js")
+        .Add("i18n/jquery.ui-zh.js")
+        .Add("jquery.ui.base.js")
+        .Add("Grid/jquery.grid.base.js")
+        .Add("TableBox/jquery.ui.jhtablebox.js")
+        .Add("Pager/jquery.ui.jhpager.js")
+
+
+
+        );}
+}

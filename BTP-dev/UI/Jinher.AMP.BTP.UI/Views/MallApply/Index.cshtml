@@ -1,0 +1,229 @@
+﻿@{
+ViewBag.Title = ViewBag.Name;
+Layout = "~/Views/Shared/_VueLayout.cshtml";
+}
+
+
+<div class="breadcrumb">
+    <span>入驻管理</span>
+    <span> > </span>
+    <span style="color:red">入驻申请</span>
+    <a class="back" href="@Url.Action("SettlementManageUser", "SettlementManage")?appId=@ViewBag.appId&userId=@ViewBag.userId">
+        <img  src="/Content/images/wx-back.png" /><span>&nbsp;返回上一级</span>
+    </a>
+</div>
+
+<div class="content">
+<div id="listWithFiltersPage">
+<div class="content-inner">
+<!-- filters start -->
+<div class="filters">
+    <el-form :inline="true" :model="SumbitForm" ref="SumbitForm">
+        <el-form-item label="申请入驻商城"  >
+        <el-select v-model="SumbitForm.EsAppId"  placeholder="请选择">
+        <el-option
+        v-for="item in options"
+        :key="item.EsAppId"
+        :label="item.EsAppName"
+        :value="item.EsAppId">
+        </el-option>
+        </el-select>
+        </el-form-item>
+
+        <el-form-item>
+            <el-button type="primary" v-on:click="handleSubmit">提交</el-button>
+            <el-button type="text" onclick="window.location.href='@Url.Action("Index", "EsShopCommission")?appId=@ViewBag.appId&userId=@ViewBag.userId'">商城拥金查看</el-button>  
+        </el-form-item>
+
+    </el-form>
+</div>
+
+<el-table :data="tableData" style="width: 100%" height="560" element-loading-text="拼命加载中" v-loading="loading" border stripe>
+    <el-table-column type="index"  lable="序号" width="70"></el-table-column>
+    <el-table-column prop="EsAppName" label="商城名称" min-width="150">
+        <template scope="scope">
+            {{scope.row.EsAppName}}
+        </template>
+    </el-table-column>
+    <el-table-column prop="StateShow" label="审核状态" min-width="150">
+        <template scope="scope">
+            {{scope.row.StateShow}}
+        </template>
+    </el-table-column>
+    <el-table-column prop="ApplyContent" label="审核意见" min-width="250">
+            <template scope="scope">
+            {{scope.row.ApplyContent}}
+            </template>
+    </el-table-column>
+
+    <el-table-column label="操作" width="100">
+        <template scope="scope">
+            <el-button v-if="scope.row.State==2" type="primary" size="mini" @@click="updateState(scope.$index, scope.row)" >取消入驻</el-button>
+            <el-button v-if="scope.row.State==3" type="primary" size="mini" @@click="updateState(scope.$index, scope.row)" >重新申请</el-button>
+            </template>
+    </el-table-column>
+</el-table>
+
+</div>
+</div>
+</div>
+
+@section Script{
+<script type="text/javascript">
+
+var defaultVue=new Vue({
+el: '#app',
+data: {
+    SumbitForm: {
+        EsAppId: '',
+        AppId:'',
+        UserId:''
+    },
+    loading: true,
+    tableData: [],
+    options:[],
+    page:1,
+    pageSize:10000,
+    createDialog: false
+},
+methods: {
+    handleSubmit:function() 
+    {  
+        this.loading = true;
+        var EsAppName=null;
+        for (var i = 0; i < this.options.length; i++) {
+          if(this.options[i].EsAppId==this.SumbitForm.EsAppId){
+             EsAppName=this.options[i].EsAppName;
+          }
+        }
+        this.$http.post('@Url.Action("AddMallAppy", "MallApply")', {
+        EsAppId:this.SumbitForm.EsAppId,EsAppName:EsAppName,AppId:'@ViewBag.appId',UserId:'@ViewBag.userId'}).
+        then(function(res) {
+                this.loading = false;
+                if (res.body.data.isSuccess==true) 
+                {
+                    this.$message({
+                    showClose: true,
+                    message:res.body.data.Message,
+                    type: 'success'
+                    });
+                   this.fetchData();
+                }
+                else 
+                {
+                    this.$message({
+                    showClose: true,
+                    message: res.body.data.Message,
+                    type: 'error'
+                    });
+                    this.fetchData();
+                }
+        }).catch(function(response){
+            this.loading = false;
+            var start=response.body.indexOf("<title>"); 
+            var end=response.body.indexOf("</title>"); 
+            var str=response.body.substring(start+7,end);
+                this.$message({
+                    showClose: true,
+                    message:str,
+                    type: 'error'
+                    });
+            this.fetchData();
+        });  
+            
+    },
+    fetchData:function()
+    {
+        this.loading = true; 
+        this.$http.post('@Url.Action("GetMallAppy", "MallApply")',{PageIndex:this.page,PageSize:this.pageSize,AppId:'@ViewBag.appId'}).then(function(res){
+            this.loading = false;
+            this.tableData= res.body.data;
+        }).catch(function(response){
+            this.loading = false;
+            var start=response.body.indexOf("<title>"); 
+            var end=response.body.indexOf("</title>"); 
+            var str=response.body.substring(start+7,end);
+                this.$message({
+                    showClose: true,
+                    message:str,
+                    type: 'error'
+                    });
+        });                    
+    },
+    GetShopAppy:function()
+    {
+        this.loading = true;
+        this.$http.get('@Url.Action("GetShopAppy", "MallApply")').then(function(res){
+            this.loading = false;
+            this.options= res.body.data;
+        }).catch(function(response){
+            this.loading = false;
+        });   
+    },
+    updateState:function(index,row)
+    { 
+        var state=null;
+        var message=null;
+        var Id=row.Id;
+        var applyContent=null;
+        switch(row.State){
+            case 0 : break;
+            case 1 : break;
+            case 2 : state=1;;break;
+            case 3 : state=0;applyContent='重新申请';message='确认要重新申请'+row.EsAppName+'商城吗？';break;
+            case 4 : break;
+            case 5 : break;
+        }
+        if (state==1) 
+        {
+            this.update(Id,state,applyContent);
+        }
+        else
+        {
+            this.$confirm(message, '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+            }).then(function(){
+               defaultVue.update(Id,state,applyContent);
+            }).catch(function(response){});     
+        }
+        
+    },
+    update:function(id,state,applyContent)
+    {
+        this.$http.post('@Url.Action("UpdateState","MallApply")',{Id:id,State:state,ApplyContent:applyContent}).then(function(res){
+                this.loading = false;
+                if (res.body.data.isSuccess==true) 
+                {
+                    this.$message({
+                    showClose: true,
+                    message:res.body.data.Message,
+                    type: 'success'
+                    });
+                    this.fetchData();
+                }
+                else 
+                {
+                    this.$message({
+                    showClose: true,
+                    message: res.body.data.Message,
+                    type: 'error'
+                    });
+                    this.fetchData();
+                }
+        }).catch(function(response){
+            this.loading = false;
+            this.fetchData();
+        });  
+    }
+},
+mounted:function() {
+    ///初始化
+    this.GetShopAppy();
+    this.fetchData();
+}
+})
+</script>
+}
+

@@ -1,0 +1,197 @@
+﻿@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+    Jinher.AMP.BTP.Deploy.CustomDTO.DistributorInfoDTO resultInfo = ViewBag.DistributorInfo;
+    if (resultInfo == null)
+    {
+        resultInfo = new Jinher.AMP.BTP.Deploy.CustomDTO.DistributorInfoDTO();
+    }
+    
+}
+@section TitleHtml
+{
+    <title>佣金累计明细</title>
+}
+@section CssStyles{
+    <link href="/Content/Mobile/mobileKit-min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="/Content/style/icons.css" />
+    <link rel="stylesheet" href="/Content/style/skin.css" />
+    <link rel="stylesheet" href="/Content/Mobile/posting.css" />
+     <style type="text/css">
+        .u-table-content>div 
+        {
+            top:215px;
+        }
+        .hideTip
+        {
+            display:none;
+        }
+        .u-table-header span{
+            text-align: center;
+        }
+    </style>
+}
+@section ClientScript
+{
+    <script src="/Scripts/first-js.js" type="text/javascript"></script>
+    <script src="/Scripts/CommLib.js" type="text/javascript"></script>
+    <script src="/Content/js/mobileKit.min.js" type="text/javascript"></script>
+    <script src="/Scripts/CommLib.js" type="text/javascript"></script>
+    <script type="text/jscript">
+        var _distributorId = "";
+        var _pageSize1 = 15;
+        var _pageIndex1 = 1;
+        var addTemplete1 = "";
+        if (JsVilaDataNull(getQueryString("searchType"))) {
+            _searchType = getQueryString("searchType");
+        }
+        if (JsVilaDataNull(getQueryString("distributorId"))) {
+            _distributorId = getQueryString("distributorId");
+        }
+        _noResult = "";
+
+        $(function () {
+            //单点
+            saveContextDTOByUrl();
+            if (_searchType == 1) {
+                document.title = "佣金累计明细";
+            } else {
+                document.title = "待收益佣金明细";
+            }
+            _pageSize1 = 15;
+            _pageIndex1 = 1;
+            addTemplete1 = $("#divTableTemplete1>ul").html();
+
+            var scroller = $('#scroller').scrollLoad({
+                loadDownFn: function (me) { //下拉加载数据
+                    //添加数据
+                    pullUpAction1();
+                    me.resetload();
+                },
+                loadUpFn: function (me) {//上拉刷新
+                    me.resetload();
+                }
+            });
+            //加载一级
+            GetData1();
+        });
+
+        //滚动翻页 （自定义实现此方法）
+        function pullUpAction1() {
+            setTimeout(function () {
+                GetData1();
+            }, 1000);
+        }
+
+        function requestData(start, count) {
+            toast(start + "ghc" + count);
+        }
+
+        function updateContent(el, data) {
+            toast(el);
+            toast(data);
+        }
+        //获取数据
+        function GetData1() {
+            var subData = {};
+            subData.AppId = getEsAppId();
+            subData.DistributorId = _distributorId;
+            subData.SearchType = _searchType;  // 查询类型：1 佣金累计；2 待收益
+            subData.PageIndex = _pageIndex1;
+            subData.PageSize = _pageSize1;
+            var subDataJson = CommLib.ObjToString(subData);
+
+            getDataAjax2({
+                url: '/Distribute/GetDistributorMoneyInfo?r=' + Math.random(),
+                type: 'post',
+                dataType: "json",
+                contentType: "application/json",
+                data: subDataJson,
+                error: function () {
+                },
+                callback: function (msg) {
+                    if (msg == null || msg.Count < 1 || msg.DistributorMoneyList == null || msg.DistributorMoneyList.length < 1) {
+                        if (_pageIndex1 == 1) {
+                            $("#scroller>ul").html(_noResult);
+                        }
+                        return;
+                    }
+                    var resultData = msg.DistributorMoneyList;
+                    //第一页需要清空之前数据
+                    if (_pageIndex1 == 1) {
+                        $("#scroller>ul").html("");
+                    }
+
+                    for (var i = 0; i < resultData.length; i++) {
+                        if (!resultData[i]) continue;
+                        resultData[i].StateText = resultData[i].State == 0 ? "已入积分账户" : "待入账";
+                        resultData[i].SortTime1 = GetDateFormat(resultData[i].SortTime, 1);
+                        resultData[i].SortTime2 = GetDateFormat(resultData[i].SortTime, 2);
+                        var tmpHtml = addTemplete1.format(resultData[i]);
+                        $("#scroller>ul").append(tmpHtml);
+                    }
+                    _pageIndex1++;
+                }
+            });
+        }
+
+        function GetDateFormat(cellval, state) {
+            try {
+                var date = new Date(parseInt(cellval.replace("/Date(", "").replace(")/", ""), 10));
+                var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+                var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+                var hour = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+                var minu = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+                var miao = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+                if (state == 1) {
+                    return date.getFullYear() + "/" + month + "/" + currentDate;
+                }
+                else if (state == 2) {
+                    return hour + ":" + minu + ":" + miao;
+                }
+                else if (state == 3) {
+                    return date.getFullYear() + "-" + month + "-" + currentDate + " " + hour + ":" + minu + ":" + miao;
+                }
+                else {
+                    return date.getFullYear() + "/" + month + "/" + currentDate + " " + hour + ":" + minu + ":" + miao;
+                }
+            } catch (e) {
+                return "";
+            }
+        }
+    </script>
+}
+    <div class="page">
+        <header class="bar bar-nav hide">
+            <a class="fa fa-chevron-left pull-left" href="javascript:void(0);">返回</a>
+            <h1 class="title">佣金累计明细</h1>
+        </header>
+        <div class="content">
+            <div class="myDistribution">
+                <div class="income">
+                    <ul class="thead clearfix">
+                        <li class="date pull-left">时间</li>
+                        <li class="money pull-left">金额</li>
+                        <li class="state pull-left">状态</li>
+                    </ul>
+                    <div id="scroller" class="scroll-load">
+                        <ul class="income-list">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="divTableTemplete1" style="display: none">
+        <ul class="table-view">
+            <li>
+                <ul class="clearfix">
+                    <li class="date pull-left">
+                        <div>{SortTime1}</div>
+                        <div>{SortTime2}</div>
+                    </li>
+                    <li class="money pull-left">{Money}</li>
+                    <li class="state pull-left">{StateText}</li>
+                </ul>
+            </li>
+        </ul>
+    </div>

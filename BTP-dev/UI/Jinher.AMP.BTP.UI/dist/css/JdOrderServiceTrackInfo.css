@@ -1,0 +1,74 @@
+﻿html,body{
+    max-width: 500px;
+    margin: 0 auto;
+    font-family:  'Microsoft YaHei';
+    word-break: break-all;
+    font-size: 16px;
+}
+.toast-content{
+    font-size: 14px!important;
+}
+ul,li{
+    padding:0;
+    margin:0;
+    list-style:none;
+}
+.lists{
+    padding: .4rem;
+}
+.lists .list{
+    position: relative;
+    top:0;
+    left:0;
+    padding-left: .3rem;
+    padding-bottom: .4rem;
+}
+.lists .list:before{
+    content: '';
+    position: absolute;
+    top:0;
+    left:0;
+    bottom:0;
+    width: 1px;
+    background-color: #dedede;
+}
+.lists .list:first-child:before{
+    content: '';
+    top: .13rem;
+}
+.lists .list:last-child:before{
+    content: '';
+    height: .13rem;
+}
+.lists .list:after{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -0.1rem;
+    width: .3rem;
+    height: .3rem;
+    background-image: url(/Content/Mobile/wuliu2.png);
+    background-size: 100% 100%;
+    display: inline-block;
+}
+.lists .list:first-child:after{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -0.14rem;
+    width: .4rem;
+    height: .4rem;
+    background-image: url(/Content/Mobile/wuliu1.png);
+    background-size: 100% 100%;
+    display: inline-block;
+}
+.lists .list .title{
+    font-size: .26rem;
+    color: #343434;
+}
+.lists .list .tips{
+    line-height: .26rem;
+    margin-top: .18rem;
+    font-size: .26rem;
+    color: #999;
+}

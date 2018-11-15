@@ -1,0 +1,325 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{a764e4ae-7507-43ab-9c84-3ca599889ca6}</ProjectGuid>
+    <ArchitectureToolsVersion>2.0.0.0</ArchitectureToolsVersion>
+    <Name>Jinher.AMP.BTP.UML</Name>
+    <RootNamespace>Jinher.AMP.BTP.UML</RootNamespace>
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(VSToolsPath)\ArchitectureTools\Microsoft.VisualStudio.TeamArchitect.ModelingProject.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v10.0\ArchitectureTools\Microsoft.VisualStudio.TeamArchitect.ModelingProject.targets" Condition="false" />
+  <ItemGroup>
+    <Content Include="UMLComponentDiagram1.componentdiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="UMLComponentDiagram1.componentdiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>UMLComponentDiagram1.componentdiagram</DependentUpon>
+    </Content>
+    <Content Include="三级分销\h5\分销商申请资料查看.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="三级分销\h5\分销商申请资料查看.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>三级分销\h5\分销商申请资料查看.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="三级分销\h5\分销商申请资料编辑.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="三级分销\h5\分销商申请资料编辑.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>三级分销\h5\分销商申请资料编辑.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="三级分销\h5\原（我的分销）.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="三级分销\h5\原（我的分销）.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>三级分销\h5\原（我的分销）.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="三级分销\h5\微小店首页.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="三级分销\h5\微小店首页.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>三级分销\h5\微小店首页.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="三级分销\h5\我的分销.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="三级分销\h5\我的分销.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>三级分销\h5\我的分销.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="三级分销\h5\我的微小店.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="三级分销\h5\我的微小店.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>三级分销\h5\我的微小店.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="三级分销\h5\我要分销.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="三级分销\h5\我要分销.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>三级分销\h5\我要分销.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="三级分销\后台\分销商审核.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="三级分销\后台\分销商审核.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>三级分销\后台\分销商审核.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="三级分销\后台\分销商申请设置.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="三级分销\后台\分销商申请设置.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>三级分销\后台\分销商申请设置.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="三级分销\后台\分销商申请资料设置.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="三级分销\后台\分销商申请资料设置.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>三级分销\后台\分销商申请资料设置.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="三级分销\后台\分销规则说明.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="三级分销\后台\分销规则说明.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>三级分销\后台\分销规则说明.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="三级分销\我要分销业务流程.vsd">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="三级分销\校验用户分销商状态.vsd">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="手机端appId改造\appid、esappid处理.vsd">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="舌尖在线\H5前端页面\优惠券.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="舌尖在线\H5前端页面\优惠券.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>舌尖在线\H5前端页面\优惠券.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="舌尖在线\H5前端页面\支付成功后订单详情.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="舌尖在线\H5前端页面\支付成功后订单详情.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>舌尖在线\H5前端页面\支付成功后订单详情.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="舌尖在线\H5前端页面\点餐\下订单.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="舌尖在线\H5前端页面\点餐\下订单.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>舌尖在线\H5前端页面\点餐\下订单.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="舌尖在线\H5前端页面\点餐\点餐.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="舌尖在线\H5前端页面\点餐\点餐.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>舌尖在线\H5前端页面\点餐\点餐.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="舌尖在线\H5前端页面\点餐\菜品分类及菜品列表.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="舌尖在线\H5前端页面\点餐\菜品分类及菜品列表.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>舌尖在线\H5前端页面\点餐\菜品分类及菜品列表.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="舌尖在线\H5前端页面\点餐\订单确认.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="舌尖在线\H5前端页面\点餐\订单确认.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>舌尖在线\H5前端页面\点餐\订单确认.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="舌尖在线\H5前端页面\点餐\购物车.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="舌尖在线\H5前端页面\点餐\购物车.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>舌尖在线\H5前端页面\点餐\购物车.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="舌尖在线\H5前端页面\点餐\选择点餐门店.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="舌尖在线\H5前端页面\点餐\选择点餐门店.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>舌尖在线\H5前端页面\点餐\选择点餐门店.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="舌尖在线\H5前端页面\点餐\选门店.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="舌尖在线\H5前端页面\点餐\选门店.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>舌尖在线\H5前端页面\点餐\选门店.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="舌尖在线\H5前端页面\订单列表.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="舌尖在线\H5前端页面\订单列表.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>舌尖在线\H5前端页面\订单列表.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="舌尖在线\后台管理\下架商品管理.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="舌尖在线\后台管理\下架商品管理.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>舌尖在线\后台管理\下架商品管理.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="舌尖在线\后台管理\出售商品管理.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="舌尖在线\后台管理\出售商品管理.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>舌尖在线\后台管理\出售商品管理.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="舌尖在线\后台管理\带参数二维码.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="舌尖在线\后台管理\带参数二维码.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>舌尖在线\后台管理\带参数二维码.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="舌尖在线\后台管理\平台门店管理.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="舌尖在线\后台管理\平台门店管理.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>舌尖在线\后台管理\平台门店管理.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="舌尖在线\后台管理\新增菜品.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="舌尖在线\后台管理\新增菜品.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>舌尖在线\后台管理\新增菜品.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="舌尖在线\后台管理\订单打印.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="舌尖在线\后台管理\订单打印.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>舌尖在线\后台管理\订单打印.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="舌尖在线\后台管理\设置.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="舌尖在线\后台管理\设置.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>舌尖在线\后台管理\设置.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="舌尖在线\后台管理\餐饮订单管理.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="舌尖在线\后台管理\餐饮订单管理.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>舌尖在线\后台管理\餐饮订单管理.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="订单\SV接口SaveCommodityOrder.vsd">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="订单\原下订单流程.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="订单\原下订单流程.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>订单\原下订单流程.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="订单\众销与三级分销.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="订单\众销与三级分销.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>订单\众销与三级分销.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="订单\原下订单流程（含直接到账）.vsd">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="订单\原继续支付流程（含直接到账）.vsd">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="订单\后台\用户app订单.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="订单\后台\用户app订单.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>订单\后台\用户app订单.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="订单\新下订单流程（含直接到账）后台签名.vsd">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="订单\新下订单签名安全流程.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="订单\新下订单签名安全流程.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>订单\新下订单签名安全流程.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="订单\新继续支付签名安全流程.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="订单\新继续支付签名安全流程.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>订单\新继续支付签名安全流程.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="订单\原继续支付流程.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="订单\原继续支付流程.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>订单\原继续支付流程.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="订单\下单_支付.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="订单\下单_支付.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>订单\下单_支付.sequencediagram</DependentUpon>
+    </Content>
+    <Folder Include="ModelDefinition\" />
+    <Content Include="ModelDefinition\Jinher.AMP.BTP.UML.uml">
+      <SubType>Content</SubType>
+    </Content>
+    <Folder Include="三级分销" />
+    <Folder Include="三级分销\h5" />
+    <Folder Include="三级分销\后台" />
+    <Folder Include="舌尖在线" />
+    <Folder Include="手机端appId改造" />
+    <Folder Include="舌尖在线\H5前端页面" />
+    <Folder Include="舌尖在线\H5前端页面\点餐" />
+    <Folder Include="舌尖在线\后台管理" />
+    <Folder Include="订单" />
+    <Folder Include="订单\后台" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,20 @@
+﻿@{
+    Layout = "~/Views/Shared/_CYMobileLayout.cshtml"; 
+}
+@section TitleHtml
+{
+    <title>西部马华</title>
+}
+@section CssFile{
+    <link rel="stylesheet" href="/Content/style/mobile_cy/swiper.css">
+    <link rel="stylesheet" href="/Content/style/mobile_cy/index.css"/>
+}
+<div class="page">
+   @{Html.RenderPartial("../CYMobile/SelectStore");}
+</div>
+@section ScriptFile
+{
+    <script src="/content/js/mobile_libs/swiper.jquery.js"></script>
+    <script src="/Scripts/CommLib.js" type="text/javascript"></script>
+    <!--<script src="/content/js/mobile_cy/index.js"></script>-->
+}

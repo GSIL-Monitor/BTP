@@ -1,0 +1,191 @@
+﻿@{
+    Layout = null;
+    ViewBag.Title = "CYOrderPrint";
+    Jinher.AMP.BTP.Deploy.CustomDTO.CommodityOrderVM ofi = ViewBag.orderFullInfo;
+}
+@helper getTotalNum(Jinher.AMP.BTP.Deploy.CustomDTO.CommodityOrderVM ofi)
+{
+    decimal ofiPrice = ofi.Price == null ? 0 : (decimal)ofi.Price;
+    decimal lastPrice = ofiPrice - ofi.CouponValue + ofi.Freight;
+    <span class="totalNum">¥@lastPrice</span>
+}
+@helper getCouponNum(Jinher.AMP.BTP.Deploy.CustomDTO.CommodityOrderVM ofi)
+{
+    if (ofi.CouponValue == 0)
+    {
+    <span class="couponNum">¥@ofi.CouponValue</span>
+    }
+    else
+    {
+    <span class="couponNum">-¥@ofi.CouponValue</span>
+    }
+}
+@helper getRemark(Jinher.AMP.BTP.Deploy.CustomDTO.CommodityOrderVM covm)
+{
+    if (!string.IsNullOrEmpty(covm.Details))
+    {
+        <span class="remarkTitle">备注：</span><span class="remarkNum">@covm.Details</span>
+    }
+}
+@helper getUnitPrice(Jinher.AMP.BTP.Deploy.CustomDTO.OrderItemsVM oivm){
+    var unitPrice = (decimal)(oivm.RealPrice / oivm.Number);
+    <span style="float: right;">¥@unitPrice</span>
+}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>订单打印</title>
+    <style type="text/css">
+        * {
+            font-size: 12px;
+            font-family: arial, "Microsoft Yahei", Simsun, sans-serif;
+        }
+        body{
+            font-family: 'Microsoft Yahei';
+            text-align: left;
+            padding: 10px;
+        }
+        #page1 {
+            width: 220px;
+        }
+        html, body {
+            overflow-x: hidden;
+        }
+        .shop_name {
+            text-align: center;
+            padding-left: 8px;
+            font-size: 16px;
+            width: 220px;
+            margin-top: 10px;
+            padding-bottom: 6px;
+        }
+        .shop_type {
+            text-align: center;
+            padding-left: 8px;
+            font-size: 14px;
+            width: 220px;
+            padding-bottom: 10px;
+        }
+        .table1 {
+            margin: 10px 0px 10px 0px;
+            width: 220px;
+            font-size: 12px;
+            border-top: dashed 1px #757575;
+            border-bottom: dashed 1px #757575;
+            padding: 8px 0px 10px 10px;
+        }
+        .header, .three{
+        	width: 220px;
+        	flex-direction: column;
+        }
+        .order, .price, .coupon, .freight, .total, .remark{
+        	clear: both;
+        	display: -ms-flexbox;
+        }
+        .priceTitle, .couponTitle, .freightTitle, .totalTitle{
+        	flex: 1 1 0px;
+        	float: left;
+        	font-size: 14px;
+        	margin-bottom: 10px;
+        }
+        .priceNum, .couponNum, .freightNum, .totalNum{
+        	float: right;
+        	font-size: 14px;
+        	margin-bottom: 10px;
+        }
+        .remarkTitle, .orderTitle{
+        	flex: 1 1 0px;
+        	float: left;
+        	font-size: 14px;
+        }
+        .remarkNum{
+        	flex: 4 1 0px;
+        	float: right;
+        	font-size: 14px;
+        }
+        .orderNum{
+        	flex: 2 1 0px;
+        	float: left;
+        	font-size: 14px;
+        }
+        .orderNum2{
+        	font-weight: bold;
+        	font-size: 16px;
+        }
+    </style>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jatools/jatoolsPrinter.js")"></script>
+    <script type="text/javascript">
+        document.domain = "iuoooo.com";
+        function doPrint() {
+            var myDoc = {
+                settings: {
+                    paperWidth: 800,
+                    paperHeight: "auto"
+                },
+                marginIgnored: true,
+                documents: document,
+                copyrights: "杰创软件拥有版权  www.jatools.com"
+            };
+            var jatoolsPrinter = getJatoolsPrinter();
+            jatoolsPrinter.print(myDoc, false);
+        }
+        window.onload = function () {
+            //setTimeout(function () { doPrint(); }, 300);
+        };
+    </script>
+</head>
+<body>
+    <div id="page1">
+    @if (ofi != null && ofi.OrderItems.Count > 0)
+    {
+        <div class="shop_name">@ViewBag.StoreName</div>
+        <div class="shop_type">外卖</div>
+        <div class="header order">
+            <div class="price"><span class="orderTitle">订单号：</span><span class="orderNum orderNum2">@ofi.Batch</span></div>
+            <div class="price"><span class="orderTitle">收货人：@ofi.ReceiptUserName</span><span class="orderNum">@ofi.ReceiptPhone</span></div>
+            <div class="price"><span class="orderTitle">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="orderNum">@ofi.Province@ofi.District@ofi.ReceiptAddress</span></div>
+        </div>
+        <table class="table1">
+            <tbody>
+            @foreach (Jinher.AMP.BTP.Deploy.CustomDTO.OrderItemsVM oivm in ofi.OrderItems)
+            {
+                <tr>
+                    <td>@oivm.CommodityIdName</td>
+                    <td rowspan="2">×@oivm.Number</td>
+                    <td rowspan="2"><span style="float: right;">¥@oivm.RealPrice</span></td>
+                </tr>
+                <tr>
+                    <td style="font-size: 10px;">@oivm.SizeAndColorId.Split(',')[0]@oivm.SizeAndColorId.Split(',')[1]</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+		<div class="three order">
+            <div class="price">
+            	<span class="priceTitle">商品金额：</span>
+            	<span class="priceNum">¥@ofi.Price</span>
+        	</div>
+            <div class="coupon">
+            	<span class="couponTitle">优惠券：</span>
+            	@getCouponNum(ofi)
+        	</div>
+            <div class="freight">
+            	<span class="freightTitle">配送费：</span>
+            	<span class="freightNum">¥@ofi.Freight</span>
+        	</div>
+            <div class="total">
+            	<span class="totalTitle">合计：</span>
+            	@getTotalNum(ofi)
+        	</div>
+            <div class="remark">
+                @getRemark(ofi)
+            </div>
+        </div>
+    }
+    </div>
+    <object id="ojatoolsPrinter" classid="clsid:B43D3361-D075-4BE2-87FE-057188254255" width="0" height="0"
+        codebase="jatoolsPrinter.cab#version=8,6,1,0"></object>
+</body>
+</html>

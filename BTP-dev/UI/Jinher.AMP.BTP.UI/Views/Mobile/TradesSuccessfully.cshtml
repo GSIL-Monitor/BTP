@@ -1,0 +1,50 @@
+﻿@{
+    ViewBag.Title = "交易成功";
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+}
+
+@section CssStyles{
+    <link rel="stylesheet" href="/Content/css/mobileKit-min.css" />
+    <link rel="stylesheet" href="/dist/css/tradeSuccessfully.css" />
+}
+<div class="page">
+        <section class="zhifu-suc">
+            <img class="pic" src="/Content/images/pt-success.png">
+            <div class="tips">交易成功!</div>
+            <div class="zhifu-btns">
+                <a href="javascript:void(0)" class="zhifu-btn" id="GoOrderDetail">订单详情</a>
+                <a href="javascript:void(0)" class="zhifu-btn active" id="GoTrade">立即评价</a>
+            </div>
+        </section>
+        <div class="height20"></div>
+        <div class="recommend-list">
+            <b class="line"></b>
+            <h3>更多推荐</h3>
+            <ul class="more-recommend-lists">
+            @if (ViewBag.GDTJList != null)
+            {
+                foreach (var item in ViewBag.GDTJList)
+                {
+                    <li class="more-recommend-list">
+                        <a href="javascript: void(0);" onclick="GoCommodityDetail('@item.Id','@item.AppId')">
+                            <div class="pic"><img src="@item.Pic"></div>
+                            <div class="list-tips">
+                            @foreach (var itemj in item.Tags)
+                            {
+                                <span>@itemj</span>
+                            }</div>
+                            <div class="title">@item.Name</div>
+                            <div class="price">￥<span class="num">@item.Price</span></div>
+                        </a>
+                    </li>
+                }
+             }
+            </ul>
+        </div>
+    </div>
+@section ClientScript
+{
+    <script>var snsURL = '@Jinher.AMP.BTP.Common.CustomConfig.SNSUrl';</script>
+    <script src="/Scripts/zepto.min.js" type="text/javascript"></script>
+    <script src="/dist/js/tradeSuccessfully.js" type="text/javascript"></script>
+}

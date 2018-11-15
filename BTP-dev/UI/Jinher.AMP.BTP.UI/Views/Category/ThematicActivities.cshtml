@@ -1,0 +1,131 @@
+﻿<div class="content" id="divThemActive" style="display:none">
+    <div class="title">
+        <label class="label">
+            专题名称</label>
+        <input type="text" value="" class="inp-txt input1" name="SsName" id="SsName" />
+        <label class="label">
+            活动名称</label>
+        <input type="text" value="" class="inp-txt input1" name="ActName" id="ActName" />
+        <label class="label">
+            开始日期</label>
+        <input type="text" value="2017-2-2" class="inp-txt input1" name="StartTime" id="StartTime" readonly="readonly" />
+        <label class="label">
+            结束日期</label>
+        <input type="text" value="2018-9-9" class="inp-txt input1" name="EndTime" id="EndTime" readonly="readonly" />
+        <a class="btn80 ml10" href="javascript:search()">查询</a>
+        <input type="hidden" id="hideinput" />
+    </div>
+    <div class="GridArea mt10 ml10">
+        <table id="jqGrid">
+        </table>
+        <div id="page">
+        </div>
+    </div>
+    <div style="text-align: center">
+        <a class="btn80 ml10" href="javascript:ok()">确定</a> <a class="btn80 ml10" href="javascript:">取消</a>
+    </div>
+</div>
+
+<style>
+    .content
+    {
+        float: left;
+        width: 80.5%;
+    }
+    .content .title
+    {
+        height: 98px;
+        color: #4E7093;
+        line-height: 50px;
+        background-color: #EFF1F4;
+        padding-left: 10px;
+        min-width: 600px;
+    }
+    .input1
+    {
+        height: 30px;
+    }
+</style>
+
+<script type="text/javascript">
+    $(function () {
+        InitGrid();
+    });
+
+    function InitGrid() {
+        var data = {
+            "SsName": $("#SsName").val(),
+            "ActName": $("#ActName").val(),
+            "StartTime": $("#StartTime").val(),
+            "EndTime": $("#EndTime").val(),
+            "Pagesize": 20,
+            "PageNo": 1
+        };
+
+        $("#jqGrid").jqGrid({
+            datatype: "json",
+            postData: data,
+            url: "GetThematicList",
+            mtype: 'POST',
+            rownumbers: true,
+            colNames: ['活动名称', '专题名称', '活动开始日期', '活动结束日期', '选择'],
+            colModel: [
+                { sortable: false, name: 'ActName', index: 'SsName', align: "center" },
+                { sortable: false, name: 'SsName', index: 'ActName', align: "center" },
+                { sortable: false, name: 'StartTime', index: 'StartTime', align: "center" },
+                { sortable: false, name: 'EndTime', index: 'EndTime', align: "center" },
+                { sortable: false, name: 'Id', index: 'Id', align: "center", formatter: FormatterRadio }
+            ],
+            rowNum: 20,
+            pager: 'page',
+            height: 442,
+            autowidth: true
+        });
+    }
+
+    function FormatterRadio(callvalue, opts, rowdata) {
+        return "<input id=\"" + opts.rowId + "\" type=\"radio\" name=\"activeradio\" />";
+    }
+
+    function search() {
+        var data = {
+            "SsName": $("#SsName").val(),
+            "ActName": $("#ActName").val(),
+            "StartTime": $("#StartTime").val(),
+            "EndTime": $("#EndTime").val(),
+            "Pagesize": 20,
+            "PageNo": 1
+        };
+        $('#jqGrid').jqGrid('setGridParam', { url: "/Category/GetThematicList", postData: data, page: 1 });
+        $('#jqGrid').trigger("reloadGrid");
+    }
+
+    function ok() {
+        var Id = $('input:radio[name="activeradio"]:checked')[0].id;
+        var spName = $('input:radio[name="activeradio"]:checked').parent().parent().children(":eq(2)").html();
+        $("#lblSpecial").html(spName);
+        $("#hidUserService").val(spName);
+        //var actName = $("#jqGrid").getCell(Id, '专题名称');
+        $('#hidAdverID').val(Id); //设置活动ID
+        $("#divThemActive").jhtablebox("hide");
+
+    }
+
+    $("#StartTime").datepicker({
+        changeMonth: true,
+        changeYear: true,
+        showOtherMonths: true,
+        selectOtherMonths: true,
+        timer: false,
+        dateFormat: 'yy-mm-dd'
+    });
+    $("#EndTime").datepicker({
+        changeMonth: true,
+        changeYear: true,
+        showOtherMonths: true,
+        selectOtherMonths: true,
+        timer: false,
+        dateFormat: 'yy-mm-dd'
+    });
+
+</script>

@@ -1,0 +1,203 @@
+﻿@using Jinher.JAP.MVC.UIJquery;
+@using Jinher.JAP.MVC.UIJquery.Validate;
+@{
+    ViewBag.Title = "广告信息";
+}
+@section Css{
+    
+    @{Html.jQuery().StyleSheetRegistrar().DefaultGroup(group => group.Add("common.css")
+        .Add("default/ui.jqgrid.css")
+        .Add("default/jquery.ui.jhtablebox.css"));}
+    
+    <style>
+        .productList
+        {
+            width: 420px;
+        }
+        .productItem
+        {
+            width: 100px;
+            display: inline-block;
+            clear: none;
+        }
+        tr:nth-child(odd)
+        {
+            background: #FFFFFF;
+        }
+        .altImg
+        {
+            margin-bottom: 4px;
+        }        
+    </style>
+}
+
+
+
+<div id="onePage" class="wrapper padding5 ml10" style="float: left; height: 1120px;">
+    
+    <div id="onePageContent" style="position: relative;">
+        <div id="onePageLeft" class="formList" style="margin-right: 300px; min-width: 530px;">
+            
+            
+            
+            <div id="GoodsWallDiv" style="display: none;">
+                <div class="titA bor-top">
+                    选择商品</div>
+                <div class="formList">
+                    <div class="item">
+                        <span id="GoodsWallSpan" class="label">已选商品 0 个</span> <a type="button" id="btnGoodsWallSelect"
+                            class="btn120" style="" href="javascript:void(0)" onclick="OpenGoodsWall()">点击选择商品</a>
+                    </div>
+                    <div id="GoodsWallList">
+                    </div>
+                    <div id="goodsGridDiv" class="GoodsGridStyle">
+                        <table id="GoodsGrid">
+                        </table>
+                        <div id="GoodsPage">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        
+    </div>
+    
+    
+</div>
+
+<div id="dialogSelectApp" style="display: none; height: 500px;" title="选择APP">
+    <iframe id="SelectAppFrame" frameborder="0" src="" style="width: 100%; height: 500px;
+        overflow-y: auto; border: 0px;"></iframe>
+</div>
+
+@section ClientScript{
+    
+    
+    <script type="text/javascript">
+        var SelectedGoodsList = new Array();
+        var GridComplete = false;
+
+        function OpenGoodsWall(callBack) {
+            var src = "/GoodsSelect/Index?SelectedCount=" + SelectedGoodsList.length;
+            src += "&r=" + Math.random();
+            if (callBack) {
+                src += "&callBack=" + callBack;
+            }
+            $("#SelectAppFrame").attr("src", src);
+            var bodyWidth = document.documentElement.clientWidth //宽
+            var winWidth = 850;
+            var left = bodyWidth / 2 - winWidth / 2;
+            var top = 100;
+            try {
+                top = window.parent.getScrollTop();
+            }
+            catch (Error) {
+            }
+            top = top + 110;
+            $("#dialogSelectApp").jhtablebox({
+                width: 800,
+                modal: true,
+                resizable: false,
+                title: "选择商品",
+                position: [left, top],
+                modal: true
+            });
+        }
+        function GoodsWallComplete(goodsList) {
+            if (goodsList) {
+                var exists = false;
+                for (var s = 0; s < goodsList.length; s++) {
+                    exists = false;
+                    for (var i = 0; i < SelectedGoodsList.length; i++) {
+                        if (SelectedGoodsList[i].Id == goodsList[s].Id) {
+                            exists = true;
+                            break;
+                        }
+                    }
+                    if (exists == false) {
+                        SelectedGoodsList.push(goodsList[s]);
+                    }
+                }
+                //ShowSelectedGoodsWall(SelectedGoodsList);
+                initGoodsGrid(SelectedGoodsList);
+            }
+            windowClose();
+        }
+        function ShowSelectedGoodsWall(goodsList) {
+            var list = "<table><tr><th>商品图片</th><th>商品名称</th><th>操作</th></tr>"; //<th>商品分类</th>
+            var item;
+            for (var i = 0; i < goodsList.length; i++) {
+                item = goodsList[i]; //<td>" + item.Category + "</td>
+                list += "<tr><td><img src='" + item.Pic + "'/></td><td>" + item.Name + "</td><td><a href='javascript:void()' onclick='GoodsWallRemove(this,\"" + item.Id + "\")'>移除</a></td></tr>";
+            }
+            list += "</table>";
+            $("#GoodsWallList").html(list);
+
+            $("#GoodsWallSpan").text("已选商品 " + goodsList.length + " 个");
+
+            try {
+                if (goodsList.length > 3) {
+                    $("body").height(880 + goodsList.length * 125);
+                    window.parent.refreshLayout();
+                }
+            } catch (err) {
+            }
+        }
+        function GoodsWallRemove(item, id) {
+            try {
+                var remove = false;
+                for (var i = 0; i < SelectedGoodsList.length; i++) {
+                    if (SelectedGoodsList[i].Id == id) {
+                        SelectedGoodsList.splice(i, 1);
+                        remove = true;
+                        break;
+                    }
+                }
+                if (remove == true) {
+                    //                $("#GoodsWallSpan").text("已选商品 " + SelectedGoodsList.length + " 个");
+                    //                $("#GoodsPage > div").find("span:first").text("总记录数" + SelectedGoodsList.length + "条");
+                    //                try {
+                    //                    $(item).parent().parent().remove();
+                    //                } catch (err1) { 
+                    //                }
+                    initGoodsGrid(SelectedGoodsList);
+                }
+            } catch (err) {
+            }
+        }
+        function GetCommidityIds() {
+            var ids = "";
+            if (SelectedGoodsList) {
+                for (var i = 0; i < SelectedGoodsList.length; i++) {
+                    if (i > 0) {
+                        ids += ",";
+                    }
+                    ids += SelectedGoodsList[i].Id;
+                }
+            }
+            return ids;
+        }
+        
+        
+
+       
+    </script>
+    
+}
+@section Script{
+    @{Html.jQuery().ScriptRegistrar().DefaultGroup(group => group.Add("i18n/jquery.ui-zh.js")
+        .Add("Grid/jquery.grid.base.js")
+        .Add("TableBox/jquery.ui.jhtablebox.js")
+        .Add("jquery.ui.base.js")
+        .Add("ToolTip/jquery.ui.jhtooltip.js")
+        .Add("ajaxfileupload.js")
+        .Add("Pager/jquery.ui.jhpager.js")
+        .Add("DatePicker/jquery.ui.jhdatetime.js")
+        .Add("DatePicker/jquery.ui.datepicker.js")
+        .Add("DatePicker/jquery.ui.jhstartandenddate.js")
+        .Add("Slider/jquery.ui.slider.js")
+        .Add("JSTools.js")
+        .Add("Views/AdManager/AdPlan.js")
+    );}
+}

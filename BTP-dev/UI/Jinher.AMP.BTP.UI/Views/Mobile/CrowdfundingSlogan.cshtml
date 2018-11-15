@@ -1,0 +1,165 @@
+﻿@{
+    ViewBag.Title = null;
+    Layout = "";
+}
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script src="/Scripts/first-js.js" type="text/javascript"></script>
+    <script>
+        if (typeof $ == 'undefined') { document.write("<script src='/Content/Mobile/zepto.min.js'></s" + "cript>"); }
+        if (typeof TouchScroll == 'undefined') { document.write("<script src='/Content/Mobile/touchScroll.js'></s" + "cript>"); }
+    </script>
+    <title></title>
+</head>
+<body>
+    <style>
+        html, body
+        {
+            padding: 0;
+            margin: 0;
+            font-family: "微软雅黑";
+        }
+        .dialog
+        {
+            width: 100%;
+            background-color: #fff6cd;
+        }
+        
+        .dialog .header .close
+        {
+            display: inline-block;
+            height: 30px;
+            width: 30px;
+            font-size: 1.5rem;
+            line-height: 1.8rem;
+            font-weight: bolder;
+            text-decoration: none;
+            float: right;
+            margin: 4px;
+            color: #974400;
+            border-radius: 50%;
+            text-align: center;
+        }
+        .dialog .header
+        {
+            height: 45px;
+            width: 100%;
+            background: url("../../Content/Mobile/header.png") no-repeat center top;
+            background-size: contain;
+        }
+        
+        .dialog .content
+        {
+            margin: 0 5px;
+            min-height: 100px;
+            overflow: hidden;
+        }
+        .dialog .content hr
+        {
+            border: none;
+            height: 1px;
+            border-top: 1px solid #ecdd9b;
+            width: 80%;
+            margin: 3px auto;
+        }
+        .dialog .content .title
+        {
+            padding: 20px 0;
+            font-size: 1.8rem;
+            text-align: center;
+            color: #c10003;
+        }
+        .dialog .content .info
+        {
+            padding: 20px 0;
+            font-size: .8rem;
+            color: #c10003;
+        }
+        .dialog .footer
+        {
+            padding-top: 25px;
+            text-align: center;
+            height: 40px;
+            width: 100%;
+            background: url("../../Content/Mobile/footer.png") repeat-x;
+            background-size: contain;
+        }
+        .dialog .footer a
+        {
+            color: #0055aa;
+            text-decoration: underline;
+        }
+        img
+        {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+    <script type="text/javascript">
+
+
+        var os = getQueryString("mobiletype");
+        $(function () {
+
+            var psource = sessionStorage.source == "share" ? "&source=share" : "";
+            var mess = "@ViewBag.Slogan";
+            setTimeout(function () {
+                $("#crowdcontent").html(decodeURIComponent(mess));
+                $('#desc').click(function () {
+                    var url = "http://" + window.location.host;
+                    if (os == "btpappandroid") {
+                        //点击详情
+                        window.crowdfunding.clickdetailsevent(url + "/Mobile/CrowdfundingDesc?shopId=" + getQueryString("shopId") + "&mobiletype=btpappandroid") + psource;
+                        return;
+                    }
+                    else if (os == "btpappios") {
+                        //点击详情
+                        window.location.href = "/Mobile/CrowdfundingDesc?shopId=" + getQueryString("shopId") + "&mobiletype=btpappios" + psource;
+                        return;
+                    }
+                    window.location.href = '/Mobile/CrowdfundingDesc?shopId=' + (sessionStorage.appId || getQueryString("shopId")) + psource;
+                });
+                $('#closeWin').click(function () {
+                    if (os == "btpappandroid") {
+                        //点击叉号
+                        window.crowdfunding.clickcloseevent();
+                        return;
+                    }
+                    dialog4.close();
+                });
+            }, 100);
+
+
+
+        });
+        function getQueryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]); return null;
+        }
+
+        
+    </script>
+    <div class="dialog">
+        <div class="header">
+            <a id="closeWin" class="close" href="javascript:void(0);">×</a></div>
+        <div class="content" id="crowdcontent">
+        </div>
+        <div class="footer" id="desc">
+            <a href="###">猛戳这里查看众筹详情</a>
+        </div>
+    </div>
+    <script type="text/javascript">
+        setTimeout(function () {
+            var p = $("#loadcrowd").height(); //修改元素
+
+            var p = p == null ? $(window).height() : p;
+            $("#crowdcontent").height(p - 110);
+            var t1 = new TouchScroll({ id: 'crowdcontent', 'width': 5, 'opacity': 0.7, color: '#555', minLength: 20 });
+        }, 1000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using Jinher.AMP.BTP.Deploy.CustomDTO
+@using Jinher.AMP.BTP.Deploy.Enum
+@{
+    ViewBag.Title = "自提点设置";
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.DistributionApplyResultDTO> applyList = ViewBag.ApplyList;
+    int rows = ViewBag.Count;
+    int lastIndex = ViewBag.lastIndex;
+}
+<script>
+    $("#searchUserName").val('@ViewBag.UserName');
+    $("#searchState").val('@ViewBag.State');
+    console.log($("#searchUserName").val(), $("#searchState").val(),@ViewBag.Count);
+</script>
+<input type="hidden" id="rowcounts" value="@ViewBag.Count"/>
+
+                    <table id="dataTable" border="0" cellspacing="0" cellpadding="0" class="m_talbe m_talbe2">
+                        <tr class="t_tr1">
+                            <td class="one" style="width: 43px;">
+                                序号
+                            </td>
+                            <td class="two">
+                                申请人
+                            </td>
+                            <td class="three">
+                                申请时间
+                            </td>
+                            <td class="three">
+                                状态
+                            </td>
+                            <td class="four" width="200px">
+                                备注
+                            </td>
+                            <td class="eight">
+                                操作
+                            </td>
+                        </tr>
+                       @{
+                            if (applyList.Any())
+                            {
+                                int index = 1;
+                                foreach (DistributionApplyResultDTO apply in applyList)
+                                {
+                            <tr class="t_tr2">
+                                <td class="one" style="width: 43px;">
+                                    @index
+                                </td>
+                                <td class="two" style='align-content: center;' >
+                                    <table style="align-content: center; width: 100%; border-collapse:collapse;border-spacing:0;margin:0;padding:0;border:none;">
+                                        <tr>
+                                            <td rowspan="2" style="border: 0px; width: 105px;"><img style="width: 100px;height: 100px" src="@apply.PicturePath" /></td>
+                                            <td style="border: 0px;"><a class="tdIdentityInfo" data-id="@apply.Id" data-hasIdentityvals="@(apply.HasIdentityVals ? 1 : 0)">@apply.UserName</a>
+                                    </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border: 0px;"><a class="tdIdentityInfo" data-id="@apply.Id" data-hasIdentityvals="@(apply.HasIdentityVals ? 1 : 0)">@apply.UserCode</a></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td>
+                                    @apply.SubTime
+                                </td>
+                                <td id="statename-@apply.Id">
+                                    @apply.StateName
+                                </td>
+                                <td class="autoNewline">
+                                    <span id="remarks-@apply.Id">@apply.Remarks</span>
+                                    <div id="div-updatedelete-remarks-@apply.Id" style="display:@(string.IsNullOrEmpty(apply.Remarks) ? "none" : "block")">
+                                        <span><a href="javascript:void(0)"  onclick="openEditDiv('@apply.Id', 1);">修改</a></span>
+                                        <span><a href="javascript:void(0)"  onclick="deleteRemarks('@apply.Id');">删除</a></span>
+                                    </div>
+                                    <div id="div-edit-remarks-@apply.Id" style="display:@(string.IsNullOrEmpty(apply.Remarks) ? "block" : "none")">
+                                        <span><a href="javascript:void(0)"  onclick="openEditDiv('@apply.Id', 1);" >编辑</a></span>
+                                    </div>
+                                </td>
+                                <td class="autoNewline">
+                                    <span id="refuse-@apply.Id" style="display: @(apply.State == DistributeApplyStateEnum.AuditRefuse ? "block" : "none")">@apply.RefuseReason</span>
+                                    <div id="div-passrefuse-@apply.Id" style="display: @(apply.State == DistributeApplyStateEnum.PendingAudit ? "block" : "none")">
+                                        <span style="padding-right: 5px;"><a href="javascript:void(0)"  onclick="submitPass('@apply.Id');">通过</a></span>
+                                        <span style="padding-left: 5px;"><a href="javascript:void(0)"  onclick="openEditDiv('@apply.Id', 2);" >拒绝</a></span>
+                                    </div>
+                                    <div id="div-reapplypassrefuse-@apply.Id" style="display:@(apply.State == DistributeApplyStateEnum.AuditAgain ? "block" : "none")">
+                                        <span style="padding-right: 5px;"><a href="javascript:void(0)"  onclick="submitPass('@apply.Id');">通过</a></span>
+                                        <span style="padding-left: 5px;padding-right: 5px;"><a href="javascript:void(0)"  onclick="openEditDiv('@apply.Id', 2);" >拒绝</a></span>
+                                        <span style="padding-left: 5px;"><a href="javascript:void(0)"  onclick="openAuditListDiv('@apply.Id', 2);" >处理记录</a></span>
+                                    </div>
+                                </td>
+                            </tr>
+                                    index++;
+                                }
+                            }
+                        }
+                    </table>

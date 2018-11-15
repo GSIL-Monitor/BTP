@@ -1,0 +1,209 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<activityRootModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm4="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm5="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" xmlns:dm9="http://schemas.microsoft.com/dsltools/SimpleShapesModel" dslVersion="1.0.0.0" Id="31f69fdc-122f-400f-ab99-6a4b8b002287" name="众销与三级分销" linkedPackageId="f36e1a96-41a9-4443-b040-24a1e5b49f93" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/ActivityDesigner">
+  <ownedCommentsInternal>
+    <comment Id="22ec7efa-1986-4adc-aa2a-bb88ea97f168">
+      <elementDefinition Id="fce4b73b-3200-4d31-8ca7-d298a1f13668" />
+      <body>判断是否众销需要满足几个条件
+
+1、SrcType等于33或34 
+2、可分成金额大于0
+3、选择众销功能项
+4、在本应用下单，即AppId与EsAppId相同
+5、OrderShareMess中存在订单分享的ShareId
+</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="62bb5b82-b577-479d-a076-ee9e5aea6116" LastKnownName="是否众销订单" />
+      </annotatedElements>
+    </comment>
+    <comment Id="5070366c-ae57-4dbb-9d87-9f522d0a149c">
+      <elementDefinition Id="d0ab9978-e1b5-4d24-880c-896643fe956e" />
+      <body>判断是否三级分销
+
+1、订单表的分销商id有值
+2、在本应用下单，即AppId与EsAppId相同
+3、选择了“三级分销”功能项
+</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="3f56ba3f-0356-4149-8d1c-b41756d0ea57" LastKnownName="是否三级分销" />
+      </annotatedElements>
+    </comment>
+  </ownedCommentsInternal>
+  <packagedElements>
+    <activityRootModelHasActivity>
+      <activity Id="2cd3b757-b20e-453f-b05d-e0b9d9d94502" name="众销与三级分销" isAbstract="false" isLeaf="false" isActiveClass="false" isReentrant="false" isReadOnly="false" isSingleExecution="false">
+        <elementDefinition Id="2cec194c-441e-4fc4-aaeb-afeb8f6f9d36" />
+        <nodes>
+          <initialNode Id="b6e9cb72-cef6-4e1f-8d6c-5ac29c5618f0" name="Initial1" isLeaf="false">
+            <elementDefinition Id="77620fe4-dd2d-492b-bcc7-6df45e1a9041" />
+            <flowNodeTargets>
+              <controlFlow Id="56ecd6fc-076b-4131-a885-98e84eb3942b" isLeaf="false">
+                <opaqueActionMoniker Id="62bb5b82-b577-479d-a076-ee9e5aea6116" LastKnownName="是否众销订单" />
+                <elementDefinition Id="09e9ae82-b838-4826-89f0-7daf38526395" />
+              </controlFlow>
+            </flowNodeTargets>
+          </initialNode>
+          <opaqueAction Id="62bb5b82-b577-479d-a076-ee9e5aea6116" name="是否众销订单" isLeaf="false">
+            <elementDefinition Id="615655ad-a5c8-4286-b2eb-f47d4a0bb48e" />
+            <flowNodeTargets>
+              <controlFlow Id="84ca0cbd-99a4-48c8-8bdc-1112d297c083" isLeaf="false">
+                <opaqueActionMoniker Id="3f56ba3f-0356-4149-8d1c-b41756d0ea57" LastKnownName="是否三级分销" />
+                <elementDefinition Id="2d95c1d6-8467-4f4e-9496-2e9902cbfb32" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="3f56ba3f-0356-4149-8d1c-b41756d0ea57" name="是否三级分销" isLeaf="false">
+            <elementDefinition Id="74f25cc4-30e5-4050-9838-78784a394d0f" />
+            <flowNodeTargets>
+              <controlFlow Id="a563c031-05d9-4303-9b48-836de49146da" isLeaf="false">
+                <forkNodeMoniker Id="99827930-636b-417b-9284-d019db87a57c" LastKnownName="Fork1" />
+                <elementDefinition Id="bd6353a1-78c6-4125-ba16-0d27f5fec819" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <forkNode Id="99827930-636b-417b-9284-d019db87a57c" name="Fork1" isLeaf="false">
+            <elementDefinition Id="766bab15-cd0d-49cc-a565-a9688f9d2a42" />
+            <objectFlowTargets>
+              <objectFlow Id="82dfccfc-e396-4f09-9fe2-3e6455815614" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="98785647-bb74-4de6-af35-d9a0e5bfcd7e" LastKnownName="众销" />
+                <elementDefinition Id="5ec1cc9b-a073-49dc-abd0-21791308c19d" />
+              </objectFlow>
+              <objectFlow Id="5df5aec2-70d2-4386-9d97-fea71c18cd5e" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="aef9e0ca-3b56-4d5f-9a64-3eec3998ee3c" LastKnownName="众销且三级分销" />
+                <elementDefinition Id="df5ac2a3-e0e7-4611-880b-aa6967c9e3c9" />
+              </objectFlow>
+              <objectFlow Id="e5edc9a1-0ff0-4bf8-8314-d62b1c1205c7" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="522deeb1-c5d6-4f9c-9c15-0f30a1464776" LastKnownName="三级分销" />
+                <elementDefinition Id="4da05ead-008b-491f-87b5-0f1c35e9c2b2" />
+              </objectFlow>
+              <objectFlow Id="bb492309-2f6a-471f-aea9-8d95894c4ac9" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="6a415280-5d2c-436f-9298-6cee82fadf5e" LastKnownName="非众销、非三级分销" />
+                <elementDefinition Id="d764bd8f-0080-41b5-b503-5b12a8cb9e05" />
+              </objectFlow>
+            </objectFlowTargets>
+          </forkNode>
+          <objectNode Id="98785647-bb74-4de6-af35-d9a0e5bfcd7e" name="众销" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="dd361dc4-38b8-4942-afb1-f5980737bcab" />
+            <objectFlowTargets>
+              <objectFlow Id="a8fb0106-a919-480b-a483-c3d857400424" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <opaqueActionMoniker Id="a2f6945f-4675-4078-b165-e9f23a37c3d3" LastKnownName="计算众销分成" />
+                <elementDefinition Id="51f83e03-7d49-43a6-81ce-ebcb075a8acd" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="77e2fa81-6d84-41a0-bf07-13f7b0c8fb5b" name="2147483647" value="2147483647">
+                <elementDefinition Id="2e98a399-1f6e-4f33-8987-5fe9b0980727" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <objectNode Id="aef9e0ca-3b56-4d5f-9a64-3eec3998ee3c" name="众销且三级分销" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="d9e4cb44-db32-4949-949d-d05282fc17de" />
+            <objectFlowTargets>
+              <objectFlow Id="3a87cab3-6aa4-4a35-8a4e-424074fe6546" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <opaqueActionMoniker Id="4c243dbc-8cf4-45bf-9c1d-3257ad98548c" LastKnownName="计算三级分销" />
+                <elementDefinition Id="f7c52278-c015-4413-9040-fab673809a41" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="7c6190d0-a2a7-4b6d-a804-aef54d1f8e24" name="2147483647" value="2147483647">
+                <elementDefinition Id="de8a424d-ccbe-42e7-83f0-b0459f8cf819" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <objectNode Id="522deeb1-c5d6-4f9c-9c15-0f30a1464776" name="三级分销" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="5709aafd-6493-44da-b957-9b13705212d7" />
+            <objectFlowTargets>
+              <objectFlow Id="68caf61e-9129-4693-b53c-28ec0b01000e" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <opaqueActionMoniker Id="7816803b-6168-441e-b569-cca8027850f8" LastKnownName="计算三级分销" />
+                <elementDefinition Id="32cb009e-7ba7-4e8f-8798-140f7d435195" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="d770a8be-2a85-4c74-b3bb-af10450c4b39" name="2147483647" value="2147483647">
+                <elementDefinition Id="63b6d788-e891-41b9-a014-9b9912cbb55c" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <objectNode Id="6a415280-5d2c-436f-9298-6cee82fadf5e" name="非众销、非三级分销" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="d51b5d7f-e470-4c98-a095-313c70ec0e50" />
+            <objectFlowTargets>
+              <objectFlow Id="e37f94ee-5128-40ce-8ba1-d625503e93a9" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <opaqueActionMoniker Id="2f560102-74ca-4654-866a-27ae1e00de62" LastKnownName="无操作" />
+                <elementDefinition Id="a0f5da00-ca55-4935-9757-b609cc36e9d0" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="7568f6bd-8480-4bdd-b16d-2ce177868c7d" name="2147483647" value="2147483647">
+                <elementDefinition Id="840303e4-0819-4a31-a1d8-75e2633774cd" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <opaqueAction Id="a2f6945f-4675-4078-b165-e9f23a37c3d3" name="计算众销分成" isLeaf="false">
+            <elementDefinition Id="e6c1c000-20f4-4e2e-a9e7-6264058ec8e7" />
+            <flowNodeTargets>
+              <controlFlow Id="04fb0cc1-12f8-4482-91f8-6c97db51e9a9" isLeaf="false">
+                <activityFinalNodeMoniker Id="04e3d5fe-ea8a-4449-93e3-6d5f89e309be" LastKnownName="ActivityFinal1" />
+                <elementDefinition Id="83990925-449e-4140-a977-29bb51f75c6b" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="4c243dbc-8cf4-45bf-9c1d-3257ad98548c" name="计算三级分销" isLeaf="false">
+            <elementDefinition Id="b16a9187-6fc5-4984-af2c-18689eeacb4d" />
+            <flowNodeTargets>
+              <controlFlow Id="340c35a8-290d-4d9f-8213-b1bffe59134e" isLeaf="false">
+                <activityFinalNodeMoniker Id="0bd7d5b8-264d-4855-b140-40f12b2b274a" LastKnownName="ActivityFinal2" />
+                <elementDefinition Id="3779169c-d964-4cda-bc2f-b0a56d2ba0e3" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="7816803b-6168-441e-b569-cca8027850f8" name="计算三级分销" isLeaf="false">
+            <elementDefinition Id="9df44afd-eb71-4587-826b-554dfc0a97c3" />
+            <flowNodeTargets>
+              <controlFlow Id="c887b2ca-6517-404b-80c4-afdde076173e" isLeaf="false">
+                <activityFinalNodeMoniker Id="7433ad1f-04bd-4fe1-9931-e9840f565fb0" LastKnownName="ActivityFinal3" />
+                <elementDefinition Id="023a2b27-8898-4d4c-add6-9c58c2fa599b" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="2f560102-74ca-4654-866a-27ae1e00de62" name="无操作" isLeaf="false">
+            <elementDefinition Id="891ba7de-2378-4716-afa9-5d5a931fea18" />
+            <flowNodeTargets>
+              <controlFlow Id="c28bae7f-9132-41df-b897-92d01b564754" isLeaf="false">
+                <activityFinalNodeMoniker Id="456264db-9b36-4336-8b5e-b723a31e39c5" LastKnownName="ActivityFinal4" />
+                <elementDefinition Id="cb861703-6634-49e3-91b9-11fa8f4c8fd7" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <activityFinalNode Id="04e3d5fe-ea8a-4449-93e3-6d5f89e309be" name="ActivityFinal1" isLeaf="false">
+            <elementDefinition Id="63b5a054-dcf4-4cd0-ae15-57e9d9ece3f2" />
+          </activityFinalNode>
+          <activityFinalNode Id="0bd7d5b8-264d-4855-b140-40f12b2b274a" name="ActivityFinal2" isLeaf="false">
+            <elementDefinition Id="bf2d72a2-4e43-478a-aa85-b86e23aa136b" />
+          </activityFinalNode>
+          <activityFinalNode Id="7433ad1f-04bd-4fe1-9931-e9840f565fb0" name="ActivityFinal3" isLeaf="false">
+            <elementDefinition Id="3f37b18a-f109-4ae8-8cf3-8c639f716d1b" />
+          </activityFinalNode>
+          <activityFinalNode Id="456264db-9b36-4336-8b5e-b723a31e39c5" name="ActivityFinal4" isLeaf="false">
+            <elementDefinition Id="00a251e2-c4dd-4ef3-aa2e-aac2770e4fa5" />
+          </activityFinalNode>
+        </nodes>
+      </activity>
+    </activityRootModelHasActivity>
+  </packagedElements>
+  <package Id="f36e1a96-41a9-4443-b040-24a1e5b49f93" name="Jinher.AMP.BTP.UML">
+    <elementDefinition Id="f2301d4e-995c-471f-a03f-000aca214d35" />
+    <profileInstances>
+      <packageHasProfileInstances Id="f8ed96b2-537f-446d-a5d7-f4f187544be6">
+        <profileInstance Id="6a531af8-43de-4aa9-b85d-3b48fd0e91f0" name="StandardProfileL2">
+          <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+        </profileInstance>
+        <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+      </packageHasProfileInstances>
+      <packageHasProfileInstances Id="824e229d-379b-4f8d-89cd-d4bd75767ab2">
+        <profileInstance Id="6fbc7ad4-2b68-46dd-aff0-3405412663c2" name="StandardProfileL3">
+          <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+        </profileInstance>
+        <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+      </packageHasProfileInstances>
+    </profileInstances>
+  </package>
+</activityRootModel>

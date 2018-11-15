@@ -1,0 +1,511 @@
+﻿@{
+    ViewBag.Title = "商品列表";
+
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.APPManageDTO> appManageList = ViewBag.appManageList;
+}
+<head>
+    <style type="text/css">
+        .bgstock
+        {
+            background-color: #fff2f2 !important;
+        }
+    </style>
+    <script type="text/javascript">
+        var updateItemKey = "";
+        function toUpdateCategory(itemKey) {
+            updateItemKey = itemKey;
+            switchDIV();
+        }
+
+
+        var _searchEntity = {};         //搜索条件实体
+        var _rowCount = 0;              //符合条件的数据的总行数。
+
+
+        var appId = "";
+
+        $(document).ready(function () {
+            window.parent.document.referrer_url = window.location.href;
+            //快速修改事件.
+            clickSetElementValue();
+
+            document.ondragstart = function () { return false; }
+
+            function showContent(event, data) {
+
+                $("#content_makes").html(data);
+                newSetIframeHeight();
+                clickSetElementValue();
+                window.addEvent('domready', function () {
+                    var dragSort = new Sortables('sortables', {
+                        handle: ".sortHandel",
+                        onStart: function (element, clone) {
+                            // element.setStyle('background-color', 'red');
+                        },
+
+                        onSort: function (element, clone) {
+                            element.setStyle('background-color', '#99FF33');
+                        },
+
+                        onComplete: function (element) {
+                            element.setStyle('background-color', '');
+                            var cardIdStr = dragSort.serialize();
+
+                        }
+
+                    });
+
+                });
+            }
+
+            $("input[name=itemCheckBox]").bind("click", function () {
+                if ($("input[name=itemCheckBox]").length == $("input[name=itemCheckBox]:checked").length) {
+                    $("#selecetall").attr("checked", 'true')
+                }
+                else {
+                    $("#selecetall").removeAttr("checked");
+                }
+
+            });
+
+            $("#pager").jhpager({
+                requestData: function () { return _searchEntity; },
+                dataType: 'html',
+                requestType: 'post',
+                dataSource: '/Commodity/SalesManagePartialIndex',
+                async: true,
+                totalCount: _rowCount,
+                rowNum: 20,
+                requestSuccess: showContent,
+                beforeRequest: function () {
+                    $("#content_makes").empty();
+                    $(window.parent.document).scrollTop(0);
+                    ajaxLoading(1, '#content_makes');
+                },
+                requestFailure: function () {
+                }
+            });
+
+
+
+            $("#appname")[0].selectedIndex = 0;
+
+            if (appId == "") {
+                //appId = "e241c09e-745f-4107-90b2-d174699b1351";
+                appId = $("#appname").val();
+                $.ajax({
+                    url: '/Commodity/showGetCategories',
+                    type: 'post',
+                    dataType: 'html',
+                    data: { selectappId: appId },
+                    success: function (data) {
+                        $("#SearchcategoryDiv").html(data);
+                    }
+                });
+            }
+
+
+
+            $("#appname").change(function () {
+
+                $("#commodityname").val("");
+                $("#commoditycategory").val("");
+                searchcategoryNameList = ""; //清除类目名称
+
+                appId = $("#appname").val();
+
+                $.ajax({
+                    url: '/Commodity/showGetCategories',
+                    type: 'post',
+                    dataType: 'html',
+                    data: { selectappId: appId },
+                    success: function (data) {
+                        $("#SearchcategoryDiv").html(data);
+                    }
+                });
+
+
+            });
+
+
+            $("#search").bind("click", function () {
+
+
+                if (appId == ""|| appId==null) {
+
+                    alert("没有可选App应用,请先添加");
+                    return;
+
+                }
+                var commodityName = $("#commodityname").val();
+                if ($.trim($("#commoditycategory").val()) == "") {
+                    searchcateogryIdList = "";
+                }
+                var commodityCategory = searchcateogryIdList;
+
+
+                _searchEntity = { commodityName: commodityName, commodityCategory: commodityCategory, selectappId: appId };
+                _searchEntity.categoryNameList = searchcategoryNameList;
+
+
+
+                $.ajax({
+                    url: '/Commodity/SalesManagePartialIndex',
+                    type: 'post',
+                    data: _searchEntity,
+                    error: function () {
+                       
+                    },
+                    beforeSend: beforeSends,
+                    complete: function () {
+                        //ajaxLoading(1, '#content_makes');
+                    },
+                    success: function (msg) {
+                        sendSuccess(msg);
+                        var rowCount = $("#rowcounts").val();
+                        if (rowCount == 0 || rowCount == "0") {
+                            alert("当前没有查到相匹配的数据！");
+                        }
+                        $("#pager").jhpager("refresh", 1, rowCount);
+                        clickSetElementValue();
+
+                        window.addEvent('domready', function () {
+                            var dragSort = new Sortables('sortables', {
+                                handle: ".sortHandel",
+                                onStart: function (element, clone) {
+                                    // element.setStyle('background-color', 'red');
+                                },
+
+                                onSort: function (element, clone) {
+                                    element.setStyle('background-color', '#99FF33');
+                                },
+
+                                onComplete: function (element) {
+                                    element.setStyle('background-color', '');
+                                    var cardIdStr = dragSort.serialize();
+
+                                }
+
+                            });
+
+                        });
+                    }
+                });
+
+            });
+
+
+            //单击修改
+            $("#upSalesvolume").live('click', function () {
+                $(this).hide();
+                $(this).parent().prev().prev().prev().hide();
+                $(this).parent().prev().prev().show();
+                $(this).next().show();
+
+
+            })
+
+
+
+
+            //单击确定
+            $("#btnXOk").live('click', function () {
+                var th = $(this);
+                var id = $(this).attr("comid");
+                var kc = $(this).parent().parent().next().next().find("#pstock").html();
+                var xl = $(this).parent().parent().find("input").val();
+                var oldzxl = $(this).parent().parent().next().find("#pTotal").html();
+                if (parseInt(xl) < 0) {
+                    alert("输入的销量必须是大于0的整数");
+                    return;
+                }
+                if (parseInt(xl) > parseInt(kc)) {
+                    alert("输入的销量不能大于库存");
+                    return;
+                } else {
+                    xl = xl.replace(/[^\d]/g, '');
+                    $.ajax({
+                        url: '/Commodity/UpdateSalesvolume',
+                        type: 'post',
+                        data: { CommodityId: id, CommoditySalesvolume: xl },
+                        success: function (data) {
+                            if (data.Result) {
+
+                                var kcresult = parseInt(kc) - parseInt(xl);
+                                var xlresult = parseInt(xl) + parseInt(oldzxl);
+                                th.parent().parent().next().next().find("#pstock").html(kcresult);
+                                th.parent().parent().next().find("#pTotal").html(xlresult);
+
+                            }
+                        }
+                    });
+                }
+                $(this).hide();
+                $(this).prev().show();
+                $(this).parent().parent().find("input").hide();
+                $(this).parent().parent().find("input").prev().show();
+            });
+
+
+            $("#commoditycategory").focus(function () {
+                if ("@ViewBag.IsShowCategoryTree".toLowerCase() == "false") {
+                    return;
+                }
+                var top = $('#commoditycategory').offset().top;
+                var left = $('#commoditycategory').offset().left;
+                var height = $('#commoditycategory').height();
+                $("#SearchcategoryDiv").css({ "top": top + height, "left": left }).show();
+            });
+
+
+            //默认滚动到页面的顶部。
+            $(window.top).scrollTop(0);
+
+
+        });
+
+        function toResetSearch() {
+
+            //var selectappId = "e241c09e-745f-4107-90b2-d174699b1351";
+            //$("#appname option[value='" + selectappId + "']").attr("selected", "selected");
+            $("#appname option:first").attr("selected", "selected");
+            $("#commodityname").val("");
+            $("#commoditycategory").val("");
+            searchcategoryNameList = ""; //清除类目名称
+            //重置所有选择框。
+            $("#SearchcategoryDiv input[type='checkbox']").prop("checked", false);
+        }
+
+
+        function CloseSearchCate(obj) {
+            $("#SearchcategoryDiv").hide();
+        }
+
+
+        function check_validate(value) {
+            //定义正则表达式部分
+            var reg = /^\d+$/;
+            if (value.constructor === String) {
+                var re = value.match(reg);
+                return true;
+            }
+            return false;
+        }
+
+        var cateogryIdList = "";
+        var categoryNameList = "";
+        var commodityid = "";
+        var selectObject;
+
+
+        var searchcateogryIdList = "";
+        var searchcategoryNameList = "";
+        function toSearchCheckSelected(obj) {
+            searchcateogryIdList = "";
+            searchcategoryNameList = "";
+            $("#SearchtcategoryUl input:checkbox:checked").each(function () {
+                searchcateogryIdList = searchcateogryIdList + "," + $(this).val();
+                searchcategoryNameList = searchcategoryNameList + "," + $(this).next().text();
+            });
+            if (searchcateogryIdList.length > 0) {
+                searchcateogryIdList = searchcateogryIdList.substring(1, searchcateogryIdList.length);
+                searchcategoryNameList = searchcategoryNameList.substring(1, searchcategoryNameList.length);
+            }
+
+            $("#commoditycategory").val(searchcategoryNameList);
+        }
+
+        
+
+
+      
+    </script>
+    <style type="text/css">
+        .item
+        {
+            line-height: 28px;
+            margin-bottom: 10px;
+            min-height: 28px;
+            padding-left: 10px;
+        }
+        
+        .lable
+        {
+            display: block;
+            float: left;
+            width: 125px;
+            line-height: 28px;
+            padding-right: 5px;
+            margin-left: -130px;
+            _display: inline;
+            text-align: right;
+        }
+        input.inp-txt
+        {
+            height: 18px;
+            line-height: 18px;
+            border: 1px solid #B6C0CD;
+            padding: 4px 5px;
+            vertical-align: middle;
+            border-radius: 3px;
+            box-shadow: inset 1px 1px 2px #DBDBDB;
+        }
+        .btn120
+        {
+            display: inline-block;
+            width: 120px;
+            height: 28px;
+            line-height: 28px;
+            background: url(../Content/default/images/btn120.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+        }
+        .floa2 h1,
+		.bbtn h1{
+			font-size: 14px;
+			color: #8c94a9;
+			padding-bottom: 5px;
+			border-bottom: 1px solid #DDDDDD;	
+		}
+		.close{
+			margin-top: 10px;
+			float: right;
+			display: inline-block;
+			*zoom:1;
+			*display: inline;
+			width: 7px;
+			height: 7px;
+			color:transparent;
+			background: url(/Images/shut.png) center no-repeat;
+		}
+		
+		
+		.floa2 ul {
+			padding: 0px 0 10px 10px;
+		}
+		
+		.floa2 ul li{
+			margin-top: 5px;
+			color:#8c94a9;
+		}
+		.addfloa2{
+			display: none; 
+			z-index: 3;
+			padding: 5px 10px;
+			height:auto;
+			border:1px solid #B8BFCF;
+			
+			-webkit-border-radius: 3px;
+			-moz-border-radius: 3px;
+			border-radius: 3px;
+		}
+		
+		/*erci*/
+		.btn60
+        {
+            display: inline-block;
+            width: 60px;
+            height: 28px;
+            line-height: 28px;
+            background: url(../Content/default/images/btn60.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+        }
+    </style>
+</head>
+<script src="../../Scripts/mootools-core-1.4-full.js" type="text/javascript"></script>
+<script src="../../Scripts/mootools-more-1.4-full.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+    jQuery(function () {
+        jQuery("span[id='pstock']").each(function () {
+            var count = jQuery(this).html()
+            if (count <= 1) {
+                //                    alert($(this).parent().parent().html());
+                jQuery(this).parent().parent().addClass("bgstock");
+            }
+        });
+
+        $("input[name=itemCheckBox]").bind("click", function () {
+            if ($("input[name=itemCheckBox]").length == $("input[name=itemCheckBox]:checked").length) {
+                $("#selecetall").attr("checked", 'true')
+            }
+            else {
+                $("#selecetall").removeAttr("checked");
+            }
+
+        });
+    })
+
+
+    window.addEvent('domready', function () {
+        var dragSort = new Sortables('sortables', {
+            handle: ".sortHandel",
+            onStart: function (element, clone) {
+                // element.setStyle('background-color', 'red');
+            },
+
+            onSort: function (element, clone) {
+                element.setStyle('background-color', '#99FF33');
+            },
+
+            onComplete: function (element) {
+                element.setStyle('background-color', '');
+                var cardIdStr = dragSort.serialize();
+
+            }
+
+        });
+
+    });
+
+
+</script>
+<script type="text/javascript">
+    try {
+        document.domain = "iuoooo.com";
+    }
+    catch (err) {
+    }
+</script>
+<div class="box" style="padding: 10px 0 10px 0px;">
+    <div class="content">
+        <div style="margin-top: 10px; height: 45px;">
+            <span>APP名称：</span>
+            <select id="appname" class="inp-txt" style="width: 150px;">
+                @foreach (var item in appManageList)
+                {
+                    <option value="@item.AppId">@item.AppName</option>
+                }
+            </select>
+            <span style="margin-left: 10px;">商品名称：</span>
+            <input type="text" id="commodityname" class="inp-txt" style="width: 70px;" />
+            <span style="margin-left: 10px;">商品类目：</span>
+            <input type="text" id="commoditycategory" class="inp-txt" style="width: 70px;" readonly="readonly" />
+            <a class="btn60" id="search" href="javascript:;" style="/*margin-left: 10px; */">查询</a>
+            <a href="javascript:;" class="reset btn60" onclick="toResetSearch()" id="reset" style="margin-left: 5px;">
+                重置</a>
+        </div>
+        <div style="background: #F2F2F2; margin-bottom: 0; font-size: 14px; height: 40px;
+            line-height: 35px; text-align: right;">
+            &nbsp;&nbsp;
+        </div>
+        <div class="manag_bot manag_bot1" style="width: 100%; margin-top: 10px;">
+            <div id="divListParent">
+                <div id="content_makes">
+                    @Html.Action("SalesManagePartialIndex", "Commodity")
+                </div>
+            </div>
+            <div id="pager">
+            </div>
+        </div>
+    </div>
+    <div class="floa2 addfloa2" id="SearchcategoryDiv" style="display: none; left: 800px;
+        top: 50px;">
+        <!-- gyy-->
+    </div>
+</div>

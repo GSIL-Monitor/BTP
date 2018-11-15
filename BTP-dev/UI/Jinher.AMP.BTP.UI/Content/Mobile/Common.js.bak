@@ -1,0 +1,419 @@
+﻿//截取字符串
+//参数1.字符串 2.从0开始截取多少 3.截取后末尾加的字符串
+function SubStrShowLength(str, length, strshow) {
+
+    var restr = str;
+    if (str.length > length) {
+
+        restr = str.substr(0, length - 1) + strshow;
+    }
+    return restr;
+}
+//判断传入的价格m 是否大于l 如果大于l 出l  d是单位
+function SubMoneyShow(m, l, d) {
+    var result = m;
+    if (m >= l) {
+        result = m / l + d;
+    }
+    return result;
+}
+//获取URL某值
+function getQueryString(name) {
+    var r;
+    if (arguments.length > 1) {
+        r = arguments[1].split('?')[1];
+    } else {
+        r = window.location.search.substr(1);
+    }
+    //	var r = str ? str.split('?')[1] : '' || window.location.search.substr(1);
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+    r = r.match(reg);
+    if (r != null) return unescape(r[2]);
+    return null;
+}
+//60秒后从新激活 某个 按钮的可点击状态 
+function time(o) {
+    if (wait == 0) {
+        o.html("重新发送");
+        var tel = $.trim($("#tel").val());
+        o.bind("click", function () {
+            if (o.html().indexOf('s') > 0) {
+                return false;
+            }
+            //start  SendMobileCode
+            getDataAjax({
+                url: '/Mobile/SendMobileCode',
+                data: { LoginId: tel },
+                callback: function (data) {
+                    if (!data.IsSuccess) {
+                        if (data.Message != "") {
+                            $(".mycart_tle").html(data.Message);
+                        }
+                        else {
+                            //获取验证码失败
+                            $(".mycart_tle").html("获取验证码失败");
+                        }
+                    }
+                    else {
+                        o.html("重新发送");
+                        wait = 60;
+                        time(o);
+                    }
+                    $("#ajaxLoadBlind").remove();
+                },
+                beforeSend: function () {
+                    ajaxLoading('22', '');
+                },
+                error: function () {
+                    $("#ajaxLoadBlind").remove();
+                }
+            });
+            //end  SendMobileCode
+
+        });
+
+    } else {
+
+        o.html("重新发送 " + wait + "s");
+        wait--;
+        setTimeout(function () {
+            time(o)
+        }, 1000)
+    }
+}
+
+function ajaxLoading(id, insertElement) {
+    //ajaxLoading盒子ID对象
+    var loading = $('#ajaxLoading_' + id);
+    //蒙版
+    var blind = $('<div></div>');
+    //是否有插入对象.有插入对象则不显示蒙版
+    var insertElements = insertElement ? $(insertElement) : blind;
+
+    //蒙版相关css
+    blind.css({
+        'position': 'fixed',
+        'z-index': '98',
+        'opacity': 0.2,
+        'backgroundColor': '#ccc',
+        'height': '100%',
+        'width': '100%',
+        'top': 0,
+        'left': 0
+    });
+
+    //蒙版ID值
+    blind.attr('id', 'ajaxLoadBlind');
+
+    //判断是否有自定义插入对象.当没有是插入body最后位置
+    if (!insertElement) {
+        !$('#ajaxLoadBlind')[0] ? $('body').append(blind) : '';
+    }
+
+    //生成loading图片对象
+    if (!loading.attr('id')) {
+        loading = $('<div></div>');
+        loading.attr('id', 'ajaxLoading_' + id);
+        loading.css({
+            'position': 'absolute',
+            'z-index': '99',
+            'left': '50%',
+            'margin-left': '-16px',
+            'top': '50%',
+            'margin-top': '-16px'
+        });
+
+        loading.append(createImg());
+
+        insertElement ? insertElements.css({ 'position': 'relative' }) : '';
+        insertElements.append(loading);
+        var windowParent = $(window.parent);
+        //		!insertElement ? loading.css({
+        //			top: loading.css({ top: (windowParent.height() / 2) - 16 + windowParent.scrollTop() })
+        //		}) : '';
+
+    } else {
+        !insertElement ? $('#ajaxLoadBlind').remove() : loading.remove();
+    }
+
+    //创建图片对象.
+    function createImg() {
+        var img = $('<img>');
+        img.attr('src', '/Content/images/ajax-loader.gif');
+        return img;
+    }
+}
+
+//获取APPid是否还在众筹中
+function GetCrowdfundingState(appid, opid) {
+    //start  GetCrowdfundingState
+    var result = false;
+
+    $.ajax({
+        type: "get",
+        contentType: "application/json",
+        url: '/Mobile/GetCrowdfundingState',
+        async: false,
+        data: { "appId": appid },
+        dataType: "json",
+        success: function (data) {
+            if (data.ResultCode == 0) {
+                $("#" + opid).show();
+                $("#" + opid).html("<img src=\"../../Content/Mobile/redredenvelope/smallcrowd.png\" style=\"width:50px;height:auto;\"/>");
+                result = true;
+
+            }
+
+            $("#ajaxLoadBlind").remove();
+
+        },
+        beforeSend: function () {
+            ajaxLoading('22', '');
+        },
+        error: function () {
+            $("#ajaxLoadBlind").remove();
+            return result;
+        }
+
+    });
+
+
+    //end  GetCrowdfundingState
+    return result;
+}
+//JS验证 不是有效的值
+function JsVilaDataNull(obj) {
+    if (obj != undefined && obj != "" && obj != "null" && obj != null && obj != "undefined" && obj) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+function CheckIosBrowser() {
+    var standalone = window.navigator.standalone;
+    var userAgent = window.navigator.userAgent.toLowerCase();
+    var safari = /safari/.test(userAgent);
+    var ios = /iphone|ipod|ipad/.test(userAgent);
+    if (ios) {
+        if (!standalone && safari) {
+            return true;
+        } else if (standalone && !safari) {
+            return true;
+        } else if (!standalone && !safari) {
+            return false;
+        };
+    }
+    return false;
+}
+
+function setUserId(userId) {
+    sessionStorage.userId = userId;
+}
+
+function getParamsInStr(srcQueryString, targetParamName) {
+    var parr = srcQueryString.split(/&/gi);
+    for (var i = 0; i < parr.length; i++) {
+        var kv = parr[i].split(/=/gi);
+        if (kv[0].toLowerCase() == targetParamName.toLowerCase()) {
+            return kv[1];
+        }
+    }
+
+}
+
+function getZphUrlParams() {
+    var result = "";
+    if (JsVilaDataNull(sessionStorage.IsFirstTimeInBtp)) {
+        result = sessionStorage.thirdPartParams;
+    }
+    else {
+        result = document.location.href;
+        //没有参数直接返回。
+        if (result.split(/\?/gi).length < 2) {
+            return "";
+        }
+        result = result.split(/\?/gi)[1];
+    }
+    //参数中不包含source参数。
+    if (result.indexOf("source=") == -1) {
+        result += "&source=internal";
+    }
+    if (result.indexOf("esappid=") == -1) {
+        result += "&esappid=" + sessionStorage.srcAppId;
+    }
+    if (result.indexOf("thiszpho2o=") == -1) {
+        result += "&thiszpho2o=1";
+    }
+    if (result.indexOf("linkmall=") == -1) {
+        result += "&linkmall=1";
+    }
+    //用户已经退出登录。
+    if (JsVilaDataNull(sessionStorage.userLoginOut)) {
+        //删除userid.
+        var uid = getParamsInStr(result, "userId");
+        if (JsVilaDataNull(uid)) {
+            uid = "&userId=" + uid;
+            var regex = eval("/" + uid + "/gi");
+            result = result.replace(regex, "");
+        }
+        //删除sessionId.
+        var sid = getParamsInStr(result, "sessionId");
+        if (JsVilaDataNull(sid)) {
+            sid = "&sessionId=" + sid;
+            var regex = eval("/" + sid + "/gi");
+            result = result.replace(regex, "");
+        }
+        //删除changOrg
+        var chgOrg = getParamsInStr(result, "changeOrg");
+        if (JsVilaDataNull(chgOrg)) {
+            chgOrg = "&changeOrg=" + chgOrg;
+            var regex = eval("/" + chgOrg + "/gi");
+            result = result.replace(regex, "");
+        }
+    }
+    else {
+        //url中不包含用户信息。
+        if (result.indexOf("userId=") == -1
+        && JsVilaDataNull(sessionStorage.userId)) {
+            result = result + "&userId=" + sessionStorage.userId;
+            if (JsVilaDataNull(sessionStorage.sessionId)) {
+                result = result + "&sessionId=" + sessionStorage.sessionId;
+            }
+            if (JsVilaDataNull(getQueryString("changeOrg"))) {
+                result = result + "&changeOrg=" + sessionStorage.sessionId;
+            } else {
+                result = result + "&changeOrg=00000000-0000-0000-0000-000000000000";
+            }
+        }
+    }
+    //不以&开头，加上&.
+    if (result.substr(0, 1) != "&") {
+        result = "&" + result;
+    }
+    sessionStorage.thirdPartParams = result;
+    sessionStorage.IsFirstTimeInBtp = true;
+    return result;
+
+
+    //    if (sessionStorage.source == "share") {
+    //        result = result + "&source=share&srctype=34";
+    //    } else {
+    //        result = result + "&source=app";
+    //        if (JsVilaDataNull(sessionStorage.SrcType)) {
+    //            result = result + "&srctype=" + sessionStorage.SrcType;
+    //        } else {
+    //            result = result + "&srctype=36";
+    //        }
+    //    }
+
+    //    if (JsVilaDataNull(sessionStorage.userId)) {
+    //        result = result + "&userId=" + sessionStorage.userId;
+    //        if (JsVilaDataNull(sessionStorage.sessionId)) {
+    //            result = result + "&sessionId=" + sessionStorage.sessionId;
+    //        }
+    //        if (JsVilaDataNull(sessionStorage.sessionId)) {
+    //            result = result + "&sessionId=" + sessionStorage.sessionId;
+    //        }
+    //        if (JsVilaDataNull(getQueryString("changeOrg"))) {
+    //            result = result + "&changeOrg=" + sessionStorage.sessionId;
+    //        } else {
+    //            result = result + "&changeOrg=00000000-0000-0000-0000-000000000000";
+    //        }
+    //    }
+
+    //    if (JsVilaDataNull(sessionStorage.AppType)) {
+    //        result = result + "&type=" + sessionStorage.AppType;
+    //    }
+
+
+
+    //    if (JsVilaDataNull(sessionStorage.SrcTagId)) {
+    //        result = result + "&SrcTagId=" + sessionStorage.SrcTagId;
+    //    }
+
+    //    if (JsVilaDataNull(sessionStorage.ShareId)) {
+    //        result = result + "&ShareId=" + sessionStorage.ShareId;
+    //    }
+
+    //    if (JsVilaDataNull(sessionStorage.srcAppId)) {
+    //        result = result + "&srcAppId=" + sessionStorage.srcAppId;
+    //    }
+
+    //    if (JsVilaDataNull(sessionStorage.ProductType)) {
+    //        result = result + "&ProductType=" + sessionStorage.ProductType;
+    //    }
+
+    //    if (JsVilaDataNull(sessionStorage.speader)) {
+    //        result = result + "&speader=" + sessionStorage.speader;
+    //    }
+
+    //    if (JsVilaDataNull(sessionStorage.wxOpenId)) {
+    //        result = result + "&wxOpenId=" + sessionStorage.wxOpenId;
+    //    }
+    //    if (JsVilaDataNull(sessionStorage.appTypeZPH)) {
+    //        result = result + "&appType=" + sessionStorage.appTypeZPH;
+    //    }
+
+    //    if (JsVilaDataNull(sessionStorage.thiszpho2o)) {
+    //        result = result + "&thiszpho2o=" + sessionStorage.thiszpho2o;
+    //    }
+    //    if (JsVilaDataNull(sessionStorage.linkmall)) {
+    //        result = result + "&linkmall=" + sessionStorage.linkmall;
+    //    }
+
+    //    if (JsVilaDataNull(sessionStorage.esappid)) {
+    //        result += "&esappid=" + sessionStorage.esappid;
+    //    }
+    //    var srcAppId = sessionStorage.srcAppId;
+    //    if (JsVilaDataNull(srcAppId) && result.indexOf("esappid") == -1) {
+    //        result += "?esappid=" + srcAppId;
+    //    }
+
+    //   
+    //    return result;
+}
+
+function setCookieMills(b, c, e) {
+    var d = new Date();
+    d.setTime(d.getTime() + e);
+    var a = window.document.domain.indexOf("iuoooo") >= 0 ? ".iuoooo.com" : window.document.domain;
+    document.cookie = b + "=" + escape(c) + ";expires=" + d.toGMTString() + ";path=/;domain=" + a;
+}
+
+//写cookies 
+function setSessionCookie(name, value) {
+    var days = 0;
+    var exp = new Date();
+    var a = window.document.domain.indexOf("iuoooo") >= 0 ? ".iuoooo.com" : window.document.domain;
+    exp.setTime(exp.getTime() + days * 24 * 60 * 60 * 1000);
+    document.cookie = name + "=" + escape(value) + ";expires=" + exp.toGMTString() + ";path=/;domain=" + a;
+}
+
+//写cookies 
+function setCookie(name, value) {
+    var days = 30;
+    var exp = new Date();
+    var a = window.document.domain.indexOf("iuoooo") >= 0 ? ".iuoooo.com" : window.document.domain;
+    exp.setTime(exp.getTime() + days * 24 * 60 * 60 * 1000);
+    document.cookie = name + "=" + escape(value) + ";expires=" + exp.toGMTString() + ";path=/;domain=" + a;
+}
+
+//读取cookies 
+function getCookie(name) {
+    var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+
+    if (arr = document.cookie.match(reg))
+
+        return unescape(arr[2]);
+    else
+        return null;
+}
+//删除cookies 
+function delCookie(name) {
+    var exp = new Date();
+    exp.setTime(exp.getTime() - 1);
+    var cval = getCookie(name);
+    if (cval != null)
+        document.cookie = name + "=" + cval + ";expires=" + exp.toGMTString() + ";path=/;domain=" + document.domain;
+}

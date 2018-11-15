@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<componentModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm4="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm5="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" dslVersion="1.0.0.0" Id="06b39fa2-894d-4718-854e-349c81349e7c" name="UMLComponentDiagram1" linkedPackageId="8d733eda-2480-4337-9824-d088829a955b" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/ComponentDesigner">
+  <ownedCommentsInternal>
+    <comment Id="7b77cbd0-3b59-4e5c-8ed2-390a185c78dc">
+      <elementDefinition Id="906f4024-7063-496a-bfaf-9e3956e4166e" />
+      <body>订单数据库读写分离（延迟采用缓存补偿）实施一部分，没能正式上线</body>
+    </comment>
+    <comment Id="485cbf98-a4b8-49fd-9bfe-90822cabd048">
+      <elementDefinition Id="f7a21f2f-aab1-4ded-a11d-879287f1585e" />
+      <body>缓存客户端连接不释放问题
+缓存集群</body>
+    </comment>
+    <comment Id="a2ee1b8f-6411-466f-9ae0-fa7590dd30aa">
+      <elementDefinition Id="7721dc4d-110c-4d83-8cb9-1e49c017f90e" />
+      <body>匿名访问接口会写用户认证缓存问题解决方案：
+1.不需要登录的接口，Base.Do(false)
+2.Web端登录有UserId、Session，组织服务的ContextDTO
+3.Job调用服务采用模拟真实账号登录获取上下文</body>
+    </comment>
+    <comment Id="90966f83-0a57-4b7e-a0b6-6c36e2bbefb2">
+      <elementDefinition Id="16f1d342-11ea-4fc3-92df-000c91f9d928" />
+      <body>sessionStorage丢失问题</body>
+    </comment>
+    <comment Id="5916765c-f35c-410c-86f2-3c3a349542d0">
+      <elementDefinition Id="15027ac4-4fed-48fb-b63d-8be45b4ae402" />
+      <body>秒杀抢购活动处理</body>
+    </comment>
+    <comment Id="d14d5400-31e9-49a3-94df-d30e290956f8">
+      <elementDefinition Id="c2a4c996-52f2-41ad-8f91-ab1204e032c9" />
+      <body>URL防篡改：后台弹出窗口的方式需要修改，否则就未授权</body>
+    </comment>
+  </ownedCommentsInternal>
+  <packagedElements>
+    <componentModelHasComponents>
+      <component Id="9894e707-789d-4306-b686-6b47223e6692" name="商品" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="a27a6ada-8acd-43e1-9bfa-96ed0453afee" />
+        <suppliersInternal>
+          <dependency Id="6390075d-b1cb-4bd5-9fb1-9a3b8fe17b2d">
+            <componentMoniker Id="0809cb0e-71b2-4132-a00d-919354957538" LastKnownName="Redis缓存" />
+            <elementDefinition Id="8173c32d-03db-49c0-8cd3-4998dbd2aadd" />
+          </dependency>
+        </suppliersInternal>
+      </component>
+    </componentModelHasComponents>
+    <componentModelHasComponents>
+      <component Id="32e79713-0936-4163-9345-50b1d5d2bd37" name="订单" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="8e964b69-2eef-4ab1-83fc-8f644235fd72" />
+      </component>
+    </componentModelHasComponents>
+    <componentModelHasComponents>
+      <component Id="81e5d3c4-686e-4b95-bc31-0c1e0231ce42" name="促销活动" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="6d5ef31f-7b77-43d4-a654-27d1afa9c857" />
+        <suppliersInternal>
+          <dependency Id="624f39d1-6a07-4ea6-9d40-565ed28fa23f">
+            <componentMoniker Id="9894e707-789d-4306-b686-6b47223e6692" LastKnownName="商品" />
+            <elementDefinition Id="29d44032-21a1-43e5-a158-8731744d5c1e" />
+          </dependency>
+        </suppliersInternal>
+      </component>
+    </componentModelHasComponents>
+    <componentModelHasComponents>
+      <component Id="0809cb0e-71b2-4132-a00d-919354957538" name="Redis缓存" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="9017d17a-7512-4bc1-aeea-8ed4b4614de5" />
+      </component>
+    </componentModelHasComponents>
+    <componentModelHasComponents>
+      <component Id="781a9cdc-399f-436f-8189-721fb9d79186" name="Web版电商" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="4a35c599-1425-4fb1-aee4-af51babb46d3" />
+      </component>
+    </componentModelHasComponents>
+    <componentModelHasComponents>
+      <component Id="c9cec6b5-7f73-41e2-bc0c-819c4836ea0d" name="Job：自动处理业务" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="5caa80f1-acc2-4292-b103-339220e06348" />
+      </component>
+    </componentModelHasComponents>
+  </packagedElements>
+  <package Id="8d733eda-2480-4337-9824-d088829a955b" name="Jinher.AMP.BTP.UML">
+    <elementDefinition Id="f2301d4e-995c-471f-a03f-000aca214d35" />
+    <profileInstances>
+      <packageHasProfileInstances Id="a4f25009-546e-4acb-a293-35397c32e4d0">
+        <profileInstance Id="a03b9470-2ed7-481c-95a1-4781a7325d1f" name="StandardProfileL2">
+          <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+        </profileInstance>
+        <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+      </packageHasProfileInstances>
+      <packageHasProfileInstances Id="8aef0b82-01b7-4f52-98f2-a82e58a81899">
+        <profileInstance Id="a2b5a341-b078-4fe0-aa45-01f6e73954cb" name="StandardProfileL3">
+          <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+        </profileInstance>
+        <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+      </packageHasProfileInstances>
+    </profileInstances>
+  </package>
+</componentModel>

@@ -1,0 +1,485 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>商品修改审核</title>
+    <link rel="stylesheet" type="text/css" href="/Content/css/common.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.all.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.jhtablebox.css" />    
+    <link rel="stylesheet" type="text/css" href="/Content/default/ui.jqgrid.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.datepicker.css" />
+    <link rel="stylesheet" type="text/css" href="/Scripts/bigautocomplete/jquery.bigautocomplete.css" />	
+    <style>
+        .ui-jqgrid tr.jqgrow td {          
+            height: 100px;
+            vertical-align: text-top;
+            padding-top: 2px;
+            overflow: hidden;
+            white-space: nowrap;
+            white-space: normal !important;
+            vertical-align:middle;
+			line-height: 1.5em;
+			font-size:15px;
+			background-color:#FFF0F5;   
+            border: 0;        
+        }
+        .breadcrumb
+        {
+            padding: 10px;
+            line-height: 15px;
+            font-size: 14px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        .breadcrumb > span + span
+        {
+            padding-left: 5px;
+        }
+        .breadcrumb .back
+        {
+            float: right;
+            color: #7e7e7e;
+        }
+        .breadcrumb .back img
+        {    
+            height: 17px;
+            width:17px;
+            vertical-align: middle;
+            margin-bottom: 3px;
+            border:0px;
+        }
+    </style>
+</head>
+<body>
+    <div id="bread" class="breadcrumb" >
+        <span>商品列表</span>
+        <span> > </span>
+        <span style="color:red">待审核记录</span>
+        <a class="back" href="javascript:window.history.back();">
+            <img src="/Content/images/wx-back.png"  /><span>&nbsp;返回上一级</span>
+        </a>
+    </div>
+    <!--查询条件-->
+    <div id="SearchArea" style="margin-top: 10px; height:45px;">
+			<span style="margin-left:10px;">供应商名称：</span>
+            <input type="text" id="txtSupplyName" class="inp-txt" style="width: 160px;"/>
+			<span style="margin-left:10px;">APP名称：</span>
+            <input type="text" id="txtAppName" class="inp-txt" style="width: 160px;"/>
+            <span style="margin-left:10px;">商品名称：</span>
+            <input type="text" id="txtName" class="inp-txt" style="width:160px;" />
+            <a class="btn120" id="btnSearch" href="javascript:;" style="margin-left:20px;">查询</a>
+            <a href="javascript:;" class="reset btn120" onclick="toResetSearch()" id="reset" style="margin-left:20px;">重置</a>
+	</div>
+    <div style="background:#F2F2F2;margin-bottom: 0; font-size: 14px;height:40px;line-height:35px;text-align:right;">
+     <a class="btn120" href="javascript:;" id="SetAudit" onclick="SetAudit()" style="margin-right: 24px;">审核设置</a>          
+     <a class="btn120" href="javascript:;" id="AuditAll" onclick="AuditAll()" style="margin-right:20px;">批量审核</a>    
+	</div>
+    <!--表格-->
+    <div class="GridArea mt10 ml10">
+        <table id="jqGrid">
+        </table>
+        <div id="jqGridPager">
+        </div>        
+    </div>    
+    <div id="Auditform" title="审核" style="display:none;">        
+        <table border="0" style="width:400px;height:180px;margin:0 auto;">
+            <tr >
+                <td>审核状态：</td>
+                 <td>
+                 <select id="auditState" style="width:130px;height:22px"> 
+                 <option value="1">审核通过</option>
+                 <option value="2">审核不通过</option>
+                 </select></td>
+            </tr>
+            <tr>
+                <td>审核意见：</td>
+                 <td><textarea id="auditopinion" rows="5" cols="40" maxlength="200" placeholder="不超过200字"></textarea></td>
+            </tr>            
+        </table>    
+        <a class="btn120" href="javascript:;" onclick="auditoption()" style="margin-left: 120px;margin-top:20px;">提交</a>          
+        <a class="btn120" href="javascript:;" onclick="hideDialog()" style="margin-left:20px;margin-top:20px;">取消</a>    
+    </div> 
+    <div id="Auditform1" title="审核" style="display:none;">
+         <input type="hidden" id="rowid" />        
+        <table border="0" style="width:400px;height:180px;margin:0 auto;">
+            <tr >
+                <td>审核状态：</td>
+                 <td>
+                 <select id="auditState1" style="width:130px;height:22px"> 
+                 <option value="1">审核通过</option>
+                 <option value="2">审核不通过</option>
+                 </select></td>
+            </tr>
+            <tr>
+                <td>审核意见：</td>
+                 <td><textarea id="auditopinion1" rows="5" cols="40" maxlength="200" placeholder="不超过200字"></textarea></td>
+            </tr>           
+        </table> 
+        <a class="btn120" href="javascript:;" onclick="auditsubmit()" style="margin-left: 120px;margin-top:20px;">提交</a>          
+        <a class="btn120" href="javascript:;" onclick="hideDialog()" style="margin-left:20px;margin-top:20px;">取消</a>    
+    </div>     
+    <div id="SetAuditform" title="审核设置" style="display:none;font-size:15px;margin-buttom:50px;">  
+        <div style="margin-top:80px;margin-left:190px;">
+        <input type="checkbox" id="SetAuto" style="margin: 10px auto;" />&nbsp;&nbsp;&nbsp;&nbsp;自动审核通过
+        </div> 
+        <a class="btn120" href="javascript:;" onclick="hideDialog()" style="margin-left: 120px;margin-top:20px;">取消</a>          
+        <a class="btn120" href="javascript:;" onclick="saveoption()" style="margin-left:20px;margin-top:20px;">保存</a> 
+    </div> 
+</body>
+</html>
+<script type="text/javascript" src="/Scripts/jquery.js"></script>
+<script type="text/javascript" src="/Scripts/jquery.extend.js"></script>
+<script type="text/javascript" src="/Scripts/jquery.ui.base.js"></script>
+<script type="text/javascript" src="/Scripts/i18n/jquery.ui-zh.js"></script>
+<script type="text/javascript" src="/Scripts/Grid/jquery.grid.base.js"></script>
+<script type="text/javascript" src="/Scripts/TableBox/jquery.ui.jhtablebox.js"></script>
+<script type="text/javascript" src="/Scripts/Pager/jquery.ui.jhpager.js"></script>
+<script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.datepicker.js"></script>
+<script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.jhdatetime.js"></script>
+<script type="text/javascript" src="/Scripts/i18n/jquery.ui.datepicker-zh.js"></script>
+<script type="text/javascript" src="/Scripts/bigautocomplete/jquery.bigautocomplete.js"></script>
+<script type="text/javascript" src="/Scripts/CommLib.js"></script>
+<script type="text/javascript" src="/Content/Business/BusinessAllEvent.js"></script>
+<script type="text/javascript">
+	try{
+		var rootPath = "/";
+		var arr = window.location.host.split('.');
+		if (arr.length > 0) {
+			document.domain =  arr[arr.length - 2] +"."+ arr[arr.length - 1];
+		}
+		//document.domain = "iuoooo.com";
+	}catch(err){}
+    var curApp = null;
+    var curcode=null;  
+    //获取商户应用
+    function GetApp() {
+        var appName = $.trim($("#txtAppName").val());
+        if (appName.length == 0) {
+            return { AppId: "00000000-0000-0000-0000-000000000000", AppName: "" };
+        } else {
+            if (curApp && curApp.title == appName)
+                return { AppId: curApp.result, AppName: "" };
+            else
+                return { AppId: "00000000-0000-0000-0000-000000000000", AppName: appName };
+        }
+    }    
+   //获取供货商code
+    function GetSupCode() {
+        var supplyName = $.trim($("#txtSupplyName").val());   
+        if (supplyName.length == 0) {
+            return { SupCode:"" , SupplyName: "" };
+        } else {
+            if (curcode && curcode.title == supplyName)
+                return { SupCode: curcode.result, SupplyName: supplyName };
+            else
+                return { SupCode:"" , SupplyName: "" };
+        }
+    }         
+    //初始化表格
+    function InitGrid() {  
+        var supplycode=GetSupCode();
+        var app=GetApp();
+        var data = { 
+            "EsAppId":'@ViewBag.EsAppId',			
+            "Appid":app.AppId,
+            "SupplyCode":supplycode.SupCode,
+            "Name":$.trim($("#txtName").val())            
+        };
+        $("#jqGrid").jqGrid({
+            datatype: "json",
+            postData: data,
+            url: "/AuditCommodity/GetAuditCommodityList",
+            mtype: 'POST',
+            colModel: [ 
+				{ sortable: false, label: '供应商名称', name: 'SupplyName',align:"center", width: 150 },
+				{ sortable: false, label: 'APP名称', name: 'AppName',align:"center", width: 150 },
+                { sortable: false, label: '商品类目', name: 'CateNames',align:"center", width: 150,formatter: FormateCateNames },
+                { sortable: false, label: '条形码', name: 'BarCode',align:"center", width: 150 },
+                { sortable: false, label: '缩略图', name: 'PicturesPath',align:"center", width: 150,formatter: FormatePic },
+                { sortable: false, label: '商品名称', name: 'Name',align:"center", width: 220,formatter: FormateName  },
+                { sortable: false, label: '现价', name: 'Price',align:"center", width: 100 },
+                { sortable: false, label: '进货价', name: 'CostPrice',align:"center", width: 100 },
+                { sortable: false, label: '商品数量', name: 'Stock',align:"center", width: 100 },
+                { sortable: false, label: '计量单位', name: 'Unit',align:"center", width: 100 },
+                { sortable: false, label: '申请时间', name: 'ApplyTime',align:"center", width: 170 },
+                { sortable: false, label: '申请行为', name: 'ActionName',align:"center", width: 150 },
+                { sortable: false, label: '审核状态', name: 'AuditState',align:"center", width: 150,formatter:State_Operation},               
+                {name:'Modify',label: '操作',index:'AuditId',width:150,align:"center",sortable:false,formatter:Format_Operation}
+            ],
+            rowNum: 20,
+            pager: '#jqGridPager',
+            height: 500,
+            autowidth: true,
+            multiselect: true,
+            //shrinkToFit: false,
+            forceFit: true
+            //rownumbers: true,
+           
+        });
+    } 
+	//格式化商品名称
+    function FormateName(cellvalue, options, rowObject){
+        var str=""; 		
+        var url = "/AuditCommodity/GetAuditComDetail?Id="+options.rowId+"&commodityId="+rowObject[13]+"&appId="+rowObject[14];	
+        var ComName=rowObject[5];
+        str += '<a  href="'+ url +'" style="color:#1154E6" title="'+ComName+'">'+ComName+'</a>';
+        return str;
+    }
+    //格式化商品类目
+	function FormateCateNames(cellvalue, options, rowObject){
+        var str=""; 		
+       if(rowObject[2]=='请选择'){return str="";}else{return str="<span>"+rowObject[2]+"</span>"}
+    }
+    //格式化状态
+    function State_Operation(cellvalue, options, rowObject){
+        var str="";
+        if(rowObject[12]==0){return str="待审核";}  
+    }
+   //格式化操作
+    function Format_Operation(cellvalue, options, rowObject){
+       var str="";        
+        var str = "<a href=\"#\" style=\"color:#1154E6\" onclick=\"AuditOperate('"+ options.rowId +"')\" title=\"审核\">审核</a><br/>";       	
+        var url = "/AuditCommodity/GetAuditComDetail?Id="+options.rowId+"&commodityId="+rowObject[13]+"&appId="+rowObject[14];
+        str += '<a href="'+ url +'" title="查看详情" style="color:#1154E6")\">查看详情</a>';
+        return str;
+    }  
+	//格式化图片
+    function FormatePic(callvalue, opts, rowdata) {
+            return "<img id='img" + opts.rowId + "' src='" + callvalue + "' style='width:86px;height:85px;' />";
+        }
+    function CreateCallBack(){
+        RefreshList();
+        hideDialog();
+    }   
+    //隐藏弹窗
+    function  hideDialog(){        
+        $("#addchangeprice,#detailform,#editform").jhtablebox("hide");    
+    } 
+    //刷新列表
+    function RefreshList(pageNo) {
+       
+        var isPageNo = typeof (pageNo) == "number";
+        if (isPageNo) {
+            if (pageNo <= 0) pageNo = $("#jqGrid").getGridParam("page");
+        } else {
+            pageNo =1;
+        }            
+		var supplycode=GetSupCode();
+        var app=GetApp();
+        var data = { 
+            "EsAppId":'@ViewBag.EsAppId',			
+            "Appid":app.AppId,
+            "SupplyCode":supplycode.SupCode,
+            "Name":$.trim($("#txtName").val())          
+        };       
+        $('#jqGrid').jqGrid('setGridParam', {
+            datatype: "json",
+            postData: data,
+            url: '/AuditCommodity/GetAuditCommodityList',
+            mtype: 'POST'
+        });
+        $('#jqGrid').trigger("reloadGrid", [
+            {
+                page: pageNo
+            }
+        ]);
+    }
+    //弹出批量审核窗口
+   function AuditAll() {  
+		var CheckCom=[]; 
+        SelectedList= jQuery("#jqGrid").jqGrid('getGridParam', 'selarrrow');              
+        if (SelectedList && SelectedList.length == 0) {
+			 alert("请先选择商品...");
+			 return
+		}
+        $("#Auditform").jhtablebox({
+            width: 500,
+            height: 280,
+            modal: true,
+            resizable: false,
+            title: "审核",
+        });
+    } 
+     //弹出单个审核窗口
+    function AuditOperate(rowId) {  
+        $("#rowid").val(rowId);
+        $("#Auditform1").jhtablebox({
+            width: 500,
+            height: 300,
+            modal: true,
+            resizable: false,
+            title: "审核",
+        });
+    }    
+    //单个审核
+    function auditsubmit(){
+        //审核未通过时审核意见为必填项 
+       if($("#auditState1").val()==2){
+             if($.trim($("#auditopinion1").val())==""){
+                 alert("审核不通过时审核意见必填");
+                 return;
+             }
+        }
+        var CheckCom=[]; 
+        Id=$("#rowid").val();
+        CheckCom.push({Id});
+        var ids = JSON.stringify(CheckCom); 
+        var data={
+          "Ids":ids,
+          "state": $("#auditState1").val(),            
+          "AuditRemark": $.trim($("#auditopinion1").val())
+        }
+        $.ajax({
+            url: "/AuditCommodity/AuditApply",
+            type: 'post',
+            data: data,
+            success:function(res){   
+                if(res.code==0){
+                CreateCallBack(); 
+				$("#auditState1").val(1);
+                $("#auditopinion1").val("");
+                alert(res.Messages);				
+            }else{
+			alert(res.Messages);
+			} 
+           }
+        });
+    }  
+    //批量审核
+    function  auditoption(){
+        var CheckCom=[]; 
+        SelectedList= jQuery("#jqGrid").jqGrid('getGridParam', 'selarrrow');              
+        if (SelectedList && SelectedList.length > 0) {
+            for (var i=0;i<SelectedList.length;i++)
+            {
+                    var Id=SelectedList[i];                
+                    CheckCom.push({Id});          
+            }
+            var ids = JSON.stringify(CheckCom);  
+
+            //审核未通过时审核意见为必填项 
+            if($("#auditState").val()==2){
+                if($.trim($("#auditopinion").val())==""){
+                    alert("审核不通过时审核意见必填");
+                    return;
+                }
+            }
+            var data={
+            "Ids":ids,
+            "state": $("#auditState").val(),            
+            "AuditRemark": $.trim($("#auditopinion").val())
+            }
+            $.ajax({
+                url: "/AuditCommodity/AuditApply",
+                type: 'post',
+                data: data,
+                success:function(res){   
+                    if(res.code==0){
+                    CreateCallBack(); 
+                    $("#auditState").val(1);
+                    $("#auditopinion").val("");
+                    alert(res.Messages);				
+                }else{
+                alert(res.Messages);
+                } 
+            }
+            });
+        } else {
+            alert("请选择商品");
+        }
+
+    }    
+    //弹出审核设置窗口
+   function SetAudit() {  
+        $("#SetAuditform").jhtablebox({
+            width: 500,
+            height: 300,
+            modal: true,
+            resizable: false,
+            title: "审核设置",
+        });       
+    }   
+    //设置自动审核是否选中
+    $("#SetAuto").prop("checked",@ViewBag.IsAuto);
+    //保存设置信息
+    function saveoption(){
+        var mode;
+       if($("#SetAuto").attr('checked')){
+           mode=0;
+       }else{
+           mode=1;
+       };
+       var data={
+         AppId:'@ViewBag.EsAppId',
+         ModeStatus:mode
+        }
+        $.ajax({
+            url: "/AuditCommodity/SetAuditMode",
+            type: 'post',
+            data: data,
+            success:function(res){   
+                if(res.code==0){
+                CreateCallBack(); 				
+                alert(res.Messages);				
+            }else{
+			alert(res.Messages);
+			} 
+           }
+        });
+
+    }
+    //隐藏弹窗
+    function  hideDialog(){
+        $("#SetAuditform").jhtablebox("hide");
+        $("#Auditform").jhtablebox("hide");
+        $("#Auditform1").jhtablebox("hide");
+    } 
+    //重置所有选择框
+    function toResetSearch(){         
+            $("#SearchArea input[type='text']").val("");
+            $("#txtState").val("-1");
+    }
+    //调整页面布局
+    function AdjustLayout() {
+        $("#jqGrid").setGridWidth($(window).width() - 25);
+        $("#jqGrid").setGridHeight($(window).height() - $("#SearchArea").height() - 130);
+    }
+    //初始化事件
+    function InitEvent() {  
+		//智能匹配商家名称
+        $("#txtAppName").bigAutocomplete({
+            url: "/AuditCommodity/GetMallAppInfo?esAppId=" +"@ViewBag.EsAppId" ,
+            callback: function (data) {
+                curApp = data;
+            }
+        });
+		//智能匹配供应商名称
+        $("#txtSupplyName").bigAutocomplete({
+            url: "/AuditCommodity/GetSupplierCode?esAppId=" +"@ViewBag.EsAppId",
+            callback: function (data) {                
+                curcode = data;  
+            }
+        });
+        //查询
+        $("#btnSearch").click(function () {
+            RefreshList();
+        });        
+    }
+    //页面加载完成
+    $(function () {
+        //初始化事件
+        InitEvent();
+        //初始化表格
+        InitGrid();
+        //调整页面布局
+        AdjustLayout();
+        $(window).resize(function () {
+            AdjustLayout();
+        });
+        
+    });
+</script>

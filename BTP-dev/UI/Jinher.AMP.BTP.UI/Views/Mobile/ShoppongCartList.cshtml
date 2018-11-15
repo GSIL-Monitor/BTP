@@ -1,0 +1,967 @@
+﻿@using System.Web
+@{
+    Layout = "~/Views/Shared/_MobileLayout.cshtml";
+}
+@helper Currency()
+    {
+    @Jinher.AMP.BTP.UI.Util.MobileCookies.GetCurrency();
+}
+@section CssStyles{
+<link rel="stylesheet" href="/Content/Mobile/zphStyle/normalize.css" />
+<link rel="stylesheet" href="/Content/Mobile/zphStyle/function.css" />
+<link rel="stylesheet" href="/Content/Mobile/zphStyle/general.css" />
+<link rel="stylesheet" href="/Content/Mobile/zphStyle/font-awesome.css" />
+<link rel="stylesheet" href="/Content/Mobile/zphStyle/skin.css" />
+<link rel="stylesheet" href="/Content/Mobile/zphStyle/shoppingCart.css" />
+    <input id="hiddnumshop" type="hidden" value="" />
+<style type="text/css">
+    body
+    {
+        background-color: transparent !important;
+    }
+    .bar-footer-secondary-tab ~ .content
+    {
+        padding-bottom: 99px;
+    }
+    .loginTitle
+    {
+        alpha: 0.5;
+        font-size: 14px;
+    }
+    .bar-nav
+{
+    background-color: #fff !important;
+}
+.bar-nav .icon, .bar-nav .btn
+{
+    color: #646464 !important;
+}
+.bar-nav .title
+{
+    color: #646464 !important;
+}
+</style>
+}
+@section ClientScript{
+    <script src="/Content/js/ispinner.js"></script>
+    <script src="/Scripts/CommLib.js" type="text/javascript"></script>
+    <script src="Content/Mobile/provinceCity.js" type="text/javascript"></script>
+    <script src="/Content/Mobile/Common.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var wait = 60;
+        //商品列表。
+        var _commodityList = new Array();
+        var _crowdfundingList = new Array();
+        var _appIds = new Array();
+
+        //项模板。
+        var cartListTemplate = "";
+        var goodsItemTemplate = "";
+
+        $(function () {
+            saveContextDTOByUrl();
+            sessionStorage.ShopCartDate = "";
+            cartListTemplate = $("#divuCartListTemplate").html();
+            goodsItemTemplate = $("#divGoodsItemTemplate").html();
+            document.title = "购物车";
+
+            if (sessionStorage.source == "share") {
+                $("#h1Cart").show();
+            } else {
+                $("#h1Cart").hide();
+            }
+
+            if (!JsVilaDataNull(sessionStorage.appId) || sessionStorage.appId == '00000000-0000-0000-0000-000000000000') {
+                sessionStorage.appId = getQueryString('appId');
+            }
+            if (JsVilaDataNull(getQueryString('SrcType'))) {
+                sessionStorage.SrcType = getQueryString('SrcType');
+            }
+
+            if (sessionStorage.AppType != "tuwen" && getQueryString('type') != "tuwen") {
+                $('.footer').css('bottom', '0px');
+            } else {
+                $("#navfoot").removeClass("f-bottom-0");
+            }
+
+            //客户端直接进购物车页面，传选中的城市.
+            var selectCityCode = getQueryString("selectCityCode");
+            var selectCityName = "";
+            if (JsVilaDataNull(selectCityCode)) {
+                setCookie("selectCityCode", selectCityCode);
+
+                var ai = getAreaInfoByCode(selectCityCode);
+                if (JsVilaDataNull(ai)) {
+                    setCookie("selectCityName", ai.Name);
+                }
+            }
+
+            zj();
+        });
+
+        function zj() {
+
+            $(window).resize(function () {
+                jiresize();
+            });
+
+            //选中所有。
+            $("#chkAll").on("click", function () {
+                var chked = $(this).attr("checked");
+                var allChks = $(".content .u-cart-list").find("input[type='checkbox']");
+                if (chked) {
+                    allChks.each(function () {
+                        this.checked = true;
+                    });
+                } else {
+                    allChks.each(function () {
+                        this.checked = false;
+                    });
+                }
+                calculatePrice();
+            });
+
+            //结算
+            $("#btnSettleAccounts").on("click", function () {
+                SettleAccounts();
+            });
+            $('#delcommodityFromCart').off("touchend", "**");
+            $('#delcommodityFromCart').on('touchend', function () {
+                var self = $(this);
+                if (self.attr('del') == "1") {
+                    $(this).attr('del', '0').text('编辑');
+                    $("#divTitle > a,#divTitle > div").show();
+                    $("#selAllText").hide();
+                    $("#btnSettleAccounts").show();
+                    $("#btnDeleteCommoditys").hide();
+
+                    //$('.bar-footer .edit').addClass('hide');
+                    //$('.bar-footer .total').removeClass('hide');
+                } else {
+                    $(this).attr('del', '1').text('完成');
+                    $("#divTitle > a,#divTitle > div").hide();
+                    $("#selAllText").show();
+                    $("#btnDeleteCommoditys").show();
+                    //$('.bar-footer .edit').removeClass('hide');
+                    //$('.bar-footer .total').addClass('hide');
+                }
+            });
+
+
+            //$("#selectall").on('click', function () {
+            //    var chked = $(this).attr("checked");
+            //    $("#chkAll")[0].checked = chked;
+            //    $("#chkAll").click();
+            //});
+
+            $("#btnDeleteCommoditys").on("click", function () {
+                DeleteCommoditysFromShoppingCart();
+            });
+        }
+
+        function conpareAttrs(attr1, attr2) {
+            if (attr1 == attr2)
+                return true;
+            var arr1 = attr1.split(',');
+            var arr2 = attr2.split(',');
+            if (arr1.length == 2 && arr2.length == 2) {
+                if ((attr2.indexOf(arr1[0] + ',') >= 0 || attr2.indexOf(',' + arr1[0]) >= 0) && (attr2.indexOf(arr1[1] + ',') >= 0 || attr2.indexOf(',' + arr1[1]) >= 0)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        //按id获取商品详细信息。
+
+        function getShopCartCommodity(el) {
+            var commodityId = $(el).parents(".goods").attr("Commodityid");
+            //var stockId = $(el).parents(".goods").attr("CommodityStockId");
+            var size = $(el).parents(".goods").attr("Size");
+            var cinfo = {};
+            for (var i = 0; i < _commodityList.length; i++) {
+                var tmpCom = _commodityList[i];
+                if (tmpCom.Id != commodityId)
+                    continue;
+                if (!conpareAttrs(tmpCom.Size, size))
+                    continue;
+                cinfo = tmpCom;
+//                if (cinfo.DiscountPrice > 0) {
+//                    cinfo.Price = cinfo.DiscountPrice;
+//                }
+            }
+
+            return cinfo;
+        }
+
+        //结算.
+
+        function SettleAccounts() {
+            var msg = "";
+            var boprice = false;
+            var bonum = false;
+            var bostate = false;
+            var xcdata = "";
+            var preselled = false;
+
+            var allChks = $('.content .u-cart-list .goods input:checked');
+
+            //检查自提商品、非自提商品不能同时下单
+            var isSelfTakeWrong = 0;
+            allChks.each(function () {
+                if ($(this).attr("selftake") == 1) {
+                    isSelfTakeWrong++;
+                }
+                else {
+                    isSelfTakeWrong--
+                }
+            });
+            if (allChks.length != Math.abs(isSelfTakeWrong)) {
+                toast("自提商品、非自提商品不能同时下单");
+                return;
+            }
+
+            allChks.each(function () {
+                var cinfo = getShopCartCommodity(this);
+                xcdata += "{\"CommodityId\":\"" + cinfo.Id + "\" ,\"CommodityStockId\":\"" + cinfo.CommodityStockId + "\"},";
+            });
+            if (xcdata == "") {
+                toast("请选择要结算的商品！");
+                return;
+            }
+            var checkdata = "{\"UserID\":\"" + getUserId() + "\" ,\"CommodityIdAndStockIds\":[" + xcdata.substr(0, xcdata.length - 1) + "],\"promotionType\":-1,\"diyGroupId\":\"00000000-0000-0000-0000-000000000000\"}";
+            getDataAjax2({
+                url: '/Mobile/CheckCommodity',
+                data: checkdata,
+                callback: function (data) {
+                    //var msg = "";
+                    var commodSeled = new Array();
+                    allChks.each(function () {
+                        var cinfo = getShopCartCommodity(this);
+                        cinfo = CommLib.clone(cinfo);
+
+                        var crci = data.PropertyValueEqual("Id", cinfo.Id);
+                        if (crci != null) {
+                            if (crci.length == 1) {
+                                crci = crci[0];
+                            } else {
+                                crci = crci.PropertyValueEqual("CommodityStockId", cinfo.CommodityStockId == "00000000-0000-0000-0000-000000000000" ? null : cinfo.CommodityStockId);
+                                if (crci != null && crci.length > 0)
+                                    crci = crci[0];
+                            }
+
+                        }
+
+                        var ginfo = $(this).parent().siblings(".goods-info").eq(0);
+                        var quantity = ginfo.find('.goods-quantity span[scTag="CommodityNumber"]').html();
+                        quantity = parseInt(quantity);
+                        var price = ginfo.find(".goods-price").html().replace(/(^\s*)|(\s*$)/g, "").replace("￥", "").replace("$", "");
+                        price = parseFloat(price);
+                        cinfo.CommodityNumber = quantity;
+                        cinfo.UserId = getUserId();
+
+                        if (crci.Price != price) {
+                            ginfo.find(".goods-price").html(cinfo.Price);
+                            boprice = true;
+                        }
+                        if (crci.State == 1 || crci.State == 3) {
+                            msg += cinfo.Name + " 已下架 \n";
+                            bostate = true;
+                        } else if (crci.IsNeedPresell && (!crci.IsPreselled)) {
+                            msg += cinfo.Name + " 需要预约才可以购买 \n";
+                            preselled = true;
+                        } else if (crci.LimitBuyEach > 0 && quantity > crci.LimitBuyEach) {
+                            if (allChks.length == 1) {
+                                msg += "该商品每人限购" + crci.LimitBuyEach + "件，您已超限 \n";
+                            } else {
+                                msg += cinfo.Name + " 每人限购" + crci.LimitBuyEach + "件，您已超限 \n";
+                            }
+                            bonum = true;
+                        } else if (quantity > crci.Stock || (crci.LimitBuyTotal > 0 && quantity > (crci.LimitBuyTotal - crci.SurplusLimitBuyTotal))) {
+                            if (allChks.length == 1) {
+                                msg += "该商品的购买数量超过了可购上限 \n";
+                            } else {
+                                msg += cinfo.Name + " 的购买数量超过了可购上限 \n";
+                            }
+                            bonum = true;
+                        }
+
+                        var size = cinfo.Size;
+                        var yan = "";
+                        var chi = "";
+                        if (size != "undefined" && size != "" && size != null) {
+                            if (size.split(',')[0] != "" && size.split(',')[0] != null && size.split(',')[0] != "null") {
+                                yan = size.split(',')[0] + "";
+                            }
+                            if (size.split(',')[1] != "" && size.split(',')[1] != null && size.split(',')[1] != "null") {
+                                chi = size.split(',')[1] + "";
+                            }
+                        }
+                        cinfo.SizeAndColorId = chi + "," + yan;
+                        commodSeled.push(cinfo);
+                    });
+
+
+                    if (boprice == true) {
+                        msg = "购物车价格发生变化，页面即将刷新";
+                        toast(msg);
+                        window.location.href = window.location.href;
+                    }
+                    if (bonum == true || bostate == true || preselled == true) {
+                        if (msg != "") {
+                            toast(msg);
+                        }
+                        return false;
+                    }
+
+                    //start 当价格和库存都没发生改变时 进入下订单页面
+                    if (boprice == false && bonum == false) {
+                        commodSeled = buildShopCartData(commodSeled);
+                        sessionStorage.ShopCartDate = JSON.stringify(commodSeled);
+                        setTimeout(function () {
+                            gotoCreateOrder("gouwuche",'',parseFloat($("#totalPrice").html()).toFixed(2)); 
+                        }, 1000);
+                    }
+                    //end  当价格和库存都没发生改变时 进入下订单页面
+                }
+            });
+
+
+        }
+
+        //按app组织数据。
+
+        function buildShopCartData(commodSeled) {
+            if (commodSeled == null || commodSeled.length == 0) {
+                return;
+            }
+            //找出选中的店铺id.
+            var appIdSeled = new Array();
+            for (var i = 0; i < commodSeled.length; i++) {
+                var cartItem = commodSeled[i];
+                var rprice = cartItem.DiscountPrice > -1 ? cartItem.DiscountPrice : Math.abs(cartItem.Price * (cartItem.Intensity / 10)).toFixed(2);
+                cartItem.RealPrice = rprice;
+                var appid = cartItem.AppId;
+                if (appIdSeled.indexOf(appid) > -1) {
+                    continue;
+                }
+                appIdSeled.push(appid);
+            }
+
+            var shops = new Array();
+            for (var b = 0; b < appIdSeled.length; b++) {
+                var appid = appIdSeled[b];
+                var cishop = commodSeled.PropertyValueEqual("AppId", appid);
+                var shopOld = cishop[0];
+                var shop = new Object();
+                shop.AppId = shopOld.AppId;
+                shop.AppName = shopOld.AppName;
+                //shop.RealPrice = shopOld.RealPrice;
+                shop.ShoppingCartItemSDTO = cishop;
+
+                //计算app下总金额、总数量。
+                var appAmount = 0;
+                var commodityNum = 0;
+                for (var d = 0; d < cishop.length; d++) {
+                    appAmount += cishop[d].RealPrice * cishop[d].CommodityNumber;
+                    commodityNum += cishop[d].CommodityNumber;
+                }
+                appAmount = eval(appAmount).toFixed(2);
+                shop.AppAmount = appAmount;
+                shop.CommodityNum = commodityNum;
+
+                shops.push(shop);
+            }
+            return shops;
+        }
+
+        //计算总价。
+
+        function calculatePrice() {
+            var totalPrice = 0;
+            var totalQuantity = 0;
+            $('.content .u-cart-list .goods input:checked').each(function () {
+                var ginfo = $(this).parent().siblings(".goods-info").eq(0);
+
+                var quantity = ginfo.find('.goods-quantity span[scTag="CommodityNumber"]').html();
+                quantity = parseInt(quantity);
+
+                var price = ginfo.find(".goods-price").html().replace(/(^\s*)/g, "").replace(/(^\s*)|(\s*$)/g, "").replace("￥", "").replace("$", "");
+                price = parseFloat(price);
+
+                price = quantity * price;
+                totalPrice += price;
+
+                totalQuantity += quantity;
+            });
+            $("#totalPrice").html(totalPrice.toFixed(2));
+            $("#btnSettleAccounts").html("结算(" + totalQuantity + ")");
+            return totalPrice;
+        }
+
+
+        function LoadShopList() {
+            if (getUserId()) {
+                var getshopcarappid = getEsAppId();
+
+                //if (sessionStorage.ProductType == "appcjzy" || sessionStorage.ProductType == "webcjzy") {
+                //    getshopcarappid = '00000000-0000-0000-0000-000000000000';
+                //}
+
+                if (getshopcarappid == '00000000-0000-0000-0000-000000000000') {
+                    getshopcarappid = sessionStorage.appId;
+                }
+
+                getDataAjax({
+                    url: '/Mobile/GetShoppongCartList',
+                    data: { appId: getshopcarappid, userId: getUserId() },
+                    callback: function (data) {
+                        _commodityList = data.CommodifyList;
+                        _crowdfundingList = data.CrowdfundingList;
+                        sessionStorage.CrowdfundingList = JSON.stringify(_crowdfundingList);
+                        //ajaxLoading('22', '');
+                        if (_commodityList != null && _commodityList.length > 0) {
+                            //如果购物车有商品  下一步显示  编辑按钮可用
+                            $("#navfoot").removeClass("hide");
+                            $("#cartHeader").removeClass("hide");
+
+                            var productNum = 0;
+                            var money = 0;
+
+                            var html = getCartListHtml(_commodityList);
+                            $(".content").html(html);
+                            registEvents();
+
+                            for (var i = 0; i < _appIds.length; i++) {
+                                calculateShopCrowdfund(_appIds[i], null);
+                            }
+
+                            $(".product-money").html(getCurrency() + money.toFixed(2));
+                            $(".product-num").html(productNum + "件商品");
+                            $("#hiddnumshop").val(productNum);
+                        } else {
+                            emptyShoppingCart();
+                        }
+                        calculatePrice();
+                        jiresize();
+                        if (sessionStorage.ProductType != "appcjzy" && sessionStorage.ProductType != "webcjzy") {
+                            JsShopCrowdfund();
+                        }
+                        var tid = setTimeout(function () {
+                            $("#ajaxLoadBlind").remove();
+                            clearTimeout(tid);
+                        }, 300);
+
+                    },
+                    beforeSend: function () {
+                        ajaxLoading('22', '');
+                    },
+                    error: function () {
+                        $("#ajaxLoadBlind").remove();
+                    }
+                });
+            }
+        }
+        function emptyShoppingCart() {
+            var h = ($(window).height() / 2) - 50;
+            $(".content").html("<div style=\"color: #d7d7d7;margin: auto;text-align: center;margin-top: " + h + "px;font-size: 25px;\">购物车没有商品<div>");
+            $("#navfoot").addClass("hide");
+            $("#cartHeader").addClass("hide");
+        }
+        function jiresize() {
+            var winWidth = $(window).width();
+            $(".product-info").css({ "width": winWidth - 120 - 20 });
+        }
+
+        //计算众筹
+
+        function JsShopCrowdfund() {
+            return;
+            getDataAjax({
+                url: "/Mobile/GetUserCrowdfundingBuy",
+                data: { userId: getUserId(), appId: sessionStorage.appId },
+                callback: function (data) {
+                    //众筹每股金额
+                    var perShareMoney = data.PerShareMoney;
+                    //用户已购买金额
+                    var money = data.Money;
+                    //用户已持有股数
+                    var currentShareCount = data.CurrentShareCount;
+                    //是否是进行中的众筹 true为活动中 
+                    var isActiveCrowdfunding = data.IsActiveCrowdfunding;
+                    //众筹可购买股数
+                    var shareCountRemain = data.ShareCountRemain;
+                    //用户将要够买的金额
+                    var usergou = 0;
+                    if (JsVilaDataNull($(".product-money").html())) {
+                        usergou = $(".product-money").html().substring(1, $(".product-money").html().length);
+                    }
+
+                    if (isActiveCrowdfunding == "true" || isActiveCrowdfunding) {
+                        $(".crowdfooter").show();
+                        //如果用户将要够买 产生的股点数超过了此App剩余的股点数
+                        if ((usergou / perShareMoney) >= shareCountRemain) {
+                            $(".crowinfor").html("您已拥有全部剩余股点" + shareCountRemain + "股！");
+
+                        } else {
+                            //向上取整,有小数就整数部分加1
+                            var jianggu = parseInt(usergou / perShareMoney) + 1;
+                            var chaprice = ((perShareMoney * jianggu) - usergou).toFixed(2);
+                            $(".crowinfor").html("您再购买" + chaprice + "元商品就能获得" + jianggu + "股，坐等分红啦！");
+                        }
+                    }
+                    $("#ajaxLoadBlind").remove();
+
+                },
+                beforeSend: function () {
+                    ajaxLoading('22', '');
+                },
+                error: function () {
+                    $("#ajaxLoadBlind").remove();
+                }
+            });
+        }
+
+
+        //计算某个店铺众筹情况。
+
+        function calculateShopCrowdfund(appId, shop) {
+            if (shop == undefined || shop == null) {
+                shop = $("div[class*='u-cart-list'][appId='" + appId + "']");
+            }
+            var thisSub = shop.find(".shop .title .sub");
+            if (_crowdfundingList == null) {
+                return;
+            }
+            var data = _crowdfundingList.GetOnlyElement("AppId", appId);
+            if (data == null) {
+                return;
+            }
+            //用户将要够买的金额
+            var usergou = 0;
+            shop.find('.goods input:checked').each(function () {
+                var ginfo = $(this).parent().siblings(".goods-info").eq(0);
+                var quantity = ginfo.find('.goods-quantity span[scTag="CommodityNumber"]').html();
+                quantity = parseInt(quantity);
+                var price = ginfo.find(".goods-price").html().replace(/(^\s*)|(\s*$)/g, "").replace("￥", "").replace("$", "");
+                price = parseFloat(price);
+                price = quantity * price;
+                usergou += price;
+            });
+
+            //众筹每股金额
+            var perShareMoney = data.PerShareMoney;
+            //用户已购买金额
+            var money = data.Money;
+            //用户已持有股数
+            var currentShareCount = data.CurrentShareCount;
+            //是否是进行中的众筹 true为活动中 
+            var isActiveCrowdfunding = data.IsActiveCrowdfunding;
+            //众筹可购买股数
+            var shareCountRemain = data.ShareCountRemain;
+
+
+            if (isActiveCrowdfunding == "true" || isActiveCrowdfunding) {
+                thisSub.show();
+                //如果用户将要够买 产生的股点数超过了此App剩余的股点数
+                if ((usergou / perShareMoney) >= shareCountRemain) {
+                    thisSub.find("span").html("您已拥有全部剩余股点" + shareCountRemain + "股！");
+                } else {
+                    //向上取整,有小数就整数部分加1
+                    var jianggu = parseInt(usergou / perShareMoney) + 1;
+                    var chaprice = ((perShareMoney * jianggu) - usergou).toFixed(2);
+                    thisSub.find("span").html("您再购买" + chaprice + "元商品就能获得" + jianggu + "股，坐等分红啦！");
+                }
+            }
+        }
+
+
+        //生成整个购物车列表html.
+
+        function getCartListHtml(data) {
+            if (data == null || data.length == 0) {
+                return "";
+            }
+            var len = data.length;
+            var allHtml = "";
+
+            //对商品列表进行分组。
+            //data.PropertyValueEqual(appId);
+            //找出所有唯一appid.
+            var appids = new Array();
+            for (var a = 0; a < data.length; a++) {
+                if (appids.indexOf(data[a].AppId) > -1) {
+                    continue;
+                }
+                appids.push(data[a].AppId);
+            }
+            _appIds = appids;
+
+            var shops = new Array();
+
+            for (var b = 0; b < appids.length; b++) {
+                var appid = appids[b];
+                var cishop = data.PropertyValueEqual("AppId", appid);
+                var shop = new Object();
+                $.extend(shop, cishop[0]);
+                shop.commodityList = cishop;
+                shops.push(shop);
+            }
+
+            for (var c = 0; c < shops.length; c++) {
+                allHtml += getShopCartItemHtml(shops[c]);
+            }
+            return allHtml;
+        }
+
+        function getSizeAndColorId(attrs) {
+            var yan = "";
+            var chi = "";
+            if (JsVilaDataNull(attrs)) {
+                if (attrs.split(',')[0] != "" && attrs.split(',')[0] != null && attrs.split(',')[0] != "null") {
+                    yan = attrs.split(',')[0] + "";
+                }
+                if (attrs.split(',')[1] != "" && attrs.split(',')[1] != null && attrs.split(',')[1] != "null") {
+                    chi = attrs.split(',')[1] + "";
+                }
+            }
+            if (JsVilaDataNull(chi) && JsVilaDataNull(yan)) {
+                return chi + "," + yan;
+            } else if (JsVilaDataNull(chi)) {
+                return chi;
+            } else if (JsVilaDataNull(yan)) {
+                return yan;
+            }
+            return '';
+        }
+
+        //生成单个订单项html.
+        function getShopCartItemHtml(data) {
+            var ciHtml = "";
+            if (data.commodityList && data.commodityList.length > 0) {
+                var len = data.commodityList.length;
+                for (var i = 0; i < len; i++) {
+                    var cartItem = data.commodityList[i];
+                    var rprice = cartItem.DiscountPrice > -1 ? cartItem.DiscountPrice : Math.abs(cartItem.Price * (cartItem.Intensity / 10)).toFixed(2);
+                    cartItem.RealPrice = rprice;
+                    cartItem.SizeAndColorId = getSizeAndColorId(cartItem.Size);
+                    if (cartItem.IsEnableSelfTake == 1) {
+                        cartItem.SelfTakeDisplay = "";
+                    }
+                    else {
+                        cartItem.SelfTakeDisplay = "none";
+                    }
+                    cartItem.IsSelfTake = cartItem.IsEnableSelfTake;
+                    cartItem.srckey = "src";
+                    ciHtml += goodsItemTemplate.format(cartItem);
+                    sessionStorage.SelfTakeShopCartItemIds = new Array();
+
+                }
+            }
+            data.GoodsItemsHtml = ciHtml;
+            data.AppName = data.AppName == undefined ? "" : data.AppName;
+            var html = cartListTemplate.format(data);
+            return html;
+        }
+
+        //注册事件。
+
+        function registEvents() {
+            ispinner({
+                callbacks: function (el) {
+                    console.log(el);
+                }
+            });
+
+            $('.content .u-cart-list .cNumEdit').off("touchend", "**");
+            $('.content .u-cart-list .cNumEdit').on('touchend', function () {
+                var self = $(this);
+                var goods = self.parents('.goods-info');
+                self.addClass('hide');
+                //goods.find('.goods-remark,.goods-name').addClass('hide');
+                goods.find('.goods-quantity').eq(1).removeClass('hide');
+
+            });
+            $('.content .u-cart-list .icon-ok').off("touchend", "**");
+            $('.content .u-cart-list .icon-ok').on('touchend', function () {
+                var self = $(this).parent();
+                var goods = self.parents('.goods-info');
+                var ucl = self.parents(".u-cart-list");
+                self.addClass('hide');
+                //goods.find('.goods-remark,.goods-name').removeClass('hide');
+                goods.find('.goods-quantity').eq(0).removeClass('hide');
+
+                var v = goods.find('input[class="ispinner"]').val();
+                //商品数量必须大于0
+                v = v > 0 ? v : 1;
+                v = v > 99999 ? 99999 : v;
+                goods.find('input[class="ispinner"]').val(v);
+                goods.find('span[scTag="CommodityNumber"]').eq(0).html(v);
+
+                var appId = ucl.attr("appId");
+
+                calculatePrice();
+                calculateShopCrowdfund(appId, ucl);
+
+
+                var shopCartItemId = $(this).parents(".goods").attr("shopCartItemId");
+                UpdateShoppingCart(shopCartItemId, v, appId);
+            });
+
+
+            $('.content .u-cart-list .goods input[type="checkbox"]').on("click", function () {
+                var ucl = $(this).parents(".u-cart-list");
+                if (!this.checked) {
+                    ucl.find(".shop input[type='checkbox']")[0].checked = false;
+                }
+                calculatePrice();
+
+                calculateShopCrowdfund(ucl.attr("appId"), ucl);
+            });
+
+            $('.content .u-cart-list .shop input[type="checkbox"]').on("click", function () {
+                var ucl = $(this).parents('.u-cart-list');
+                var childChk = ucl.find('.goods input[type="checkbox"]');
+                var pchk = this.checked;
+                childChk.each(function () {
+                    this.checked = pchk;
+                });
+                calculatePrice();
+                calculateShopCrowdfund(ucl.attr("appId"), ucl);
+            });
+            var result = 0;
+            $('input[type="checkbox"]').on("click", function () {
+                var childChk = $('.goods input[type="checkbox"]:checked');
+                if (childChk.length > 0) {
+                    if (result == 0) {
+                        var isSelfTakeWrong = 0;
+                        childChk.each(function () {
+                            if ($(this).attr("selftake") == 1) {
+                                isSelfTakeWrong++;
+                            }
+                            else {
+                                isSelfTakeWrong--
+                            }
+                        });
+                        if ($('#delcommodityFromCart').attr('del') == 0 && childChk.length != Math.abs(isSelfTakeWrong)) {
+                            toast("自提商品、非自提商品不能同时下单");
+                            result = 1;
+                        }
+                    }
+                }
+                if (result == 1) {
+                    $('input[type="checkbox"]').each(function () {
+                        $(this)[0].checked = false;
+                    });
+                    calculatePrice();
+                    result = 0;
+                }
+
+            });
+
+            $('input[class="ispinner"]').off("change", "**");
+            $('input[class="ispinner"]').on("change", function () {
+                //商品数量必须大于0
+                var v = $(this).val();
+                if (v > 0) {
+                    return;
+                }
+                $(this).val(1);
+            });
+        }
+
+
+        function UpdateShoppingCart(shopCartItemId, commodityNumber, appId) {
+            //TODO dzc 需要将esappId传到后台  并保存
+            var comnum = "{\"Number\":" + commodityNumber + ",\"ShopCartItemId\":\"" + shopCartItemId + "\"}";
+            var strjson = "{\"shopCartCommodityUpdateDTOs\":[" + comnum + "],\"userId\":\"" + getUserId() + "\",\"appId\":\"" + appId + "\"}"
+            if (comnum != "") {
+                getDataAjax2({
+                    url: '/Mobile/UpdateShoppingCart',
+                    data: strjson,
+                    callback: function (data) {
+                        if (data.Message == 'Success') {
+                        } else {
+                            ajaxLoading(2, '');
+                            toast(data.Message);
+                        }
+                    }
+                });
+            }
+        }
+
+        function DeleteCommoditysFromShoppingCart() {
+            var xcdata = "";
+            var allChks = $('.content .u-cart-list .goods input:checked');
+            allChks.each(function () {
+                var citemId = $(this).parents(".goods").attr("shopcartitemid");
+                xcdata += citemId + ",";
+            });
+            if (xcdata == null || xcdata == "") {
+                toast("请选择要删除的商品！");
+                return;
+            }
+            getDataAjax({
+                url: '/Mobile/DeleteCommoditysFromShoppingCart',
+                data: { shopCartItemIds: xcdata, userId: getUserId(), appId: sessionStorage.appId },
+                callback: function (data) {
+                    if (data.ResultCode == 0) {
+                        calculatePrice();
+                        LoadShopList();
+                        toast("删除商品成功");
+                        $("#ajaxLoadBlind").remove();
+                    } else {
+                        toast("删除商品失败");
+                        $("#ajaxLoadBlind").remove();
+                    }
+                },
+                beforeSend: function () {
+                    ajaxLoading('22', '');
+                },
+                error: function () {
+                    toast("删除商品失败");
+                    $("#ajaxLoadBlind").remove();
+                }
+            });
+        }
+       $(function () {
+            if (getQueryString('type') == "tuwen") {
+                $(".footdi").removeClass("hide");
+                $("#navfoot").addClass("bar-footer-secondary-tab");
+                footmenu($("#shopcart"));
+            }
+            else {
+                $(".footdi").addClass("hide");
+                $("#navfoot").removeClass("bar-footer-secondary-tab");
+            }
+
+            if (DealLoginPartial == undefined) {
+                return;
+            }
+
+            //设置登录成功之后回调函数
+            DealLoginPartial.setCallback(function () {
+                $("#cartHeader").removeClass("hide");
+                $(".content").empty();
+                if (sessionStorage.ProductType == "webcjzy" || sessionStorage.ProductType == "appcjzy") {
+                    $("#searchZPH").attr("href", getZphCategoryUrl());
+                    $("#guang").attr("href", getZphIndexUrl());
+                }
+                LoadShopList();
+
+            });
+            DealLoginPartial.setLoginOut(function () {
+                $(".content").html($("#divNotLoginTemplate").html());
+                $("#cartHeader").addClass("hide");
+                $("#navfoot").addClass("hide");
+            });
+            //判断用户是否已登录
+            if ((JsVilaDataNull(getUserId()) && JsVilaDataNull(getSessionId())) || JsVilaDataNull(sessionStorage.neeLoginWhenLoad)) {
+                DealLoginPartial.initPartialPage();
+            }
+            if (!JsVilaDataNull(getUserId()) || !JsVilaDataNull(getSessionId())) {
+                $(".content").html($("#divNotLoginTemplate").html());
+                $("#cartHeader").addClass("hide");
+                $("#navfoot").addClass("hide");
+            }
+
+            //点击登录
+            $(".content").on("click", "#btnLogin", function () {
+                delContextDTO();
+                DealLoginPartial.initPartialPage();
+            });
+        });
+</script>
+}
+<div class="page" id="box">
+    <header class="bar bar-nav" id="cartHeader" style="z-index: 999;">
+        @*<a class="icon icon-angle-left pull-left"></a>*@
+        <a id="delcommodityFromCart" class="btn btn-link pull-right" del="0" href="javascript:void(0);" style="font-size:0.8rem;">编辑</a>
+        <h1 id="h1Cart" class="title" style="font-size:1rem;display:none;">购物车</h1>
+    </header>
+    <nav id="navfoot" class="bar bar-footer bar-footer-secondary-tab f-bottom-0 hide" style="height: 50px;z-index: 999;">
+        <div class="total">
+            <div class="sel"><input type="checkbox" id="chkAll"/></div>
+            <div class="title" id="divTitle">
+                <v id="selAllText" style="display:none;position:relative;top:10px;">全选</v>
+                <a id="btnSettleAccounts" class="pull-right btn btn-primary" href="javascript:void(0);" style="margin-top:0px;">结算(0)</a>
+                <div class="total-num">合计:@Currency()<span id="totalPrice">0.00</span></div>
+                <div class="sub">不含运费</div>
+                <a id="btnDeleteCommoditys" class="pull-right btn btn-primary del" data-state="del" href="javascript:void(0);"  style="margin-top:0px;display:none;">删除</a>
+            </div>
+        </div>
+       @*  <div class="edit hide">
+            <div class="selected-all"><input id="selectall" type="checkbox"/><span >全选</span></div>
+            <div class="title" style="margin-left:20%;width:80%;">
+                <a id="btnDeleteCommoditys" class="pull-right btn btn-primary del" data-state="del" href="javascript:void(0);"  style="margin-top:0px;top:0px;">删除</a>
+            </div>
+        </div>*@
+    </nav>
+    <div class="content">
+    </div>
+</div>
+<div id="divuCartListTemplate" style="display: none;">
+    <div class="u-cart-list" appid="{AppId}">
+        <div class="shop">
+            <div class="sel">
+                <input type="checkbox" /></div>
+            <div class="title">
+                <div class="primary">
+                    {AppName}</div>
+                <div class="sub" style="display: none;">
+                    <div class="crowd">
+                    </div>
+                    <span>您在本店再购买245元商品就能获得1股，坐等分红啦！</span>
+                </div>
+            </div>
+        </div>
+        {GoodsItemsHtml}
+    </div>
+</div>
+<div id="divGoodsItemTemplate" style="display: none;">
+    <div class="goods" commodityid="{Id}" commoditystockid="{CommodityStockId}" shopcartitemid="{ShopCartItemId}"
+        size="{Size}" style="position: relative">
+        <div class="sel">
+            <input type="checkbox" selftake="{IsSelfTake}" /></div>
+        <div class="goods-photo">
+            <a href="/Mobile/CommodityDetail?commodityId={Id}&commoditystockid={CommodityStockId}">
+            <img class="img" {srckey}="{Pic}" alt="" />
+            </a>
+            <div class="selfTake" style="display: {SelfTakeDisplay}">
+                <img class="selfTakeImg" src="/Images/selftake.png" alt="自提" />
+            </div>
+           </div>
+        <div class="goods-info">
+            <div class="goods-name">
+                {Name}</div>
+            <div class="goods-size" style="color: #aaa; font-size: .8rem; overflow: hidden; max-height: 1.2rem;">
+                {SizeAndColorId}</div>
+            <div class="goods-price">
+                @Currency() {RealPrice}</div>
+            <div class="goods-quantity cNumEdit">
+                x<span sctag="CommodityNumber">{CommodityNumber}</span> <a href="javascript:void(0)"
+                    class="icon icon-edit"></a>
+            </div>
+            <div class="goods-quantity hide">
+                <input type="number" class="ispinner" min="1" max="999" value="{CommodityNumber}"
+                    maxlength="3" />
+                <a href="javascript:void(0)" class="icon icon-ok  icon-large"></a>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="divNotLoginTemplate" style="display: none">
+    <div class="ui-notice" style="margin-top: 180px;">
+        <i>
+            <img src="../../Content/Mobile/redredenvelope/fail.png" alt="" style="margin: auto;
+                width: 160px;">
+        </i>
+        <p class="loginTitle">
+            还未登录，请先登录</p>
+        <div class="ui-notice-btn" style="text-align: center">
+            <a class="btn btn-primary" id="btnLogin">点此登录</a>
+        </div>
+    </div>
+</div>
+

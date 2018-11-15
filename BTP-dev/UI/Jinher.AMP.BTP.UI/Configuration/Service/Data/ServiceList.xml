@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--应用列表-->
+<Applications>
+  <!--业务框架BF应用-->
+  <Application name="BF" type="PlatForm" path="">
+    <!--业务框架BF的BP程序集-->
+    <Assembly name="Jinher.JAP.BF.BP">
+      <!--业务框架保存服务-->
+      <service name="Jinher.JAP.BF.BP.Base.SaveCommand" />
+      <!--业务框架查询服务-->
+      <service name="Jinher.JAP.BF.BP.Base.LoadCommand" />
+      <!--业务框架删除服务-->
+      <service name="Jinher.JAP.BF.BP.Base.DeleteCommand" />
+    </Assembly>
+    <Assembly name="Jinher.JAP.BF.SV">
+    </Assembly>
+  </Application>
+  <!--平台异常处理应用-->
+  <Application name="Exception" type="PlatForm" path="">
+    <!--异常处理服务组-->
+    <Assembly name="Jinher.JAP.Exception.SV">
+      <!--异常处理服务-->
+      <service name="Jinher.JAP.Exception.SV.ExceptionHelperSV" />
+    </Assembly>
+  </Application>
+  <!--资源管理应用-->
+  <Application name="RM" type="PlatForm" path="">
+    <!--资源管理BP-->
+    <Assembly name="Jinher.JAP.RM.BP">
+      <!--资源管理特定资源获取服务-->
+      <service name="Jinher.JAP.RM.BP.ResourceBP" />
+      <!--资源管理公共资源获取BP-->
+      <service name="Jinher.JAP.RM.BP.PublicResourceBP" />
+    </Assembly>
+  </Application>
+  <Application name="Info" type="BussinessModule" path="">
+    <Assembly name="Jinher.AMP.Info.BP">
+      <service name="Jinher.AMP.Info.BP.InfoManageBP" />
+      <service name="Jinher.AMP.Info.BP.InfoQueryBP" />
+    </Assembly>
+    <Assembly name="Jinher.AMP.Info.SV">
+      <service name="Jinher.AMP.Info.SV.InfoManageSV" />
+      <service name="Jinher.AMP.Info.SV.InfoQuerySV" />
+    </Assembly>
+  </Application>
+  <Application name="BTP" type="BussinessModule" path="">
+    <Assembly name="Jinher.AMP.BTP.BP">
+      <service name="Jinher.AMP.BTP.BP.CommodityBP" />
+      <service name="Jinher.AMP.BTP.BP.CommodityOrderBP" />
+      <service name="Jinher.AMP.BTP.BP.DeliveryAddressBP" />
+      <service name="Jinher.AMP.BTP.BP.PromotionBP" />
+      <service name="Jinher.AMP.BTP.BP.StoreBP" />
+    </Assembly>
+    <Assembly name="Jinher.AMP.BTP.SV">
+      <service name="Jinher.AMP.BTP.SV.CategorySV" />
+      <service name="Jinher.AMP.BTP.SV.CollectionSV" />
+      <service name="Jinher.AMP.BTP.SV.CommodityOrderSV" />
+      <service name="Jinher.AMP.BTP.SV.CommoditySV" />
+      <service name="Jinher.AMP.BTP.SV.DeliveryAddressSV" />
+      <service name="Jinher.AMP.BTP.SV.MessageSV" />
+      <service name="Jinher.AMP.BTP.SV.PromotionSV" />
+      <service name="Jinher.AMP.BTP.SV.ReviewSV" />
+      <service name="Jinher.AMP.BTP.SV.ShoppingCartSV" />
+      <service name="Jinher.AMP.BTP.SV.StoreSV" />
+    </Assembly>
+  </Application>
+</Applications>

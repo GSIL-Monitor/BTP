@@ -1,0 +1,368 @@
+﻿@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+}
+@helper Currency()
+    {
+    @Jinher.AMP.BTP.UI.Util.MobileCookies.GetCurrency();
+}
+@section TitleHtml
+{
+    <title>待自提订单</title>
+}
+@section CssStyles{
+    <link rel="stylesheet" href="/Content/Mobile/css.css" />
+    <link rel="stylesheet" href="/Content/Mobile/zphStyle/normalize.css" />
+    <link rel="stylesheet" href="/Content/Mobile/zphStyle/function.css" />
+    @*影响文本框的样式*@
+    <link rel="stylesheet" href="/Content/Mobile/zphStyle/general.css" />
+    <link rel="stylesheet" href="/Content/Mobile/zphStyle/font-awesome.css" />
+    @*影响整个页面的背景色。*@
+    <link rel="stylesheet" href="/Content/Mobile/zphStyle/skin.css" />
+    <link rel="stylesheet" href="/Content/Mobile/zphStyle/zOrder.css" />
+}
+@section ClientScript
+{
+    <script type="text/javascript">
+        $(function () {
+            saveContextDTOByUrl();
+            ScollLoadData.init(getSelfTakeOrderList);
+        });
+
+        //获取自提订单列表。
+        function getSelfTakeOrderList(pageIndex, isRefush, fn) {
+            ajaxLoading('22', '');
+            var cparam = {};
+            cparam.userId = getQueryString('userId');
+            cparam.pageIndex = pageIndex;
+            cparam.pageSize = 10;
+
+            var strjson = JSON.stringify(cparam);
+            getDataAjax2({
+                url: "/Mobile/GetSelfTakeOrderList",
+                data: strjson,
+                callback: function (result) {
+                    $("#ajaxLoadBlind").remove();
+                    var html = getOrderListHtml_stol(result);
+                    if (isRefush) {
+                        $("#orderItems").html(html);
+                    }
+                    else {
+                        $("#orderItems").append(html);
+                    }
+
+                    $("#orderItems .u-order-card .footer a").remove();
+                    if (result == null || result.length == 0) {
+                        $('#footer_loading').show().find('span').text('暂无更多订单数据!');
+                    }
+                    regOrderItemEvent();
+                    fn && fn(result);
+                }
+            });
+        }
+
+        function regOrderItemEvent() {
+            $("#orderItems .u-order-card").off("click", "**");
+            $("#orderItems .u-order-card").on("click", function () {
+                var orderid = $(this).attr("orderid");
+                document.location.href = "/Mobile/SelfTakeOrderDetail?orderId=" + orderid
+                        + "&userId=" + getQueryString('userId') + "&sessionId=" + getQueryString('sessionId') + "&changeOrg=" + getQueryString('changeOrg');
+            });
+        }
+
+
+        //生成整个订单列表html.
+        function getOrderListHtml_stol(data) {
+            if (data == null || data.length == 0) {
+                return "";
+            }
+            var len = data.length;
+            var allHtml = "";
+            for (var i = 0; i < len; i++) {
+                allHtml += getOrderItemHtml_stol(data[i]);
+            }
+            return allHtml;
+        }
+
+        //生成单个订单列表html.
+        function getOrderItemHtml_stol(data) {
+            var ciHtml = "";
+
+            if (data.ShoppingCartItemSDTO && data.ShoppingCartItemSDTO.length > 0) {
+                var len = data.ShoppingCartItemSDTO.length;
+                var reviewLength = 0;
+                for (var i = 0; i < len; i++) {
+                    var cartItem = data.ShoppingCartItemSDTO[i];
+                    cartItem.end = (i == len - 1) ? "end" : "";
+                    cartItem.SelfTakeDisplay = data.SelfTakeFlag == 1 ? "block" : "none";
+                    dealColorAndSize(cartItem);
+                    ciHtml += commodityItemTemplate.format(cartItem);
+                    if (cartItem.HasReview) {
+                        reviewLength++;
+                    }
+
+                }
+            }
+            //订单中有一个已评价，则整个订单为已评价。
+            var isReview = reviewLength > 0 ? true : false;
+            data.CommodityCount = len;
+            data.CommodityItemsHtml = ciHtml;
+            data.OperateButtonsHtml = getOneOrderButtonHtml(data, isReview);
+            data.StateText = getOrderStateText(data.State);
+            data.AppName = data.AppName == undefined ? "" : data.AppName;
+
+
+            var html = shopItemTemplate.format(data);
+            return html;
+        }
+
+
+        function dealColorAndSize(datai) {
+            //datai.Size以，分隔；前颜色，后尺寸。
+            if (datai.Size != null && datai.Size.length > 1) {
+                var splitR = datai.Size.split(",");
+                var sizeText = "";
+                var s01 = false;
+                var s02 = false;
+                if (splitR.length == 1) {
+                    if (splitR[0] != null && splitR[0].length > 0 && splitR[0] != "null") {
+                        s01 = true;
+                    }
+                }
+                else if (splitR.length >= 1) {
+                    if (splitR[0] != null && splitR[0].length > 0 && splitR[0] != "null") {
+                        s01 = true;
+                    }
+                    if (splitR[1] != null && splitR[1].length > 0 && splitR[1] != "null") {
+                        s02 = true;
+                    }
+                }
+                datai.SizeDisplay = s01 || s02 ? "inline-block" : "none";
+                if (s01) {
+                    sizeText += splitR[0];
+                }
+                if (s02) {
+                    if (sizeText.length > 0) {
+                        sizeText += "&nbsp;&nbsp;";
+                    }
+                    sizeText += splitR[1];
+                }
+                datai.SizeText = sizeText;
+            }
+            else {
+                datai.SizeText = "";
+                datai.SizeDisplay = "none";
+            }
+        }
+
+        var ScollLoadData = (function () {
+
+            var pageIndex = 1;
+            var _loadDataFn;
+            var isLoading = false;
+            function init(loadDataFn) {
+                _loadDataFn = loadDataFn;
+                downEvent_stol();
+                scrollLoadDataEvent_stol();
+
+                _loadDataFn && _loadDataFn(1, false);
+            }
+
+            function downEvent_stol() {
+                pageIndex = 1;
+                var body = document.getElementsByTagName('body')[0]; //缓存body元素
+                var top_loading = document.getElementById('top_loading'); //头部加载文字盒子
+                var footer_loading = document.getElementById('footer_loading'); //底部加载文字盒子
+                var $body = $(body);
+                var $top_loading = $(top_loading);
+                var $footer_loading = $(footer_loading);
+                var startPageX = 0; //横轴开始值
+                var startPageY = 0; //纵轴开始值
+                var startY = document.body.scrollTop; //记录滚动条距离
+                var top_loading_start_size = 0;
+                var moveSize = 0; //横轴移动量
+                var moveSizeY = 0; //纵轴移动量
+                var topLoadingLock = false;
+                var type = {};
+
+
+                function asyncCompleted(data) {
+                    $top_loading.find('span').text('已更新');
+                    setTimeout(function () {
+                        $top_loading.css('margin-top', '-' + $top_loading.css('height'))
+                                .find('span').text('下拉可刷新');
+                    }, 1000);
+                    if (data.length >= 10) {
+                        $('#footer_loading').show().find('span').text('正在获取数据...');
+                    } else {
+                        if (data.length > 0)
+                            $('#footer_loading').show().find('span').text('暂无更多订单数据!');
+                    }
+                    isOrderDataEnd = data.length < 10;
+                }
+
+                body.addEventListener('touchstart', function (e) {
+                    var touch = e.changedTouches[0];
+                    startPageX = touch.screenX;
+                    startPageY = touch.screenY;
+                    startY = body.scrollTop;
+                    top_loading_start_size = parseInt($top_loading.css('margin-top'));
+                });
+                body.addEventListener('touchmove', function (e) {
+                    var touch = e.changedTouches[0];
+                    moveSize = touch.screenX - startPageX;
+                    moveSizeY = touch.screenY - startPageY;
+                    var top_move = top_loading_start_size + moveSizeY;
+                    if (startY == 0 && moveSizeY > 0) {
+                        if (top_move <= 0) {
+                            e.preventDefault();
+                            $top_loading.css({
+                                marginTop: top_move
+                            })
+                        } else {
+                            $top_loading.css({
+                                marginTop: 0
+                            }).find('span').text('松开可更新');
+                            topLoadingLock = true;
+                        }
+                    }
+                });
+                body.addEventListener('touchend', function (e) {
+                    if (isLoading)
+                        return;
+                    isLoading = true;
+                    if (topLoadingLock) {
+                        pageIndex = 1;
+                        _loadDataFn && _loadDataFn(pageIndex, topLoadingLock, function (data) {
+                            asyncCompleted(data);
+                            isLoading = false;
+                        });
+                    } else {
+                        $top_loading.css('margin-top', '-' + $top_loading.css('height'));
+                        isLoading = false;
+                    }
+                });
+            }
+
+            //滚动到底部开始加载数据。
+            function scrollLoadDataEvent_stol() {
+                var footer_loading = $('#footer_loading'); //底部加载文字盒子
+                //var goTop = $(".u-backtop");//回到顶部按钮
+                var showGoTop = false; //回到顶部按钮状态
+                var goTopAdvance = 1500; //回到顶部按钮显示时机
+                var loading = false;
+                var isEnd = false;
+                var advance = 10; //距离底部30px时开始加载
+                var page = 1;
+                var pageSize = 10;
+
+                // 初始化滚动监听
+                $(window).scroll(function () {
+                    scrollEvent();
+                });
+
+                //数据加载函数
+                function loadItems() {
+                    loading = true;
+                    $('#footer_loading').show().find('span').text('正在获取数据...');
+                    pageIndex++;
+                    _loadDataFn && _loadDataFn(pageIndex, false, function (data) {
+                        if (data.length >= 10) {
+                            $('#footer_loading').show().find('span').text('正在获取数据...');
+                        }
+                        else {
+                            $('#footer_loading').show().find('span').text('暂无更多订单数据!');
+                        }
+                        setTimeout(function () {
+                            loading = false;
+                        }, 1000);
+                        isOrderDataEnd = data.length < 10; //isEnd = data.length < pageSize;
+                    });
+                }
+                //滚动逻辑函数
+                function scrollEvent() {
+                    if (loading == true) {
+                        return;
+                    }
+                    var scrollHeight = $(document).height() > $(window).height() ? $(document).height() - $(window).height() : 0;
+                    var scrollTop = $(window).scrollTop();
+                    var scrollBottom = scrollHeight - scrollTop;
+
+                    //滚动加载
+                    if (scrollBottom <= advance && !loading && !isOrderDataEnd) {
+                        loadItems(); //加载
+
+                    } else if (isOrderDataEnd) {
+                        footer_loading.find("span").html('暂无更多订单数据!');
+                    }
+                    else {
+                        footer_loading.hide();
+                    }
+
+                }
+            }
+
+            var sld = {};
+            sld.init = init;
+            return sld;
+        } ());
+         
+    </script>
+}
+<body style="background-color: #B4B4B4;">
+    <div id="box">
+        <header id="headerOrder" class="bar bar-nav hide" style="margin-left: auto; margin-right: auto;">
+            <h1 id="orderTitle" class="title" style="font-size:1rem;">待自提订单</h1>
+        </header>
+        <div id="main" style="padding: 0px; min-height: 568px; background-color: #B4B4B4;
+            border-top: 0px; margin-top: 10px;">
+            <script type="text/javascript">
+                setSessionStorageItemHeightAndImgHeight();
+            </script>
+            <div id="top_loading" style="margin-top: -64px; margin-left: auto; margin-right: auto;
+                background-color: #B4B4B4;">
+                <span style="color: #d7d7d7;">下拉可刷新</span>
+            </div>
+            <div id="orderItems" class="content clearFloat">
+            </div>
+            <div id="footer_loading" style="margin: 0 auto; width: 94%; border-top: 0px;">
+                <span style="color: #d7d7d7;">正在获取数据...</span>
+            </div>
+        </div>
+    </div>
+    <div id="shopItemTemplate" style="display: none;">
+        <div class="u-order-card" ctag="shopItem" orderid="{CommodityOrderId}" appid="{AppId}">
+            <div class="tit">
+                <a href="javascript:void(0);">{AppName}({CommodityCount}) <span>@Currency() {Price}</span><i
+                    class="pull-right light-3"></i></a></div>
+            {CommodityItemsHtml}
+            <div class="footer clearfix">
+                {OperateButtonsHtml}
+            </div>
+            <div class="saw">
+            </div>
+        </div>
+    </div>
+    <div id="commodityItemTemplate" style="display: none;">
+        <div class="con {end}" ctag="commodityItem">
+            <div class="goods-photo">
+                <div>
+                    <div class="media-object pull-left " style="position: relative; width: 80px; height: 80px;">
+                        <img class="img" src="{Pic}" alt="" />
+                        <div class="selfTake" style="display: {SelfTakeDisplay}">
+                            <img class="selfTakeImg" style="display: block; width: 80px;" src="/Images/selftake.png"
+                                alt="自提" />
+                        </div>
+                    </div>
+                    <div class="photo-status" style="z-index: 120">
+                        {StateText}</div>
+                </div>
+            </div>
+            <div class="goods-info" style="width: 100%;">
+                <div class="goods-name">
+                    {Name}</div>
+                <div class="goods-price">
+                    <span style="display: {SizeDisplay};">{SizeText}</span> 数量: <span>{CommodityNumber}</span></div>
+            </div>
+        </div>
+    </div>
+</body>

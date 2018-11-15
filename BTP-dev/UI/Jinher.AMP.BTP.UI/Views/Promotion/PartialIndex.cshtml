@@ -1,0 +1,148 @@
+﻿@{
+    Layout = null;
+    int rows = ViewBag.Count;
+}
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $(".del").bind("click", function () {
+            var id = this.id;
+            if (confirm("确定要删除吗?")) {
+                $.ajax({
+                    url: '/Promotion/DelPromotion/',
+                    type: 'post',
+                    dataType: 'json',
+                    data: { promotionId: id },
+                    error: function () {
+                        alert("删除错误");
+                    },
+                    success: function () {
+                        window.location.href = location.href
+                    }
+
+                });
+            }
+        });
+    });
+  </script>
+
+<input type="hidden" id="rowcounts" value="@rows"/>
+<table id="dataTable" border="0" cellspacing="0" cellpadding="0" class="m_talbe">
+    <tr class="t_tr1">
+        <td class="one">
+            序号
+        </td>
+        <td class="two">
+            促销名称
+        </td>
+        <td class="three">
+            促销时间
+        </td>
+        <td class="four">
+            折扣
+        </td>
+        <td class="five">
+            促销商品
+        </td>
+        <td class="six">
+            宣传图片
+        </td>
+        <td class="seven">
+            状态
+        </td>
+        <td class="eight">
+            操作
+        </td>
+    </tr>
+    @{int index = 1;
+      foreach (Jinher.AMP.BTP.Deploy.CustomDTO.DiscountsVM promotion in ViewBag.PromotionList)
+      {
+        <tr class="t_tr2">
+            <td class="one">
+                @index
+            </td>
+            <td class="two">
+                @promotion.Name
+            </td>
+            <td class="three">
+                @{
+           string time = string.Empty;
+           if (promotion.StartTime != null && promotion.StartTime.ToString() != "")
+           {
+               time = promotion.StartTime.ToString("yyyy-MM-dd HH:mm");
+           }
+           if (promotion.EndTime != null && promotion.EndTime.ToString() != "")
+           {
+               time += "-" + promotion.EndTime.ToString("yyyy-MM-dd HH:mm");
+           }
+                }
+                @time
+            </td>
+            <td class="four">
+                @{
+           string inten = string.Empty;
+           if (promotion.Intensity.ToString() == "10.00")
+           {
+               inten = "无折扣,有优惠价";
+           }
+           else
+           {
+               int indx = promotion.Intensity.ToString().IndexOf('.');
+
+               if (indx > 0)
+               {
+                   if (promotion.Intensity.ToString().Substring(indx + 1, 1) == "0")
+                   {
+                       inten = promotion.Intensity.ToString().Substring(0, 1);
+                   }
+                   else
+                   {
+                       inten = promotion.Intensity.ToString().Substring(0, 3);
+                   }
+               }
+           }
+                }
+                @inten
+            </td>
+            <td class="five">
+                @{
+           string commodityString = string.Empty;
+           if (promotion.Commoditys.Count > 3)
+           {
+               promotion.Commoditys.RemoveAt(3);
+               commodityString = string.Join(",", promotion.Commoditys) + "...";
+           }
+           else
+           {
+               commodityString = string.Join(",", promotion.Commoditys);
+           }
+                }<a  href="javascript:void(0)" onclick="searchCommodity('@promotion.PromotionId')">@commodityString</a>
+            </td>
+            <td class="six">
+                <img src="@promotion.PicturesPath" width="120" height="120" alt="" draggable="false"/>
+            </td>
+            <td class="seven">
+                @if (promotion.StartTime > DateTime.Now)
+                {
+                    <text>未开始</text>
+                }
+                @if (promotion.StartTime < DateTime.Now && promotion.EndTime > DateTime.Now)
+                {
+                    <text>促销中</text>
+                }
+                @if (promotion.EndTime < DateTime.Now)
+                { 
+                    <text>已结束</text>
+                }
+            </td>
+            <td class="eight">
+                @*@if (promotion.EndTime >= DateTime.Now)
+                {
+
+                } *@<span><a href="/Promotion/UpdatePromotion?promotionId=@promotion.PromotionId">编辑</a></span>
+                <span><a href="javascript:void(0)" class="del" id="@promotion.PromotionId">删除</a></span>
+            </td>
+        </tr>
+                                                              index++;
+      }}
+</table>

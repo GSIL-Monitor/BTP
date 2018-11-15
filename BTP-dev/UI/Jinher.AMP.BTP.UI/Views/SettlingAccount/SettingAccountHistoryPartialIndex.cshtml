@@ -1,0 +1,72 @@
+﻿@using System.Web
+@using Jinher.AMP.BTP.UI.Models
+@{
+    ViewBag.Title = "SettingAccountHistoryPartialIndex";
+
+    List<Jinher.AMP.BTP.Deploy.SettlingAccountDTO> comHistorylist = ViewBag.CommodityHistoryList;
+    int pageCurrent2 = ViewBag.PageCurrent2;
+}
+<input type="hidden" id="rowcounts2" value="@ViewBag.Count2"/>
+
+                      <div style="margin:0 auto; overflow-y: auto; height: 505px; margin-top: 6px;" class="manag_bot">
+<table id="dataTable2" border="0" cellspacing="5" cellpadding="0" class="m_talbe" style="text-align:left; font-size: 14px;  color: #8c94a9;">
+    <tr class="t_tr1">
+        <td width="80">
+            序号
+        </td>
+        <td width="100">
+            日期
+        </td>
+        <td width="120">
+            结算价
+        </td>
+        <td width="100">
+            生效时间
+        </td>
+        <td width="100">
+            修改人账号
+        </td>
+        <td width="100">
+            修改人
+        </td>
+         <td width="100">
+            操作
+        </td>
+    </tr>
+     <script type="text/javascript">
+         _rowCount2 = "@ViewBag.Count2";
+     </script>
+    <tbody id="sortables2">
+        @foreach (var items in comHistorylist)
+        {
+            <tr class="t_tr2 t_tr2_bg wysort" style="height:42px" data-items-id="@items.Id">
+                <td>
+                    <span>@pageCurrent2</span>
+                </td>
+                <td>
+                    <span>@items.SubTime</span>
+                </td>
+                <td>
+                    <span>@Jinher.AMP.BTP.UI.Util.WebUtil.GetCurrency()@items.ManufacturerClearingPrice</span>
+                </td>
+                <td>
+                    <span>@items.EffectiveTime</span>
+                </td>
+                <td>
+                    <span>@items.UserCode</span>
+                </td>
+                <td>
+                    <span>@items.SubName</span>
+                </td>
+                <td>
+                @if (items.EffectiveTime > DateTime.Now)
+                {
+                    <span><a href="javascript:;" onclick="deleteHistory('@items.Id','@items.CommodityId')">删除</a></span>
+                }
+                </td>
+            </tr>  
+                     pageCurrent2 = pageCurrent2 + 1;
+        }
+    </tbody>
+</table>
+</div>

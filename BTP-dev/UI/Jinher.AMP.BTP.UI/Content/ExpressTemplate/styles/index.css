@@ -1,0 +1,519 @@
+html,body{
+    padding:0;
+    margin:0;
+    font-family:'Microsoft Yaheit';
+    font-size: 12px;
+}
+*{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
+}
+ul,li{
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+input::-webkit-inner-spin-button{
+    -webkit-appearance: none!important
+}
+a{
+    text-decoration: none;
+}
+.clearfix{
+    display: block;
+    clear: both;
+    overflow: hidden;
+}
+.btn{
+    padding: 5px 8px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    -ms-border-radius: 3px;
+    border-radius: 3px;
+    background: #00BEF2;
+    color: #fff;
+    cursor: pointer;
+}
+.btn.disable{
+    cursor:default;
+    background: #999;
+}
+.w350{
+    width: 350px;
+}
+.w120{
+    width: 120px;
+}
+.w280{
+    width: 280px;
+}
+.h180{
+    height: 180px;
+}
+.h600{
+    height: 600px;
+}
+.scale-in{
+    -webkit-animation: action_scale 1s;
+}
+@-webkit-keyframes action_scale{
+    0%{transform: scale(0)}
+    50%{transform: scale(1.01)}
+    100%{transform: scale(1)}
+}
+.express-order-wrap{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    z-index: 1;
+    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+}
+.express-order-wrap.modal{
+    background:rgba(0,0,0,.3);
+}
+.express-order-wrap .express-order-content{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+.express-order-wrap .express-order-content .express-order-body{
+    padding-top: 40px;
+}
+.express-order-wrap .express-order-content .express-order-close{
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    color: #fff;
+    z-index:2;
+}
+.express-order-wrap .express-order-content .express-order-header{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 10px;
+    background: #00BEF2;
+    color: #fff;
+    z-index: 1;
+}
+.express-order-left{
+    position: absolute;
+    float: left;
+    width: 145px;
+    height: 100%;
+    padding: 40px 0 71px 0;
+}
+.express-order-left .express-order-list{
+    height: 100%;
+    background-color: #fff;
+    border: 1px solid #dee5e7;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+}
+.express-order-left .express-order-list .list
+{
+    height:500px;
+    overflow-y: auto;
+}
+.express-order-left .express-order-list .title{
+    margin: 0;
+    padding: 10px 5px;
+    border-bottom: 1px solid #dee5e7;
+    font-size: 12px;
+    color: #fff;
+    background: #00BEF2;
+    font-weight: 400;
+}
+.express-order-left .express-order-list li{
+    padding: 10px 5px;
+    border-bottom: 1px solid #dee5e7;
+    margin-top: -1px;
+    white-space: nowrap;
+    cursor: pointer;
+    color: #555;
+}
+.express-order-left .express-order-list li.selected{
+    background: #eee;
+    color:#e4393c;
+}
+.express-order-left .express-order-list li:hover{
+    background: #eee;
+}
+.express-order-left .express-order-opera{
+    margin-top: 10px;
+}
+.express-order-right{
+    height: 100%;
+    margin-left: 150px;
+    padding-top: 40px;
+    padding-bottom: 71px;
+}
+.express-order-right .express-order-right-content{
+    width: 100%;
+    height: 100%;
+    border-top: 1px dashed #999;
+    border-left: 1px dashed #999;
+    overflow: auto;
+}
+.express-order-right .express-order-bg{
+    position: relative;
+    top:0;
+    left: 0;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+.express-order-right .express-order-bg .express-order-bg-item{
+    display: inline-block;
+    position: absolute;
+    cursor: pointer;
+    border: 1px solid #333;
+    background:#fff;
+}
+.express-order-right .express-order-bg .express-order-bg-item.disable{
+    background: transparent;
+    border: 1px dashed #999;
+}
+.express-order-right .express-order-bg .express-order-bg-item.active{
+    border:1px dashed #e4393c;
+    z-index: 1;
+    cursor: move;
+}
+.express-order-right .express-order-bg .express-order-bg-item .left-drag-dashed{
+    position: absolute;
+    top: 50%;
+    left: -4px;
+    width: 4px;
+    height: 4px;
+    margin-top: -2px;
+    background: rgba(0, 125, 252, 0.901961);
+    cursor: e-resize;
+}
+.express-order-right .express-order-bg .express-order-bg-item .right-drag-dashed{
+    position: absolute;
+    top: 50%;
+    right: -4px;
+    width: 4px;
+    height: 4px;
+    margin-top: -2px;
+    background: rgba(0, 125, 252, 0.901961);
+    cursor: e-resize;
+}
+.express-order-right .express-order-bg .express-order-bg-item .top-drag-dashed{
+    position: absolute;
+    top: -4px;
+    left: 50%;
+    width: 4px;
+    height: 4px;
+    margin-left: -4px;
+    background: rgba(0, 125, 252, 0.901961);
+    cursor: s-resize;
+}
+.express-order-right .express-order-bg .express-order-bg-item .bottom-drag-dashed{
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    width: 4px;
+    height: 4px;
+    margin-left: -4px;
+    background: rgba(0, 125, 252, 0.901961);
+    cursor: s-resize;
+}
+.express-order-right .express-order-size{
+    margin-top: 10px;
+    color: #999;
+}
+.express-order-right .express-order-size span{
+    margin-right: 100px;
+}
+.express-order-wrap .express-order-content.create{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 470px;
+    height: 240px;
+    margin-top: -120px;
+    margin-left: -235px;
+    background: #fff;
+    z-index: 2;
+}
+.express-order-group{
+    position: relative;
+    margin-bottom: 10px;
+    margin-left: 20px;
+}
+.express-order-group .title{
+    display: inline-block;
+    width: 60px;
+    color: #999;
+}
+.express-order-group .title:before{
+    content:'*';
+    color:#e4393c;
+}
+.express-order-group .icon-down{
+    position: absolute;
+    bottom: 10px;
+    right: 40px;
+    border: 4px solid #00BEF2;
+    border-left-color: transparent;
+    border-right-color: transparent;
+    border-bottom: 0;
+    z-index: 1;
+}
+.express-order-group input ,.express-order-group select{
+    height: 25px;
+    padding: 0 3px;
+    border: 0;
+    outline: none;
+    border: 1px solid #dee5e7;
+    -webkit-box-shadow: 0 0 0px 1000px #fff inset;
+}
+.express-order-group .upload-btn{
+    display: inline-block;
+    padding: 5px 8px;
+    background: #00BEF2;
+    color: #fff;
+}
+.express-order-group .upload{
+    position: absolute;
+    right: 22px;
+    width: 64px;
+    opacity: 0;
+}
+.express-order-body .express-order-tips{
+    padding-left: 89px;
+    font-size: 12px;
+    color: #999;
+}
+.express-order-footer{
+    position: absolute;
+    bottom: 0;
+    margin-top: 10px;
+    width: 100%;
+    height: 30px;
+    padding: 0 10px;
+    background: #f1f1f1;
+    color: #fff;
+    text-align: right;
+}
+.express-order-footer .express-order-footer-position{
+    float: left;
+    text-align: right;
+    color: #333;
+}
+.express-order-footer .express-order-footer-position .title{
+    line-height: 30px;
+}
+.express-order-footer .express-order-footer-position input{
+    width: 80px;
+}
+.express-order-footer .express-order-footer-btn{
+    float: right;
+    text-align: right;
+}
+.express-order-wrap .express-order-content.property{
+    top: 10%;
+    left: 20%;
+    width: 60%;
+    height: 80%;
+    background: #fff;
+    z-index: 2;
+}
+.express-order-wrap .express-order-content.property .express-order-body{
+    height: 100%;
+    padding-bottom: 30px;
+    overflow-y: auto;
+}
+.property-group{
+    position: relative;
+    margin: 20px 20px 30px;
+    padding: 15px 15px 5px;
+    border: 1px solid #ddd;
+}
+.property-group .property-group-title{
+    position: absolute;
+    top: -10px;
+    background: #fff;
+    width: 69px;
+    font-size: 12px;
+    color: #333;
+    text-align: center;
+}
+.property-group label{
+    display: inline-block;
+    margin-right: 30px;
+    margin-bottom: 10px;
+}
+.property-group label input{
+    float: left;
+    position: relative;
+    top: -2px;
+}
+.property-group .print-tips{
+    width: 200px;
+    padding: 3px 5px;
+    border: 0;
+    outline: none;
+    border-radius: 2px;
+    border: 1px solid #999;
+    font-size: 12px;
+}
+.express-order-wrap .express-order-content.common-templates{
+    top: 10%;
+    left: 20%;
+    width: 70%;
+    height: 80%;
+    background: #fff;
+    z-index: 2;
+}
+.express-order-wrap .express-order-content.common-templates .express-order-body{
+    height: 100%;
+    padding-bottom: 30px;
+}
+.common-templates-wrap{
+    position: relative;
+    overflow: hidden;
+}
+.common-templates-left{
+    width: 50%;
+    height: 100%;
+    float: left;
+    padding-right: 31px;
+}
+.common-templates-list{
+    height: 100%;
+    padding: 10px 10px 50px 10px;
+}
+.common-templates-title{
+    height: 20px;
+    padding-left: 10px;
+}
+.common-templates-list ul{
+    height: 100%;
+    padding: 5px;
+    border: 1px solid #ddd;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+.common-templates-list .item{
+    padding: 5px 0;
+}
+.common-templates-list .item.selected{
+    color:#00BEF2;
+}
+.common-templates-center{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 62px;
+    margin-left: -31px;
+    margin-top: -25px;
+}
+.common-templates-right{
+    width: 50%;
+    height:100%;
+    float: right;
+    padding-left: 31px;
+}
+.common-templates .button-icon{
+    width: 60px;
+    color: #000;
+    height: 18px;
+    line-height: 18px;
+    text-align: center;
+    display: inline-block;
+    border: 1px solid #999;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+}
+.common-templates .button-icon.disabled{
+    color: #ddd;
+    border-color: #ddd;
+}
+.bottom-btn{
+    display: inline-block;
+    min-width: 60px;
+    padding: 5px 10px;
+    margin: 3px;
+    color: #fff;
+    background: #00BEF2;
+    text-align: center;
+    cursor: pointer;
+}
+.bottom-btn.disable{
+    background: #999;
+    cursor: default;
+}
+
+/**/
+.dialog-wrap {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    margin: 0 auto;
+    z-index: 100;
+    background: rgba(0, 0, 0, .5);
+    font-family: 'Microsoft Yahei';
+}
+.dialog-wrap .dialog-cover{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    width: 300px;
+    height: auto;
+    background: #fff;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    overflow: hidden;
+    text-align: center;
+}
+.dialog-wrap .dialog-cover .dialog-body{
+    padding: 18px 10px;
+    line-height: 16px;
+    border-bottom: 1px solid #E8E8E8;
+    font-size: 14px;
+}
+.dialog-wrap .dialog-cover .dialog-footer a{
+    float: left;
+    width: 50%;
+    height: 33px;
+    line-height: 33px;
+    font-size: 12px;
+    color: #000;
+}
+.dialog-wrap .dialog-cover .dialog-footer a.cancel{
+    border-right: 1px solid #E8E8E8;
+}
+
+.mask-wrap{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255,255,255,.5);
+    z-index: 1;
+}
+.mask-wrap img{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+}

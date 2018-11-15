@@ -1,0 +1,546 @@
+﻿@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+}
+@section TitleHtml
+{
+    <title>订单分享</title>
+}
+@section CssStyles{
+    <link href="/Content/Mobile/style/base.css" rel="stylesheet" type="text/css" />
+    <link href="/Content/Mobile/style/mycart.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="/Content/Mobile/css.css" />
+    <link href="/Content/Mobile/style/app.css" rel="stylesheet" type="text/css" />
+    <link href="/Content/Mobile/style/normalize.css" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+        .list li
+        {
+            border: 1px solid #e3e3e3;
+            background-color: #f5f5f5;
+        }
+        .list li:active
+        {
+            background-color: #f5f5f5;
+        }
+        .btnclass
+        {
+            color: #FFFFFF !important;
+            background-color: #ff5400 !important;
+            font-weight: lighter;
+            border: 0;
+            border-radius: 6px;
+            padding: 6px;
+        }
+        .topval
+        {
+            height: 45px;
+            line-height: 45px;
+            background-color: #fafbfc;
+            text-indent: 20px;
+            color: #717070;
+        }
+    </style>
+}
+@section ClientScript
+{
+    <script src="/Content/Mobile/Common.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var pay = 10;
+        var sta = 10;
+        var shareData = "";
+        var baurl = window.location.href;
+        //订单id，appid，商品名称，商品缩略图  ISO
+        function GiveIsoShare() {
+            return shareData;
+        }
+        function GiveAndroidShare() {
+            if (window.tw && window.tw.setOrderInformation) {
+                window.tw.setOrderInformation(shareData);
+            }
+        }
+
+        $(function() {
+            if (DealLoginPartial == undefined) {
+                return;
+            }
+            DealLoginPartial.setCallback(function() {
+                TzShop();
+            });
+        });
+        $(function () {
+            saveContextDTOByUrl();
+            var orderId = getQueryString('orderId');
+            var appId = getQueryString('shopId');
+            setSessionStorage('commodityUpInfo', 'appId', appId);
+            setSessionStorage('commodityUpInfo', 'orderId', orderId);
+            setSessionStorage('orderInfo', 'OrderId', orderId);
+            //start 可以多次分享 从页面取参数 判断
+            if (!sessionStorage.appId || sessionStorage.appId == "null" || sessionStorage.appId == "undefined") {
+                sessionStorage.appId = getQueryString('shopId');
+            }
+
+            if (!sessionStorage.source || sessionStorage.source == "null" || sessionStorage.source == "undefined") {
+                sessionStorage.source = getQueryString('source');
+
+            }
+            var srcType = getQueryString('SrcType');
+            if (srcType != undefined && srcType != "" && srcType != "null" && srcType != null && srcType != "undefined") {
+
+                sessionStorage.SrcType = getQueryString('SrcType');
+            }
+
+            var srcTagId = getQueryString('SrcTagId');
+
+            if (srcTagId != undefined && srcTagId != "" && srcTagId != "null" && srcTagId != null && srcTagId != "undefined") {
+
+                sessionStorage.SrcTagId = getQueryString('SrcTagId');
+            } else {
+                sessionStorage.SrcTagId = getQueryString('orderId');
+            }
+            var cpsId = getQueryString('CPSId');
+
+            if (cpsId != undefined && cpsId != "" && cpsId != "null" && cpsId != null && cpsId != "undefined") {
+                sessionStorage.CPSId = getQueryString('CPSId');
+            }
+
+           //end 可以多次分享 从页面取参数 判断
+
+
+            //判断是否缓存了订单ID值.当没有时从地址栏获取并缓存
+            if (!sessionStorage.orderId || sessionStorage.orderId == "null" || sessionStorage.orderId == "undefined") {
+                sessionStorage.orderId = getQueryString('orderId');
+            }
+
+            getDataAjax({
+                url: '/Mobile/GetShareMyOrderDetail',
+                data: { appId: appId, orderId: orderId },
+                callback: function (data) {
+                    ajaxLoading('22', '');
+                    $(".page").show();
+                    pay = data.data.Payment;
+                    sta = data.data.State;
+
+                    setSessionStorage('commodityUpInfo', 'priceAll', data.data.Price);
+                    setSessionStorage('commodityUpInfo', 'name', data.data.ShoppingCartItemSDTO[0].Name);
+                    setSessionStorage('orderInfo', 'OrderCode', data.data.Code);
+
+                    var tempobjons = { OrderId: sessionStorage.orderId, AppId: sessionStorage.appId, Pic: data.data.ShoppingCartItemSDTO[0].Pic, CommodityName: data.data.ShoppingCartItemSDTO[0].Name };
+                    shareData = JSON.stringify(tempobjons);
+                    // shareData = '{"OrderId":"' + sessionStorage.orderId + '","AppId":"' + sessionStorage.appId + '","Pic":"' + data.data.ShoppingCartItemSDTO[0].Pic + '","CommodityName":"' + data.data.ShoppingCartItemSDTO[0].Name + '"}';
+                    GiveAndroidShare();
+                    if (data.data.State == 0) {
+
+                        $("#showPayment").hide();
+                    } else {
+                        var payment = data.data.PaymentName;
+                        $("#showPayment").show();
+                        $("#Payment").html(payment);
+                    }
+
+
+                    //填充页面表单
+                    sessionStorage.appId = data.data.AppId;
+                    sessionStorage.appIdCong = data.data.AppId;
+                    $(".userimg").attr("src", data.userimg)
+                    $(".nickname").html(data.nickname)
+                    $("#ReceiptUserName").html(data.data.ReceiptUserName);
+                    $("#ReceiptPhone").html(data.data.ReceiptPhone);
+                    $("#ReceiptAddress").html(data.data.Province + "" + data.data.City + "" + data.data.District + "" + data.data.ReceiptAddress);
+                    $("#SubTime").html(ChangeDateFormat(data.data.SubTime, 1));
+                    $("#Code").html(data.data.Code);
+                    $("#Price").html(getCurrency() + data.data.Price + "(" + new Number(data.data.Price * 1000).toFixed(0) + "金币)");
+                    if (data.data.Details != "" && data.data.Details != null && data.data.Details != "undefined") {
+                        $("#details").html("<span>备注</span><span >" + data.data.Details + "</span>");
+                    }
+                    //                    toast(JSON.stringify(data));
+                    //向页面填充 商品
+                    for (var i = 0; i < data.data.ShoppingCartItemSDTO.length; i++) {
+
+                        var html = "";
+                        var name = "";
+                        html += "<li><img style=\"float:left\" src=\"" + data.data.ShoppingCartItemSDTO[i].Pic + "\" alt=\"\" width=\"60\" height=\"60\">"
+                        html += "<div style=\"float:left;\"><div>"
+
+                        name = SubStrShowLength(data.data.ShoppingCartItemSDTO[i].Name, 20, "...");
+
+                        html += "<div id=\"Name\"  style=\" float:left;width:150px;font-size: 0.8em\">" + name + "</div>\n"
+                        html += "<div id=\"Price\" class=\"red\" style=\"font-size: 0.9em; padding: 4px 0;position:absolute;right:10px;\">" + getCurrency() + data.data.ShoppingCartItemSDTO[i].RealPrice + "</div></div>\n"
+
+                        html += "<div style=\"clear:both;margin-bottom:5px;\"></div>";
+                        var yan = "";
+                        var chi = "";
+                        var size = data.data.ShoppingCartItemSDTO[i].Size;
+                        if (size != "undefined" && size != "" && size != null) {
+                            if (size.split(',')[0] != "" && size.split(',')[0] != null && size.split(',')[0] != "null") {
+                                yan = size.split(',')[0];
+                            }
+                            if (size.split(',')[1] != "" && size.split(',')[1] != null && size.split(',')[1] != "null") {
+                                chi = size.split(',')[1];
+                            }
+                        }
+                        html += "<div style=\"height:14px;font-size:14px;\">" + yan + "</div>";
+                        html += "<div><div style=\"float:left;font-size:14px;\">" + chi + "</div><div id=\"CommodityNumber\" style=\"font-size: .8em;position:absolute;right:10px;\">×" + data.data.ShoppingCartItemSDTO[i].CommodityNumber + "</div></div></div></li>\n"
+                        $(".list").append(html);
+                    }
+                },
+                beforeSend: function () {
+                    $(".page").hide();
+                    ajaxLoading('22', '');
+                }
+            });
+            //start 看更多商品
+            $(".btnmore").bind("click", function () {
+                window.location.href = urlAppendCommonParams("/Mobile/CommodityList?shopId=" + getQueryString('shopId') + "&type=tuwen&commodityIds=" + getQueryString('commodityIds') + "&orderId=" + getQueryString('orderId'));
+            });
+            //end   看更多商品
+
+            //start 忘记密码
+            $("#dwangpwd").bind("click", function () {
+                window.location.href = "@ViewBag.PortalUrl" + "/Phone/WebRetrievePwd.html?url=" + baurl;
+            });
+            //end  忘记密码
+
+            //start 照样买
+            $(".btnbuy").bind("click", function () {
+                DealLoginPartial.initPartialPage();
+            });
+            //end   照样买
+            if (TimeRountDown) {
+                TimeRountDown.Init($("#resend_tel_code"));
+            }
+        });
+        function ChangeDateFormat(cellval, state) {
+            try {
+                var date = new Date(parseInt(cellval.replace("/Date(", "").replace(")/", ""), 10));
+                var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+                var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+                var hour = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+                var minu = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+                if (state == 1) {
+                    return date.getFullYear() + "-" + month + "-" + currentDate + " " + hour + ":" + minu;
+                }
+                else {
+                    return date.getFullYear() + "-" + month + "-" + currentDate;
+                }
+            } catch (e) {
+                return "";
+            }
+        }
+        function showDialog(el) {
+            $('.mask').show();
+            $(el).show();
+            $('.page').addClass('lock');
+        }
+        function hideDialog(el) {
+            $('.mask').hide();
+            $(el).hide();
+            $('.page').removeClass('lock');
+        }
+
+        $(function () {
+            $("#validCode").val("")
+
+            $("#validCodeImg").click(function () {
+                GetValidCode();
+            });
+
+            //校验码输入框获取焦点时，显示校验码
+            $("#validCode").focus(function () {
+                if ($("#validCodeContainer").css("visibility") == "hidden") {
+                    $("#validCodeContainer").css("visibility", "visible");
+                    GetValidCode();
+
+                    //等待120s
+                    setInterval("GetValidCode()", 1000 * 120);
+                }
+            });
+
+            //刷新重新获取校验码
+            $("#refreshCode").click(function () {
+                GetValidCode();
+                return false;
+            });
+
+            //start 验证手机注册登录
+            $("#submit_user_tel").bind("click", function () {
+
+                var base64 = new Base64();
+
+                var tel = $.trim($("#tel").val());
+                if (!checkMobile(tel)) {
+                    return false;
+                }
+                tel = base64.encode(tel);
+                //start  ajax
+                getDataAjax({
+                    url: '/Mobile/CheckMobileRegister',
+                    data: { LoginId: tel },
+                    callback: function (data) {
+                        //没注册过
+                        if (data.IsSuccess) {
+
+                            //start  SendMobileCode
+                            getDataAjax({
+                                url: '/Mobile/SendMobileCode',
+                                data: { LoginId: tel },
+                                callback: function (data) {
+                                    if (!data.IsSuccess) {
+                                        if (data.Message != "") {
+                                            $(".mycart_tle").html(data.Message);
+                                        }
+                                        else {
+                                            //获取验证码失败
+                                            $(".mycart_tle").html("获取验证码失败");
+                                        }
+                                    }
+                                    else {
+                                        //验证码已经发到您的手机上
+                                        $(".mycart_tle").html("已发送验证码到你的手机");
+                                        $("#submit_user_tel").hide();
+                                        $("#btn_re_login").show();
+                                        $("#YZM").show();
+                                        $("#btn_login").hide();
+                                        //显示手机验证码输入框
+                                        $(".yzcode").show();
+                                        //显示密码输入框
+                                        $(".yzpwd").show();
+                                        $("#tel").attr("disabled", true);
+                                        $("#resend_tel_code").show();
+                                        TimeRountDown.RountDown();
+                                        $("#resend_tel_code").attr("onclick", "null");
+
+                                    }
+                                    $("#ajaxLoadBlind").remove();
+                                },
+                                beforeSend: function () {
+                                    ajaxLoading('22', '');
+                                },
+                                error: function () {
+                                    $("#ajaxLoadBlind").remove();
+                                }
+                            });
+                            //end  SendMobileCode
+
+                        }
+                        else {//注册过
+                            $(".mycart_tle").html("你的号码已注册,请输入密码");
+                            $(".yzpwd").show();
+                            $("#submit_user_tel").hide();
+                            $("#btn_re_login").hide();
+                            $("#btn_login").show();
+                            $("#tel").attr("disabled", true);
+                            $("#YZM").show();
+                        }
+                        $("#ajaxLoadBlind").remove();
+                    },
+                    beforeSend: function () {
+                        ajaxLoading('22', '');
+                    },
+                    error: function () {
+                        $("#ajaxLoadBlind").remove();
+                    }
+                });
+                //end  ajax
+            });
+            //end 验证手机注册登录
+
+            //start 手机注册登录
+            $("#btn_re_login").bind("click", function () {
+                var base64 = new Base64();
+
+                var tel = $.trim($("#tel").val());
+                var pwd = $.trim(base64.encode($("#txtpwd").val()));
+                var code = $.trim($("#txtcode").val());
+                var validatecode = $.trim($("#validCode").val());
+                if (!checkMobile(tel)) {
+                    $(".mycart_tle").html("请输入正确的手机号码");
+                    return false;
+                }
+                if (pwd == "") {
+                    return false;
+                }
+                if (code == "") {
+                    return false;
+                }
+                if (validatecode == "") {
+                    return false;
+                }
+                //start  RegisterAndLogin
+                tel = base64.encode(tel);
+                getDataAjax({
+                    async: false,
+                    url: '/Mobile/RegisterAndLogin',
+                    data: { LoginId: tel, Password: pwd, Code: code, validate: validatecode },
+                    callback: function (res) {
+
+                        if (!res.Success) {
+                            if (res.Message != null && res.Message != "") {
+                                $(".mycart_tle").html(res.Message);
+                                GetValidCode();
+                            }
+                        } else if (!res.RegReturnInfo.IsSuccess) {
+                            if (res.RegReturnInfo.Message != null && res.RegReturnInfo.Message != "") {
+                                $(".mycart_tle").html(res.RegReturnInfo.Message);
+                            }
+                        } else if (!res.LoginReturnInfo.IsSuccess) {
+                            if (res.LoginReturnInfo.Message != null && res.LoginReturnInfo.Message != "") {
+                                $(".mycart_tle").html(res.LoginReturnInfo.Message);
+                            }
+                        } else if (res.Success && res.RegReturnInfo.IsSuccess && res.LoginReturnInfo.IsSuccess) {
+                            //注册并登录成功
+                            saveContextDTO(res.LoginReturnInfo.ContextDTO.LoginUserID, res.SessionID, getQueryString('changeOrg') || Guid.NewGuid().ToString());
+                            TzShop();
+                        }
+                        $("#ajaxLoadBlind").remove();
+
+                    },
+                    beforeSend: function () {
+                        ajaxLoading('22', '');
+                    },
+                    error: function () {
+                        $("#ajaxLoadBlind").remove();
+                    }
+                });
+                //end  RegisterAndLogin
+            });
+            //end   手机注册登录
+
+            //start 手机登录
+            $("#btn_login").bind("click", function () {
+                var base64 = new Base64();
+
+                var tel = $.trim($("#tel").val());
+                var pwd = $.trim(base64.encode($("#txtpwd").val()));
+                var validatecode = $.trim($("#validCode").val());
+                if (!checkMobile(tel)) {
+                    $(".mycart_tle").html("请输入正确的手机号码");
+                    return false;
+                }
+                if (pwd == "") {
+                    return false;
+                }
+                if (validatecode == "") {
+                    return false;
+                }
+                tel = base64.encode(tel);
+                //start  MobileLogin
+                getDataAjax({
+                    async: false,
+                    url: '/Mobile/MobileLogin',
+                    data: { LoginId: tel, Password: pwd, validateCode: validatecode },
+                    callback: function (data) {
+                        //登录成功
+                        if (data.ret.IsSuccess) {
+                            saveContextDTO(data.SubId, data.SessionID, getQueryString('changeOrg') || Guid.NewGuid().ToString());
+                            TzShop();
+                        }
+                        else {
+                            $(".mycart_tle").html(data.ret.Message);
+                        }
+                        $("#ajaxLoadBlind").remove();
+                        GetValidCode();
+                    },
+                    beforeSend: function () {
+                        ajaxLoading('22', '');
+                    },
+                    error: function () {
+                        $("#ajaxLoadBlind").remove();
+                    }
+                });
+                //end  MobileLogin
+            });
+            //end   手机登录
+        });
+        //检查手机
+        function checkMobile(value) {
+            var mob_preg = /^1[3|4|5|7|8][0-9]{9}$/;
+
+            if (!mob_preg.test(value)) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+
+        //获取校验码
+        function GetValidCode() {
+            $("#validCodeImg").attr("src", "/Mobile/GetValidateCode?" + Math.random());
+        }
+
+        function TzShop() {
+            //start 复制商品到购物车
+            getDataAjax({
+                async: false,
+                url: '/Mobile/CopyOrderToShoppingCart',
+                data: { orderId: getQueryString('orderId'), userId: getUserId(), appId: sessionStorage.appId },
+                callback: function (data) {
+                    if (data.ResultCode == 0) {
+                        window.location.href = urlAppendCommonParams("/Mobile/ShoppongCartList?shopId=" + sessionStorage.appId + "&type=tuwen");
+                    }
+                    else {
+                        toast("加入购物车失败");
+                    }
+                    $("#ajaxLoadBlind").remove();
+                },
+                beforeSend: function () {
+                    ajaxLoading('22', '');
+                },
+                error: function () {
+                    toast("加入购物车失败,请重试");
+                    $("#ajaxLoadBlind").remove();
+                }
+            });
+            //end   复制商品到购物车
+        }
+    </script>
+}
+<body style="background-color: #e3e2e2;">
+    <div class="page" style="font-family: sans-serif !important;">
+        <div class="content">
+            <div style="height: 60px; position: relative;">
+                <img class="userimg" style="float: left; border: 3px solid  rgb(199, 192, 186);"
+                    src="" alt="" width="55" height="55"><span class="nickname" style="font-size: 0.5em;"></span>
+                <div style="position: absolute; top: 3px; right: 15px; text-align: center; line-height: 1.1em;">
+                    <span style="font-size: 1.2em; color: Red; font-weight: bolder;">晒单喽！</span><br />
+                    <span style="font-size: 0.9em;">这是我买的商品，东西不错，<br />
+                        推荐给大家~</span>
+                </div>
+            </div>
+            <div id="moreday" class="info red">
+            </div>
+            <ul class="list">
+                <li>
+                    <div class="item">
+                        <span>收货人</span><span id="ReceiptUserName"></span></div>
+                    <div class="item">
+                        <span>联系电话</span><span id="ReceiptPhone"></span></div>
+                    <div class="item">
+                        <span style="display: block; float: left;">收货地址</span><span id="ReceiptAddress" style="display: block;
+                            float: left; width: 70%;"></span></div>
+                    <div class="item" id="details">
+                    </div>
+                </li>
+                <li>
+                    <div class="item">
+                        <span>下单时间</span><span id="SubTime"></span></div>
+                    <div class="item">
+                        <span>订单编号</span><span id="Code"></span></div>
+                    <div class="item">
+                        <span>订单金额</span><span id="Price" class="red"></span>
+                    </div>
+                    <div class="item" id="showPayment">
+                        <span>支付方式</span><span id="Payment"></span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div style="text-align: center; margin: 10px 0px;">
+            <button class="btnclass btnbuy" style="width: 50%; margin-right: 15px;">
+                照样买</button>
+            <a class="btnmore" style="margin: 15px; /* text-align: center; */display: block;
+                color: rgb(50, 136, 208);">看更多商品&gt;&gt;</a>
+        </div>
+    </div>
+    <div class="mask">
+    </div>
+   

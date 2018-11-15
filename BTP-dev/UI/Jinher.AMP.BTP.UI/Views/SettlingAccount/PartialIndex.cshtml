@@ -1,0 +1,115 @@
+﻿@using System.Collections.Generic
+@using System.Web
+@{
+    Layout = null;
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.SettlingAccountVM> comcalist = ViewBag.CommodityList;
+@*List<Jinher.AMP.BTP.Deploy.CustomDTO.CategorySDTO> categorylist = ViewBag.CategoryList;*@
+}
+<input type="hidden" id="rowcounts" value="@ViewBag.Count"/>
+<table id="dataTable" border="0" cellspacing="5" cellpadding="0" class="m_talbe m_talbe3">
+    <tr class="t_tr1">
+        <td width="30">
+            <input type="checkbox" id="selecetall" />
+        </td>
+        <td width="80">
+            全选
+        </td>
+        <td style="text-align: left; padding-left: 50px; width: 80px;">
+            商品编号/名称
+        </td>
+        <td width="150">
+            销售金额
+        </td>
+        <td width="100">
+            厂家结算金额
+        </td>        
+        <td width="100">
+            操作
+        </td>
+    </tr>
+    <script type="text/javascript">
+        $("#selecetall").on('click', function () {
+            var s = document.getElementsByName("itemCheckBox");
+            if ($(this).prop('checked')) {
+                for (var i = 0; i < s.length; i += 1)
+                    s[i].checked = "checked";
+            } else {
+                for (var i = 0; i < s.length; i += 1)
+                    s[i].checked = "";
+            }
+        });
+
+        $(".Modify").on('click', function () {
+            $("#CommodityId").val($(this).attr("comId"));
+            $("#AppID").val($(this).attr("appId"));
+            $("#ManufacturerClearingPrice").val($(this).attr("manufacturerClearingPrice"));
+            $("#manufacturerClearingPriceAdd").val("")
+            $("#effectiveTime").val("");
+            //默认时间不当前时间
+            $('#effectiveTime').val(GetDateNow());
+            $("#UpdateSettlingAccount").jhtablebox({
+                title: "修改结算价",
+                width: 360,
+                height: 250,
+                modal: true,
+                resizable: false,
+                close: function () { $("#effectiveTime").datepicker("hide"); }
+            });
+           
+
+        });
+
+        _rowCount = "@ViewBag.Count";
+    </script>
+    <tbody id="sortables">    
+
+        @foreach (var items in comcalist)
+        {
+            string isST = items.IsEnableSelfTake == 1 ? "block" : "none";
+                                    
+            <tr class="t_tr2 t_tr2_bg wysort" data-items-id="@items.CommodityId">
+                <td>
+                    <input name="itemCheckBox" value="@items.CommodityId" type="checkbox"/>
+                </td>
+                <td>
+                    <div style="position: relative; width: 86px; height: 85px">
+                        <img src="@items.PicturesPath" alt="" width="86" height="85" />
+                        <div class="selfTake" style="display:@isST">
+                            <img class="selfTakeImg" style="display: block; width: 86px;" src="/Images/selftake.png"
+                                alt="自提" />
+                        </div>
+                    </div>
+                </td>
+                <td style="text-align: left; padding-left: 50px;" class="parentElement">
+                    <p class="setElementText1">
+                        @items.CommodityCode
+                    </p>
+                    <p class="setElementText">@items.CommodityName</p>
+                    <input name="nameText" type="text" class="showElement"
+                           style="border: 1px solid #ccc; height: 30px; display: none;"
+                           value="@items.CommodityName" />                   
+                </td>            
+                <td class="parentElement">
+              
+               @if (items.SalePrice >= 0)
+               {
+                    <span name="oldPrice" class="setElementText" style="color: Orange">@Jinher.AMP.BTP.UI.Util.WebUtil.GetCurrency()@items.SalePrice</span>
+               }
+
+                    <input name="priceText" class="showElement" type="text" style="display:none" value="@items.SalePrice" />                   
+                </td>
+                 <td class="parentElement">
+                  @if (items.ManufacturerClearingPrice >= 0)
+                  {
+                    <span name="oldPrice" class="setElementText" style="color: Orange">@Jinher.AMP.BTP.UI.Util.WebUtil.GetCurrency()@items.ManufacturerClearingPrice</span>
+                  }
+                    <input name="priceText" class="showElement" type="text" style="display:none" value="@items.ManufacturerClearingPrice" />                   
+                </td>               
+                <td>
+                    <span><a href="javascript:void(0)" id="zdid" comId="@items.CommodityId" appId="@items.AppId" manufacturerClearingPrice="@items.ManufacturerClearingPrice" class="Modify">修改结算价</a></span>
+                    <span><a href="javascript:void(0)" id="zdid2" comId="@items.CommodityId" onclick="showHistory('@items.CommodityId','@items.CommodityName')" class="Search">查看历史记录</a></span>
+                </td>
+            </tr>     
+        }
+    </tbody>
+</table>

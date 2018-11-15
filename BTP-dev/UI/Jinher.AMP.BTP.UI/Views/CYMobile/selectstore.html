@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <meta charset="utf-8"/>
+
+</head>
+<body>
+    <a href="javascript:void(0)" onclick="jump(0)">西二旗店</a><br /><br />
+    <a href="javascript:void(0)" onclick="jump(1)">回龙观店</a><br /><br />
+    <a href="javascript:void(0)" onclick="jump(2)">上地店</a><br /><br />
+
+
+<script>
+    sessionStorage.appId_CY = "app-xbmh";
+    sessionStorage.appName_CY = "西部马华";
+    sessionStorage.appBgPic_CY = "../../content/style/images/xbmh.jpg";
+
+    function jump(id) {
+        switch (id) {
+        case 0:
+            sessionStorage.shopId_CY = "shop-xierqi";
+            sessionStorage.shopName_CY = "西二旗店";
+            sessionStorage.IsWork = true;
+            sessionStorage.deliveryCondition = 20;
+            sessionStorage.deliveryFee = 6;
+            sessionStorage.freeDeliveryCondition = 50;
+            break;
+        case 1:
+            sessionStorage.shopId_CY = "shop-hlg";
+            sessionStorage.shopName_CY = "回龙观店";
+            sessionStorage.IsWork = false;
+            sessionStorage.deliveryCondition = 20;
+            sessionStorage.deliveryFee = 6;
+            sessionStorage.freeDeliveryCondition = 50;
+            break;
+        case 2:
+            sessionStorage.shopId_CY = "shop-sd";
+            sessionStorage.shopName_CY = "上地店";
+            sessionStorage.IsWork = true;
+            sessionStorage.deliveryCondition = 10;
+            sessionStorage.deliveryFee = 3;
+            sessionStorage.freeDeliveryCondition = 25;
+            break;
+        }
+        location.href = "index.html";
+    }
+</script>
+</body>
+</html>

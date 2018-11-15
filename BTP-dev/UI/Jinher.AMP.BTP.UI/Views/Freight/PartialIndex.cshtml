@@ -1,0 +1,147 @@
+﻿@{
+    Layout = null;
+    
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.FreightDTO> freightList = ViewBag.FreightList;
+    int rows = ViewBag.Count;
+}
+<input type="hidden" id="rowcounts" value="@rows"/>
+<a class="btn120" href="#" id="action">新增运费模板</a> <a class="btn120" href="#" id="btnBack">返回</a>
+@{
+    if (freightList != null && freightList.Count > 0)
+    {
+        foreach (Jinher.AMP.BTP.Deploy.CustomDTO.FreightDTO freight in freightList)
+        {
+            string methodName = "";
+            if (freight.FreightMethod == 0)
+            {
+                methodName = "快递";
+            }
+            else if (freight.FreightMethod == 1)
+            {
+                methodName = "EMS";
+            }
+            else
+            {
+                methodName = "平邮";
+            }
+
+            string calcTypeString = "件";
+            string calcTypeUnit = "个";
+            decimal firstCountDef = 0;
+            decimal nextCountDef = 0;
+            if (freight.PricingMethod == 0)
+            {
+                calcTypeString = "件";
+                calcTypeUnit = "个";
+                firstCountDef = decimal.Round(freight.FirstCount, 0);
+                nextCountDef = decimal.Round(freight.NextCount, 0);
+            }
+            else
+            {
+                calcTypeString = "重";
+                calcTypeUnit = "kg";
+                firstCountDef = freight.FirstCount;
+                nextCountDef = freight.NextCount;
+
+            }
+    <table border="0" cellspacing="0" cellpadding="0" class="m_talbe m_talbe2">
+        <tr class="t_tr1">
+            <td class="t_tr_tdHead" style="text-align: left; border-bottom: none;">
+                @freight.Name
+                <div class="hDiv">
+                    <a href="#" class="state" onclick="OpenUpdate('@freight.Id')">修改</a>&nbsp;|&nbsp;<a href="#" class="state" onclick="DelFreight('@freight.Id')">删除</a></div>
+            </td>
+        </tr>
+    </table>
+    <table id="dataTable" border="0" cellspacing="0" cellpadding="0" class="m_talbe m_talbe2">
+        <tr class="t_trNew">
+            <td>
+                运送方式
+            </td>
+            <td style="width: 400px;">
+                运送到
+            </td>
+            <td>
+                首 @calcTypeString (@calcTypeUnit)
+            </td>
+            <td>
+                运费(元)
+            </td>
+            <td>
+                续 @calcTypeString (@calcTypeUnit)
+            </td>
+            <td>
+                运费(元)
+            </td>
+        </tr>
+        @if (freight.IsFreeExp == true)
+        {
+            <tr class="t_trNew">
+                <td>
+                    包邮
+                </td>
+                <td colspan="5">
+                </td>
+            </tr>
+        }
+        else
+        {
+            <tr class="t_trNew">
+                <td>
+                    默认运费
+                </td>
+                <td style="width: 400px; text-align: left; padding-left: 5px;">
+                </td>
+                <td>
+                    @firstCountDef
+                </td>
+                <td>
+                    @freight.FirstCountPrice
+                </td>
+                <td>
+                    @nextCountDef
+                </td>
+                <td>
+                    @freight.NextCountPrice
+                </td>
+            </tr>
+               if (freight.FreightDetailList != null && freight.FreightDetailList.Count > 0)
+               {
+                   foreach (Jinher.AMP.BTP.Deploy.FreightTemplateDetailDTO detail in freight.FreightDetailList)
+                   {
+                       decimal detailFC = detail.FirstCount;
+                       decimal detailNC = detail.NextCount;
+                       if (freight.PricingMethod == 0)
+                       {
+                           detailFC = decimal.Round(detail.FirstCount, 0);
+                           detailNC = decimal.Round(detail.NextCount, 0);
+                       }
+            <tr class="t_trNew">
+                <td>
+                    @methodName
+                </td>
+                <td style="width: 400px;">
+                    @detail.FreightTo
+                </td>
+                <td>
+                    @detailFC
+                </td>
+                <td>
+                    @detail.FirstCountPrice
+                </td>
+                <td>
+                    @detailNC
+                </td>
+                <td>
+                    @detail.NextCountPrice
+                </td>
+            </tr>
+                   }
+               }
+        }
+    </table>
+    <div style="height: 10px;">
+    </div>
+        }
+    }
+}

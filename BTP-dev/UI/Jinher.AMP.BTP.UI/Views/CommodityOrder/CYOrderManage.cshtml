@@ -1,0 +1,1535 @@
+﻿@{
+    ViewBag.Title = "订单管理";
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.CommodityOrderVM> commodityOrderList = ViewBag.commodityOrderList;
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.CommodityOrderMoneyToModelDTO> moneyToList = ViewBag.MoneyToList;
+    List<int> directArrivalPayments = Jinher.AMP.BTP.UI.Models.PaySourceVM.GetDirectArrivalPayment();
+    string dapStr = "," + string.Join(",", directArrivalPayments) + ",";
+
+    List<int> stwogPayments = Jinher.AMP.BTP.UI.Models.PaySourceVM.GetSecTransWithoutGoldPayment();
+    string stwogStr = "," + string.Join(",", stwogPayments) + ",";
+}
+@helper getPic(Jinher.AMP.BTP.Deploy.CustomDTO.OrderItemsVM oivm){
+    <img class="food-pic" src="@oivm.PicturesPath" alt="" />
+}
+@section CssStyles{
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/default/jquery.ui.jhtablebox.css")" />
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/jqueryui/Timepicker/jquery-ui-timepicker-addon.min.css")" />
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/css/orderManage.css")" />
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/css/refundorder.css")" />
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/css/printorder.css")" />
+    <style type="text/css">
+        ::-webkit-scrollbar
+        {
+            width: 14px;
+            height: 14px;
+        }
+        ::-webkit-scrollbar-track, ::-webkit-scrollbar-thumb
+        {
+            border-radius: 999px;
+            border: 5px solid transparent;
+        }
+        ::-webkit-scrollbar-track
+        {
+            box-shadow: 1px 1px 5px rgba(0,0,0,.2) inset;
+        }
+        ::-webkit-scrollbar-thumb
+        {
+            min-height: 20px;
+            background-clip: content-box;
+            box-shadow: 0 0 0 5px rgba(0,0,0,.2) inset;
+        }
+        ::-webkit-scrollbar-corner .,
+        {
+            background: transparent;
+        }
+                
+        #content
+        {
+            padding: 10px;
+        }
+        .runw
+        {
+            width: 80px;
+            text-align: right;
+            height: 40px;
+        }
+        .brunw
+        {
+            width: 150px;
+            text-align: right;
+            height: 10px;
+        }
+        .txtColor
+        {
+            width: 180px !important;
+        }
+        .spfb_t_l table tr
+        {
+            height: 40px;
+        }
+        .pingz
+        {
+            margin-right: 14px;
+        }
+        .dxq_title .on
+        {
+            background: url('/images/biao.jpg') 0 no-repeat;
+            width: 125px;
+            height: 34px;
+            line-height: 32px;
+            text-align: center;
+            color: #454f58;
+        }
+        
+        .dxq_title .xian
+        {
+            width: 64px;
+            height: 3px;
+            border-top: 3px solid #dde1e4;
+            margin-top: 15px;
+        }
+        
+        .dxq_title .tw
+        {
+            background: url('/images/biao2.jpg') 0 no-repeat;
+            width: 125px;
+            height: 34px;
+            line-height: 32px;
+            text-align: center;
+            color: #ffffff;
+        }
+        .dxq_title sapn
+        {
+            margin-bottom: 0px !important;
+        }
+        /**详情专用***/
+        .u-refund
+        {
+            max-width: 500px;
+            margin: auto;
+            border: 1px solid #ddd;
+        }
+        .u-refund .item-refund
+        {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .u-refund p
+        {
+            display: -webkit-box;
+            display: -moz-box;
+            display: box;
+            display: -ms-flexbox;
+            display: -webkit-flex;
+            display: -moz-flex;
+            display: flex;
+            -webkit-box-lines: single;
+            -moz-box-lines: single;
+            box-lines: single;
+            -webkit-box-align: center;
+            -moz-box-align: center;
+            box-align: center;
+            -ms-flex-align: center;
+            -webkit-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -webkit-justify-content: flex-start;
+            justify-content: flex-start;
+            -webkit-align-items: center;
+            align-items: center;
+            margin: 0;
+            font-size: 12px;
+            font-family: 'Microsoft YaHei';
+            color: #2c2c2c;
+            overflow: hidden;
+            line-height: 26px;
+        }
+        .u-refund p.reason
+        {
+            color: #858585;
+        }
+        .u-refund p.reason .liy
+        {
+            padding-left: 60px;
+            margin-right: 10px;
+        }
+        .u-refund .item-refund p .name
+        {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            flex-shrink: 0;
+        }
+        .u-refund .item-refund p .spacing
+        {
+            word-spacing: 1rem;
+        }
+        .u-refund .item-refund p span.date
+        {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            flex-shrink: 0;
+        }
+        .u-refund .item-refund p span.conte
+        {
+            width: 100%;
+            overflow: hidden;
+            vertical-align: middle;
+            -webkit-box-flex: 2;
+            -moz-box-flex: 2;
+            box-flex: 2;
+            -ms-flex: 2;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        .u-refund .item-refund p span.reCont
+        {
+            display: inline-block;
+            width: 100%;
+        }
+        .u-refund .item-refund p span.reCont .photo
+        {
+            display: inline-block;
+            width: 20%;
+            height: 0;
+            padding-bottom: 20.8%;
+            overflow: hidden;
+            margin: 0 1% .5% 0;
+        }
+        .u-refund .item-refund p span.reCont .photo img
+        {
+            width: 100%;
+            height: auto;
+        }
+        .u-refund .item-more
+        {
+            display: block;
+            height: 33px;
+            line-height: 33px;
+            color: #315bde;
+            text-align: center;
+            font-size: 12px;
+            font-family: 'Microsoft YaHei';
+            text-decoration: none;
+        }
+        /**详情专用***/
+        .ghcred
+        {
+            color: Red;
+        }
+        .hide
+        {
+            display: none;
+        }
+        .show
+        {
+            display: block;
+        }
+        .timeClass
+        {
+            color: #D90000;
+            font-size: 12px;
+            margin: 13px 0 0 5px;
+        }
+        #divSellersRemarks .showSellersRemark
+        {
+            height: 60px;
+            display: block;
+        }
+        table.ghost tr td
+        {
+            margin: 0;
+            padding: 0;
+            border: none;
+            vertical-align: middle;
+        }
+        .dgl_bot_con .com_name
+        {
+            min-height: 30px;
+            color: #5F7292;
+        }
+        .dgl_bot_con .com_cat_name
+        {
+            font-size: 12px;
+            min-height: 12px;
+            color: #5F7292;
+            margin: 5px 0;
+        }
+        
+        .dgl_bot_con .com_attr
+        {
+            color: #FF9226; 
+            font-size: 12px; 
+            min-height: 30px; 
+            vertical-align: bottom
+        }
+        .wlck
+        {
+            width: 10%;
+            height: 10px;
+            background: #fff;
+            margin-left: 10px;
+        }
+        
+        input.inp-txt
+        {
+            height: 18px;
+            line-height: 18px;
+            border: 1px solid #B6C0CD;
+            padding: 4px 5px;
+            vertical-align: middle;
+            border-radius: 3px;
+            box-shadow: inset 1px 1px 2px #DBDBDB;
+        }
+        .btn120
+        {
+            display: inline-block;
+            width: 120px;
+            height: 28px;
+            line-height: 28px;
+            background: url(../Content/default/images/btn120.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+        }
+        .btn90
+        {
+            display: inline-block;
+            width: 90px;
+            height: 28px;
+            line-height: 28px;
+            background: url(../Content/default/images/btn90.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+        }
+        .btn60
+        {
+            display: inline-block;
+            width: 60px;
+            height: 28px;
+            line-height: 28px;
+            background: url(../Content/default/images/btn60.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+        }
+        .dgl_bot_header span.addColor
+        {
+            color: #8C94A9;
+        }
+        .dgl_bot_header a.orderText
+        {
+            color: #409FFF;
+        }
+        .dgl_bot_header a.orderText:hover
+        {
+            color: #80BDE3;
+        }
+        .dgl_bot_header a:hover
+        {
+            color: #80BDE3;
+        }
+        .left_border p a.state
+        {
+            color: #409FFF;
+        }
+        .left_border p a.state:hover
+        {
+            color: #80BDE3;
+        }
+        #ghc3
+        {
+            display: block;
+            color: #315bde;
+            text-align: center;
+            font-size: 12px;
+            font-family: 'Microsoft YaHei';
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .text-overflow-multi
+        {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+        #divListParent table
+        {
+            border: none;
+        }
+        #content_makes
+        {
+            border-left: 1px solid #CED3D9;
+            border-right: 1px solid #CED3D9;
+            /*max-width: 1320px;*/
+        }
+        #dataTable 
+        {
+            width: 100%;
+            }
+        #dataTable .titleItem 
+        {
+             width: auto; 
+        }
+        #dataTable .orderItem
+		{
+			width:14.3%;
+		}
+		#dataTable .listItem
+		{
+			width:auto;
+		}
+    </style>
+}
+<div class="box" style="padding: 10px 0 10px 0px;">
+    <div class="content">
+        <div style="float: right; margin-top: 25px; margin-right: 48px;">
+            <a class="btn120" href="#" onclick="ShiftChangeData()">交班</a></div>
+        <div class="dgl_title">
+            <ul>
+                <li class="cx"><span>订单查询</span>
+                    <input type="text" id="se" value="可输入流水号、收货人姓名、手机号查询" onfocus="if(this.value==defaultValue) {this.value='';this.type='text';}"
+                        onblur="if(!value) {value=defaultValue; this.type='text';}" class="inp-txt" style="width: 400px;
+                        color: #8c94a9;" />
+                    <a class="btn120" href="#" onclick="SearchOrderCode()">查询</a> <a id="backBtn" class="btn120"
+                        style="display: none;" href="#" onclick="BackTo()">返回</a> </li>
+                <li id="stateli"><span class="tou">订单状态：</span> <span class="yanse" style="cursor: pointer"
+                    onclick="toSelectByState(this,-1)">全部</span> <span onclick="toSelectByState(this,'0,18')"
+                        style="cursor: pointer">待处理</span> <span style="cursor: pointer" onclick="toSelectByState(this,'1,11,19')">
+                            已完成</span>
+                    <span style="cursor: pointer" onclick="toSelectByState(this,'7')">已退款</span> <span
+                        style="cursor: pointer" onclick="toSelectByState(this,'8,9,10,12,14')">部分退款</span><span style="cursor: pointer"
+                            onclick="toSelectByState(this,'4')">交易关闭</span></li>
+                <li id="paymentli"><span class="tou">用餐方式：</span> <span class="yanse" style="cursor: pointer"
+                    onclick="toSelectByPayment(this,-1)">全部</span> <span onclick="toSelectByPayment(this,0)"
+                        style="cursor: pointer">外卖</span>
+                </li>
+                <li id="dayli"><span style="cursor: pointer" class="tou">支付时间：</span> <span style="cursor: pointer"
+                    class="yanse" onclick="toSelectByDay(this,0)">全部</span> <span style="cursor: pointer"
+                        onclick="toSelectByDay(this,3)">近4小时</span> <span style="cursor: pointer" onclick="toSelectByDay(this,7)">
+                            近1天</span>
+                        <input type="text" id="StartOrderTime" class="inp-txt" style="width: 100px; color: #8c94a9;height: 10px; line-height: 10px;" value="@DateTime.Today.ToString("yyyy-MM-dd")"/>
+                        <strong style="font-weight: normal;">至</strong>
+                        <input type="text" id="EndOrderTime" class="inp-txt" style="width: 100px; color: #8c94a9;height: 10px; line-height: 10px;" value="@DateTime.Today.ToString("yyyy-MM-dd")"/>
+                        </li>
+            </ul>
+        </div>
+        <div class="zhjian" style="width: 96%;">
+            <div style="float: right; margin-top: 25px; margin-bottom: 25px;"><a class="btn120"
+                    href="#" onclick="BatchBPrint()">批量接单并打印</a></div>
+            <div style="clear: both;">
+            </div>
+        </div>
+        <div class="manag_bot manag_bot1" style="width: 100%;margin-top:10px;">
+            <div id="divListParent">
+                @*@Html.Partial("~/Views/CommodityOrder/CYOrderManagePartialIndex.cshtml")*@
+                <div id="content_makes">
+                    @Html.Action("CYOrderManagePartialIndex", "CommodityOrder")
+                </div>
+            </div>
+            <div id="pager"></div>
+        </div>
+        <div class="tanchu" id="div3">
+            <div>
+                <div class="tanchu_r">
+                    <p class="color ty" style="display: none;">
+                        买家已付款，请确定协商无误后再执行该操作！</p>
+                    <p>
+                        请填写取消订单原因：</p>
+                    <textarea rows="5" cols="10" id="Content" style="border: 1px solid #B8BFCF; width: 95%;
+                        margin-left: 10px; height: 160px;"></textarea>
+                    <div class="contentwordage" style="text-align: right; font-size: 10px; color: red;
+                        margin-right: 10px;">
+                        还能输入150个字</div>
+                    <div style="text-align: center;">
+                        <button class="an1">
+                            确定</button>
+                        <button onclick="closeTip()">
+                            取消</button></div>
+                </div>
+            </div>
+            <div class="shut" onclick="closeTip()">
+                <img src="/images/shut.png" alt="" width="7" height="7" />
+            </div>
+        </div>
+        <!-- 交班提示弹窗 -->
+        <div class="tanchu" id="divShiftChange" style="width:430px;height:260px;">
+            <input id="hiddshiftuserid" type="hidden" value="@ViewBag.UserId" />
+            <input id="hiddshiftstoreid" type="hidden" value="@ViewBag.StoreId" />
+            <input id="hiddshiftappid" type="hidden" value="@ViewBag.AppId" />
+            <div style="margin-top:100px;">
+                <div class="tanchu_r">
+                    <p>
+                        交班后，历史订单将不能退款，确定要交班么？</p>
+                    <div style="text-align: center;">
+                        <button id="btnShiftChangeOK" onclick="ShiftChangeOK()">
+                            确定</button>
+                        <button onclick="closeShiftChangeTip()">
+                            取消</button></div>
+                </div>
+            </div>
+            <div class="shut" onclick="closeShiftChangeTip()">
+                <img src="/images/shut.png" alt="" width="10" height="10" />
+            </div>
+        </div>
+        <!-- 取消订单弹窗 -->
+        <div class="tanchu" id="divCancelOrder">
+            <div>
+                <div class="tanchu_r">
+                    <input type="hidden" id="CancelOrderId" value="" />
+                    <input type="hidden" id="CancelOrderUserId" value="" />
+                    <p>
+                        请填写取消订单原因：</p>
+                    <textarea rows="5" cols="10" id="CancelOrderContent" style="border: 1px solid #B8BFCF;resize:none;
+                        width: 95%; margin-left: 10px; height: 160px;"></textarea>
+                    <div class="CancelOrderwordage" style="text-align: right; font-size: 10px;
+                        color: red; margin-right: 10px;">
+                        140个字</div>
+                    <div style="text-align: center;">
+                        <button id="btnCancelOrderOK" onclick="CancelOrderOK()">
+                            确定</button>
+                        <button onclick="closeCancelOrderTip()">
+                            取消</button></div>
+                </div>
+            </div>
+            <div class="shut" onclick="closeCancelOrderTip()">
+                <img src="/images/shut.png" alt="" width="7" height="7" />
+            </div>
+        </div>
+        <!-- 查看取消原因 -->
+        <div class="tanchu" id="divCancelOrderDetail" style="width: 600px; height: 535px; position: relative;">
+            <input id="hiddcodid" type="hidden" />
+            <input id="hiddcodstate" type="hidden" />
+            <input id="hiddcodpayment" type="hidden" />
+            <input id="hiddcodtype" type="hidden" />
+            <input id="hiddcodAfState" type="hidden" />
+            <input id="hiddcodSelfTakeFlag" type="hidden" />
+            <input id="hiddcodStateRefundAfterSales" type="hidden" />
+            <input id="hiddcodStateRefund" type="hidden" />
+            <div style="width: 590px; height: 490px; position: relative;">
+                <div style="position: absolute; right: 4px; top: 4px;" onclick="closeRefoundDetailTiporder()">
+                    <img src="/images/shut.png" alt="" width="7" height="7" />
+                </div>
+                <h2>取消订单</h2>
+                <span>退款明细：</span>
+                <div style="width: 570px; height: 490px; overflow: auto;">
+                    <div id="refundNowDetail">
+                        <div class="tanchu_r" style="border: 1px solid #ccc; margin: 5px; width: auto; padding-bottom: 5px;">
+                            <div style="padding-left: 15px; font-size: 12px;">
+                                <div style="margin-bottom: 10px;">
+                                    <p class="color restate">
+                                    </p>
+                                </div>
+                                <div>
+                                    <table style="color: Black; line-height: 28px;" cellpadding="0" cellspacing="0">
+                                        <thead>
+                                            <tr>
+                                                <td></td>
+                                                <td>商品名称</td>
+                                                <td>数量</td>
+                                                <td>小计</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><img src="http://placehold.it/90x90" alt=""/></td>
+                                                <td><p>宫保鸡丁</p><p class="category">麻辣味</p></td>
+                                                <td>1</td>
+                                                <td>￥25</td>
+                                                <td>￥25</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div>
+                                    <p class="cost freight">运费：￥5</p>
+                                    <p class="cost">合计退款：<span class="pay">￥6</span></p>
+                                    <p class="detail">退款原因：菜没做熟</p>
+                                    <p class="detail">退款时间：2017-1-1</p>
+                                    <p class="detail">操作人：登录账号 昵称</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="text-align: center; width: auto; height: auto;" class="tanchu_r">
+                            <button class="an1" id="btnrun2" style="display: none;">
+                                标记为已退款</button>
+                            <button class="an1" id="btnrun">
+                                确定</button>
+                            <button class="an1" id="btnCancel" style="display: none;">
+                                取消</button><span class="spalert color"></span> <span class="spalert color"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 查看退款详情 -->
+        <div class="tanchu" id="divRefundDetail" style="width: 600px; height: 535px; position: relative;">
+            <input id="hiddorid" type="hidden" />
+            <input id="hiddstate" type="hidden" />
+            <input id="hiddpayment" type="hidden" />
+            <input id="hiddretype" type="hidden" />
+            <input id="hiddorAfState" type="hidden" />
+            <input id="hiddSelfTakeFlag" type="hidden" />
+            <input id="hiddorStateRefundAfterSales" type="hidden" />
+            <input id="hiddorStateRefund" type="hidden" />
+            <div style="width: 590px; height: 490px; position: relative;">
+                <div style="position: absolute; right: 4px; top: 4px;" onclick="closeRefoundDetailTiporder()">
+                    <img src="/images/shut.png" alt="" width="7" height="7" />
+                </div>
+                <h2>整单全退</h2>
+                <span>退款明细：</span>
+                <div style="width: 570px; height: 490px; overflow: auto;">
+                    <div id="refundNowDetail">
+                        <div class="tanchu_r" style="border: 1px solid #ccc; margin: 5px; width: auto; padding-bottom: 5px;">
+                            <div style="padding-left: 15px; font-size: 12px;">
+                                <div style="margin-bottom: 10px;">
+                                    <p class="color restate">
+                                    </p>
+                                </div>
+                                <div>
+                                    <table style="color: Black; line-height: 28px;" cellpadding="0" cellspacing="0">
+                                        <thead>
+                                            <tr>
+                                                <td></td>
+                                                <td>商品名称</td>
+                                                <td>数量</td>
+                                                <td>小计</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><img src="http://placehold.it/90x90" alt=""/></td>
+                                                <td><p>宫保鸡丁</p><p class="category">麻辣味</p></td>
+                                                <td>1</td>
+                                                <td>￥25</td>
+                                                <td>￥25</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div>
+                                    <p class="cost freight">运费：￥5</p>
+                                    <p class="cost">合计退款：<span class="pay">￥6</span></p>
+                                    <p class="detail">退款原因：菜没做熟</p>
+                                    <p class="detail">退款时间：2017-1-1</p>
+                                    <p class="detail">操作人：登录账号 昵称</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="text-align: center; width: auto; height: auto;" class="tanchu_r">
+                            <button class="an1" id="btnrun2" style="display: none;">
+                                标记为已退款</button>
+                            <button class="an1" id="btnrun">
+                                确定</button>
+                            <button class="an1" id="btnCancel" style="display: none;">
+                                取消</button><span class="spalert color"></span> <span class="spalert color"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 退款 -->
+        <div class="tanchu" id="divRefund" style="width: 798px; height: 698px;">
+            <input id="hiddrefunduserid" type="hidden" value="@ViewBag.UserId" />
+            <input id="hiddrefundcommodityorderid" type="hidden" value="@ViewBag.StoreId" />
+            <div class="refund">
+                <div class="shut" onclick="closeRefoundTiporder()">
+                    <img src="/images/shut.png" alt="" width="7" height="7" />
+                </div>
+                <div class="title">
+                    <div class="all-refund">
+                        <input type="radio" name="refund-way" id="all-refund" checked="checked" onclick="changeChecked('all')" />
+                        <label for="all-refund">整单全退（含运费）</label>
+                    </div>
+                    <div class="part-refund">
+                        <input type="radio" name="refund-way" id="part-refund" onclick="changeChecked('part')"/>
+                        <label for="part-refund">部分退款</label>
+                    </div>
+                </div>
+                <div class="refund-list" id="refund-list">
+                    <div class="all-list">
+                        <div class="title">
+                            <div class="name">商品名称</div>
+                            <div class="count">数量</div>
+                            <div class="price">单价</div>
+                            <div class="subtotal">小计</div>
+                        </div>
+                        <ul id="all-listUl"></ul>
+                    </div>
+                    <div class="part-list" id="part-list">
+                        <div class="title">
+                            <div class="food-checked"></div>
+                            <div class="name">商品名称</div>
+                            <div class="count">数量</div>
+                            <div class="price">单价</div>
+                            <div class="subtotal">小计</div>
+                            <div class="refund-money">退款金额</div>
+                        </div>
+                        <ul id="part-listUl"></ul>
+                    </div>
+                </div>
+                <div class="freight">
+                    <input class="food-checked" type="checkbox" id="freight"/><label for="freight">运费：</label><span
+                        class="freight-money">￥{ovm.Freight}</span>
+                </div>
+                <div class="total"><span>合计：</span><span class="total-money">￥{ovm.TotalNum}</span></div>
+                <div class="why">
+                    <div>退款原因：</div>
+                    <textarea class="refund-why" cols="20" rows="5"></textarea>
+                </div>
+                <div class="refund-div"><a class="btn120" href="javascript:void(0);" onclick="refundOk()">退款</a></div>
+            </div>
+            <div id="list-temp" style="display:none;">
+                <ul id="all-list-temp">
+                    <li>
+                        <div class="name">{getPicPath(oi)}
+                            <div class="food-info">
+                                <div class="specific-name">{orderItem.Name}</div>
+                                <div class="kinds">{orderItem.SizeAndColor}</div>
+                            </div>
+                        </div>
+                        <div class="count">{orderItem.Num}</div>
+                        <div class="price">￥{orderItem.Price}</div>
+                        <div class="subtotal">￥{orderItem.RealPrice}</div>
+                    </li>
+                </ul>
+                <ul id="part-list-temp">
+                    <li>
+                        <div class="food-checked">
+                            <input type="checkbox" id="{orderItem.Id}"/>
+                        </div>
+                        <div class="name">{getPicPath(oi)}
+                            <div class="food-info">
+                                <div class="specific-name">{orderItem.Name}</div>
+                                <div class="kinds">{orderItem.SizeAndColor}</div>
+                            </div>
+                        </div>
+                        <div class="count">{orderItem.Num}</div>
+                        <div class="price">￥{orderItem.Price}</div>
+                        <div class="subtotal">￥{orderItem.RealPrice}</div>
+                        <div class="refund-money"><input type="text" value="{orderItem.Price}"/></div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- 接单并打印 -->
+        <div class="tanchu" id="divPrintOrder" style="width: 260px; height: 512px; position: relative;">
+            <div class="page"></div>
+        </div>
+    </div>
+    <div id="tempData" style="display:none;">
+        <div id="{covm.CommodityOrderId}" class="order-detail" style="width:260px; margin:0px;">
+            <div class="header">
+                <div class="title"><span>{ViewBag.StoreName}</span></div>
+                <div class="sub-title"><span>外卖</span></div>
+            </div>
+            <div class="one-three">
+                <div class="one">
+                    <div class="order-address">
+                        <div class="order-num clearfix"><span class="num">订单号：</span><span class="detail">{covm.Batch}</span></div>
+                        <div class="order-receiver clearfix"><span class="receiver">收货人：{covm.ReceiptUserName}</span><span class="phone">{covm.ReceiptPhone}</span>
+                            <span class="address">{covm.ReceiptAddress}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="two">
+                    <div class="order-list"></div>
+                </div>
+                <div class="three">
+                    <div class="total-num clearfix"><span class="commodity">商品金额：</span><span class="commodity-num">¥{covm.Price}</span></div>
+                    <div class="total-num clearfix">{getMealBoxFee(covm)}</div>
+                    <div class="total-num clearfix"><span class="deliver">配送费：</span><span class="deliver-num">¥{covm.Freight}</span></div>
+                    <div class="total-num clearfix">{getFreight(covm)}</div>
+                    <div class="total-num clearfix"><span class="coupon">优惠券：</span>{getCouponNum(covm)}</div>
+                    <div class="total-num clearfix"><span class="total">合计：</span>{getTotalNum(covm)}</div>
+                    <div class="remark clearfix">{getRemark(covm)}</div>
+                </div>
+            </div>
+            <div class="nav">
+                <div class="print"><a href="javascript:void(0)"><span id="{covm.CommodityOrderId}" class="print-btn" onclick="alinkClick(this)">接单并打印</span></a></div>
+            </div>
+        </div>
+    </div>
+    <div id="tempOrderData" style="display: none;">
+	    <div class="com-detail">
+            <div class="com-detail-wb">
+                <div class="com-two clearfix">
+                    <div class="com-name">
+                        <div class="com-change">
+                            <div class="com-name-one">
+                                <span class="dish">{oivm.CommodityIdName}</span>
+                            </div>
+                            <div class="com-name-two">
+                                <span class="taste">{oivm.SizeAndColorId0}</span>
+                                <span class="size">{oivm.SizeAndColorId1}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="com-number"><span>×{oivm.Number}</span></div>
+                </div>
+                <div class="total-price-finish">¥{getUnitPrice(oivm)}</div>
+            </div>
+        </div>
+    </div>
+    <div style="display: none;" class="OrderDetailPar">
+        <div id="OrderDetail" style="margin: 0 auto;">
+            <iframe id="orderdetailurl" src="" width="900px;" height="780px" style="margin-bottom: 20px;
+                border: 0px;"></iframe>
+        </div>
+        <div id="PrintOrderDetail" style="margin: 0 auto;">
+            <iframe id="printorderdetailurl" style="border: 0px;"></iframe>
+        </div>
+    </div>
+</div>
+@section ClientScript
+{
+    <script src="/Scripts/CommLib.js" type="text/javascript"></script>
+    <script src="/Scripts/jquery.watermark.js" type="text/javascript"></script>
+    <script src="/Scripts/pic/jquery.imgbox.pack.js" type="text/javascript"></script>
+    <script src="/Scripts/TableBox/jquery.ui.jhtablebox.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.datepicker.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhdatetime.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhstartandenddate.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/Timepicker/jquery-ui-timepicker-addon.min.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/Timepicker/i18n/jquery-ui-timepicker-zh-CN.js" type="text/javascript"></script>
+
+    <script src="/Scripts/Validator/JValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/jquery.dotdotdot.min.js" type="text/javascript"></script>
+    <script src="/Scripts/ToolTip/jquery.ui.jhtooltip.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        function SetCookie(name, value) {
+            var Days = 30;
+            var exp = new Date();
+            exp.setTime(exp.getTime() + Days * 24 * 60 * 60 * 1000);
+            document.cookie = name + "=" + escape(value) + ";expires=" + exp.toGMTString();
+            var strsec = 2; //getsec(time);
+
+            exp = new Date();
+            exp.setTime(exp.getTime() + strsec * 1);
+            document.cookie = name + "=" + escape(value) + ";expires=" + exp.toGMTString();
+        }
+
+        function GetCookie(name) {
+
+            var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+
+            if (arr = document.cookie.match(reg))
+                return (arr[2]);
+            else
+                return null;
+        }
+
+        //setInterval(ajaxSaveInfo, 1000);
+
+        function ajaxSaveInfo() {
+
+            var commodityname = $('#commodityname').val();
+
+            var commoditycategory = $('#commoditycategory').val();
+            var ssalesvolume = $('ssalesvolume').val();
+            var esalesvolume = $('esalesvolume').val();
+            var scommodityprice = $('scommodityprice').val();
+            var ecommodityprice = $('ecommodityprice').val();
+            SetCookie("commodityname", commodityname);
+            SetCookie("commoditycategory", commoditycategory);
+            SetCookie("ssalesvolume", ssalesvolume);
+            SetCookie("esalesvolume", esalesvolume);
+            SetCookie("scommodityprice", scommodityprice);
+            SetCookie("ecommodityprice", ecommodityprice);
+        }
+
+        function toResetSearch() {
+            $("#commodityname").val("");
+            $("#commoditycategory").val("");
+            $("#ssalesvolume").val("");
+            $("#esalesvolume").val("");
+            $("#scommodityprice").val("");
+            $("#ecommodityprice").val("");
+
+            var date = new Date();
+            date.setTime(date.getTime() - 10000);
+            var name = 'Commodity.SearchEntityJson.' + '@ViewBag.AppId';
+            document.cookie = name + '=a;expires=' + date.toGMTString() + ';path=/';
+            searchcategoryNameList = ""; //清除类目名称
+
+            //重置所有选择框。
+            $("#SearchcategoryDiv input[type='checkbox']").prop("checked", false);
+        }
+
+        function toNoOnSale(commodityIds) {
+            $.ajax({
+                url: '/Commodity/OffShelves',
+                type: 'post',
+                data: { CommodityIds: commodityIds },
+                error: function () {
+                    alert("请求错误，请稍后刷新进行操作.");
+                },
+                success: function (msg) {
+                    alert("下架成功！");
+                    window.location.href = "/Commodity/CYSaleIndex?appId=" + getQueryString('appId');
+                }
+            });
+        }
+
+        function toDelete(commodityIds) {
+            var result = confirm("确认删除");
+            if (result == true) {
+                $.ajax({
+                    url: '/Commodity/DeleteCommoditys',
+                    type: 'post',
+                    data: { CommodityIds: commodityIds },
+                    error: function () {
+                        window.location.href = "/Commodity/CYSaleIndex?appId=" + getQueryString('appId');
+                    },
+                    success: function (msg) {
+                        window.location.href = "/Commodity/CYSaleIndex?appId=" + getQueryString('appId');
+                    }
+                });
+            }
+            else {
+                return;
+            }
+        }
+
+        var State = "";
+        var Payment = "";
+        var StartOrderTime = "";
+        var EndOrderTime = "";
+
+        var toSearch = function () {
+            $.ajax({
+                url: '/CommodityOrder/CYOrderManagePartialIndex',
+                type: 'post',
+                async: true,
+                dataType: "html",
+                data: _searchEntity,
+                error: function (err) {
+                    console.log(err.responseText);
+                },
+                success: function (msg) {
+                    $('#content_makes').html(msg);
+                    var rowCount = $("#rowcounts").val();
+                    $("#pager").jhpager("refresh", 1, rowCount);
+                    //newSetIframeHeight();
+                },
+                beforeSend: function () {
+                    ajaxLoading('1', '#content_makes');
+                }
+            });
+        };
+
+        var toSelectByPayment = function (obj, p){
+            $("#paymentli span").removeClass("yanse");
+            $(obj).addClass("yanse");
+            _searchEntity.Payment = p;
+            toSearch();
+        };
+
+        var toSelectByState = function (obj, s) {
+            $("#stateli span").removeClass("yanse");
+            $(obj).addClass("yanse");
+            _searchEntity.State = s;
+            toSearch();
+        };
+
+        var toSelectByDay = function (obj, daycount) {
+            if (daycount) {
+                if (/^[1-9]\d*$/.test(daycount)) {
+                    $("#dayli span").removeClass("yanse");
+                    $(obj).addClass("yanse");
+                    _searchEntity.DayCount = daycount;
+                    _searchEntity.StartOrderTime = "";
+                    _searchEntity.EndOrderTime = "";
+                    toSearch();
+                }
+                else {
+                    alert("请填写正确的天数");
+                }
+            } else if (daycount == 0) {
+                $("#dayli span").removeClass("yanse");
+                $(obj).addClass("yanse");
+                _searchEntity.DayCount = daycount;
+                _searchEntity.StartOrderTime = "";
+                _searchEntity.EndOrderTime = "";
+                toSearch();
+            } else {
+                alert("请填写天数");
+            }
+        };
+
+        var toSelectByDates = function (obj, start, end) {
+            if (start) {
+                if (isDate(start)) {
+                    $("#dayli span").removeClass("yanse");
+                    $(obj).addClass("yanse");
+                    _searchEntity.DayCount = "0";
+                    _searchEntity.StartOrderTime = start;
+                    var d1 = new Date(start.replace(/\-/g, "\/"));
+                    var d2 = '';
+                    if (end && isDate(end)) {
+                        _searchEntity.EndOrderTime = end;
+                        d2 = new Date(end.replace(/\-/g, "\/"));
+                    } else {
+                        _searchEntity.EndOrderTime = '';
+                        d2 = new Date();
+                    }
+
+                    if (d1 >= d2) {
+                        alert("开始时间不能大于结束时间！");
+                        return false;
+                    }
+
+                    toSearch();
+                }
+                else {
+                    alert("请填写正确的查询日期");
+                }
+            } else {
+                alert("请填写查询日期");
+            }
+        };
+
+        var SearchOrderCode = function () {
+            SeacrhContent = $.trim($("#se").val());
+            if (SeacrhContent == '可输入流水号、收货人姓名、手机号查询') {
+                SeacrhContent = "";
+            }
+            toSearch();
+        };
+
+        var ShiftChangeOK = function () {
+            var jsonData = {};
+            jsonData.userId = $("#hiddshiftuserid").val();
+            jsonData.shiftTime = new Date();
+            jsonData.storeId = $("#hiddshiftstoreid").val();
+            jsonData.appId = $("#hiddshiftappid").val();
+
+            $.ajax({
+                url: "@Url.Action("ShiftChange", "CommodityOrder")",
+                type: "post",
+                datatype: "json",
+                data: jsonData,
+                success: function (ret) {
+                    if (ret.success) {
+                        window.location.href = "http://testportal.iuoooo.com";
+                    }else{
+                        closeShiftChangeTip();
+                        alert(ret.msg);
+                    }
+                },
+                error: function (err) {
+                    console.log(err.responseText);
+                }
+            });
+        };
+
+        var ShiftChangeData = function () {
+            $("#divShiftChange").OpenDiv();
+        };
+
+         var closeShiftChangeTip = function () {
+            $("#divShiftChange").CloseDiv();
+         };
+
+        var _searchEntity = {}; //搜索条件实体
+        var _rowCount = 0;  //符合条件的数据的总行数。
+
+        var CancelOrder = function (obj, id, userId) {
+            //$("#CancelOrderContent").val(decodeURI(Remark));
+
+            $("#CancelOrderId").val(id);
+            $("#CancelOrderUserId").val(userId);
+            var Remark = $("#CancelOrderContent").val();
+            var result = 140 - decodeURI(Remark).length;
+
+            $('.CancelOrderwordage').html('还可以输入' + result + '字符');
+
+            $("#divCancelOrder").OpenDiv();
+            $("#BigDiv").css("z-index",1000);
+            $("#divCancelOrder").css("z-index",1001);
+
+            if (window.parent) { //在iframe页面打开时，纠正top
+                $("#divCancelOrder").css("top", 50 + $(window.parent.document).scrollTop());
+            }
+        };
+
+        var closeRefundTip = function () {
+            $("#divRefundTip").CloseDiv();
+        };
+
+        //关闭divRefund层的显示    
+        var closeRefoundTiporder = function () {
+            $("#divRefund").CloseDiv();
+        }
+
+        //关闭divRefundDetail层的显示    
+        var closeRefoundDetailTiporder = function () {
+            $("#divRefundDetail").CloseDiv();
+        };
+
+        //关闭divCancelOrder层的显示
+        var closeCancelOrderTip = function () {
+            $("#divCancelOrder").CloseDiv();
+        };
+
+        /* 切换退款方式 */
+        var changeChecked = function (obj) {
+            if(obj == 'all'){
+                $('.all-list').show().siblings('.part-list').hide();
+                $('.food-checked').hide();
+            } else {
+                $('.part-list').show().siblings('.all-list').hide();
+                $('.food-checked').show();
+            }
+        };
+
+        var refundOk = function () {
+            if(refundCheckData()){
+                var jsonData = {};
+                jsonData.commodityOrderId = $("#hiddrefundcommodityorderid").val();
+                jsonData.state = 7;
+                jsonData.message = $(".refund-why").val();
+                jsonData.userId = $("#hiddrefunduserid").val();
+
+                if($("#all-refund")[0].checked){
+                    jsonData.refundType = 0;
+                }else{
+                    jsonData.refundType = 1;
+                    jsonData.orderItemIds = "";
+                    $("#part-listUl :checkbox").each(function () {
+                        if($(this)[0].checked){
+                            jsonData.orderItemIds += $(this)[0].id + ",";
+                        }
+                    });
+                    jsonData.hasFreight = $("#freight")[0].checked;
+                }
+
+                $.ajax({
+                    url: '@Url.Action("UpdateCYCommodityOrder", "CommodityOrder")',
+                    type: "post",
+                    dataType: "json",
+                    data: jsonData,
+                    success: function (ret) {
+                        if(ret.Result) {
+                            //alert(ret.Messages);
+                            closeRefoundTiporder();
+                        }else{
+                            alert(ret.Messages);
+                        }
+                    },
+                    error: function (err) {
+                        console.log(err.responseText);
+                    }
+                });
+            }
+        };
+
+        var refundCheckData = function () {
+            if($("#all-refund")[0].checked){
+                if($(".refund-why").val() == ''){
+                    alert('请输入退款原因重试');
+                    return false;
+                }
+            }
+            if($("#part-refund")[0].checked){
+                if($(".refund-why").val() == ''){
+                    alert('请输入退款原因重试');
+                    return false;
+                }
+            }
+            return true;
+        };
+
+        var CancelOrderOK = function () {
+            var cancelOrderRemark = $("#CancelOrderContent").val();
+            if(cancelOrderRemark == ""){
+                alert('请输入取消订单原因');
+                return false;
+            }
+            var jsonData = {};
+            jsonData.commodityOrderId = $("#CancelOrderId").val();
+            jsonData.state = 20;
+            jsonData.message = cancelOrderRemark;
+            jsonData.userId = $("#CancelOrderUserId").val();
+
+            $.ajax({
+                url:"@Url.Action("UpdateCommodityOrder", "CommodityOrder")",
+                type:"post",
+                datatype:"json",
+                data:jsonData,
+                success:function (ret){
+                    if(ret.Result){
+                        closeCancelOrderTip();
+                    }else{
+                        alert(ret.Messages);
+                    }
+                },
+                error:function (err){
+                    console.log(err.responseText);
+                }
+            });
+        };
+
+        var ShowRefound = function (obj, id) {
+            $("#divRefundDetail").OpenDiv();
+        };
+
+        var getQueryString = function (name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]); return null;
+        };
+
+        var alinkClick = function (delbtn) {
+            $("#printorderdetailurl").attr("src", '@Url.Action("CYOrderPrint", "CommodityOrder")' + "?orderId=" + delbtn.id + "&appId=" + getQueryString("appId"));
+            var jsonData = {};
+            jsonData.commodityOrderId = delbtn.id;
+            jsonData.state = 19;
+            jsonData.message = "已处理";
+            jsonData.userId = getQueryString("userId");
+
+            $.ajax({
+                url: "/CommodityOrder/UpdateCommodityOrder",
+                type: "post",
+                datatype: "json",
+                data: jsonData,
+                success: function (result) {
+                    if (result.success) {
+                        $("#divPrintOrder").CloseDiv();
+                    }
+                },
+                err: function (e) {
+                    console.log(e);
+                }
+            });
+            //$("#" + delbtn.id).remove();
+            //hideNoOrder();
+        };
+
+        var PrintOrder = function (obj, orderId, userId) {
+            //$("#printorderdetailurl").attr("src", '@Url.Action("CYOrderPrint", "CommodityOrder")' + "?orderId=" + orderId + "&appId=" + getQueryString("appId"));
+
+            //var jsonData = {};
+            //jsonData.commodityOrderId = orderId;
+            //jsonData.state = 19;
+            //jsonData.message = "已处理";
+            //jsonData.userId = userId;
+            //
+            //$.ajax({
+            //    url: "/CommodityOrder/UpdateCommodityOrder",
+            //    type: "post",
+            //    datatype: "json",
+            //    data: jsonData,
+            //    success: function (result) {
+            //        if (result.success) {
+            //        }
+            //    },
+            //    err: function (e) {
+            //        console.log(e);
+            //    }
+            //});
+
+            var newData;
+            var jsonData = {};
+            jsonData.commodityOrderId = orderId;
+            jsonData.appId = getQueryString("appId");
+
+            $.ajax({
+                url: "/CommodityOrder/GetCommodityOrderById",
+                type: "post",
+                dataType: "json",
+                data: jsonData,
+                success: function (result) {
+                    if(result.success) {
+                        newData = formatOrderData(result.data);
+                        $(".page").append(newData);
+
+                        $("#divPrintOrder").OpenDiv();
+                        $("#BigDiv").css("z-index",1000);
+                        $("#divPrintOrder").css("z-index",1001);
+
+                        if (window.parent) { //在iframe页面打开时，纠正top
+                            $("#divPrintOrder").css("top", 50 + $(window.parent.document).scrollTop());
+                        }
+                    }
+                },
+                err: function (e) {
+                    console.log(e);
+                }
+            });
+        };
+
+        var getFreight = function (obj) {
+            if (obj.Freight) {
+                return "<span class=\"remark-title\">配送费优惠：</span><span class=\"remark-con\">" + obj.Freight + "</span>";
+            } else {
+                return "";
+            }
+        };
+
+        var getMealBoxFee = function (obj) {
+            if (obj.MealBoxFee) {
+                return "<span class=\"remark-title\">餐盒费：</span><span class=\"remark-con\">" + obj.MealBoxFee + "</span>";
+            } else {
+                return "";
+            }
+        };
+
+        var getCouponNum = function (obj) {
+            if (obj > 0) {
+                return "<span class=\"coupon-num\">-¥" + obj + "</span>";
+            } else {
+                return "<span class=\"coupon-num\">¥" + obj + "</span>";
+            }
+        };
+
+        var getTotalNum = function (obj) {
+            var totalNum = obj.Price - obj.CouponValue + obj.Freight;
+            return "<span class=\"num\">¥" + totalNum + "</span>";
+        };
+
+        var getRemark = function (obj) {
+            if (obj.Details) {
+                return "<span class=\"remark-title\">备注：</span><span class=\"remark-con\">" + obj.Details + "</span>";
+            } else {
+                return "";
+            }
+        };
+
+        var formatOrderData = function (data) {
+            var covmList = "";
+            var oivmList = $("#tempOrderData").html();
+            var comDetailHTML = "";
+            var orderDetailHTML = "";
+            //for (var covmNum = 0; covmNum < data.length; covmNum++) {
+                var covmData = data;
+                for (var oivmNum = 0; oivmNum < covmData.OrderItems.length; oivmNum++) {
+                    var oivmData = covmData.OrderItems[oivmNum];
+                    var sizeAndColorStr = oivmData.SizeAndColorId;
+                    comDetailHTML += oivmList.replace("{oivm.CommodityIdName}", oivmData.CommodityIdName)
+            		.replace("{oivm.Number}", oivmData.Number).replace("{getUnitPrice(oivm)}", (oivmData.RealPrice / oivmData.Number));
+
+                    if (sizeAndColorStr == ",") {
+                        comDetailHTML = comDetailHTML.replace("{oivm.SizeAndColorId0}", "").replace("{oivm.SizeAndColorId1}", "");
+                    } else {
+                        comDetailHTML = comDetailHTML.replace("{oivm.SizeAndColorId0}", sizeAndColorStr.substring(0, sizeAndColorStr.indexOf(',')))
+            				.replace("{oivm.SizeAndColorId1}", sizeAndColorStr.substring(sizeAndColorStr.indexOf(',') + 1));
+                    }
+                    $("#tempData .order-list").html(comDetailHTML);
+                }
+                covmList = $("#tempData").html();
+                orderDetailHTML += covmList.replace("{ViewBag.StoreName}", $("#storeName").val()).replace("{covm.Batch}", covmData.Batch)
+            	.replace("{covm.ReceiptUserName}", covmData.ReceiptUserName).replace("{covm.ReceiptPhone}", covmData.ReceiptPhone)
+            	.replace("{covm.ReceiptAddress}", covmData.Province + covmData.District + covmData.ReceiptAddress)
+            	.replace("{covm.Price}", covmData.Price).replace("{covm.Freight}", covmData.Freight)
+            	.replace("{covm.CommodityOrderId}", covmData.CommodityOrderId).replace("{covm.CommodityOrderId}", covmData.CommodityOrderId)
+            	.replace("{getCouponNum(covm)}", getCouponNum(covmData.CouponValue)).replace("{getTotalNum(covm)}", getTotalNum(covmData))
+            	.replace("{getRemark(covm)}", getRemark(covmData)).replace("{getMealBoxFee(covm)}", getMealBoxFee(covmData))
+                .replace("{getFreight(covm)}", getFreight(covmData));
+            //}
+            return orderDetailHTML;
+        };
+
+        var orderRefound = function (obj, id, userid) {
+            var jsonData = {};
+            jsonData.orderId = id;
+            $.ajax({
+                url: "@Url.Action("GetOrderFullInfo","CommodityOrder")",
+                type: "post",
+                datatype: "json",
+                data: jsonData,
+                success: function (ret){
+                    if(ret){
+                        formatOrderRefoundData(ret);
+
+                        $("#divRefund").OpenDiv();
+                        $("#BigDiv").css("z-index",1000);
+                        $("#divRefund").css("z-index",1001);
+
+                        if (window.parent) { //在iframe页面打开时，纠正top
+                            $("#divRefund").css("top", 139 + $(window.parent.document).scrollTop());
+                        }
+
+                        changeChecked('all');
+                    }
+                },
+                error: function (err){
+                    console.log(err.responseText);
+                }
+            });
+            $("#hiddrefunduserid").val(userid);
+            $("#hiddrefundcommodityorderid").val(id);
+        };
+
+        var getPicPath = function (obj){
+            return '<img class="food-pic" src="' + obj.PicturesPath + '" alt=""/>';
+        }
+
+        var formatOrderRefoundData = function (obj) {
+            var allListLi = "";
+            var partListLi = "";
+            $("#all-listUl").html("");
+            $("#part-listUl").html("");
+            var allListUl = "";
+            var partListUl = "";
+
+            for(var i = 0; i < obj.OrderItems.length; i++){
+                var oi = obj.OrderItems[i];
+                var sizeAndColor = oi.SizeAndColorId == null ? "" : oi.SizeAndColorId;
+                allListLi = $("#all-list-temp").html();
+                allListLi = allListLi.replace("{getPicPath(oi)}", getPicPath(oi)).replace("{orderItem.Name}", oi.ComCategoryName)
+                    .replace("{orderItem.SizeAndColor}", sizeAndColor).replace("{orderItem.Num}", oi.Number)
+                    .replace("{orderItem.Price}", oi.RealPrice).replace("{orderItem.RealPrice}", oi.RealPrice*oi.Number);
+
+                partListLi = $("#part-list-temp").html();
+                partListLi = partListLi.replace("{getPicPath(oi)}", getPicPath(oi))
+                    .replace("{orderItem.Id}", oi.CommodityId).replace("{orderItem.Name}", oi.ComCategoryName)
+                    .replace("{orderItem.SizeAndColor}", sizeAndColor).replace("{orderItem.Num}", oi.Number)
+                    .replace("{orderItem.RealPrice}", oi.RealPrice).replace("{orderItem.Price}", oi.RealPrice*oi.Number)
+                    .replace("{orderItem.Price}", oi.RealPrice);
+                $("#all-listUl").append(allListLi);
+                $("#part-listUl").append(partListLi);
+            }
+
+            $("#freight").html(obj.OrderVM.Freight.toFixed(2));
+            $(".total-money").html("￥" + eval(obj.OrderVM.Price - obj.OrderVM.CouponValue + obj.OrderVM.Freight).toFixed(2));
+
+            var allListDiv = $("#divRefund").html().replace("{ovm.Freight}", obj.OrderVM.Freight)
+                .replace("{ovm.TotalNum}", eval(obj.OrderVM.Price - obj.OrderVM.CouponValue + obj.OrderVM.Freight).toFixed(2));
+               
+            $("#divRefund").html(allListDiv);
+        };
+
+        var GotoOrderDetail = function (obj) {
+            var jsonData = {};
+            jsonData.commodityOrderId = obj.id.substring(5);
+            $.ajax({
+                url: "/CommodityOrder/CYOrderDetails",
+                type: "post",
+                dataType: "json",
+                data: jsonData,
+                success: function (ret) {
+                    console.log(ret);
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        };
+
+        var ShowOrderDetail = function () {
+            $("#OrderDetail").jhtablebox({
+                title: "订单详情",
+                width: 900,
+                height: 780,
+                draggable: true,
+                modal: true,
+                resizable: false,
+                beforeClose: function (e) {
+                }
+            });
+        };
+
+        var showContent = function (event, data) {
+            $("#content_makes").html(data);
+            //newSetIframeHeight();
+            //clickSetElementValue();
+            window.addEvent('domready', function () {
+                var dragSort = new Sortables('sortables', {
+                    handle: ".sortHandel",
+                    onStart: function (element, clone) {
+                        //element.setStyle('background-color', 'red');
+                    },
+                    onSort: function (element, clone) {
+                        element.setStyle('background-color', '#99FF33');
+                    },
+                    onComplete: function (element) {
+                        element.setStyle('background-color', '');
+                        var cardIdStr = dragSort.serialize();
+                    }
+                });
+            });
+        };
+
+        $(document).ready(function () {
+            var limitNum = 140;
+            var pattern = '还可以输入' + limitNum + '字符';
+
+            $('#CancelOrderContent').keyup(function () {
+                var remain = $.trim($(this).val()).length;
+                if (remain > limitNum) {
+                    pattern = "字数超过限制！";
+
+                } else {
+                    var result = limitNum - remain;
+                    pattern = '还可以输入' + result + '字符';
+                }
+                $('.CancelOrderwordage').html(pattern);
+            });
+
+            $("#StartOrderTime").datetimepicker();
+            $("#EndOrderTime").datetimepicker();
+
+            /*关闭按钮*/
+            $("#refundClose").on("click", function () {
+                $("#divRefund").CloseDiv();
+            });
+
+            /*切换退款方式*/
+            $("#all-refund input[type=radio]").change(function () {
+                if(this.id == "all-refund") {
+                    $('.all-list').show().siblings('.part-list').hide();
+                    $('.food-checked').hide();
+                }else{
+                    $('.part-list').show().siblings('.all-list').hide();
+                    $('.food-checked').show();
+                    //$('.refund-money input[type="text"]').hide();
+                }
+            });
+
+            $('.food-checked > input[type="checkbox"]').each(function () {
+                $(this).attr("checked","true");
+                if($(this).is(":checked")){
+                    $('.refund-money input[type="text"]').show();
+                }else{
+                    $('.refund-money input[type="text"]').hide();
+                }
+            });
+
+            $("#batchnum").live("click", function () {
+                var hre = $(this).attr("batchnums");
+
+                ShowOrderDetail();
+                $("#orderdetailurl").attr("src", hre);
+                if (window.parent) { //在iframe页面打开时，纠正top
+                    $(".ui-jhtablebox-top").css("top", 10 + $(window.parent.document).scrollTop());
+                }
+            });
+
+            $("#pager").jhpager({
+                requestData: function () { return _searchEntity; },
+                dataType: 'html',
+                requestType: 'post',
+                dataSource: '/CommodityOrder/CYOrderManagePartialIndex',
+                async: true,
+                totalCount: _rowCount,
+                rowNum: 20,
+                requestSuccess: showContent,
+                beforeRequest: function () {
+                    $("#content_makes").empty();
+                    $(window.parent.document).scrollTop(0);
+                    ajaxLoading(1, '#content_makes');
+                },
+                requestFailure: function () {
+                }
+            });
+        });
+    </script>
+}

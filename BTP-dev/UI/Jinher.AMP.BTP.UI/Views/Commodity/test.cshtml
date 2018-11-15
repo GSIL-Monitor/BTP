@@ -1,0 +1,291 @@
+﻿@{
+    ViewBag.Title = "test";
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<title>出售中商品管理-修改类别</title> 
+    <link href="/Content/css/style.css" rel="stylesheet" type="text/css" />
+    <link href="/Scripts/tree/demoStyle/demo.css" rel="stylesheet"
+        type="text/css" />
+    <link href="/Scripts/tree/zTreeStyle/zTreeStyle.css" rel="stylesheet"
+        type="text/css" />
+    <script src="/Scripts/tree/asyncData1/demoData.js" type="text/javascript"></script>
+    <script src="/Scripts/tree/demoTools.js" type="text/javascript"></script>
+    <script src="/Scripts/tree/jquery-1.4.2.js" type="text/javascript"></script>
+    <script src="/Scripts/tree/jquery.ztree-2.6.min.js" type="text/javascript"></script>
+    <script src="/Scripts/jquery.js" type="text/javascript"></script>
+  <script language="JavaScript">
+  <!--
+      var zTree1;
+      var setting;
+
+      setting = {
+          showIcon: false,
+          showLine: false,
+          checkable: true,
+          callback: {
+              change: zTreeOnChange
+          }
+      };
+
+      $(document).ready(function () {
+          refreshTree();
+          //给修改绑定事件
+          $("#updateca").click(function () {
+              alert("a");
+              switchDIV();
+          });
+
+      });
+
+      function zTreeOnChange(event, treeId, treeNode) {
+          getCheckedNodesLength();
+      }
+
+      function getCheckBoxType() {
+          var py = $("#py").attr("checked") ? "p" : "";
+          var sy = $("#sy").attr("checked") ? "s" : "";
+          var pn = $("#pn").attr("checked") ? "p" : "";
+          var sn = $("#sn").attr("checked") ? "s" : "";
+
+          var type = { "Y": (py + sy), "N": (pn + sn) };
+          return type;
+      }
+
+      function refreshTree() {
+          var checkType = getCheckBoxType();
+          setting.checkType = checkType;
+          zTree1 = $("#treeDemo").zTree(setting, clone(zNodes));
+          $("#checkTypeCode").html("{\"Y\":" + checkType.Y + ", \"N\":" + checkType.N + "}");
+          getCheckedNodesLength();
+      }
+
+      function getCheckedNodesLength() {
+          var tmp = zTree1.getCheckedNodes();
+          $("#checkedNum").html(tmp.length);
+          tmp = zTree1.getChangeCheckedNodes();
+          $("#checkedChangeNum").html(tmp.length);
+          if ($("#changeYes").attr("checked")) {
+              for (var i = 0; i < tmp.length; i++) {
+                  tmp[i].checkedOld = tmp[i].checked;
+              }
+          }
+      }
+
+  //-->
+  </script>
+
+
+
+
+@*
+<script type="text/javascript">
+    //在鼠标显示一个层，该层的内空为div2的内容    
+    function switchDIV() {
+        var div3 = document.getElementById('div3'); //将要弹出的层    
+        div3.style.display = "block"; //div3初始状态是不可见的，设置可为可见    
+        //window.event代表事件状态，如事件发生的元素，键盘状态，鼠标位置和鼠标按钮状.    
+        //clientX是鼠标指针位置相对于窗口客户区域的 x 坐标，其中客户区域不包括窗口自身的控件和滚动条。    
+        /*div3.style.left=event.clientX+10; //鼠标目前在X轴上的位置，加10是为了向右边移动10个px方便看到内容    
+        div3.style.top=event.clientY+5;    
+        div3.style.position="absolute"; */
+        //必须指定这个属性，否则div3层无法跟着鼠标动    
+
+    }
+    //关闭层div3的显示    
+    function closeTip() {
+        var div3 = document.getElementById('div3');
+        div3.style.display = "none";
+    }    
+</script>
+*@
+</head>
+
+<body >
+
+<div class="box">
+	
+    <div class="content">
+    	
+        <div class="right right1">
+            <div class="manag_top  manag_top3">
+            	<ul>
+                	<li class="door_one"><span>商品名称：</span><input  type="text"  /></li>
+                    <li class="door_two"><span>商品类目：</span><input  type="text"  /></li>
+                    
+                    <li class="door_three"><span>总销量：</span><input  type="text"  /><strong>到</strong><input  type="text"  /></li>
+                    <li class="door_four"><span>价格：</span><input  type="text"  /><strong>到</strong><input  type="text"  /></li>
+                    <li class="five"><button>查询</button><span><a href="#">重置</a></span></li>
+                   
+                </ul>
+            </div>
+            <div class="manag_bot manag_bot1">
+            	<h1><button class="one">添加商品</button><button>删除</button><button>上架</button></h1>
+                <table  border="0" cellspacing="0" cellpadding="0" class="m_talbe m_talbe3">
+                      <tr class="t_tr1">
+                        <td class="one"><input type="checkbox"><span>全选</span></td>
+                        <td class="two">商品名称</td>
+                        <td class="three">商品类别</td>
+                        <td class="four">价格</td>
+                        <td class="five">数量</td>
+                        <td class="six">总销量</td>
+                        <td class="seven">添加时间</td>
+                        <td class="eight" >操作</td>
+                        
+                      </tr>
+                      <tr class="t_tr2 t_tr2_bg">
+                        <td class="one"><input type="checkbox" checked="checked"><span><img src="images/check_pic.png" alt="" width="86" height="85" /></span></td>
+                        <td class="two"> <p>小Y旗舰店 限量发<br />售动感高质量吉他</p><span><a href="#">修改</a></span></td>
+                        <td class="three"> 
+                        	<ul>
+                            	<li>养生</li>
+                                <li>女装</li>
+                                <li>乐器</li>
+                                <li><span><a href="javascript:void(0)" id="updateca">修改</a></span></li>
+                            </ul>
+                        </td>
+                        <td class="four"> 
+                        	<span>￥360.90</span><br />
+                            <span><a href="#">修改</a></span>
+                        </td>
+                        <td class="five"> 
+                            <strong>2345</strong>
+                        	<span><a href="#">上架</a></span>
+                        </td>
+                        <td class="six"> 1234</td>
+                        <td class="seven"> 2013-3-20<br />
+    09:21</td>
+                        <td class="eight">
+                            <span><a href="#">编辑</a></span>
+                            
+                        </td>
+                      </tr>
+                      <tr class="t_tr2">
+                        <td class="one"><input type="checkbox"><span><img src="images/check_pic.png" alt="" width="86" height="85" /></span></td>
+                        <td class="two"> <p>小Y旗舰店 限量发<br />售动感高质量吉他</p><span><a href="#"></a></span></td>
+                        <td class="three"> 
+                        	<ul>
+                            	<li>养生</li>
+                                <li>女装</li>
+                                <li>乐器</li>
+                                <li><span><a href="#"></a></span></li>
+                            </ul>
+                        </td>
+                        <td class="four"> 
+                        	<span>￥360.90</span><br />
+                            <span><a href="#"></a></span>
+                        </td>
+                        <td class="five"> 
+                            <strong>2345</strong>
+                        	<span><a href="#">上架</a></span>
+                        </td>
+                        <td class="six"> 1234</td>
+                        <td class="seven"> 2013-3-20<br />
+    09:21</td>
+                        <td class="eight">
+                            <span><a href="#">编辑</a></span>
+                            
+                        </td>
+                      </tr>
+                      <tr class="t_tr2">
+                        <td class="one"><input type="checkbox"><span><img src="images/check_pic.png" alt="" width="86" height="85" /></span></td>
+                        <td class="two"> <p>小Y旗舰店 限量发<br />售动感高质量吉他</p><span><a href="#"></a></span></td>
+                        <td class="three"> 
+                        	<ul>
+                            	<li>养生</li>
+                                <li>女装</li>
+                                <li>乐器</li>
+                                <li ><span><a href="#"></a></span></li>
+                            </ul>
+                        </td>
+                        <td class="four"> 
+                        	<span>￥360.90</span><br />
+                            <span><a href="#"></a></span>
+                        </td>
+                        <td class="five"> 
+                            <strong>2345</strong>
+                        	<span><a href="#">上架</a></span>
+                        </td>
+                        <td class="six"> 1234</td>
+                        <td class="seven"> 2013-3-20<br />
+    09:21</td>
+                        <td class="eight">
+                            <span><a href="#">编辑</a></span>
+                            
+                        </td>
+                      </tr>
+                     <tr class="t_tr2 t_tr2_bg">
+                        <td class="one"><input type="checkbox" checked="checked"><span><img src="images/check_pic.png" alt="" width="86" height="85" /></span></td>
+                        <td class="two"> <p>小Y旗舰店 限量发<br />售动感高质量吉他</p><span><a href="#">修改</a></span></td>
+                        <td class="three"> 
+                        	<ul>
+                            	<li>养生</li>
+                                <li>女装</li>
+                                <li>乐器</li>
+                                <li><span><a href="#">修改</a></span></li>
+                            </ul>
+                        </td>
+                        <td class="four"> 
+                        	<span>￥360.90</span><br />
+                            <span><a href="#">修改</a></span>
+                        </td>
+                        <td class="five"> 
+                            <strong>2345</strong>
+                        	<span><a href="#">上架</a></span>
+                        </td>
+                        <td class="six"> 1234</td>
+                        <td class="seven"> 2013-3-20<br />
+    09:21</td>
+                        <td class="eight">
+                            <span><a href="#">编辑</a></span>
+                            
+                        </td>
+                      </tr>
+                      
+                      
+              </table>
+              <div class="last">
+                      
+                      	<ul>
+                        	<li><img src="images/1.png" alt="" width="15" height="14" /></li>
+                            <li><img src="images/2.png" alt="" width="15" height="14" /></li>
+                            <li>1/1</li>
+                            <li><img src="images/3.png" alt="" width="15" height="14" /></li>
+                            <li><img src="images/4.png" alt="" width="15" height="14" /></li>
+                        </ul>
+                       
+                 </div>
+                 
+              <div class="floa" id="div3">
+                 	<TABLE border=0  class="tb1">
+	<TR>
+		<TD width=187px align=center valign=top>
+		<div class="zTreeDemoBackground">
+			<ul id="treeDemo" class="tree"></ul>
+		</div>		
+		</TD>
+		
+	</TR>
+</TABLE>
+                   
+                   <div class="shut" onclick=closeTip()>
+           	              <img src="images/shut.png" alt="" width="7" height="7" /> 
+                    </div>
+                     <div class="btn" onclick=closeTip()><button>确定</button></div>
+                 </div>
+            </div>
+        
+      
+       
+    </div>
+    
+</div>
+</body>	
+</html>
+

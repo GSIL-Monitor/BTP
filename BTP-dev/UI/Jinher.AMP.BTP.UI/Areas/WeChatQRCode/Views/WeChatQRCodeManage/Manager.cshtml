@@ -1,0 +1,450 @@
+﻿@{
+    ViewBag.Title = "带参数二维码";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Css{
+    <link href="/Content/common.css" rel="stylesheet" type="text/css" />
+    <link href="/Content/default/ui.jqgrid.css" rel="stylesheet" type="text/css" />
+    <link href="/Content/default/jquery.ui.jhtablebox.css" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+        input.inp-txt
+        {
+            height: 18px;
+            line-height: 18px;
+            border: 1px solid #B6C0CD;
+            padding: 4px 5px;
+            vertical-align: middle;
+            border-radius: 3px;
+            box-shadow: inset 1px 1px 2px #DBDBDB;
+        }
+        .toolbar
+        {
+            background: #F2F2F2;
+            margin-bottom: 0;
+            font-size: 14px;
+            height: 40px;
+            line-height: 35px;
+            text-align: left;
+        }
+        .wx-header
+        {
+            padding: 20px;
+            line-height: 20px;
+            font-size: 14px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        .wx-header .wx-cur
+        {
+            padding-left: 5px;
+            color: #e4393c;
+        }
+        .wx-header a
+        {
+            float: right;
+            color: #7e7e7e;
+        }
+    </style>
+}
+<div class="wx-header clearfix">
+    <span>微信公众号</span><span> > </span><span class="wx-cur">带参数二维码</span><a href="javascript:window.history.back();"><img
+        style="height: 17px" src="/Content/images/wx-back.png" /><i class="fa fa-mail-forward"></i>返回上一级</a>
+</div>
+<div class="box">
+    <div class="content">
+        <div class="manag_top  manag_top2" style="margin: 0; padding-right: 0; margin-top: 10px;
+            height: 45px;">
+            <div style="float: left;">
+                <ul>
+                    <li><span>推广渠道：</span>
+                        <select id="QRType" style="width: 130px; height: 27px; line-height: 27px; color: #8c94a9">
+                            <option value="">全部</option>
+                            @foreach (var item in ViewBag.QRTypes)
+                            {
+                                <option value="@item.Type">@item.Description</option>
+                            }
+                        </select>
+                    </li>
+                    <li><span>微信公众号：</span>
+                        <input type="text" id="WeChatPublicCode" class="inp-txt" style="width: 150px; height: 17px;
+                            line-height: 17px;" />
+                    </li>
+                    <li><span>绑定状态：</span>
+                        <select id="IsUse" style="width: 130px; height: 27px; line-height: 27px; color: #8c94a9">
+                            <option value="">全部</option>
+                            <option value="1">已绑定</option>
+                            <option value="0">未绑定</option>
+                        </select>
+                    </li>
+                </ul>
+            </div>
+            <div style="float: left;">
+                <a href="javascript:search()" class="btn120">查询</a>
+            </div>
+            <div style="clear: both;">
+            </div>
+        </div>
+        <div class="toolbar">
+            <a class="btn120" href="javascript:openCreateDialog();" style="margin-left: 15px;">新建</a>
+            <a class="btn120" href="javascript:exportData();" style="margin-left: 15px;">导出</a>
+        </div>
+        <div class="manag_bot" style="margin-top: 10px; width: 100%;">
+            <table id="TableGrid">
+            </table>
+            <div id="TablePager">
+            </div>
+        </div>
+    </div>
+</div>
+<form id="ExportForm" action="@Url.Action("ExportExcel")" method="post">
+<input type="hidden" name="QRType" id="exportQRType" />
+<input type="hidden" name="WeChatPublicCode" id="exportWeChatPublicCode" />
+<input type="hidden" name="Status" id="exportStatus" />
+</form>
+<div style="display: none;">
+    <div id="createDialog">
+        <div style="height: 280px;">
+            <p class="color" style="color: red; margin-top: 10px; margin-left: 150px; display: none;"
+                id="errorInfo">
+            </p>
+            <div class="item" style="text-align: center; margin: 23px 0;">
+                <span>
+                    <img src="/images/xin.png" /></span><span class="label">微信公众号名称：</span>&nbsp;&nbsp;
+                <input id="addWeChatPublicCode" type="text" class="inp-txt w200 mr10" />
+            </div>
+            <div class="item" style="text-align: center; margin: 23px 0;">
+                <span>
+                    <img src="/images/xin.png" /></span> <span>推广渠道：</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <select id="addQRType" class="inp-txt w200 mr10" style="width: 210px; height: 27px;
+                    line-height: 27px; color: #8c94a9">
+                    @foreach (var item in ViewBag.QRTypes)
+                    {
+                        <option value="@item.Type">@item.Description</option>
+                    }
+                </select>
+            </div>
+            <div class="item" style="text-align: center; margin: 23px 0;">
+                <span>
+                    <img src="/images/xin.png" /></span> <span>二维码数量：</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <input type="text" id="addCreateNo" class="inp-txt w200 mr10" />
+            </div>
+            <div class="item" style="text-align: center; margin: 23px 0;">
+                &nbsp;&nbsp;&nbsp;&nbsp;<span>备注：</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <textarea rows="5" cols="8" id="addDescription" class="inp-txt w200 mr10" style="border: 1px solid #B8BFCF;
+                    margin-left: 10px; width: 210px; height: 60px;"></textarea>
+            </div>
+        </div>
+        <div style="height: 40px; text-align: center;">
+            <a href="javascript:void(0)" onclick="create()" id="btnCreate" class="btn120">确定</a>&nbsp;&nbsp;&nbsp;&nbsp;
+            <a href="javascript:void(0)" onclick="closeCreateDialog()" class="btn120">取消</a>
+        </div>
+    </div>
+</div>
+@*<div class="tanchu" id="createDialog">
+    <div class="tanchu_r">
+        <p class="color" style="margin-left: 99px; display: none;" id="errorInfo">
+            &nbsp;
+        </p>
+        <ul style="margin: 20px;">
+            <li><span>
+                <img src="/images/xin.png" /></span> <span>微信公众号名称：</span>
+                <input type="text" id="addWeChatPublicCode" class="inp-txt" style="width: 200px;
+                    height: 17px; line-height: 17px;" />
+                <br />
+                <br />
+            </li>
+            <li><span>
+                <img src="/images/xin.png" /></span> <span>推广渠道：</span>
+                <select id="addQRType" style="width: 200px; height: 27px; line-height: 27px; color: #8c94a9">
+                    <option value="">全部</option>
+                    @foreach (var item in ViewBag.QRTypes)
+                    {
+                        <option value="@item.Type">@item.Description</option>
+                    }
+                </select>
+                <br />
+                <br />
+            </li>
+            <li><span>
+                <img src="/images/xin.png" /></span> <span>二维码数量：</span>
+                <input type="text" id="addCreateNo" class="inp-txt" style="width: 200px; height: 17px;
+                    line-height: 17px;" />
+                <br />
+                <br />
+            </li>
+            <li><span>备注：</span>
+                <textarea rows="5" cols="8" id="addDescription" style="border: 1px solid #B8BFCF;
+                    margin-left: 10px; width: 200px; height: 60px;"></textarea>
+            </li>
+        </ul>
+        <div style="text-align: center;">
+            <button onclick="closeCreateDialog()">
+                取消</button>
+            &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;
+            <button onclick="create()" id="btnCreate">
+                确定</button>
+        </div>
+        <div class="shut" onclick="closeCreateDialog()">
+            <img src="/images/shut.png" alt="" width="7" height="7" />
+        </div>
+        <p id="ExportError" style="color: Red;">
+        </p>
+    </div>
+</div>*@
+@section ClientScript{
+    <script type="text/javascript" src="/Content/Mobile/allEvent.js"></script>
+    <script type="text/javascript" src="/Scripts/jquery.watermark.js"></script>
+    <script type="text/javascript" src="/Scripts/i18n/jquery.ui-zh.js"></script>
+    <script type="text/javascript" src="/Scripts/Grid/jquery.grid.base.js"></script>
+    <script type="text/javascript" src="/Scripts/TableBox/jquery.ui.jhtablebox.js"></script>
+    <script type="text/javascript" src="/Scripts/jquery.ui.base.js"></script>
+    <script type="text/javascript" src="/Scripts/jquery.nicescroll.min.js"></script>
+    <script type="text/javascript" src="/Scripts/Pager/jquery.ui.jhpager.js"></script>
+    <script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.jhdatetime.js"></script>
+    <script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.datepicker.js"></script>
+    <script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.jhstartandenddate.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            initDataGrid();
+        });
+
+        function search(pageNumber) {
+            var page = pageNumber ? pageNumber : 1;
+            var data = initSearchParam();
+            if (data) {
+                $('#TableGrid').jqGrid('setGridParam', { url: '@Url.Action("Manager")', postData: data, page: page });
+                $('#TableGrid').trigger("reloadGrid");
+            }
+        }
+
+        function initSearchParam(){
+                var QRType = $("#QRType").val();
+                var WeChatPublicCode = $("#WeChatPublicCode").val();
+                var IsUse = $("#IsUse").val();
+                if(IsUse)                IsUse= IsUse=="1"?true:false;
+                else IsUse=null;
+                var data = { "QRType": QRType, "WeChatPublicCode": WeChatPublicCode, "IsUse": IsUse };
+                return data;
+        }
+
+            // 导出数据
+            function exportData() {
+                $("#exportQRType").val($("#QRType").val());
+                $("#exportWeChatPublicCode").val($("#WeChatPublicCode").val());
+                $("#exportStatus").val($("#Status").val());
+                $("#ExportForm").submit();
+            }
+
+
+        // 打开新建窗口 
+        function openCreateDialog() {
+            $("#createDialog").jhtablebox({
+                title: "生成微信二维码",
+                width: 440,
+                height: 380,
+                modal: true,
+                resizable: false,
+                beforeClose: function (e) {
+                    clear();
+                }
+            });
+
+
+
+            //$("#createDialog").OpenDiv();
+//            if (window.parent) {
+//                //在iframe页面打开时，纠正top 
+//                $("#createDialog").css("top", 200 + $(window.parent.document).scrollTop());
+//            }
+        }
+
+        // 关闭新建窗口 
+        function closeCreateDialog() {
+          $("#createDialog").jhtablebox("hide");
+          clear();
+//            $("#createDialog").CloseDiv();
+        }
+
+        function clear(){
+            $("#errorInfo").hide();
+            $("#errorInfo").html("");
+            $("#addWeChatPublicCode").val("");
+            $("#addCreateNo").val("");
+            $("#addDescription").val("");
+        }
+
+        function initDataGrid() {
+            $("#TableGrid").jqGrid({
+                url: '@Url.Action("Manager")',
+                datatype: "json",
+                mtype: 'POST',
+                colNames: ['序号','推广渠道', '微信公众号', '二维码链接', '二维码名称', '二维码', '备注', '生成时间', '绑定状态', '操作'],
+                colModel:
+                [{ name: 'QRNo', index: 'QRNo', width: 20, align: "center", sortable: false,formatter:'integer'},
+                { name: 'QrTypeDesc', index: 'QRType', width: 30, align: "center", sortable: false
+                }, { name: 'WeChatPublicCode', index: 'WeChatPublicCode', width: 40, align: "center", sortable: false
+                }, { name: 'WeChatTicket', index: 'WeChatTicket', width: 80, align: "center", sortable: false,formatter:function(cellvalue, options, rowObject){
+                    return "https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket="+cellvalue;
+                }
+                }, { name: 'Name', index: 'Name', width: 60, align: "center", sortable: false
+                }, { name: 'WeChatTicket', index: 'WeChatTicket', width: 60, align: "center", sortable: false,formatter:function(cellvalue, options, rowObject){
+                    return "<a href=\"@Url.Action("download")?ticket="+cellvalue+"&filename="+rowObject.Name+".png\" style=\"text-decoration:underline;color:blue\">下载二维码</a>";
+                }
+                }, { name: 'Description', index: 'Description', width: 60, align: "center", sortable: false
+                }, { name: 'SubTime', index: 'SubTime', width: 40, align: "center", sortable: false, formatter:'date', formatoptions: {
+                        srcformat : 'Y-m-d H:i:s',
+                        newformat : 'Y-m-d H:i:s'
+                    }
+                }, { name: 'IsUse', index: 'IsUse', width: 20, align: "center", sortable: false,formatter:formateIsUse
+                }, { name: 'Process', index: 'Process', width: 20, align: "center", sortable: false,formatter: formatterProcess}],
+                rowNum: 20,
+                pager: 'TablePager',
+                pagerAlone: true,
+                height: '100%',
+                autowidth: true,
+                multiselect: false,
+                forceFit: true,
+                scroll: false,
+                shrinkToFit: true,
+                jsonReader: {  
+                    root:"data",     
+                    page: "page",     
+                    total: "total",  
+                    records: "records",  
+                    repeatitems : false  
+                },
+                onPaging: function(pgButton) { 
+                    alert(pgButton);
+                } 
+            });
+        }
+
+         function formateIsUse(callvalue, opts, rowdata) {
+            if (callvalue) {
+                return "已绑定";
+            } else {
+                return "未绑定";
+            }
+        }
+
+        function formatterProcess(callvalue, opts, rowdata){
+            if(rowdata.IsDel){
+                return "<a href='javascript:updateState(\""+rowdata.Id+"\","+false+")'>启用</a>";
+            }else{
+                return "<a href='javascript:updateState(\""+rowdata.Id+"\","+true+")'>停用</a>";
+             }
+        }
+
+        // 创建二维码
+        function create() {
+            var statename = $("#btnCreate").html();
+            if (statename == "提交中,请稍候") { return; }
+            $("#errorInfo").hide();
+            $("#errorInfo").html("");
+
+            var qrType = $("#addQRType").val();
+            if (qrType == "请选择") {
+                $("#errorInfo").html("请选择推广渠道");
+                $("#errorInfo").show();
+                return;
+            }
+            var wcValue = $("#addWeChatPublicCode").val();
+            if (wcValue == "") {
+                $("#errorInfo").html("请输入微信公众号名称");
+                $("#errorInfo").show(); return;
+            }
+            if (wcValue.length > 30) {
+                $("#errorInfo").html("微信公众号名称最多只能输入30个字");
+                $("#errorInfo").show();
+                return;
+            }
+            var qrNo = $("#addCreateNo").val();
+            if (qrNo == "") {
+                $("#errorInfo").html("请输入二维码数量");
+                $("#errorInfo").show();
+                return;
+            }
+            qrNo = parseInt(qrNo);
+            if(isNaN(qrNo)){
+                $("#errorInfo").html("二维码数量只允许输入数字");
+                $("#errorInfo").show();
+                return;
+            }
+            if (qrNo < 1 || qrNo > 99999) {
+                $("#errorInfo").html("二维码数量只允许输入1~99999之间");
+                $("#errorInfo").show();
+                return;
+            }
+            var desc = $("#addDescription").val();
+            if(desc.length>100){
+                $("#errorInfo").html("备注最多只能输入100个字");
+                $("#errorInfo").show();
+                return;
+            }
+
+            $("#btnCreate").html("提交中,请稍候");
+            $.ajax({
+                url: '@Url.Action("CreateQrCode")',
+                type: 'post',
+                data: {
+                    AppId: '@ViewBag.AppId',
+                    QrType: qrType,
+                    WeChatPublicCode: wcValue,
+                    CreateNo: qrNo,
+                    Description:desc,
+                },
+                success: function (data) {
+                    if (data.isSuccess) {
+                        reflushData();
+                        closeCreateDialog();
+                        $("#btnCreate").html("确定");
+                        $("#errorInfo").hide();
+                        alert(data.Message);
+                    }
+                    else {
+                        alert("生成失败："+data.Message);
+                        $("#errorInfo").show();
+                    }
+                },
+                error: function () {
+                    $("#btnCreate").html("确定");
+                    alert("生成失败");
+                    $("#errorInfo").show();
+                }
+            });
+        }
+
+        function reflushData(){
+            var rowcounts = $("#rowcounts");
+            var rowcounts_number = rowcounts.val() - 1;
+            rowcounts.val(rowcounts_number);
+            if (!rowcounts_number % 1) {
+                $("#pager").jhpager("refresh", $('.ui-jhpager-pager').text().split('/')[0], rowcounts_number);
+            } else {
+                var page = $('.ui-jhpager-pager').text().split('/')[0];
+                if (page == 1) {
+                    page = 1;
+                } else if (page > 1) {
+                    page -= 1;
+                }
+                search(page);
+            }
+        }
+
+        function updateState(id,isDel){
+        $.post('@Url.Action("UpdateState")',{ Id:id,IsDel: isDel },function(data){
+            if (data.isSuccess) {
+                if(isDel){             
+                  alert("停用成功");
+                }else{
+                  alert("启用成功");
+                }
+                reflushData();
+            }
+            else{
+                alert(data.Message);
+            }
+            });
+        }
+    </script>
+}

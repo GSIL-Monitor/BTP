@@ -1,0 +1,1533 @@
+﻿@{
+    Layout = "~/Views/Shared/_CYMobileLayout.cshtml";
+    //ViewBag.AppSelfTakeWay = 3;
+    //ViewBag.IsPlatformApp = 1;
+}
+@section TitleHtml
+{
+    <title>确认订单</title>
+}
+@section CssFile{
+    <link href="/Content/style/mobile_cy/mobileKit-min.css" rel="stylesheet" type="text/css" />
+    <link href="/Content/style/mobile_cy/takeorder.css" rel="stylesheet" type="text/css" />
+}
+@section ScriptCode
+{
+    <script type="text/javascript" src="http://webapi.amap.com/maps?v=1.3&key=14ebdcdb0066be84eae6d7fc6ff8c281&plugin=AMap.Riding"></script>
+    <script type="text/javascript" src="http://cache.amap.com/lbs/static/addToolbar.js"></script>
+    <!--script type="text/javascript" language="javascript" src="https://webapi.amap.com/maps?v=1.3&key=@Jinher.AMP.BTP.Common.CustomConfig.AmapKey&plugin=AMap.Geocoder"></script-->
+    <script src="/Scripts/md5.js" type="text/javascript"></script>
+    <script src="/Scripts/CommLib.js" type="text/javascript"></script>
+    <script src="/Content/Mobile/provinceCity.js" type="text/javascript"></script>
+    <script src="/Content/js/mobile_cy/takeorder.js" type="text/javascript"></script>
+    <script src="/Scripts/distance.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var dateTemplate = '<li style="font-size:12px;">{ScrollDateText}<input type="hidden" name="ScrollDateValue" value="{ScrollDateFmt}" data-text="{ScrollDateValue}" />';
+        var timeTemplate = '<li style="font-size:12px;">{ScrollTimeText}<input type="hidden" name="ScrollTimeValue" value="{ScrollTime}" data-text="{ScrollTimeValue}"  /></li>';
+
+        //订单项模板。
+        var shopItemTemplate = "";
+        var commodityItemTemplate = "";
+
+        //地址信息。
+        var _addressInfo = new Object();
+
+        //众筹信息列表
+        var_crowdfundingList = [];
+
+        //是否自提标记
+        var _selftaketoggle = false;
+
+        //加载商品自提数据是否完成。
+        var _selftakeCompleted = false;
+        //加载收货地址数据是否完成。
+        var _loadAddressCompleted = false;
+        //是否显示积分抵用。
+        var _isShowScore = false;
+        //积分-人民币兑换比例。
+        var _userScore = {};
+
+        //GetCreateOrderAllInfo返回的数据。
+        var _pageAllInfoData = {};
+
+        var _isAllAppInZPH = false;
+
+        var appIds = new Array();
+        //配送方式（配置）：0 app没有自提功能，1快递，2自提，3两者
+        var _appSelfTakeWay = @ViewBag.AppSelfTakeWay;
+        //配送方式（选择）：0:快递；1自提
+        var _appSelfTakeFlag = 0;
+        //检查可用的app配送方式。0 不显示配送方式；1 只显示快递；2 只显示自提；3 都显示，但自提是灰色显示
+        var _checkEnableWay = 0;
+        //0 非平台型app; 1 平台型app
+        var _isPlatformApp = @ViewBag.IsPlatformApp;
+        //用来存当前页的东西
+        var _pageCache = {};
+
+        var _storeInfo = {};
+        var mealBoxFee = 0;        
+
+        var _couponResult = new Array();
+
+        var commodityUpInfo;
+        if (JsVilaDataNull(getQueryString("srctype"))) {
+            sessionStorage.SrcType = getQueryString("srctype");
+        }
+        if (JsVilaDataNull(getQueryString("producttype"))) {
+            sessionStorage.ProductType = getQueryString("producttype");
+        }
+
+        function getCityCode(cityName) {
+            var cityCode;
+            var allCities = [];
+            allCities = getAllCities();
+            for (var i = 0, n = allCities.length; i < n; i++) {
+                if (cityName == allCities[i].Name) {
+                    cityCode = allCities[i].AreaCode;
+                }
+            }
+            return cityCode;
+        }
+
+        function isSelfTakeForCreateOrder() {
+            //$("#selftaketoggle").is(".active") ? "1":"0";
+            return _appSelfTakeFlag;
+        }
+
+        function setPageSetting() {
+            if (JsVilaDataNull(sessionStorage.CreateOrderInfo)) {
+                _pageCache = JSON.parse(sessionStorage.CreateOrderInfo);
+            }
+            if (JsVilaDataNull(getQueryString('addressid'))) {
+                _pageCache.addressId = getQueryString('addressid');
+            }
+            if (JsVilaDataNull(getQueryString('couponCodes'))) {
+                _pageCache.couponCodes = getQueryString('couponCodes');
+            }
+            if (JsVilaDataNull(getQueryString('couponCount'))) {
+                _pageCache.couponCount = getQueryString('couponCount');
+            }
+            if (JsVilaDataNull(getQueryString('couponCount'))) {
+                _pageCache.couponCount = getQueryString('couponCount');
+            }
+            if (JsVilaDataNull(getQueryString('appselftakestationid'))) {
+                _pageCache.appSelfTakeStationId = getQueryString('appselftakestationid');
+            }
+            if (!JsVilaDataNull(_pageCache.needinvoice)) {
+                if ($("#invoicetoggle").is(".active")) {
+                    _pageCache.needinvoice = 1;
+                } else {
+                    _pageCache.needinvoice = 0;
+                }
+            }
+            if (!JsVilaDataNull(_pageCache.signScorePay)) {
+                if ($("#signScorePay").is(".active")) {
+                    _pageCache.signScorePay = 1;
+                } else {
+                    _pageCache.signScorePay = 0;
+                }
+            }
+            if (!JsVilaDataNull(_pageCache.goldpay)) {
+                if ($("#goldpay").is(".active")) {
+                    _pageCache.goldpay = 1;
+                } else {
+                    _pageCache.goldpay = 0;
+                }
+            }
+            if (!JsVilaDataNull(_pageCache.appSelfTakeFlag)) {
+                if ($("#selfTakeWay").is(".current")) {
+                    _pageCache.appSelfTakeFlag = 1;
+                } else {
+                    _pageCache.appSelfTakeFlag = 0;
+                }
+            }
+            sessionStorage.CreateOrderInfo = JSON.stringify(_pageCache);
+        }
+         var map = new AMap.Map("container", {
+            resizeEnable: true,
+            center: [116.397428, 39.90923],//地图中心点
+            zoom: 13 //地图显示的缩放级别
+        });
+        function getGeocoder(address) {
+            //步行导航
+            var riding = new AMap.Riding({
+                map: map,
+                panel: "panel"
+            }); 
+            riding.search([
+                {keyword: _storeInfo.store.Address, city : (_storeInfo.store.City == "null" || _storeInfo.store.City == null ? _storeInfo.store.Province : _storeInfo.store.City)},
+                {keyword: address, city : _addressInfo.City}
+            ],function(status, result){
+                 //TODO 解析返回结果，自己生成操作界面和地图展示界面
+	             if(status != "error"){
+                    geocoderCallBackRiding(result.routes[0].time);
+                 }
+                 else{
+                    $("#divDeliveryRangeTip").removeClass("hide");
+                    $("#btnSubmit").addClass("active");
+                    geocoderCallBackRiding(1200);
+                 }
+                 console.log(result);
+                 console.log(status);	             
+            });
+        }
+        //按距离计算配送范围
+        function geocoderCallBack(data) {
+            try {
+                var geocode = data.geocodes;
+                if (geocode.length) {
+                    var dis = getGreatCircleDistance(geocode[0].location.getLat(), geocode[0].location.getLng(), _storeInfo.store.YAxis, _storeInfo.store.XAxis);
+                    if ((_storeInfo.setting.CateringSetting.DeliveryRange * 1000) < dis) {
+                        $("#divDeliveryRangeTip").removeClass("hide");
+                        $("#btnSubmit").addClass("active");
+                    }
+                }
+            } catch(e) {
+                $("#divDeliveryRangeTip").removeClass("hide");
+                $("#btnSubmit").addClass("active");
+            }
+        }
+        //按骑行计算配送范围
+        function geocoderCallBackRiding(ridingTime) {
+            try {
+                if ((_storeInfo.setting.CateringSetting.DeliveryRange * 60) < ridingTime) {
+                    $("#divDeliveryRangeTip").removeClass("hide");
+                    $("#btnSubmit").addClass("active");
+                }
+            } catch(e) {
+                $("#divDeliveryRangeTip").removeClass("hide");
+                $("#btnSubmit").addClass("active");
+            }
+        }
+        $(function() {
+            _storeInfo = JSON.parse(sessionStorage.storeInfo_CY);
+            if (!_storeInfo) {
+                return;
+            } else {
+                $("#spanStoreName").html(_storeInfo.store.StoreName);
+            }
+            saveContextDTOByUrl();
+            setPageSetting();
+
+            shopItemTemplate = $("#divShopItemTemplate").html();
+            commodityItemTemplate = $("#divCommodityItemTemplate").html();
+
+            setPageSetting();
+
+            $("#signScorePay").on('click', function(e) {
+                setTimeout(function() {
+                    if ($("#signScorePay").is(".active")) {
+                        _pageCache.signScorePay = 1;
+                    } else {
+                        _pageCache.signScorePay = 0;
+                    }
+                    sessionStorage.CreateOrderInfo = JSON.stringify(_pageCache);
+                    CalcPayPrice();
+                }, 100);
+            });
+
+            $("#InvoiceMessage").on("click", function() {
+                document.location.href = urlAppendCommonParams("/Mobile/InvoiceInfo?appIds=" + appIds);
+            });
+            $(".add-receiving-information").on("click", function() {
+                window.location.href = urlAppendCommonParams("/Mobile/AddDeliveryAddress?catering=1&opa=add&co=1&catering=1");
+            });
+            $(".delivery-info").on("click", function() {
+                window.location.href = urlAppendCommonParams("/Mobile/DeliveryAddressList?catering=1&opa=edit&co=1&addressid=" + sessionStorage.AddressId);
+            });
+        });
+
+        function goldpayToggleActive() {
+            getDataAjax({
+                url: '/Mobile/CheckGoldPwd',
+                data: { userId: getUserId() },
+                callback: function(data) {
+                    ajaxLoadingSingle.hide();
+                    _pageCache.goldpay = 1;
+                    sessionStorage.CreateOrderInfo = JSON.stringify(_pageCache);
+                    $('#goldpw').show();
+                    if (data.Code == 1) { //未设置密码
+                        showDialog('#setPwdDialog');
+                        hideDialog('#payDialog');
+                    } else {
+                        showDialog('#payDialog');
+                        hideDialog('#setPwdDialog');
+                    }
+                },
+                beforeSend: function() {
+                    ajaxLoadingSingle.show();
+                },
+                error: function() {
+                    ajaxLoadingSingle.hide();
+                }
+            });
+        }
+
+        function invoiceToggleActive() {
+            $('#InvoiceMessage').show();
+            _pageCache.needinvoice = 1;
+            sessionStorage.CreateOrderInfo = JSON.stringify(_pageCache);
+            var invText = "点击设置发票信息";
+
+            var invoice = JsVilaDataNull(sessionStorage.InvoiceDTO) && $.parseJSON(sessionStorage.InvoiceDTO);
+            if (invoice) {
+                if (invoice.Category == 1) {
+                    invText = "增值税普通发票";
+                } else if (invoice.Category == 2) {
+                    invText = "电子发票";
+                } else if (invoice.Category == 4) {
+                    invText = "增值税专用发票";
+                }
+            }
+            $("#invoiceTip").html(invText);
+
+        }
+
+        var _showContractCommodityList = [];
+        var _uploadAppId = "";
+        var dialog4 = "";
+        var callbackurl = "";
+
+        function htmlDecodeJQ(str) {
+            return $('').html(str).text();
+        }
+
+        //考虑点餐都是自己app
+        function getAppIds() {
+            appIds.push(sessionStorage.appId);
+        }
+
+        $(function() {
+            var psource = sessionStorage.source == "share" ? "&source=share" : "";
+            callbackurl = window.location.href;
+            if (JsVilaDataNull(getQueryString('shopId'))) {
+                sessionStorage.appId = getQueryString('shopId');
+            }
+            if (JsVilaDataNull(getQueryString('type'))) {
+                sessionStorage.type = getQueryString('type');
+            }
+            if (JsVilaDataNull(getQueryString('price'))) {
+                sessionStorage.Price = getQueryString('price');
+            }
+            if (JsVilaDataNull(getQueryString("distributorId"))) {
+                sessionStorage.distributorId = getQueryString("distributorId");
+            }
+
+            if (!JsVilaDataNull(sessionStorage.appId)) {
+                sessionStorage.appId = sessionStorage.appIdCong;
+            }
+            if (!JsVilaDataNull(sessionStorage.userLoginOut)) {
+                saveContextDTOByUrl();
+            }
+
+            if (JsVilaDataNull(sessionStorage.CrowdfundingList)) {
+                _crowdfundingList = JSON.parse(sessionStorage.CrowdfundingList);
+            }
+            //获取所有appid
+            getAppIds();
+
+            _isShowScore = getIsShowScore();
+
+            createOrder($('.content'));
+
+            $("#hdfk").bind("click", function() {
+                if ($("#hdfk").attr("checked")) {
+                    $("#goldul").hide();
+
+                }
+                CalcPayPrice();
+            });
+
+            $("#onlinePay").bind("click", function() {
+                if ($("#onlinePay").attr("checked")) {
+                    $("#goldul").show();
+                }
+                CalcPayPrice();
+            });
+
+
+            //Start 跳转到地址编辑页面
+            $(".dedev").bind("click", function() {
+                var opa = "";
+
+                if ($(".devk").html() != null && $(".devk").html() != "") {
+                    opa = "add";
+                    window.location.href = urlAppendCommonParams("/Mobile/AddDeliveryAddress?catering=1&opa=" + opa + "&co=1");
+                } else {
+                    opa = "edit";
+                    window.location.href = urlAppendCommonParams("/Mobile/DeliveryAddressList?catering=1&opa=" + opa + "&co=1&addressid=" + $("#hiddaddressid").val());
+                }
+                //window.location.href = "/Mobile/AddDeliveryAddress?opa=" + opa + "&addressid=" + $("#hiddaddressid").val();
+            });
+            //End   跳转到地址编辑页面
+           
+            //点击设置支付密码
+            $("#btnSetPwd").bind("click", function() {
+                if ($.trim($("#txtSetPwd").val()) == "" || $.trim($("#txtNextPwd").val()) == "") {
+                    return;
+                }
+                if ($.trim($("#txtSetPwd").val()) != $.trim($("#txtNextPwd").val())) {
+                    toast("两次密码输入不一致");
+                    return;
+                }
+                $("#zhifu").hide();
+
+                getDataAjax({
+                    url: '/Mobile/SetGoldPayPwd',
+                    data: { userId: getUserId(), pwd: hex_md5($.trim($("#txtSetPwd").val())) },
+                    callback: function(data) {
+                        ajaxLoadingSingle.hide();
+                        if (data.ResultCode == 1) {
+                            $("#zhifu").show();
+                            toast(data.Message);
+                        } else {
+                            hideDialog('#setPwdDialog');
+                            showDialog('#payDialog');
+                        }
+                    },
+                    beforeSend: function() {
+                        ajaxLoadingSingle.show();
+                    },
+                    error: function() {
+                        ajaxLoadingSingle.hide();
+                    }
+                });
+            });
+            //start 忘记密码
+            $("#wangpwd").bind("click", function() {
+                // 实例化
+                var base64 = new Base64();
+                // 给字符串加密
+                window.location.href = "@ViewBag.FSPUrl" + "/PasswordProtect/GetPassQuestion?userId=" + getUserId() + "&sessionId=" + getSessionId() + "&ChangeOrg=00000000-0000-0000-0000-000000000000&token=12345678&clientType=web&callback=" + base64.encode(callbackurl + psource);
+            });
+        });
+
+        //下订单使用
+        function createOrder(documents) {
+            _selftakeCompleted = true;
+            $('#siglecom').hide();
+            $("#ulDetails").hide();
+            displayCartInfo();
+            if (_pageCache.goldpay == 1) {
+                $("#gold_balance").show();
+                $("#goldpay").addClass('active');
+                goldpayToggleActive();
+            }
+            if (_pageCache.signScorePay == 1) {
+                $("#signScorePay").addClass('active');
+            }
+            var couponCode = _pageCache.couponCodes;
+            var couponCount = eval(_pageCache.couponCount) * 1.0;
+            if (JsVilaDataNull(couponCode) && couponCount > 0) {
+                $("#couponInfo").text("使用" + couponCode.split(';').length + "张");
+            }
+            if (_pageCache.needinvoice == 1) {
+                $("#invoicetoggle").addClass('active');
+                invoiceToggleActive();
+            }
+
+            CalcPayPriceCY();
+
+            GetCreateOrderAllInfo();
+        }
+
+        function CalcPayPriceCY() {
+            var payCouponValue = 0, goldValue = 0, scoreValue = 0;
+            var freight = _storeInfo.setting.CateringSetting.DeliveryFee;
+            var freeAmount = _storeInfo.setting.CateringSetting.FreeAmount;
+            var deliveryFeeDiscount = _storeInfo.setting.CateringSetting.DeliveryFeeDiscount;
+            var deliveryFeeStartT = _storeInfo.setting.CateringSetting.DeliveryFeeStartT;
+            var deliveryFeeEndT = _storeInfo.setting.CateringSetting.DeliveryFeeEndT;
+            $(".peiSongFei").text(freight.toFixed(2));
+            var totalprice = eval($(".totalprice").text());
+            var payPriceValue = (totalprice + freight).toFixed(2);
+            var realPrice = payPriceValue;            
+
+            //餐盒费
+            if(isNaN(mealBoxFee)  || mealBoxFee == 0){
+                $("#mealBoxFeeLi").hide();;
+            }
+            else if(mealBoxFee > 0){
+                payPriceValue = (payPriceValue + mealBoxFee).toFixed(2);
+            }
+            $(".mealBoxFee").text(mealBoxFee.toFixed(2));
+
+            //免配送费            
+            if(freeAmount == null || freeAmount == undefined || freeAmount == 0)
+            {
+                //配送费优惠
+                //deliveryFeeStartT,deliveryFeeEndT
+                if(deliveryFeeDiscount == null || deliveryFeeDiscount == undefined || deliveryFeeDiscount == 0){
+                    $("#peiSongFeeDiscountLi").hide();
+                }
+                else if(deliveryFeeDiscount > 0){
+                    var dateNow = new Date().getTime();
+                    if(deliveryFeeStartT!= null && deliveryFeeEndT != null&& deliveryFeeStartT!= undefined && deliveryFeeEndT != undefined){
+                        if(checkEndTime(deliveryFeeStartT, dateNow) && checkEndTime(dateNow, deliveryFeeEndT))
+                        {
+                            $(".peiSongFeeDiscount").text((-freight * deliveryFeeDiscount).toFixed(2));
+                            payPriceValue = (payPriceValue - freight * deliveryFeeDiscount).toFixed(2);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if(payPriceValue-freight >= freeAmount){                    
+                    $(".peiSongFeeDiscount").text((freight).toFixed(2));
+                    payPriceValue = (payPriceValue - freight).toFixed(2);
+                }
+                else{
+                    //配送费优惠
+                    //deliveryFeeStartT,deliveryFeeEndT
+                    if(deliveryFeeDiscount == null || deliveryFeeDiscount == undefined || deliveryFeeDiscount == 0){
+                        $("#peiSongFeeDiscountLi").hide();
+                    }
+                    else if(deliveryFeeDiscount > 0){
+                        var dateNow = "/Date(" + new Date().getTime() + ")/";;
+                        if(deliveryFeeStartT!= null && deliveryFeeEndT != null&& deliveryFeeStartT!= undefined && deliveryFeeEndT != undefined){
+                            if(checkEndTime(deliveryFeeStartT, dateNow) && checkEndTime(dateNow, deliveryFeeEndT))
+                            {
+                                $(".peiSongFeeDiscount").text((freight * deliveryFeeDiscount).toFixed(2));
+                                payPriceValue = (payPriceValue - freight * deliveryFeeDiscount).toFixed(2);
+                            }
+                        }
+                    }
+                }
+            }
+
+            //优惠券
+            if ($("#spanCouponAmount").text() > 0) {
+                payPriceValue -= $("#spanCouponAmount").text();
+            }
+
+            //积分
+            if ($("#signScorePay").is(".active")) {
+                var scorebalance = window._userScore.Money;
+                if (scorebalance >= eval(payPriceValue)) {
+                    scoreValue = payPriceValue;
+                } else {
+                    scoreValue = scorebalance;
+                }
+                var scoreAmount = parseInt(scoreValue * window._userScore.ScoreCost);
+                scoreValue = (scoreAmount / window._userScore.ScoreCost).toFixed(2);
+                $(".scoreValue").text(scoreValue);
+                $("#scoreValueli").show();
+            } else {
+                $(".scoreValue").text("0.00");
+                $("#scoreValueli").hide();
+            }
+            payPriceValue = (payPriceValue - scoreValue).toFixed(2);
+
+            var shopList = JSON.parse(sessionStorage.ShopCartDate);
+            for (var i = 0; i < shopList.length; i++) {
+                var shop = shopList[i];
+                shop.RealPrice = payPriceValue;
+                shop.Price = shop.AppAmount;
+            }
+            sessionStorage.ShopCartDate = JSON.stringify(shopList);
+
+            //代金券
+            var couponCount = (eval(_pageCache.couponCount) * 1.00).toFixed(2);
+            var couponCode = _pageCache.couponCodes;
+            if (JsVilaDataNull(couponCode) && couponCount > 0 && _isAllAppInZPH) {
+                if (eval(couponCount) >= eval(payPriceValue)) {
+                    payCouponValue = payPriceValue;
+                } else {
+                    payCouponValue = couponCount;
+                }
+                payCouponValue = eval(payCouponValue).toFixed(2);
+                $(".payCouponValue").text(payCouponValue);
+                $("#payCouponValueli").show();
+            }
+            payPriceValue = (payPriceValue - payCouponValue).toFixed(2);
+
+
+            //金币
+            if ($("#goldpay").is(".active")) {
+                //$('#goldpw').show();
+                var goldbalance = eval($(".price_3").text());
+                if (goldbalance >= eval(payPriceValue)) {
+                    goldValue = payPriceValue;
+                } else {
+                    goldValue = goldbalance;
+                }
+                $(".goldValue").text(goldValue);
+                $("#goldValueli").show();
+            } else {
+                $(".goldValue").text('0.00');
+                $("#goldValueli").hide();
+            }
+            payPriceValue = (payPriceValue - goldValue).toFixed(2);
+            
+            $(".money").text(payPriceValue);
+        }
+               
+        function checkEndTime(startTime,endTime){
+            var start=new Date(startTime.replace("-", "/").replace("-", "/"));            
+            var end=new Date(endTime.replace("-", "/").replace("-", "/"));  
+            if(end<start){  
+                return false;  
+            }  
+            return true;  
+        } 
+
+        function displayCartInfo() {
+            $(".totalprice").text(sessionStorage.Price);
+
+            var sh = sessionStorage.ShopCartDate;
+            var html = getOrderListHtml(JSON.parse(sh));
+            $("#divShopCommoditys").html(html);
+
+            //控制列表中的自提显隐
+            if (isOrderSelfTake == 1) {
+                $("#selftaketoggle").addClass('active');
+                _selftaketoggle = true;
+                $("#selftakedesc").show();
+                $("#selftakeli").show();
+            } else {
+                $("#selftakeli").hide();
+            }
+            $('div[co-tag="CrowdfundingDiv"]').each(function(ind, el) {
+                var cfDisplay = $(el).css("display");
+                if (cfDisplay == "none") {
+                    var pli = $(el).parent("li");
+                    pli.css("padding-bottom", "0px");
+                    pli.css("border-bottom-width", "0px");
+                }
+            });
+        }
+
+        var _isSubmit = false;
+        function validSubmit() {
+            if (_appSelfTakeWay == 2 || _appSelfTakeWay == 3) {
+                if (_appSelfTakeFlag == 1) {
+                    if (!JsVilaDataNull(sessionStorage.userSelfTake)) {
+                        toast("请选择自提点");
+                        return false;
+                    }
+                    var userSelfTakeObj = JSON.parse(sessionStorage.userSelfTake);
+                    if (!userSelfTakeObj.StationId) {
+                        toast("请选择自提点");
+                        return false;
+                    }
+                    if ($("#AppOrderPickUpName").val() == "") {
+                        toast("请输入提货人姓名");
+                        return false;
+                    }
+                    if ($("#AppOrderPickUpPhone").val() != "" && $("#AppOrderPickUpPhone").val().length < 11) {
+                        toast("请输入11位手机号");
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        function submitOrder(obj) {
+            var $this = $(obj);
+            if (_isSubmit)
+                return;
+
+            //验证
+            if (!validSubmit()) {
+                _isSubmit = false;
+                return;
+            }
+            if ($this.hasClass("active"))
+                return;
+            $this.addClass('active');
+
+            ajaxLoadingSingle.show();
+            var subData = getSubmitData();
+            SaveCommodityOrder(subData);
+            _isSubmit = false;
+        }
+
+        function getSubmitData() {
+            var subData = null;
+            if (sessionStorage.type == "gouwuche") {
+                subData = getCartsubmitOrder();
+            } else {
+                subData = getSinglesubmitOrder();
+            }
+            return subData;
+        }
+
+        //购物车下订单
+        function getCartsubmitOrder() {
+            var data = [];
+            var sh = sessionStorage.ShopCartDate;
+            var shopcartData = [];
+            if (JsVilaDataNull(sh)) {
+                shopcartData = JSON.parse(sh);
+                data = buildOrderModel(shopcartData);
+            }
+            //备注信息。
+            var detailText = $("#beizhu").val();
+            var sci = data.GetOnlyElement("AppId", sessionStorage.appId_CY);
+            sci.Details = detailText;
+            return data;
+        }
+
+        //组建要提交的数据
+        function buildOrderModel(appItems) {
+            var orderSDTO = {};
+            orderSDTO = {
+                //Price: "",              //总价格
+                //RealPrice: '',
+                ShoppingCartItemSDTO: [], //商品信息
+                UserId: '',             //用户Id
+                Details: "",             //订单备注
+                SrcTagId: "00000000-0000-0000-0000-000000000000",
+                SrcType: 34,
+                SrcAppId: "00000000-0000-0000-0000-000000000000",
+                Source: "",
+                WxOpenId: bridge.getData('WeChatKey') || "",
+                TradeType: 0,
+                PicturesPath: '',
+                PromotionType: '0',
+                AppOrderPickUpInfo: ''
+            };
+            if ($("#spanCouponAmount").text() > 0) {
+                orderSDTO.CouponValue = eval($("#spanCouponAmount").text()).toFixed(2);
+            }            
+            
+            $.extend(orderSDTO, _addressInfo);
+            //此appid从地址信息中继承来，此处要用商品的appid.
+            delete orderSDTO.AppId;
+
+            if (JsVilaDataNull(sessionStorage.SrcTagId)) {
+                orderSDTO.SrcTagId = sessionStorage.SrcTagId;
+            }
+            if (JsVilaDataNull(sessionStorage.SrcType)) {
+                orderSDTO.SrcType = sessionStorage.SrcType;
+            }
+            if (JsVilaDataNull(sessionStorage.srcAppId)) {
+                orderSDTO.SrcAppId = sessionStorage.srcAppId;
+            }
+            orderSDTO.Details = $(".remark-title").val();
+
+            if ($("#selftaketoggle").is(".active")) {
+                orderSDTO.SelfTakeFlag = 1;
+            } else {
+                orderSDTO.SelfTakeFlag = 0;
+            }
+            //发票信息。
+            if ($("#invoicetoggle").is(".active")
+                && JsVilaDataNull(sessionStorage.InvoiceDTO)) {
+                orderSDTO.InvoiceInfo = $.parseJSON(sessionStorage.InvoiceDTO);
+            }
+
+            orderSDTO.UserId = getUserId();
+            orderSDTO.ShareId = getShareId();
+
+            if (JsVilaDataNull(sessionStorage.CPSId)) {
+                orderSDTO.CPSId = sessionStorage.CPSId;
+            }
+            if ($("#signScorePay").hasClass("active")) {
+                orderSDTO.ScorePrice = $(".scoreValue").text();
+            }
+            if ($("#goldpay").hasClass("active")) {
+                orderSDTO.GoldPrice = $(".goldValue").text();
+            }
+            orderSDTO.PayCouponValue = $(".payCouponValue").text();
+            orderSDTO.PaycouponCodes = _pageCache.couponCodes;
+
+            if ($("#goldpay").hasClass("active")
+                && $("#txtpwd").val() != "") {
+                orderSDTO.PayPassword = hex_md5($("#txtpwd").val());
+            }
+            if ($("#hdfk").attr("checked")) {
+                orderSDTO.Payment = 1;
+            }
+            if (JsVilaDataNull(sessionStorage.speader)) {
+                orderSDTO.SpreadCode = sessionStorage.speader;
+            }
+            if (!JsVilaDataNull(orderSDTO.RecipientsZipCode)) {
+                orderSDTO.RecipientsZipCode = null;
+            }
+            //餐饮订单类型2
+            orderSDTO.OrderType = 2;
+            var orderMealBoxFee = eval($("#spanMealBoxFee").text()).toFixed(2);            
+            orderSDTO.mealBoxFee = orderMealBoxFee > 0 ? orderMealBoxFee : 0;
+            var deliveryFeeDiscount = eval($("#spanPeiSongFeeDiscount").text() == "" ? "0" : $("#spanPeiSongFeeDiscount").text()).toFixed(2);  
+            orderSDTO.deliveryFeeDiscount = deliveryFeeDiscount > 0 ? deliveryFeeDiscount : 0;
+            orderSDTO.SrcAppId = sessionStorage.srcAppId;
+
+            if (JsVilaDataNull(commodityUpInfo)) {
+                if (!JsVilaDataNull(commodityUpInfo.serviceId)) {
+                    orderSDTO.ServiceId = null;
+                } else {
+                    orderSDTO.ServiceId = commodityUpInfo.serviceId;
+                }
+            }
+
+            orderSDTO.Source = (JsVilaDataNull(sessionStorage.source) ? sessionStorage.source : 'internal');
+            orderSDTO.WxOpenId = bridge.getData('WeChatKey') || "";
+            orderSDTO.TradeType = _pageAllInfoData.TradeType;
+            //拼团
+            if (sessionStorage.type == "diygroup") {
+                orderSDTO.PromotionType = 3;
+                if (sessionStorage.diyGroupId) {
+                    orderSDTO.DiyGroupId = sessionStorage.diyGroupId;
+                }
+            }
+            if (_appSelfTakeWay == 2 || _appSelfTakeWay == 3) {
+                if (_appSelfTakeFlag == 1) {
+                    orderSDTO.SelfTakeFlag = 1;
+                    orderSDTO.AppOrderPickUpInfo = {};
+                    var userSelfTakeObj = JSON.parse(sessionStorage.userSelfTake);
+                    orderSDTO.AppOrderPickUpInfo.SelfTakeStationId = userSelfTakeObj.StationId;
+                    orderSDTO.AppOrderPickUpInfo.Name = $("#AppOrderPickUpName").val();
+                    orderSDTO.AppOrderPickUpInfo.Phone = $("#AppOrderPickUpPhone").val();
+                    orderSDTO.AppOrderPickUpInfo.BookDate = userSelfTakeObj.AppOrderPickUpBookDate;
+                    orderSDTO.AppOrderPickUpInfo.BookStartTime = userSelfTakeObj.AppOrderPickUpBookStartTime;
+                    orderSDTO.AppOrderPickUpInfo.BookEndTime = userSelfTakeObj.AppOrderPickUpBookEndTime;
+                }
+            }
+            if (appItems && appItems.length > 0) {
+                //将全局信息copy到每个应用里。
+                for (var i = 0; i < appItems.length; i++) {
+                    //appItems[i].Price = eval(appItems[i].Price).toFixed(2);
+                    var shoppings = appItems[i].ShoppingCartItemSDTO;
+                    $.extend(appItems[i], orderSDTO);
+                    //extend后ShoppingCartItemSDTO集合中的元素丢失。
+                    appItems[i].ShoppingCartItemSDTO = shoppings;
+                    appItems[i].SelfTakeStationId = JsVilaDataNull(sessionStorage.stStationId) ? sessionStorage.stStationId : "00000000-0000-0000-0000-000000000000";
+                    appItems[i].EsAppId = getEsAppId();
+                    appItems[i].distributorId = JsVilaDataNull(sessionStorage.distributorId) ? sessionStorage.distributorId : "00000000-0000-0000-0000-000000000000";
+                    //规则：下订单是使用积分抵现只会发生在购买单个店铺里的商品，如果混合支付走到这里，则$(".scoreValue").text()一定为0，RealPrice-0和没减相同。
+                    appItems[i].RealPrice -= eval($(".scoreValue").text());
+                    appItems[i].RealPrice = appItems[i].RealPrice.toFixed(2);
+                    if (appItems[i].AppId && _uploadAppId.toLowerCase().indexOf(appItems[i].AppId.toLowerCase()) > -1) {
+                        var refundImgs = "";
+                        var rImgs = $('#preview >li input');
+                        for (var j = 0; j < rImgs.length; j++) {
+                            if (rImgs[j].value != "") {
+                                refundImgs += rImgs[j].value + ",";
+                            }
+                        }
+                        refundImgs = refundImgs.substring(0, refundImgs.length - 1);
+                        appItems[i].PicturesPath = refundImgs;
+                    }
+                    if (_couponResult == null) {
+                        continue;
+                    }
+                    var appCouponInfo = _couponResult.GetFirstElement("ShopId", appItems[i].AppId);
+                    if (appCouponInfo == null) {
+                        continue;
+                    }
+                    appItems[i].CouponId = appCouponInfo.CouponId;
+                    appItems[i].CouponComId = appCouponInfo.GoodId == undefined ? "" : appCouponInfo.GoodId;
+                    appItems[i].ComCategoryId = appItems.CategoryId == undefined ? null : appItems.CategoryId;
+                }
+            }
+            return appItems;
+        }
+
+        //创建订单
+        function SaveCommodityOrder(subData) {
+            var isHYL = sessionStorage.IsHYL ? "1" : "";
+            var subData = { orderList: subData, sessionId: getSessionId(), isHYL: isHYL };
+            subData = CommLib.ObjToStringWithQuot(subData);
+            getDataAjax2({
+                url: "/Mobile/SaveCommodityOrderNew",
+                data: subData,
+                callback: function(data) {
+                    //行为记录 提交订单增加订单Id
+                    if (data && data.ResultCode != 1) {
+                        localStorage.removeItem("orderDishes" + sessionStorage.appId);
+                    }
+                    var payPrice = eval($(".money").text());
+                    if (payPrice == 0 && data.ResultCode == 0) {
+                        data.ResultCode = 3;
+                    }
+                    if (data.ResultCode == 0) {
+                        setTimeout(function() {
+                            window.location.href = data.PayUrl;
+                        }, 1000);
+                    } else if (data.ResultCode == 1) {
+                        $("#btnSubmit").removeClass("active");
+                        ajaxLoadingSingle.hide();
+                        toast(data.Message);
+                    } else if (data.ResultCode == 2) {
+                        toast("支付失败");
+                        if (JsVilaDataNull(data.OrderId)) {
+                            window.location.href = urlAppendCommonParams('MyOrderDetail?orderId=' + data.OrderId + '&userId=' + getUserId() + '&sessionId=' + getSessionId());
+                        } else {
+                            window.location.href = urlAppendCommonParams("/Mobile/MyOrderList?user=" + getUserId() + "&type=shuaxin&orderState=1");
+                        }
+                    } else if (data.ResultCode == 3) {
+                        ajaxLoadingSingle.hide();
+                        if ($("#hdfk").attr("checked") || eval(commodityUpInfo.realPrice) <= 0) {
+                            alert("下单成功");
+                        } else {
+                            alert("支付成功");
+                        }
+                        //成功后跳转
+                        if (sessionStorage.type == "diygroup") {
+                            var _diyGroupIdNew = data.DiyGroupId;
+                            window.location.href = urlAppendCommonParams("/Mobile/DiyGroupDetail?diyGroupId=" + _diyGroupIdNew);
+                        } else {
+                            window.location.href = urlAppendCommonParams("/Mobile/MyOrderList?user=" + getUserId() + "&type=shuaxin&orderState=1");
+                        }
+                    }
+                },
+                error: function(err) {
+                    $("#btnSubmit").removeClass("active");
+                    ajaxLoadingSingle.hide();
+                }
+            });
+        }
+
+        var _hasAddress = false;
+        function showAddressMain(data) {
+            if (data !== null) {
+                showAddress(data);
+                _hasAddress = true;
+            } else {
+                $(".add-receiving-information").removeClass("hide");
+                $("#btnSubmit").addClass("active");
+            }
+        }
+
+        //显示地址信息
+        function showAddress(data) {
+            _addressInfo = data;
+            $(".delivery-info").removeClass("hide");
+            $("#hiddphone").val(data.ReceiptPhone);
+            sessionStorage.AddressId = data.AddressId;
+            $("#hiddaddressid").val(data.AddressId);
+            $(".name").html(data.ReceiptUserName);
+            $(".tel").html(data.ReceiptPhone);
+            if (data.RecipientsZipCode != null && data.RecipientsZipCode != "") {
+                $(".spzipcode").html(data.RecipientsZipCode);
+            }
+            $(".sprovince").html(data.Province);
+            $(".scity").html(data.City);
+            $(".sdistrict").html(data.District);
+            $(".detail").html(data.ReceiptAddress);
+            var add = data.Province + data.City + data.District + data.ReceiptAddress;
+            getGeocoder(add);
+        }
+
+        function saveOrderValid() {
+            if ($(".devk").html() != null && $(".devk").html() != "" && _appSelfTakeFlag != 1) {
+                toast("请先维护收货地址");
+                return false;
+            }
+
+            if (_appSelfTakeFlag == 1) {
+
+            } else if ($(".detail").html() == "") {
+                toast("请先维护收货地址");
+                return false;
+            }
+
+            //判断地址 是否因为 异常原因加载失败了
+            if ($(".name").html() == "" || $("#hiddphone").val() == "") {
+                return false;
+            }
+
+            if ($("#onlinePay").attr("checked") && $("#goldpay").hasClass("active") && $("#txtpwd").val() == "") {
+                toast("请输入账户交易密码！");
+                return false;
+            }
+            var valpwd = true;
+            //校验金币支付密码
+            if ($("#goldpay").hasClass("active") && $("#txtpwd").val() != "") {
+                getDataAjax2({
+                    type: "post",
+                    url: '/Mobile/CheckGoldPayPwdVal',
+                    async: false,
+                    data: { userId: getUserId(), sessionId: getSessionId(), pwd: hex_md5($("#txtpwd").val()) },
+                    dataType: "json",
+                    callback: function(data) {
+                        if (data.Code == 0) {
+                            valpwd = true;
+                        } else {
+                            toast(data.Message);
+                            valpwd = false;
+                        }
+                    },
+                    error: function() {
+                        valpwd = false;
+                    }
+                });
+            }
+            return valpwd;
+        }
+        
+        function showDialog(el) {
+            $('.mask').show();
+            $(el).show();
+            $('.page').addClass('lock');
+        }
+
+        function hideDialog(el) {
+            $('.mask').hide();
+            $(el).hide();
+            $('.page').removeClass('lock');
+        }
+
+        function usePayCoupon() {
+            var couponCodes = "";
+            if (JsVilaDataNull(_pageCache.couponCodes)) {
+                couponCodes = _pageCache.couponCodes;
+            }
+            var totalprice = eval($(".totalprice").text());
+            var freightprice = totalprice + eval($(".peiSongFei").text());
+            var psource = sessionStorage.source == "share" ? "&source=share" : "";
+
+            var srcUrl = urlAppendCommonParams(getBtpDomain() + "Mobile/CreateOrder?back=coupons&type=" + sessionStorage.type);
+            window.location.href = "@ViewBag.PromotionUrl" + "/MyVouchers/VoucherList?srcApp=btp&userId=" + getUserId() + "&sessionId=" + getSessionId() + "&selectedVCodes=" + couponCodes + "&orderAmount=" + freightprice + "&ChangeOrg=00000000-0000-0000-0000-000000000000&appId=" + getEsAppId() + "&srcUrl=" + encodeURIComponent(srcUrl);
+        }
+
+        var isOrderSelfTake = 0;
+        //生成整个订单列表html.
+        function getOrderListHtml(shops) {
+            if (shops == null || shops.length == 0) {
+                return "";
+            }
+            //生成html.
+            var allHtml = "";
+            for (var c = 0; c < shops.length; c++) {
+                var commoditysHtml = getCommodityItemsInShop(shops[c].ShoppingCartItemSDTO);
+                shops[c].CommoditysInShopHtml = commoditysHtml;
+                //众筹相关功能先不做。
+                //calculateShopCrowdfund(shops[c]);
+                shops[c].CrowdfundingInfo = "";
+                shops[c].cfDisplay = "none";
+
+                var tmpComArry = [];
+                if (shops[c].ShoppingCartItemSDTO) {
+                    for (var m = 0; m < shops[c].ShoppingCartItemSDTO.length; m++) {
+                        tmpComArry.push(shops[c].ShoppingCartItemSDTO[m].Id);
+                    }
+                }
+                mealBoxFee += shops[c].boxAmount * shops[c].boxNum;
+                shops[c].AppUploadFile = "";
+                allHtml += shopItemTemplate.format(shops[c]);
+            }
+            return allHtml;
+        }
+
+        function getCommodityItemsInShop(items) {
+            var commoditysHtml = "";
+            for (var i = 0; i < items.length; i++) {
+                dealColorAndSize(items[i]);
+                isOrderSelfTake = items[i].IsEnableSelfTake == 1 ? 1 : 0;
+                items[i].SelfTakeDisplay = items[i].IsEnableSelfTake == 1 ? "inline-block" : "none";
+                items[i].srckey = "src";
+                items[i].AppName = JsVilaDataNull(items[i].AppName) ? items[i].AppName : "";
+                items[i].CategoryName = JsVilaDataNull(items[i].CategoryName) ? items[i].CategoryName : "";
+                commoditysHtml += commodityItemTemplate.format(items[i]);
+            }
+            return commoditysHtml;
+        }
+
+        function dealColorAndSize(datai) {
+            //datai.Size以，分隔；前颜色，后尺寸。
+            if (datai.Size != null && datai.Size.length > 1) {
+                var splitR = datai.Size.split(",");
+                var sizeText = "";
+                var s01 = false;
+                var s02 = false;
+                if (splitR.length == 1) {
+                    if (splitR[0] != null && splitR[0].length > 0 && splitR[0] != "null") {
+                        s01 = true;
+                    }
+                } else if (splitR.length >= 1) {
+                    if (splitR[0] != null && splitR[0].length > 0 && splitR[0] != "null") {
+                        s01 = true;
+                    }
+                    if (splitR[1] != null && splitR[1].length > 0 && splitR[1] != "null") {
+                        s02 = true;
+                    }
+                }
+                datai.SizeDisplay = s01 || s02 ? "block" : "none";
+                if (s01) {
+                    sizeText += splitR[0];
+                }
+                if (s02) {
+                    if (sizeText.length > 0) {
+                        sizeText += "&nbsp;&nbsp;";
+                    }
+                    sizeText += splitR[1];
+                }
+                datai.SizeText = sizeText;
+            } else {
+                datai.SizeText = "";
+                datai.SizeDisplay = "none";
+            }
+        }
+        
+        //计算某个店铺众筹情况。
+        function calculateShopCrowdfund(shop) {
+            shop.CrowdfundingInfo = "";
+            shop.cfDisplay = "none";
+            if (_crowdfundingList == null) {
+                return;
+            }
+            var data = _crowdfundingList.GetOnlyElement("AppId", shop.AppId);
+            if (data == null) {
+                return;
+            }
+            //用户将要够买的金额
+            var usergou = 0;
+            var shoppingItems = shop.ShoppingCartItemSDTO;
+            if (shoppingItems == null || shoppingItems.length == 0) {
+                return;
+            }
+            var siLength = shoppingItems.length;
+            for (var i = 0; i < siLength; i++) {
+                var cartItem = shoppingItems[i];
+                usergou += cartItem.CommodityNumber * cartItem.RealPrice;
+            }
+            //众筹每股金额
+            var perShareMoney = data.PerShareMoney;
+            //用户已购买金额
+            var money = data.Money;
+            //用户已持有股数
+            var currentShareCount = data.CurrentShareCount;
+            //是否是进行中的众筹 true为活动中
+            var isActiveCrowdfunding = data.IsActiveCrowdfunding;
+            //众筹可购买股数
+            var shareCountRemain = data.ShareCountRemain;
+
+
+            if (isActiveCrowdfunding == "true" || isActiveCrowdfunding) {
+                //如果用户将要够买 产生的股点数超过了此App剩余的股点数
+                if ((usergou / perShareMoney) >= shareCountRemain) {
+                    shop.CrowdfundingInfo = "您已拥有全部剩余股点" + shareCountRemain + "股！"
+                    shop.cfDisplay = "block";
+                } else {
+                    //向上取整,有小数就整数部分加1
+                    var jianggu = parseInt(usergou / perShareMoney) + 1;
+                    var chaprice = ((perShareMoney * jianggu) - usergou).toFixed(2);
+                    shop.CrowdfundingInfo = "您再购买" + chaprice + "元商品就能获得" + jianggu + "股，坐等分红啦！"
+                    shop.cfDisplay = "block";
+                }
+            }
+        }
+
+        //并行一次获取金币余额、代金券张数、收货地址、积分。
+        function GetCreateOrderAllInfo() {
+            var isShowCoupon = sessionStorage.ProductType == "appcjzy" || sessionStorage.ProductType == "webcjzy" ? true : false;
+            //地址id.
+            var addressId = "00000000-0000-0000-0000-000000000000";
+            if ((getQueryString("back") == "deladdlist" || getQueryString("back") == "coupons") && JsVilaDataNull(_pageCache.addressId)) {
+                addressId = _pageCache.addressId;
+            }
+            //配送方式（配置）：0 app没有自提功能，1快递，2自提，3两者
+            //检查可用的app配送方式。0 不显示配送方式；1 只显示快递；2 只显示自提；3 都显示; 4 都显示但自提灰显
+            //0 非平台型app; 1 平台型app
+            if (_isPlatformApp == 0) {
+                if (_appSelfTakeWay == 0 || _appSelfTakeWay == 1) {
+                    _checkEnableWay = 1;
+                    _appSelfTakeFlag = 0;
+                } else if (_appSelfTakeWay == 2) {
+                    _checkEnableWay = 2;
+                    _appSelfTakeFlag = 1;
+                } else if (_appSelfTakeWay == 3) {
+                    _checkEnableWay = 3;
+                    //_appSelfTakeFlag = 0;
+                }
+            } else {
+                if (_appSelfTakeWay == 0 || _appSelfTakeWay == 1) {
+                    _checkEnableWay = 1;
+                    _appSelfTakeFlag = 0;
+                } else if (_appSelfTakeWay == 2 || _appSelfTakeWay == 3) {
+                    //支持自提
+                    var tmpAppIdArray = appIds.split(",");
+                    if (tmpAppIdArray.length == 1) {
+                        if (tmpAppIdArray[0] == getEsAppId()) {
+                            _checkEnableWay = 3;
+                        } else {
+                            _checkEnableWay = 4;
+                            _appSelfTakeFlag = 0;
+                        }
+                    } else {
+                        //多app
+                        _checkEnableWay = 4;
+                        _appSelfTakeFlag = 0;
+                    }
+                }
+            }
+            if (JsVilaDataNull(_pageCache.appSelfTakeFlag)) {
+                if (_pageCache.appSelfTakeFlag == 1 && (_checkEnableWay == 2 || _checkEnableWay == 3 || _checkEnableWay == 4)) {
+                    $("#selfTakeWay").addClass('current').siblings().removeClass('current');
+                    _appSelfTakeFlag = 1;
+                } else {
+                    $("#commonWay").addClass('current').siblings().removeClass('current');
+                    _appSelfTakeFlag = 0;
+                }
+            } else {
+                if (_appSelfTakeFlag == 1) {
+                    $("#selfTakeWay").addClass('current').siblings().removeClass('current');
+                } else {
+                    $("#commonWay").addClass('current').siblings().removeClass('current');
+                }
+            }
+
+            //检查可用的app配送方式。0 不显示配送方式；1 只显示快递；2 只显示自提；3 都显示; 4 都显示但自提灰显
+            if (_checkEnableWay == 0 || _checkEnableWay == 1 || _checkEnableWay == 2) {
+                $(".delivery").hide();
+            } else if (_checkEnableWay == 3) {
+                $(".delivery").show();
+            } else if (_checkEnableWay == 4) {
+                $("#selfTakeWay").addClass("disableA");
+                $("#commonWay").addClass("disableB");
+                $(".delivery").show();
+            }
+
+            var appSelfTakeStationId = '';
+            var searchTypeForAppSelfTake = '';
+            if (!JsVilaDataNull(_pageCache.appSelfTakeStationId)) {
+                //没有选择时
+                if (JsVilaDataNull(sessionStorage.userSelfTake)) {
+                    var userSelfTakeObj = JSON.parse(sessionStorage.userSelfTake);
+                    if (JsVilaDataNull(userSelfTakeObj.appSelfTakeStationId)) {
+                        isWorthToGet = false;
+                        appSelfTakeStationId = userSelfTakeObj.appSelfTakeStationId;
+                        searchTypeForAppSelfTake = appSelfTakeStationId == '' ? 2 : 1;
+                        _pageCache.appSelfTakeStationId = appSelfTakeStationId;
+                        sessionStorage.CreateOrderInfo = JSON.stringify(_pageCache);
+                    }
+                }
+            } else {
+                if (JsVilaDataNull(sessionStorage.userSelfTake)) {
+                    var userSelfTakeObj = JSON.parse(sessionStorage.userSelfTake);
+                    if (userSelfTakeObj.StationId == _pageCache.appSelfTakeStationId) {
+                        isWorthToGet = false;
+                    }
+                }
+                appSelfTakeStationId = _pageCache.appSelfTakeStationId;
+                searchTypeForAppSelfTake = _pageCache.appSelfTakeStationId == '' ? 2 : 1;
+            }
+
+            var pobj = {};
+            pobj.userId = getUserId();
+            pobj.sessionId = getSessionId();
+            pobj.addressId = addressId;
+            pobj.appId = "00000000-0000-0000-0000-000000000000";
+            pobj.isShowCoupon = isShowCoupon;
+            pobj.commodityIds = sessionStorage.commodityId_2 + ",";
+            pobj.coType = sessionStorage.type;
+            pobj.areaCode = "";
+            pobj.esAppId = getEsAppId();
+            pobj.isShowScore = _isShowScore;
+            pobj.appIds = appIds;
+            pobj.appSelfTakeWay = _appSelfTakeFlag == 1 ? 2 : 0;
+
+            getDataAjax({
+                url: "/Mobile/GetCreateOrderAllInfo",
+                data: pobj,
+                callback: function(data) {
+                    if (data.ResultCode != 0) {
+                        return;
+                    }
+
+                    //ajaxLoadingSingle.hide();
+                    _pageAllInfoData = data;
+                    if (data.TradeType == -1) {
+                        toast("出错了！");
+                        return;
+                    }
+                    _isAllAppInZPH = data.IsAllAppInZPH;
+                    if (data.TradeType == 0) {
+
+                        $("#gold_balance").show();
+                        //金币
+                        var goldbalance = (Math.floor(data.GoldBalance * 0.1) * 0.01).toFixed(2);
+                        $('#gold_balance').find('.price_3').text(goldbalance);
+                        if (eval(goldbalance) == 0) {
+                            $("#goldpay").css("pointer-events", "none");
+                        }
+                        //代金券
+                        if (data.IsAllAppInZPH) {
+                            $('#payCouponLi').show();
+                            $('#paycouponCount').text(data.CouponCount);
+                        }
+                    } else {
+                        $("#gold_balance").hide();
+                        $('#payCouponLi').hide();
+
+                    }
+
+                    //收货地址
+                    showAddressMain(data.AddressInfo);
+
+                    //众销
+                    showCrowdfund(data.UserCrowdfunding);
+
+                    //显示积分。
+                    showUserScore(data.UserScore);
+
+                    //计算优惠券
+                    getOptimalCoupon();
+
+                    setTimeout(function() {
+                        //所有子元素都隐藏了，父元素（父元素中包含一根分隔线）也隐藏。
+                        var liCount = 0;
+                        $("#goldul").children("li").each(function(i, el) {
+                            if ($(this).css("display") == "none") {
+                                liCount++;
+                            }
+                        })
+                        if ($("#goldul").children("li").length == liCount) {
+                            $("#goldul").hide();
+                        }
+                    }, 50);
+                    ajaxLoadingSingle.hide();
+                },
+                beforeSend: function() {
+                    ajaxLoadingSingle.show();
+                },
+                error: function() {
+                    ajaxLoadingSingle.hide();
+                }
+            });
+        }
+
+        function getOptimalCoupon() {
+            var list = new Array();
+            if (sessionStorage.type == "gouwuche") {
+                var shopList = JSON.parse(sessionStorage.ShopCartDate);
+                if (shopList && shopList.length) {
+                    for (var i = 0; i < shopList.length; i++) {
+                        var clist = shopList[i].ShoppingCartItemSDTO;
+                        for (var j = 0; j < clist.length; j++) {
+                            var cj = clist[j];
+                            list.push({ AppId: cj.AppId, CommodityId: cj.Id, Count: cj.CommodityNumber, Price: eval(cj.RealPrice).toFixed(2) });
+                        }
+                    }
+                }
+            } else {
+                list.push({ AppId: sessionStorage.appId, CommodityId: sessionStorage.commodityId_2, Count: commodityUpInfo.number, Price: eval(commodityUpInfo.realPrice).toFixed(2) });
+            }
+            getDataAjax2({
+                url: "/Mobile/GetOptimalCouponAjax",
+                async: false,
+                data: { ocpList: list, userId: getUserId(), },
+                callback: function(result) {
+                    showCouponInfo(result);
+
+                },
+                error: function() {
+                    ajaxLoadingSingle.hide();
+                }
+            });
+        }
+        
+        function showCouponInfo(result) {
+            if (!result || !result.IsSuccess || !result.Data || !result.Data.length)
+                return;
+            _couponResult = result.Data;
+            var shopList = JSON.parse(sessionStorage.ShopCartDate);
+            var shop = shopList.GetFirstElement("AppId", sessionStorage.appId);
+            var appAmount = eval(shop.AppAmount);
+            var appAmountExceptFreight = appAmount;
+            var cspan = $("#spanCouponAmount");
+            cspan.html("0.00");
+            if (_couponResult != null && _couponResult.length > 0) {
+                //优惠券。
+                var cdto = _couponResult.GetFirstElement("ShopId", sessionStorage.appId);
+                if (cdto != null) {
+                    //商店通用
+                    if (cdto.CouponType == 0) {
+                        var youh = 0;
+                        if (cdto.Cash > appAmountExceptFreight) {
+                            youh = appAmountExceptFreight;
+                        } else {
+                            youh = cdto.Cash;
+                        }
+                        appAmount -= youh;
+                        cspan.html(youh.toFixed(2));
+                        $("#payCouponValueUHli").removeClass("hide");
+                    }
+                        //优惠券适用于“指定商品”
+                    else if (cdto.CouponType == 1) {
+                        var totalPriceCommodity = 0;
+                        if (cdto.GoodList != null && cdto.GoodList.length > 0) {
+                            var gstr = cdto.GoodList.join(",");
+                            var shoppings = shop.ShoppingCartItemSDTO;
+                            for (var j = 0; j < shoppings.length; j++) {
+                                if (gstr.indexOf(shoppings[j].Id) > -1) {
+                                    //同一商品，属性不同，价格也不同。(可能有同一商品id,不同价格。)
+                                    totalPriceCommodity += eval(shoppings[j].CommodityNumber) * eval(shoppings[j].RealPrice);
+                                }
+                            }
+                        }
+                        //优惠券金额大于商品总价，只优惠商品总价。
+                        if (cdto.Cash > totalPriceCommodity) {
+                            appAmount -= totalPriceCommodity;
+                            cspan.html(totalPriceCommodity.toFixed(2));
+                        } else {
+                            appAmount -= cdto.Cash;
+                            cspan.html(cdto.Cash.toFixed(2));
+                        }
+                        $("#payCouponValueUHli").removeClass("hide");
+                    }
+                }
+            }
+            initScore();
+            CalcPayPriceCY();
+        }
+
+        function getIsShowScore() {
+            var isShow = true;
+            //订单项里的商品appid如果和esappId不同，则“积分”不显示。
+            if (sessionStorage.type == "gouwuche") {
+                var sh = sessionStorage.ShopCartDate;
+                var shopcartData = [];
+                if (JsVilaDataNull(sh)) {
+                    shopcartData = JSON.parse(sh);
+                    for (var i = 0; i < shopcartData.length; i++) {
+                        if (shopcartData[i].AppId != getEsAppId()) {
+                            isShow = false;
+                            break;
+                        }
+                    }
+                }
+            } else {
+                if (sessionStorage.appId != getEsAppId()) {
+                    isShow = false;
+                }
+            }
+            return isShow;
+        }
+
+        //显示积分
+        function showUserScore(data) {
+            //订单项里的商品appid如果和esappId不同，则“积分”不显示。
+            //未启用“积分抵现”，则“积分”不显示。
+            if ((!_isShowScore) || (!JsVilaDataNull(data)) || (!data.IsCashForScore)) {
+                $("#signScore_balance").hide();
+                $("#scoreValueli").hide();
+                return;
+            }
+            window._userScore = data;
+            $("#spanUserScore").html(data.Score);
+            $(".signScore_3").html(data.Money);
+            $("#signScore_balance").show();
+            $("#scoreValueli").show();
+            //启用了“积分抵现”，但用户没有积分可以抵现
+            if (data.IsCashForScore) {
+                //不足以抵0.01元（可能data.Score >0,但兑换成人民币后不足0.01元；也可能data.Score=0）。
+                if (data.Money <= 0) {
+                    $("#spanActivedScore").hide();
+                    $("#spanNoScore").show();
+                    $("#spanCannotScore").hide();
+                    $("#signScorePay").css("pointer-events", "none");
+                    return;
+                }
+            }
+            $("#spanActivedScore").show();
+            $("#spanNoScore").hide();
+            $("#spanCannotScore").hide();
+        }
+    </script>
+}
+<div class="page">
+    <header class="bar bar-nav process-header">
+            <a href="javascript:window.history.back();" class="pull-left fa">
+                <img src="/Content/style/images/fanhui.png" />
+            </a>
+            <h1 class="title">确认订单</h1>
+        </header>
+    <!--内容-->
+    <div class="content">
+        <div class="sure-order">
+            <div class="add-receiving-information hide">
+                <a href="javascript:;">
+                    <img src="/Content/style/images/dingwei.png" /><span>点击添加收货信息</span> </a>
+            </div>
+            <div class="delivery-info hide">
+                <a class="receiving-information" id="receiving-information" href="javascript:;">
+                    <div class="icon">
+                        <img src="/Content/style/images/dingwei.png" />
+                    </div>
+                    <div class="info">
+                        <div class="name-tel clearfix">
+                            <span class="name pull-left spusername"></span><span class="tel pull-right spphone">
+                            </span>
+                        </div>
+                        <div class="address-detail">
+                            <div class="address clearfix">
+                                <span class="general sprovince"></span><span class="scity"></span><span class="sdistrict">
+                                </span>
+                            </div>
+                            <span class="detail spadress"></span>
+                        </div>
+                    </div>
+                    <div class="angle-right">
+                        <img src="/Content/style/images/dizhixuanze.png" />
+                    </div>
+                </a>
+            </div>
+            <div id="divShopCommoditys" class="pay-intro">
+            </div>
+            <div class="remark">
+                <span class="remark-title" co-tag="Details">备注</span>
+                <input id="beizhu" placeholder="给商家留言,可不填" co-tag="Details" maxlength="30" type="text" />
+            </div>
+            <div class="settlement">
+                <span class="total-price pull-left">实付款:￥</span> <span class="money pull-left"></span><span id="btnSubmit" class="settlement-btn pull-right" onclick="submitOrder(this);">
+                    支付</span>
+            </div>
+            <div id="divDeliveryRangeTip" class="check hide">
+                <div>
+                    <div class="title">
+                        抱歉，您的位置不在配送范围内~
+                    </div>
+                    <ul>
+                        <li class="sure">确定</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="divShopItemTemplate" style="display: none;" class="pay-intro">
+    <div class="title">
+        <img src="/Content/style/images/shangjia.png" alt=""/><span id="spanStoreName">{AppName}</span>
+    </div>
+    {CommoditysInShopHtml}
+    <div class="com-intro">
+        <ul>
+            <li class="com-price">商品金额<span class="totalprice search" data-search-key="price_2">{AppAmount}</span><span>￥</span></li>
+            <li id="mealBoxFeeLi" class="fee">餐盒费<span id="spanMealBoxFee" class="mealBoxFee"></span><span>￥</span></li>
+            <li class="fee">配送费<span class="peiSongFei"></span><span>￥</span></li>
+            <li id="peiSongFeeDiscountLi" class="fee">配送费优惠<span id="spanPeiSongFeeDiscount" class="peiSongFeeDiscount"></span><span>-</span><span>￥</span></li>
+            <li id="payCouponValueUHli" class="coupon hide">优惠券<span id="spanCouponAmount"></span><span>-</span><span>￥</span></li>
+            <li class="total">合计<span class="money">{AllAmount}</span><span>￥</span></li>
+        </ul>
+    </div>
+</div>
+<div id="divCommodityItemTemplate" style="display: none;" class="com-detail">
+    <div class="com-detail">
+        <div class="com-detail-wb">
+            <div class="com-two clearfix">
+                <div class="com-name">
+                    <div class="com-change">
+                        <div class="com-name-one">
+                            <span class="dish">{Name}</span>
+                        </div>
+                        <div class="com-name-two">
+                            <span class="taste">{SizeText}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="com-number">
+                    <span>×{CommodityNumber}</span>
+                </div>
+            </div>
+            <div class="total-price-finish">
+                <span>¥{Price}</span>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="panel" style="display:none"></div>

@@ -1,0 +1,275 @@
+html{
+    font-size: 50px;
+}
+body{
+    font-size: 16px;
+}
+.text-red{
+    color: #e4393c;
+}
+em{
+    font-style: normal;
+}
+.fixed{
+    position: fixed;
+    top:0;
+    left:0;
+    right:0;
+    max-width: 500px;
+    margin: 0 auto;
+    z-index: 1;
+}
+.content{
+    padding-top: .8rem;
+    padding-bottom: .88rem;
+}
+.tap-list-wrap{
+    height: .8rem;
+    background-color: #fff;
+    overflow: hidden;
+}
+.tap-list-wrap ul{
+    display: -webkit-box;
+    -webkit-box-flex: 1;
+    padding-bottom: 10px;
+    overflow-x: auto;
+}
+.tap-list-wrap ul .tap-list{
+    width: 25%;
+    height: .8rem;
+    line-height: .8rem;
+    font-size: .24rem;
+    text-align: center;
+    cursor: pointer;
+}
+.tap-list-wrap ul .tap-list.average{
+    -webkit-box-flex: 1;
+}
+.tap-list-wrap ul .tap-list.active{
+    color:#e4393c;
+}
+/*套餐列表*/
+.package-list-wrap{
+    margin-top: .2rem;
+    padding-bottom: .3rem;
+    background-color: #fff;
+}
+.package-list-wrap .package-list{
+    display: -webkit-box;
+    -webkit-box-flex: 1;
+    padding: .3rem .3rem 0 .3rem;
+}
+.package-list-wrap .package-list .package-list-left{
+    position: relative;
+    top: 0;
+    left: 0;
+    height: 1.8rem;
+    width: 1.8rem;
+    border: 1px solid #d8d8d8;
+    border-radius: .1rem;
+    overflow: hidden;
+}
+.package-list-left img{
+   position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.package-list-wrap .package-list .package-list-right{
+    position: relative;
+    top: 0;
+    left: 0;
+    -webkit-box-flex: 1;
+    padding-left: .2rem;
+    height: 1.8rem;
+}
+.package-list-right .package-list-title{
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    margin-bottom: .1rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #333;
+    font-size: .28rem;
+    word-break:break-all;
+}
+.package-list-right .package-list-size{
+    display: inline-block;
+    position: absolute;
+    bottom: 0;
+    left: .2rem;
+    padding: .05rem .44rem .05rem .1rem;
+    border: 1px solid #999;
+    -webkit-border-radius: .05rem;
+    -moz-border-radius: .05rem;
+    border-radius: .05rem;
+    color: #999;
+    max-width: 100%;
+    font-size: .22rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+}
+.package-list-right .package-list-size:after{
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: .44rem;
+    height: .44rem;
+    content: '';
+    background-image: url(/Content/Mobile/angle-down.png);
+    background-size: 100% 100%;
+}
+.package-list-right .package-list-price{
+    line-height: .28rem;
+    font-size: .22rem;
+    color: #333;
+}
+.package-list-right .del{
+    display: block;
+    line-height: .22rem;
+    font-size: 0.22rem;
+    color: #999;
+    text-decoration: line-through;
+}
+.package-list-right .package-list-price .price {
+    font-size: .28rem;
+}
+/*底部价格*/
+.bottom{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: .88rem;
+    line-height: .88rem;
+    margin: 0 auto;
+    max-width: 500px;
+    display: -webkit-box;
+    -webkit-box-flex: 1;
+    border-top: 1px solid #dbd6d6;
+    background:#fff;
+}
+.bottom .bottom-price{
+    -webkit-box-flex: 1;
+    padding: 0 0 0 .2rem;
+    font-size: .28rem;
+    white-space: nowrap;
+}
+.bottom .bottom-price em{
+    font-size: .24rem;
+}
+.bottom .bottom-btn{
+    display: block;
+    width: 2rem;
+    text-align: center;
+    font-size: .34rem;
+    color: #fff;
+    background: #e4393c;
+}
+.modal-wrap{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,.6);
+    z-index: 2;
+    max-width: 500px;
+    margin: 0 auto;
+}
+.modal-content{
+    position: absolute;
+    width: 100%;
+    height: 286px;
+    padding-bottom: 44px;
+    background: #fff;
+    bottom: 0;
+    border-radius: 0;
+    border: 0;
+}
+.modal-content .modal-content-close {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    width: 22px;
+    height: 22px;
+    float: right;
+    background: url(/Content/Mobile/guanbi.png) no-repeat;
+    background-size: 100%;
+}
+.modal-content .modal-content-hd{
+    position: relative;
+    height: 55px;
+    border-bottom: 1px solid #e8e8e8;
+    padding: 0 15px;
+}
+.modal-content .modal-content-hd .pic{
+    width: 90px;
+    height: 90px;
+    margin-top: -45px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+.modal-content .modal-content-hd .money{
+    position: absolute;
+    top: 12px;
+    left: 115px;
+    color: #e4393c;
+    font-size: 10px;
+}
+.modal-content .modal-content-hd .money .money-text{
+    font-size: 14px;
+}
+.modal-content .modal-content-hd .modal-duty{
+    position: absolute;
+    bottom: 5px;
+    left: 115px;
+    color: #999;
+    font-size:11px;
+}
+.modal-content .modal-content-bd{
+    padding: 5px 10px;
+    height: 189px;
+    overflow-y: auto;
+}
+.modal-content .modal-content-bd .modal-content-bd-title{
+    padding: 5px;
+    margin-top: 5px;
+    color: #999;
+    font-size: 12px;
+}
+.modal-content .modal-content-bd .modal-content-bd-item{
+    float: left;
+    padding: 5px 15px;
+    margin: 5px;
+    border: 1px solid #c1c2c4;
+    color: #000;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    font-size: 11px;
+    cursor: pointer;
+}
+.modal-wrap .modal-content .modal-content-bd .modal-content-bd-item.disable{
+    border-color: #b3b3b3;
+    color: #b3b3b3;
+    cursor: default;
+}
+.modal-content .modal-content-bd .modal-content-bd-item.active{
+    border-color: #e4393c;
+    color: #e4393c;
+}
+.modal-content .modal-content-btn{
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 44px;
+    line-height: 44px;
+    color: #fff;
+    text-align: center;
+    background: #e4393c;
+    cursor: pointer;
+}

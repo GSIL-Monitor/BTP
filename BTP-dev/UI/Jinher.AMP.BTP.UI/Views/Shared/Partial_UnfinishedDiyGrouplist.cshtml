@@ -1,0 +1,24 @@
+﻿@model List<UnfinishedDiyGroupOutputDTO>
+@{
+    Layout = null;
+}
+<div class="groupon-title">
+    以下小伙伴正在发起团购，您可以直接参与</div>
+<ul class="groupon-lists" data-list-count="@(Model.Count)">
+    @foreach (var item in Model)
+    {
+        <li>
+            <div class="item">
+                <img class="pic" src="@(item.OwnerIcon)" />
+                <span>@(item.OwnerName)</span>
+                <div class="context">
+                    <div class="num">
+                        还差@(item.LackMember)人成团</div>
+                    <div class="time countdown" data-seconds="@(item.SpareSeconds)">
+                        剩余 <span></span>结束</div>
+                </div>
+                <a href="javascript:;" class="stranger-group-buying" data-group-id="@item.GroupId">去参团</a>
+            </div>
+        </li>
+    }
+</ul>

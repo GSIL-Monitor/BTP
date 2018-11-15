@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--该配置文件为预加载Job的配置文件，Host程序解析并加载该配置文件中的Job-->
+<JobEngine>
+  <Jobs> 
+    <!--Job节点设置PreloadJob的信息,可以设置多个-->
+    <!--assembly为PreloadJob所在的动态链接库-->
+    <!--class为实现IPreloadJob接口的类全名-->
+    <Job assembly="Jinher.JAP.Job.Host.Demo" class="Jinher.JAP.Job.Host.Demo.PreloadJobTest">
+      --><!--param节点参数列表，可以设置多个-->
+      <param name="title"><![CDATA[PreloadJob测试]]></param>
+      <param name="name"><![CDATA[管理员]]></param>
+    </Job>
+    <!--搜索引擎创建索引服务-->
+    <Job assembly="Jinher.JAP.SE.Index" class="Jinher.JAP.SE.Index.PreloadBuildIndexJob">
+      <!--job引擎启动20秒后启动搜索引擎创建索引服务-->
+      <param name="StartInterval"><![CDATA[20]]></param>
+      <!--搜索引擎创建索引服务的执行频率-->
+      <param name="RepeatInterval"><![CDATA[2]]></param>
+    </Job>
+  </Jobs>  
+</JobEngine>

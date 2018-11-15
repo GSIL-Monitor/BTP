@@ -1,0 +1,354 @@
+﻿@{
+    Layout = null;
+    string _mobileType = ViewBag.OS;
+
+    //直接读取此配置
+
+    string comm_share = string.Empty;
+    string comm_gotoGold = string.Empty;
+    string fencontent = "分享有分成，我获得了一个众销红包金币{coin}个，你也快来参加吧~";
+    //android 配置项
+    string android_share = "window.redpaper.share_redpaper('" + ViewBag.ShareUrl + "','" + fencontent + "','" + ViewBag.ShareImg + "');"; //分享
+    string android_gotoGold = "window.redpaper_gold.gotoGold();";    //查看金币
+    string android_gotoLogin = "window.redpaper_login.gotoLogin();";  //跳转登录
+
+    //ios 配置项
+    string ios_share = "Goto('http://redbonusshownshare?shareIcon=" + ViewBag.ShareImg + "&sharecont=" + fencontent + "&shareurl=" + ViewBag.ShareUrl + "')"; //分享
+    string ios_gotoGold = "Goto('http://redbonuscheckgoldcoin')";    //查看金币
+    string ios_gotoLogin = "Goto('http://redbonusrequestlogin')";  //跳转登录
+
+
+    if (_mobileType == "android")
+    {
+        comm_share = android_share;
+        comm_gotoGold = android_gotoGold;
+    }
+    else if (_mobileType == "ios")
+    {
+        comm_share = ios_share;
+        comm_gotoGold = ios_gotoGold;
+    }
+    else
+    {
+        comm_share = "";
+        comm_gotoGold = "";
+    }
+    string comm_href = "";
+    if (ViewBag.IsAnnon == "true")
+    {
+        if (_mobileType == "android")
+        {
+            comm_href = android_gotoLogin;   // 此处填写移动端登录页面链接
+        }
+        else if (_mobileType == "ios")
+        {
+            comm_href = ios_gotoLogin;
+        }
+    }
+  
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <title>红包</title>
+    <link href="../../Scripts/Jquerymobile/1.4.5/jquery.mobile-1.4.5.min.css" rel="stylesheet"
+        type="text/css" />
+    <script src="/Scripts/first-js.js" type="text/javascript"></script>
+    <script src="../../Scripts/jquery-1.7.2.min.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquerymobile/1.4.5/jquery.mobile-1.4.5.min.js" type="text/javascript"></script>
+    <script src="/Scripts/CookieContextDTO.js" type="text/javascript"></script>
+    <script src="/Content/Mobile/Common.js" type="text/javascript"></script>
+    <script src="/Content/Mobile/allEvent.js" type="text/javascript"></script>
+    <style type="text/css">
+        html, body
+        {
+            font-family: 微软雅黑;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            background-color: #FFFFFF;
+        }
+        .hyyone
+        {
+            color: #bf0203;
+            font-weight: bold;
+            font-size: 1.4em;
+            margin-top: 81px;
+        }
+        .hyytwo
+        {
+            color: #bf0203;
+            font-weight: bold;
+            font-size: 1.4em;
+            margin-top: 5px;
+        }
+        .hyythree
+        {
+            margin-top: 20px;
+            border: 1px solid #eee;
+            background-color: #f5f5f5;
+            padding: 10px;
+            line-height: 1.8em;
+        }
+        .hyyfour
+        {
+            color: #ff5400;
+            font-size: 1.15em;
+            margin-top: 15px;
+        }
+        .hyyfive
+        {
+            text-align: center;
+            margin: 0 auto;
+            width: 200px;
+        }
+        .btnclass
+        {
+            color: #FFFFFF !important;
+            background-color: #ff5400 !important;
+            width: 200px;
+            font-weight: lighter;
+            border: 0;
+            border-radius: 3px;
+            padding: 6px;
+        }
+        .reded
+        {
+            color: #8d8d8d;
+        }
+    </style>
+    <script type="text/javascript">
+        //电商馆首页url
+        var dshguanHomeUrl = "@Jinher.AMP.BTP.Common.CustomConfig.BacEUrl" + "/AppPage/TemplatePage/BusinessActive.html?isshowsharebenefitbtn=1";
+        //app店铺首页地址
+        var appShopUrl = "@Jinher.AMP.BTP.Common.CustomConfig.ZPHUrl" + "zph/appShop";
+        var zphIndexUrl = "@Jinher.AMP.BTP.Common.CustomConfig.ZPHUrl" + "zph?isshowsharebenefitbtn=1";
+        function getBtpDomain() {
+            return "http://" + window.location.host + "/";
+        }
+
+        //获取正品会首页url
+        function getZphIndexUrl() {
+            var result = "javascript:void(0);";
+
+            //0、正品会； 1、自由超市； 2、掌上商城； 3、未定义； 4、电商馆； 5、电商馆APP；
+            if (sessionStorage.appTypeZPH == 0) {
+                //首页显示“正品会”首页。
+                if (zphIndexUrl && zphIndexUrl.indexOf("http") == 0) {
+                    result = zphIndexUrl + getZphUrlParams();
+                }
+            }
+            else if (sessionStorage.appTypeZPH == 4) {
+                //首页显示 某个馆。
+                var gglinkUrl = dshguanHomeUrl + getZphUrlParams();
+                if (sessionStorage.source != "share") {
+                    gglinkUrl += "&active=finish";
+                }
+                if (gglinkUrl && gglinkUrl.indexOf("http") == 0) {
+                    result = gglinkUrl;
+                }
+            }
+            else if (sessionStorage.appTypeZPH == 5) {
+                //首页显示 app店铺。
+                if (appShopUrl && appShopUrl.indexOf("http") == 0) {
+                    result = appShopUrl;
+                }
+            }
+            return result;
+        }
+        var myDate = new Date();
+        $(function () {
+            saveContextDTOByUrl();
+            $.ajax({
+                async: true,
+                type: "POST",
+                dataType: "json",
+                url: '/ShareRedEnvelope/GetShareRedEnvelopes',
+                data: { msgId: getQueryString("msgId") },
+                success: function (data) {
+                    try {
+                        var actname = "";
+                        if (data.RedEnvelopeType == 1) {
+                            actname = "众筹红包";
+                        }
+                        else {
+                            actname = "众销红包";
+                        }
+                        var psource = sessionStorage.source == "share" ? "&source=share" : "";
+                        var pwxOpenId = JsVilaDataNull(sessionStorage.wxOpenId) ? "&wxOpenId=" + sessionStorage.wxOpenId : "";
+                        //cjzy=0 应用内打开cjzy=1 第三方打开
+                        var tzcjShare = getZphIndexUrl();
+                        var tzcj = getZphIndexUrl();
+                        if (data != null && data != "null") {
+                            var hour = "@ViewBag.DividentDue";
+                            var myDate = new Date();
+                            //判断是否登录  如果没有登录跳转到 APP登录
+
+
+                            if ("@ViewBag.IsAnnon" == "true") {
+
+                                var urlogin = "@comm_href";
+                                $(".hyyone").html("<img src=\"../../Content/Mobile/redredenvelope/face.png\" width=\"20px\" height=\"20px\" />恭喜您!");
+                                $(".hyytwo").html("获得" + actname + "金币<span style=\"color: #ffd700;\">" + data.GoldCount + "</span>个!");
+                                $(".hyythree").html("<span class=\"reded\">有效期仅有" + hour + "小时哦，快登录领取吧~</span>");
+                                $(".hyyfour").html("<button onclick=\"" + urlogin + "\" class=\"btnclass\" >马上登录领取</button>");
+
+                            } //没有领取
+                            else if (data.State == 0 && new Date(ChangeDateFormat(data.DueDate, 2)) >= new Date(GetDateNow())) {
+                                //start立即领取
+                                $.ajax({
+                                    async: true,
+                                    type: "POST",
+                                    dataType: "json",
+                                    url: "/ShareRedEnvelope/ReceiveShareRedEnvelopes",
+                                    data: { RedEnvelopesId: getQueryString("msgId") },
+                                    success: function (rdata) {
+                                        if (rdata.ResultCode == 0) {
+                                            $(".hyyone").html("<img src=\"../../Content/Mobile/redredenvelope/face.png\" width=\"20px\" height=\"20px\" />恭喜您!");
+                                            $(".hyytwo").html("获得" + actname + "金币<span style=\"color: #ffd700;\">" + data.GoldCount + "</span>个!");
+                                            $(".hyythree").html(data.Description.replace(new RegExp(/(,)/g), "<br/>"));
+                                            var url = "@comm_share".replace("{coin}", data.GoldCount);
+                                            if (!isLogin()) {
+                                                url = "";
+                                            }
+                                            //众筹 跳转到 点击参与更多众筹活动，打开厂家直营页面
+                                            if (data.RedEnvelopeType == 1) {
+
+                                                $(".hyyfour").append("<button onclick=\"Goto('" + tzcj + "')\" class=\"btnclass\" id=\"dol\">参与更多众筹活动</button>");
+                                            }
+                                            else {
+                                                $(".hyyfour").html("<button onclick=\"" + url + "\" class=\"btnclass\" id=\"btnlogin\">晒红包</button>");
+                                            }
+                                        }
+                                        else {
+                                            alert("领取失败了,请重试");
+                                            //alert(rdata.Message);
+                                        }
+                                    },
+                                    error: function (err) {
+                                        alert("领取失败了,请重试");
+                                    }
+                                });
+
+                                //end立即领取
+
+                            } //是否是通过红包分享进入getQueryString("type") 并且是众销红包
+                            else if (getQueryString("opentype") == "share" && data.RedEnvelopeType == 0) {
+
+
+                                var downapp = "ViewBag.BTPAppresUrl" + "/app/GetAppDetail?appId=12d1e3ba-d920-4472-ac50-9eb81a36059b";
+
+                                $(".hyyone").html("分享有分成!");
+                                $(".hyytwo").html("我通过");
+                                $(".hyythree").html(data.Description.replace(new RegExp(/(,)/g), "<br/>"));
+                                $(".hyyfour").html("获得" + actname + "金币<span style=\"color: #ffd700;\">" + data.GoldCount + "</span>个,你也快来参与吧</br></br>");
+                                $(".hyyfour").append("<button onclick=\"Goto('" + tzcjShare + "')\" class=\"btnclass\" id=\"dol\">马上来参与</button>");
+                            } //红包已经领取过
+                            else if (data.State == 1) {
+
+                                $(".hyyone").html("<img src=\"../../Content/Mobile/redredenvelope/face.png\" width=\"20px\" height=\"20px\" />恭喜您!");
+                                $(".hyytwo").html("获得" + actname + "金币<span style=\"color: #ffd700;\">" + data.GoldCount + "</span>个!");
+                                $(".hyythree").html(data.Description.replace(new RegExp(/(,)/g), "<br/>"));
+                                var url = "@(comm_share)".replace("{coin}", data.GoldCount);
+                                if (!isLogin()) {
+                                    url = "";
+                                }
+                                //众筹 跳转到 点击参与更多众筹活动，打开厂家直营页面
+                                if (data.RedEnvelopeType == 1) {
+                                    //                                    var tzcj = urlPrefix + "btp.iuoooo.com/SetMobile/Index?&isAnnon=false&changeOrg=00000000-0000-0000-0000-000000000000&cjzy=0";
+                                    $(".hyyfour").append("<button onclick=\"Goto('" + tzcjShare + "')\" class=\"btnclass\" id=\"dol\">参与更多众筹活动</button>");
+                                }
+                                else {
+                                    $(".hyyfour").html("<button onclick=\"" + url + "\" class=\"btnclass\" id=\"btnlogin\">晒红包</button>");
+                                }
+
+                            } //红包已经过期
+                            else if (ChangeDateFormat(data.DueDate, 2) < GetDateNow() || data.State == 2) {
+
+                                $(".hyyone").html("<span class=\"reded\">很遗憾,您的红包已过期!</span>");
+
+                                $(".hyytwo").html("<span class=\"reded\">红包发放后需在" + hour + "小时内领取!</span>");
+                                $(".hyythree").html("<img src=\"../../Content/Mobile/redredenvelope/reded.png\" />");
+                                $(".hyyfour").html("<span class=\"reded\">记得每天都要来收钱哦~</span>");
+                            }
+                        }
+                    }
+                    catch (e) {
+                        alert("请求异常,请重试！");
+                        $("#ajaxLoadBlind").remove();
+                    }
+                    $("#ajaxLoadBlind").remove();
+                },
+                beforeSend: function () {
+                    ajaxLoading('22', '');
+                },
+                error: function (err) {
+                    alert("请重试！");
+                    $("#ajaxLoadBlind").remove();
+                }
+            });
+
+        });
+        function Goto(href) {
+            window.location.href = href;
+        }
+        function getQueryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]); return null;
+        }
+        function ChangeDateFormat(cellval, state) {
+            try {
+                var date = new Date(parseInt(cellval.replace("/Date(", "").replace(")/", ""), 10));
+                var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+                var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+                var hour = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+                var minu = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+                var miao = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+                if (state == 1) {
+                    return date.getFullYear() + "-" + month + "-" + currentDate + " " + hour + ":" + minu;
+                }
+                else {
+                    return date.getFullYear() + "/" + month + "/" + currentDate + " " + hour + ":" + minu + ":" + miao;
+                }
+            } catch (e) {
+                return "";
+            }
+        }
+
+        function GetDateNow() {
+            var date = new Date();
+            var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+            var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+            var hour = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+            var minu = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+            var miao = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+            return date.getFullYear() + "/" + month + "/" + currentDate + " " + hour + ":" + minu + ":" + miao;
+        }
+    </script>
+</head>
+<body>
+    <div class="hyyone">
+        @*<img src="Images/face.png" width="20px" height="20px" />
+        恭喜您!*@
+    </div>
+    <div class="hyytwo">
+        @* 获得众销红包金币<span style="color: #ffd700;">1000000</span>个!*@
+    </div>
+    <div class="hyythree">
+        @*      <img src="Images/coin.png" />*@
+    </div>
+    <div class="hyyfour">
+        @*   有效期仅有24小时哦,快登陆领取吧~*@
+    </div>
+    <div class="hyyfive">
+        @*<button class="btnclass" id="btnlogin">
+            马上登录领取
+        </button>*@
+    </div>
+</body>
+</html>

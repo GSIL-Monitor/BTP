@@ -1,0 +1,100 @@
+﻿@{
+    ViewBag.Title = "结算周期设置";
+    Layout = "~/Views/Shared/_VueLayout.cshtml";
+}
+@section Css {
+<style type="text/css">
+    #customDayRadio .el-radio__input {
+        float: left;
+        margin-top: 22px;
+    }
+    #customDayRadio .el-el-radio__label {
+        float: left;
+    }
+</style>
+}
+<div class="breadcrumb">
+    <span>入驻管理</span>
+    <span> > </span>
+    <span style="color:red">结算周期设置 </span>
+    <a class="back" href="javascript:window.history.back();">
+        <img src="/Content/images/wx-back.png" /><span>&nbsp;返回上一级</span>
+    </a>
+</div>
+<div class="content">
+    <el-form :model="form" :rules="formRules" ref="form" label-width="125px">
+        <el-radio v-model="form.useAfterSalesEndTime" label="0" id="customDayRadio">
+            <el-form-item label="订单结算周期：" prop="numOfDay">
+                <el-input v-model="form.numOfDay" auto-complete="off" style="width:150px;">
+                    <template slot="append">天</template>
+                </el-input>
+            <span style="color:#AEAEAE">（从确认收货开始计算）</span>
+            </el-form-item>
+        </el-radio>
+        <br />
+        <el-radio v-model="form.useAfterSalesEndTime" label="1">仅结算售后完毕的订单</el-radio>
+        <br />
+        <br />
+        <br />
+        <br />
+        <el-form-item>
+            <el-button type="primary" @@click="submitForm('form')">提交</el-button>
+        </el-form-item>
+    </el-form>
+</div>
+
+@section Script{
+    <script>
+        var defaultVue = new Vue({
+            el: '#app',
+            data: {
+                form: {
+                    useAfterSalesEndTime: '@ViewBag.UseAfterSalesEndTime',
+                    numOfDay: '@ViewBag.NumOfDay'
+                },
+                formRules: {
+                    numOfDay: [
+                    // { required: true, message: '结算周期不能为空'},
+                        {validator: this.checknumOfDay, trigger: 'blur' },
+                    // { type: 'integer', message: '结算周期必须为正整数'},
+                    // { type: 'integer', min : 7, message : '结算周期必须大于等于7天'}
+                    ]
+                }
+            },
+            methods: {
+                checknumOfDay: function (rule, value, callback) {
+                    if (defaultVue.form.settleModel && !value) {
+                        callback(new Error('结算周期不能为空'));
+                    } else {
+                        var num = parseInt(value);
+                        if (isNaN(num)) {
+                            callback(new Error('结算周期必须为数字'));
+                        } else {
+                            if (num < 7) {
+                                callback(new Error('结算周期必须大于等于7天'));
+                            } else {
+                                callback();
+                            }
+                        }
+                    }
+                },
+                submitForm: function (formName) {
+                    this.$refs[formName].validate(function (valid) {
+                        if (!valid) return;
+                        defaultVue.$http.post('@Url.Action("Period")', {
+                            useAfterSalesEndTime: defaultVue.form.useAfterSalesEndTime,
+                            numOfDay: defaultVue.form.numOfDay
+                        })
+                        .then(function (res) {
+                            if (res.body.isSuccess) {
+                                defaultVue.$message.success('保存成功');
+                            } else {
+                                defaultVue.$message.error(res.body.Message);
+                            }
+                        });
+                    });
+                }
+            }
+        });
+    </script>
+}

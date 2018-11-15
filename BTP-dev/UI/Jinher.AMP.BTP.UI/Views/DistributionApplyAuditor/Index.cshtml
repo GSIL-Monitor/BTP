@@ -1,0 +1,568 @@
+﻿@using System
+@using System.Collections.Generic
+@using System.Linq
+@using Jinher.AMP.BTP.Deploy.CustomDTO
+@using Jinher.AMP.BTP.Deploy.Enum
+@{
+    ViewBag.Title = "分销商申请列表";
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.DistributionApplyResultDTO> applyList = ViewBag.ApplyList;
+    List<KeyValuePair<int, string>> applyStates = ViewBag.ApplyStates;
+    var appId = ViewBag.AppId;
+}
+<title>分销商申请列表</title>
+<script type="text/javascript" src="/Scripts/jquery.watermark.js"></script>
+<script src="/Scripts/pcProvinceCity.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+    var editInfo = { id: '', type: 1 };
+    $(document).ready(function() {
+
+        $("#pager").jhpager({
+            dataType: 'html',
+            requestType: 'post',
+            dataSource: '/DistributionApplyAuditor/PartialIndex',
+            async: true,
+            totalCount: '@ViewBag.Count',
+            rowNum: 10,
+            requestSuccess: showContent,
+            beforeRequest: function() {
+                $("#content_makes").empty();
+                $(window.parent.document).scrollTop(0);
+                ajaxLoading(1, '#content_makes');
+            },
+            requestFailure: function() {},
+            requestData: function() {
+                return {
+                    userName: $("#searchUserName").val(),
+                    state: $("#searchState").val()
+                };
+            }
+        });
+
+        $("#search").bind("click", function() {
+            var userName = $("#searchUserName").val();
+            var state = $("#searchState").val();
+            var pag = 1;
+            $.ajax({
+                url: '/DistributionApplyAuditor/PartialIndex',
+                type: 'post',
+                data: { userName: userName, state: state, pageIndex: pag },
+                error: function() {
+                    alert("请稍后再试！");
+                },
+                beforeSend: beforeSends,
+                complete: function() {
+                    //ajaxLoading(1, '');
+                },
+                success: function(msg) {
+                    sendSuccess(msg);
+                    var rowCount = $("#rowcounts").val();
+                    if (rowCount == 0) {
+                        alert("当前没有查到相匹配的数据！");
+                    }
+                    $("#pager").jhpager("refresh", 1, rowCount);    
+
+                    addSrc4IdentityInfo();
+                }
+            });
+        });
+        
+        addSrc4IdentityInfo();
+    });
+
+    function addSrc4IdentityInfo() {
+        $(".tdIdentityInfo").each(function () {
+            var id = $(this).attr("data-id");
+            var hasIdentityvals = $(this).attr("data-hasIdentityvals");
+
+            if (hasIdentityvals=="1") {
+                $(this).attr("onclick", "showIdentityInfo(\"" + id + "\")");
+                $(this).attr("style", "color:#0000FF;cursor:pointer;");
+            } else {
+                $(this).attr("style", "text-decoration:none;color:#8C94A9;cursor:not-allowed");
+            }
+        });
+    }
+
+    function showIdentityInfo(id) {
+        $("#identityInfoUrl").attr("src", "/DistributionApplyAuditor/IdentityInfo?&applyId=" + id + "&r=" + Math.random());
+
+        $("#identityInfoDiv").jhtablebox({
+            title: "分销商身份信息",
+            width: 500,
+            height: 400,
+            draggable: true,
+            modal: true,
+            resizable: false,
+            beforeClose: function (e) {
+            }
+        });
+
+        if (window.parent) { //在iframe页面打开时，纠正top
+            $(".ui-jhtablebox-top").css("top", 50 + $(window.parent.document).scrollTop());
+        }
+    }
+
+    function showContent(event, data) {
+        $("#content_makes").html(data);
+        
+        addSrc4IdentityInfo();
+    }
+    
+    function showIdentityImg(imgUrl) {
+        $("#imgCtrl").attr("src", imgUrl);
+        showInCenter($("#imgDiv"));
+    }
+
+    $(function () {
+        $("body").click(function (event) {
+            var $this = $(event.target);
+            if ($this.id != "imgDiv") {
+                $("#imgDiv").hide();
+            }
+        });
+
+        $("#imgDiv").click(function (e) {
+            e.stopPropagation();
+        });
+    });
+
+    function showInCenter(i) {
+        var h = $(document).scrollTop(),
+            e = $(window).height(),
+            d = $(window).width(),
+            g = i.height(),
+            f = i.width();
+
+        var posiTop = (e - g) / 2 + h;
+        var posiLeft = (d - f) / 2;
+        console.log(h, e, d, g, f);
+        i.css({
+            left: posiLeft + "px",
+            top: posiTop + "px",
+            display: "block"
+        });
+    }
+
+    //导出数据
+    function exportData() {
+        $("#exportUserName").val($("#searchUserName").val());
+        $("#exportState").val($("#searchState").val());
+
+        $("#ExportForm").submit();
+    }
+
+    $(document).ready(function () {
+
+        $("#editContent").keyup(function () {
+            CountWords();
+        });
+    });
+    
+    function CountWords() {
+        var inputLen = $("#editContent").val().length;
+        if (140 < inputLen) {
+            var newContent = $("#editContent").val().substr(0, 140);
+            $("#editContent").val(newContent);
+            $('#editContentWarn').text('还可以输入' + 0 + '个字符。');
+        } else {
+            $('#editContentWarn').text('还可以输入' + (140 - inputLen) + '个字符。');
+        }
+    }
+
+    function submitPass(id) {
+        editInfo.type = 3; //审核通过
+        editInfo.id = id;
+        $.ajax({
+            url: '/DistributionApplyAuditor/PassAuditingDistributionApply',
+            type: 'post',
+            data: {
+                id: id
+            },
+            success: function (data) {
+                if (data.Result) {
+                    alert("审核通过。");
+                    afterAudit(id, true, "");
+                } else {
+                    alert(data.Messages);
+                }
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                alert(xhr.status, xhr.readyState);
+                alert(textStatus);
+            }
+        });
+    }
+
+    function deleteRemarks(id) {
+        var url = '/DistributionApplyAuditor/RemarkDistributionApply';
+        $.ajax({
+            url: url,
+            type: 'post',
+            data: {
+                id: id,
+                content: ""
+            },
+            success: function (data) {
+                alert("备注删除完成。");
+                afterRemarks(id, "");
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                alert(xhr.status, xhr.readyState);
+                alert(textStatus);
+            }
+        });
+    }
+
+    function afterRemarks(id, remarks) {
+        $("#remarks-" + id).text(remarks);
+        if (remarks) {
+            $("#div-edit-remarks-" + id).hide();
+            $("#div-updatedelete-remarks-" + id).show();
+        } else {
+            $("#div-edit-remarks-" + id).show();
+            $("#div-updatedelete-remarks-" + id).hide();
+        }
+    }
+
+    function afterAudit(id, isPass, refuse) {
+        if (isPass) {
+            $("#statename-" + id).text("审核通过");//全部隐藏
+            $("#refuse-" + id).hide();
+            $("#div-reapplypassrefuse-" + id).hide();
+            $("#div-passrefuse-" + id).hide();
+        } else {
+            $("#statename-" + id).text("审核不通过"); //只显示拒绝理由
+            $("#refuse-" + id).text(refuse);
+            $("#refuse-" + id).show();
+            $("#div-reapplypassrefuse-" + id).hide();
+            $("#div-passrefuse-" + id).hide();
+        }
+    }
+
+    function openAuditListDiv(id) {
+        $("#divAuditList").OpenDiv();
+        
+        if (window.parent) {
+            $("#divAuditList").css("top", 50 + $(window.parent.document).scrollTop());
+        } else {
+            $("#divAuditList").css("top", 50 + $(document).scrollTop());
+        }
+
+        $.ajax({
+            url: '/DistributionApplyAuditor/GetApplyAuditList',
+            type: 'post',
+            data: {
+                id: id
+            },
+            success: function (data) {
+                console.log(data);
+                if (data.Result) {
+                    var audits = data.Data;
+                    var trs="";
+                    for (var i = 0; i < audits.length; i++) {
+                        var audit = audits[i];
+                        var tr;
+                        if (i === audits.length - 1) {
+                            tr = "<tr><td style='height: 50px;'>" + audit.SubTimeDate + "<br/>" + audit.SubTimeTime + "</td><td>" + audit.SubName + "</td><td>" + audit.AuditResult + "</td></tr>";
+                        } else {
+                            tr = "<tr><td style='height: 50px;border-bottom:1px solid #808080'>" + audit.SubTimeDate + "<br/>" + audit.SubTimeTime + "</td><td style='border-bottom:1px solid #808080'>" + audit.SubName + "</td><td style='border-bottom:1px solid #808080'>" + audit.AuditResult + "</td></tr>";
+                        }
+                        trs += tr;
+                    }
+                    $("#auditListTable").append(trs);
+                } else {
+                    alert(data.Messages);
+                }
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                alert(xhr.status, xhr.readyState);
+                alert(textStatus);
+            }
+        });
+    }
+
+    function openEditDiv(id, type) {
+        editInfo.type = type;
+        editInfo.id = id;
+        var content;
+
+        if (type === 1) {
+            $("#editTitle").text("请填写备注：");
+            content = $("#remarks-" + id).text();
+        } else if (type === 2) {
+            $("#editTitle").text("请填写拒绝原因：");
+            content = "";//$("#refuse-" + id).text();
+        } else {
+            console.error("type，请检查！");
+            return;
+        }
+        $("#editContent").val(content);
+        CountWords();
+
+        $("#divEdit").OpenDiv();
+
+        if (window.parent) {
+            $("#divEdit").css("top", 50 + $(window.parent.document).scrollTop());
+        }else{
+            $("#divEdit").css("top", 50 + $(document).scrollTop());
+       }
+    }
+
+    function closeEditDiv() {
+        $("#editTitle").text("");
+        $("#editContent").val("");
+        $("#divEdit").CloseDiv();
+    }
+    function closeAuditListDiv(){
+        $("#divAuditList").CloseDiv();
+    }
+
+    //单击 Edit对话框
+    function submitEdit() {
+        var content = $("#editContent").val();
+        var url;
+
+        if (editInfo.type === 1) { /* remark */
+            url = '/DistributionApplyAuditor/RemarkDistributionApply';
+        } else if (editInfo.type === 2) {/* refuse */
+            if (content.length === 0) {
+                $("#editContentWarn").text("拒绝原因不能为空！");
+                return;
+            }
+            url = '/DistributionApplyAuditor/RefuseAuditingDistributionApply';
+        } else {
+            console.error("editInfo.type值错误，请检查！");
+            return;
+        }
+        $.ajax({
+            url: url,
+            type: 'post',
+            data: {
+                id: editInfo.id,
+                content: encodeURIComponent(content)
+            },
+            success: function (data) {
+                if (data.Result) {
+                    closeEditDiv();
+
+                    //审核不通过时，更新状态显示
+                    if (editInfo.type === 2) {
+                        alert("审核不通过。");
+                        afterAudit(editInfo.id, false, content);
+                    } else { //编辑时
+                        alert("编辑完成。");
+                        afterRemarks(editInfo.id, content);
+                    }
+                } else {
+                    alert(data.Messages);
+                }
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                alert(xhr.status, xhr.readyState);
+                alert(textStatus);
+            }
+        });
+    }
+
+</script>
+<style type="text/css">
+    .btn120
+    {
+        display: inline-block;
+        width: 120px;
+        height: 28px;
+        line-height: 28px;
+        background: url(../Content/default/images/btn120.png) no-repeat;
+        text-align: center;
+        vertical-align: middle;
+        color: #5F7392;
+        box-shadow: 1px 1px 2px #DBDBDB;
+    }
+    input.inp-txt
+    {
+        height: 18px;
+        line-height: 18px;
+        border: 1px solid #B6C0CD;
+        padding: 4px 5px;
+        vertical-align: middle;
+        border-radius: 3px;
+        box-shadow: inset 1px 1px 2px #DBDBDB;
+    }
+    .autoNewline
+    {
+        width: 150px;
+        word-break: break-all;
+    }
+</style>
+<div class="box" style="padding: 10px 0 10px 0px;">
+    <div class="content">
+        <div class="right1">
+            <div class="manag_top  manag_top2" style="margin: 0; padding-right: 0; margin-top: 10px;
+                                                                                                              height: 45px;">
+                <div style="float: left;">
+                    <ul>
+                        <li class="door_one"><span>申请人：</span>
+                            <input type="text" id="searchUserName" class="inp-txt" style="width: 150px; height: 17px;
+                                                                                                                                                                                                                          line-height: 17px;" />
+                        </li>
+                        <li class="door_two"><span>状态：</span>
+                            <select id="searchState" style="width: 130px; height: 27px; line-height: 27px; color: #8c94a9">
+                                @foreach (System.Collections.Generic.KeyValuePair<int, string> state in applyStates)
+                                {
+                                    <option value="@state.Key">@state.Value</option>
+                                }
+                            </select>
+                        </li>
+                    </ul>
+                </div>
+                <div style="float: left;">
+                    <a href="###" id="search" class="btn120">查询</a>
+                </div>
+                <div style="clear: both;">
+                </div>
+            </div>
+            <div style="margin-bottom: 10px; font-size: 14px; line-height: 36px; text-align: right;">
+                <a class="btn120" onclick="exportData()">导出</a>
+            </div>
+            <div class="manag_bot" style="width: 100%;">
+                <div id="content_makes" style="margin-top: 10px;">
+                    <table id="dataTable" border="0" cellspacing="0" cellpadding="0" class="m_talbe m_talbe2">
+                        <tr class="t_tr1">
+                            <td class="one" style="width: 43px;">
+                                序号
+                            </td>
+                            <td class="two">
+                                申请人
+                            </td>
+                            <td class="three">
+                                申请时间
+                            </td>
+                            <td class="three">
+                                状态
+                            </td>
+                            <td class="four" width="200px">
+                                备注
+                            </td>
+                            <td class="eight">
+                                操作
+                            </td>
+                        </tr>
+                        @{
+                            if (applyList.Any())
+                            {
+                                int index = 1;
+                                foreach (DistributionApplyResultDTO apply in applyList)
+                                {
+                            <tr class="t_tr2">
+                                <td class="one" style="width: 43px;">
+                                    @index
+                                </td>
+                                <td class="two" style='align-content: center;' >
+                                    <table style="align-content: center; width: 100%; border-collapse:collapse;border-spacing:0;margin:0;padding:0;border:none;">
+                                        <tr>
+                                            <td rowspan="2" style="border: 0px; width: 105px;"><img style="width: 100px;height: 100px" src="@apply.PicturePath" /></td>
+                                            <td style="border: 0px;"><a class="tdIdentityInfo" data-id="@apply.Id" data-hasIdentityvals="@(apply.HasIdentityVals ? 1 : 0)">@apply.UserName</a>
+                                    </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border: 0px;"><a class="tdIdentityInfo" data-id="@apply.Id" data-hasIdentityvals="@(apply.HasIdentityVals ? 1 : 0)">@apply.UserCode</a></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td>
+                                    @apply.SubTime
+                                </td>
+                                <td id="statename-@apply.Id">
+                                    @apply.StateName
+                                </td>
+                                <td class="autoNewline">
+                                    <span id="remarks-@apply.Id">@apply.Remarks</span>
+                                    <div id="div-updatedelete-remarks-@apply.Id" style="display:@(string.IsNullOrEmpty(apply.Remarks) ? "none" : "block")">
+                                        <span><a href="javascript:void(0)"  onclick="openEditDiv('@apply.Id', 1);">修改</a></span>
+                                        <span><a href="javascript:void(0)"  onclick="deleteRemarks('@apply.Id');">删除</a></span>
+                                    </div>
+                                    <div id="div-edit-remarks-@apply.Id" style="display:@(string.IsNullOrEmpty(apply.Remarks) ? "block" : "none")">
+                                        <span><a href="javascript:void(0)"  onclick="openEditDiv('@apply.Id', 1);" >编辑</a></span>
+                                    </div>
+                                </td>
+                                <td class="autoNewline">
+                                    <span id="refuse-@apply.Id" style="display: @(apply.State == DistributeApplyStateEnum.AuditRefuse ? "block" : "none")">@apply.RefuseReason</span>
+                                    <div id="div-passrefuse-@apply.Id" style="display: @(apply.State == DistributeApplyStateEnum.PendingAudit ? "block" : "none")">
+                                        <span style="padding-right: 5px;"><a href="javascript:void(0)"  onclick="submitPass('@apply.Id');">通过</a></span>
+                                        <span style="padding-left: 5px;"><a href="javascript:void(0)"  onclick="openEditDiv('@apply.Id', 2);" >拒绝</a></span>
+                                    </div>
+                                    <div id="div-reapplypassrefuse-@apply.Id" style="display:@(apply.State == DistributeApplyStateEnum.AuditAgain ? "block" : "none")">
+                                        <span style="padding-right: 5px;"><a href="javascript:void(0)"  onclick="submitPass('@apply.Id');">通过</a></span>
+                                        <span style="padding-left: 5px;padding-right: 5px;"><a href="javascript:void(0)"  onclick="openEditDiv('@apply.Id', 2);" >拒绝</a></span>
+                                        <span style="padding-left: 5px;"><a href="javascript:void(0)"  onclick="openAuditListDiv('@apply.Id', 2);" >处理记录</a></span>
+                                    </div>
+                                </td>
+                            </tr>
+                                    index++;
+                                }
+                            }
+                        }
+                    </table>
+                </div>
+                <div id="pager">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div style="display: none;">
+    <div id="identityInfoDiv" style="margin: 0 auto;">
+        <iframe id="identityInfoUrl" src="" width="1193px;" height="690px" style="margin-bottom: 20px;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  border: 0px;"></iframe>
+    </div>
+</div>
+<div id="imgDiv" style="display: none; z-index: 9999; position: absolute">
+    <img id="imgCtrl" src="#" />
+</div>
+<div class="tanchu" id="divEdit">
+    <div>
+        <div class="tanchu_r">
+            <p id="editTitle">
+            </p>
+            <textarea rows="5" cols="10" id="editContent" style="border: 1px solid #B8BFCF; width: 93%;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        margin-left: 10px; height: 160px;"></textarea>
+            <div id="editContentWarn" style="text-align: right; font-size: 10px; color: red;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  margin-right: 10px;">
+                还可以输入140个字</div>
+            <div style="text-align: center;">
+                <button onclick="submitEdit()">
+                    确定</button>
+                <button onclick="closeEditDiv()">
+                    取消</button>
+            </div>
+        </div>
+    </div>
+    <div class="shut" onclick="closeEditDiv()">
+        <img src="/images/shut.png" alt="" width="7" height="7"/>
+    </div>
+</div>
+@*<style type="text/css">*@
+@*    .auditlisttable td{border-bottom:1px solid 	#808080}*@
+@*</style>*@
+<div class="tanchu2" id="divAuditList">
+    <div>
+        <div class="tanchu_r2">
+            <br/>
+            <table id="auditListTable" class="auditlisttable" style="width: 94%; border: 0px; text-align: center;">
+                <tr>
+                    <td style="width: 25%; height: 30px; border-bottom:1px solid #808080">处理日期</td>
+                    <td style="width: 25%; height: 30px; border-bottom:1px solid #808080">处理人</td>
+                    <td style="width: 50%; height: 30px; border-bottom:1px solid #808080">处理结果</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="shut" onclick="closeAuditListDiv()">
+        <img src="/images/shut.png" alt="" width="7" height="7" />
+    </div>
+</div>
+<form id="ExportForm" action="/DistributionApplyAuditor/ExportApplyList" method="post">
+    <input type="hidden" name="exportUserName" id="exportUserName"/>
+    <input type="hidden" name="exportState" id="exportState"/>
+</form>

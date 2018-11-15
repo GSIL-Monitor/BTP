@@ -1,0 +1,659 @@
+﻿@using Jinher.AMP.BTP.Deploy.Enum
+@model Jinher.AMP.BTP.Deploy.CustomDTO.DistributRuleFullDTO
+@{
+    ViewBag.Title = "分销商申请设置";
+}
+<head>
+    <link rel="stylesheet" type="text/css" href="/Content/css/common.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.all.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/ui.jqgrid.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.jhtablebox.css" />
+    <link href="/Scripts/ueditor_mini/themes/default/css/umeditor.min.css" type="text/css"
+        rel="stylesheet" />
+    <link href="/Scripts/ueditor_mini/dialogs/image/image.css" type="text/css" rel="stylesheet" />
+    <script src="/Scripts/CommLib.js" type="text/javascript"></script>
+    <script src="/Scripts/i18n/jquery.ui-zh.js" type="text/javascript"></script>
+    <script src="/Scripts/jquery.ui.base.js" type="text/javascript"></script>
+    <script src="/Scripts/Grid/jquery.grid.base.js" type="text/javascript"></script>
+    <script src="/Scripts/TableBox/jquery.ui.jhtablebox.js" type="text/javascript"></script>
+    <script src="/Scripts/Pager/jquery.ui.jhpager.js" type="text/javascript"></script>
+    <script type="text/javascript" src="/Scripts/TableBox/jquery.ui.jhtablebox.js"></script>
+    <script type="text/javascript" src="/Scripts/jquery.watermark.js"></script>
+    <script type="text/javascript" src="/Scripts/ueditor_mini/umeditor.config.js"></script>
+    <script type="text/javascript" src="/Scripts/ueditor_mini/umeditor.min.js"></script>
+    <script type="text/javascript" src="/Scripts/BR.js"></script>
+    <style type="text/css">
+        .disabled
+        {
+            pointer-events: none;
+        }
+        *
+        {
+            font-size: 14px;
+        }
+        .btn120
+        {
+            display: inline-block;
+            width: 120px;
+            height: 28px;
+            line-height: 28px;
+            background: url(/Content/default/images/btn120.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+        }
+    </style>
+</head>
+<div class="tabs-box">
+    <div class="tabs-top">
+        <a href="javascript:;" class="tabCoupon current" status="-1">分销商申请设置</a> <a href="javascript:;"
+            class="tabCoupon" status="0">分销规则说明</a>
+    </div>
+</div>
+<div id="DbRule" style="padding: 20px 0 0 30px;">
+    <table style="font-size: 14px;">
+        <tr>
+            <td>
+                <span style="font-size: 18px; font-weight: bold">请设置成为分销商的条件</span>
+            </td>
+        </tr>
+        <tr>
+            <td style="height: 10px;">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="radio" name="RuleType" value="0" checked="checked" />无条件&nbsp;&nbsp;
+                注册即为分销商
+            </td>
+        </tr>
+        <tr>
+            <td style="height: 10px;">
+            </td>
+        </tr>
+        <tr style="height: 10px">
+            <td>
+                <input type="radio" name="RuleType" value="1" />条件设置
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="spfb_b1" style="display: none; width: 100%">
+    <div class="spfb_b1t">
+        <span class="zihao1">描述内容</span>
+    </div>
+    <div id="textDiv" style="padding-left: 0; width: 100%;">
+        <script type="text/plain" id="myEditor"></script>
+    </div>
+</div>
+<div class="box" style="padding: 30px 0 10px 50px; display: none">
+    <div style="margin-left: 20px;">
+        <table style="font-size: 14px;">
+            <tr>
+                <td>
+                    <span style="font-size: 18px; font-weight: bold">身份信息条件</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="height: 10px;">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input id="needIn" type="checkbox" value="0" />填写申请资料&nbsp;&nbsp; <a href="javascript:EditRow(0);">
+                        申请资料设置</a>
+                </td>
+            </tr>
+            <tr>
+                <td style="height: 30px;">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span style="font-size: 18px; font-weight: bold">审核机制</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="height: 10px;">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="radio" name="ApprovalType" value="1" checked="checked" />自动审核&nbsp;&nbsp;
+                    满足设定条件后，自动成为分销商
+                </td>
+            </tr>
+            <tr>
+                <td style="height: 10px;">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="radio" name="ApprovalType" value="2" />人工审核&nbsp;&nbsp; 满足设定条件后，进入分销商审核列表
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div style="width: 100%; margin-top: 26px;">
+    <div style="text-align: center;">
+        <a class="btn120" style="cursor: pointer;" id="btnSave" onclick="Publish()">保存</a>
+    </div>
+</div>
+<!--层遮罩部分-->
+<div id="overlay">
+</div>
+<!--层遮罩部分结束-->
+<div id="win" class="ui-jhtablebox ui-widget ui-draggable ui-jhtablebox-top" tabindex="-1"
+    role="jhtablebox" aria-labelledby="ui-dialog-title-checkNoPass" style="z-index: 1002;
+    outline: 0px; height: auto; width: 380px; top: 209px; left: 545px; display: none;
+    background-color: White;">
+    <div>
+        <div class="ui-jhsingletablebox-leftcorner">
+        </div>
+        <div class="ui-jhsingletablebox-rightcorner">
+        </div>
+        <h2 class="ui-jhsingletablebox-titlebar ui-helper-clearfix">
+            <a href="#" class="ui-dialog-titlebar-button" role="button"><span id="close" class="ui-icon ui-tabbox-icon ui-tabbox-icon-close"
+                title="关闭">关闭</span></a>
+        </h2>
+    </div>
+    <div id="checkNoPass" style="padding: 10px; margin: 0px auto; width: auto; min-height: 0px;"
+        class="ui-jhtablebox-element ui-jhtablebox-content ui-corner-bottom">
+        <div class=" formList">
+            <div class="item" style="padding-left: 64px">
+                <input type="text" id="txtTitle" class="inp-txt w180" maxlength="20" value="@Model.Title" placeholder="请设置标题，如分销商申请"/>
+            </div>
+            @if (Model.DbIdentitySets.Count == 0)
+            {
+                <div id="div0" class="item" style="padding-left: 5px">
+                    <span class="tabCell tabCellWth">
+                        <label id="lab0">
+                            姓&nbsp;&nbsp;&nbsp;名：</label></span> <span class="tabCell">
+                                <input type="text" class="inp-txt w180" value="" oninput="change(this)" disabled="disabled"/>
+                            </span><span class="tabCell">
+                                <input id="chk0" type="checkbox" />必填 </span>
+                </div>
+                <div id="div1" class="item" style="padding-left: 5px">
+                    <span class="tabCell tabCellWth">
+                        <label id="lab1">
+                            手机号：</label></span> <span class="tabCell">
+                                <input type="text" class="inp-txt w180" value="" disabled="disabled" />
+                            </span><span class="tabCell">
+                                <input id="chk1" type="checkbox" />必填 </span>
+                </div>
+                <div id="div2" class="item" style="padding-left: 5px">
+                    <span class="tabCell tabCellWth">
+                        <label id="lab2">
+                            微信号：</label></span> <span class="tabCell">
+                                <input type="text" class="inp-txt w180" value="" disabled="disabled" />
+                            </span><span class="tabCell">
+                                <input id="chk2" type="checkbox" />必填 </span>
+                </div>
+            }
+            else
+            {
+                for (var i = 0; i < Model.DbIdentitySets.Count; i++)
+                {
+                    var labid = "lab" + i;
+                    var chkid = "chk" + i;
+                    var textid = "text" + i;
+                    var divid = "div" + i;
+
+                    var tit = "必填";
+                    var j = i;
+                    var isRequired = Model.DbIdentitySets[i].IsRequired == true;
+                    if (Model.DbIdentitySets[i].ValueType == ApplyInfoTypeEnum.Text)
+                    {
+                        if (i <= 2)
+                        {
+                <div id="@divid" class="item" style="padding-left: 5px">
+                    <span class="tabCell tabCellWth">
+                        <label id="@labid">
+                            @Model.DbIdentitySets[i].Name：</label></span> <span class="tabCell">
+                                <input type="text" class="inp-txt w180" value="" disabled="disabled" />
+                            </span><span class="tabCell">
+                                @if (@isRequired)
+                                {
+                                    <input id="@chkid" type="checkbox" checked="checked" />@tit }
+                                else
+                                {
+                                    <input id="@chkid" type="checkbox" />@tit  }
+                            </span>
+                </div>
+                        }
+                        else
+                        {
+                <div id="@divid" class="item" style="padding-left: 5px">
+                    <span class="tabCell tabCellWth">
+                        <input id="@textid" type="text" class="inp-txt w50" maxlength="10" value="@Model.DbIdentitySets[i].Name"><label>：</label></span><span
+                            class="tabCell">
+                            <input type="text" class="inp-txt w160" disabled="disabled">
+                        </span><span class="tabCell">
+                            @if (@isRequired)
+                            {<input id="@chkid" type="checkbox" checked="checked" />@tit 
+                            }
+                            else
+                            {
+                                <input id="@chkid" type="checkbox" />@tit 
+                            }
+                        </span><span class="tabCell"><a href="javascript:DelAction(@j);">删除</a></span></div>
+                        }
+                    }
+                    else if (Model.DbIdentitySets[i].ValueType == ApplyInfoTypeEnum.File)
+                    {
+                <div id="@divid" class="item" style="padding-left: 5px">
+                    <span class="tabCell tabCellWth">
+                        <input id="@textid" type="text" class="inp-txt w50" maxlength="10" value="@Model.DbIdentitySets[i].Name"><label>：</label></span><span
+                            class="tabCell">
+                            <div style="height: auto; display: inline-block;">
+                                <img class="tut" style="margin-top: 5px; cursor: pointer;" alt="" src="/Images/comment_pic5.png"
+                                    width="80" height="80"></div>
+                        </span><span class="tabCell">
+                            @if (@isRequired)
+                            {<input id="@chkid" type="checkbox" checked="checked" />@tit 
+                            }
+                            else
+                            {
+                                <input id="@chkid" type="checkbox" />@tit 
+                            }
+                        </span><span class="tabCell"><a href="javascript:DelAction(@j);">删除</a></span></div>
+                    }
+                }
+            }
+            <div id="addHtml">
+            </div>
+            <div class="item" style="padding-left: 5px">
+                <span class="tabCell tabCellWth"><a id="addT" href="javascript:AddAction(0);">增加文本字段</a></span>
+                <span class="tabCell" style="padding-left: 100px"><a id="addP" href="javascript:AddAction(1);">
+                    增加上传文件字段</a></span>
+            </div>
+            <div class="item" style="text-align: center; padding-left: 0px">
+                <a id="ReleaseClick" onclick="SaveN()" class="btn60">保存</a>
+            </div>
+        </div>
+    </div>
+    <input type="hidden" id="hidId" value="@Model.Id"/>
+    <input type="hidden" id="hidRuleType" value="@Model.HasCondition"/>
+    <input type="hidden" id="hidneedIn" value="@Model.NeedIdentity"/>
+    <input type="hidden" id="hidApprovalType" value="@Model.TiApprovalType"/>
+    <input type="hidden" id="hidItemCount" value="@Model.DbIdentitySets.Count"/>
+</div>
+<script type="text/javascript">
+    var ue = UM.getEditor('myEditor', {
+        //这里可以选择自己需要的工具按钮名称
+        toolbar: [
+            'undo redo | bold italic underline strikethrough | forecolor | removeformat |',
+            'insertorderedlist insertunorderedlist | selectall cleardoc | paragraph fontsize',
+            '| justifyleft justifycenter justifyright justifyjustify |',
+            'link unlink | image | horizontal fullscreen'
+        ],
+        //focus时自动清空初始化时的内容
+        autoClearinitialContent: false,
+        //关闭字数统计
+        wordCount: false,
+        //关闭elementPath
+        elementPathEnabled: false,
+        //默认的编辑区域高度
+        initialFrameHeight: 300,
+        //宽度
+        initialFrameWidth: '100%',
+        //自适应高度
+        autoHeightEnabled: false,
+        //工具条保持不动
+        autoFloatEnabled: false,
+        zIndex: 5,
+        //更多其他参数，请参考umeditor.config.js中的配置项
+        filterRules: function() {
+            return {
+                //$:{}表示不保留任何属性
+                p: { $: {} },
+                h3: { $: {} },
+                h2: { $: {} },
+                img: function(node) {
+                    var src = node.getAttr('src');
+                    node.setAttr();
+                    node.setAttr({ 'src': src })
+                },
+                //黑名单，以下标签及其子节点都会被过滤掉
+                '-': 'script style meta iframe embed object'
+            }
+        }
+    });
+</script>
+
+<script type="text/javascript">
+    $(function() {
+        //判断浏览器是否支持placeholder属性
+        supportPlaceholder = 'placeholder' in document.createElement('input'),
+            placeholder = function(input) {
+                var text = input.attr('placeholder'),
+                    defaultValue = input.defaultValue;
+                if (!defaultValue) {
+                    input.val(text).addClass("phcolor");
+                }
+                input.focus(function() {
+                    if (input.val() == text) {
+                        $(this).val("");
+                    }
+                });
+                input.blur(function() {
+                    if (input.val() == "") {
+                        $(this).val(text).addClass("phcolor");
+                    }
+                });
+                //输入的字符不为灰色
+                input.keydown(function() {
+                    $(this).removeClass("phcolor");
+                });
+            };
+        //当浏览器不支持placeholder属性时，调用placeholder函数
+        if (!supportPlaceholder) {
+            $('input').each(function() {
+                text = $(this).attr("placeholder");
+                if ($(this).attr("type") == "text") {
+                    placeholder($(this));
+                }
+            });
+        }
+    });
+
+    $(function () {
+        timeout = setTimeout(function () {
+            var mess = "@Model.RuleDesc";
+            if (mess != null) {
+                $('#myEditor').html(escape2Html(decodeURIComponent(mess)));
+            } 
+        }, 500);
+
+        var id = $("#hidId").val();
+        if (id !== "00000000-0000-0000-0000-000000000000") {
+            //是否有条件
+            var ruleType = 0;
+            if ($("#hidRuleType").val() === "True") {
+                ruleType = 1;
+                $('.box').css('display', 'block');
+            }
+            $(":radio[name='RuleType'][value='" + ruleType + "']").prop("checked", "checked");
+            //是否勾选填写资料
+            if ($("#hidneedIn").val() === "True") {
+                $("#needIn").prop("checked", true);
+            }
+            //审核机制
+            var approvalType = 0;
+            if ($("#hidApprovalType").val() === "Auto") {
+                approvalType = 1;
+            }
+            else if ($("#hidApprovalType").val() === "Manual") {
+                approvalType = 2;
+            }
+
+            $(":radio[name='ApprovalType'][value='" + approvalType + "']").prop("checked", "checked");
+        }
+
+        $("#txtTitle").focus(function () {
+            if (this.value === "") {
+                this.value = "";
+                $(this).removeClass("txtColor");
+            }
+        }).blur(function () {
+            if (this.value === "") {
+                this.value = "";
+                $(this).addClass("txtColor");
+            }
+        }).each(function () {
+            if (this.value === "") {
+                $(this).addClass("txtColor");
+            }
+        });
+
+        $(":radio[name='RuleType']").click(function () {
+            if ($(this).val() === "1") {
+                $('.box').css('display', 'block');
+            } else {
+                $('.box').css('display', 'none');
+            }
+        });
+
+        // 标签切换
+        $(".tabCoupon").click(function () {
+            if ($(this).hasClass("current")) {
+                return false;
+            }
+            // 改编标签样式
+            $(this).addClass("current").siblings().removeClass("current");
+            var status = $(this).attr("status");
+            if (status === "-1") {
+                $('#DbRule').css('display', 'block');
+                $('.spfb_b1').hide();
+                $('.box').css('display', 'block');
+                //$(":radio[name='RuleType'][value='" + 0 + "']").prop("checked", "checked");
+            } else {
+                $('#DbRule').css('display', 'none');
+                $('.spfb_b1').show();
+                $('.box').css('display', 'none');
+                CloseN();
+            }
+        });
+    });
+
+    function escape2Html(str) {
+        var arrEntities = { 'lt': '<', 'gt': '>', 'nbsp': ' ', 'amp': '&', 'quot': '"' };
+        return str.replace(/&(lt|gt|nbsp|amp|quot);/ig, function (all, t) { return arrEntities[t]; });
+    } 
+
+    function Publish() {
+        initSubmitParam();
+        if ($.trim($('#myEditor').html()) === "<br>") {
+            alert('规则更改了！');
+        }
+        var sendData = {
+            "Id": getQueryString('appId'),
+            "HasCondition": $("input[name='RuleType']:checked").val() === "1" ? true : false,
+            "NeedIdentity": $('#needIn').is(':checked'),
+            "Title": $.trim($("#txtTitle").val()),
+            "TiApprovalType": $("input[name='ApprovalType']:checked").val(),
+            "RuleDesc": escape2Html(decodeURIComponent($.trim($('#myEditor').html()))),
+            "strJson": JSON.stringify(dbIdentitySets)
+        };
+
+        $("#btnSave").attr("onclick", "");
+        $.ajax({
+            async: true,
+            type: "POST",
+            dataType: "json",
+            url: "/Distribute/ModifyDistributRuleFull",
+            data: sendData,
+            success: function (data) {
+                if (data.isSuccess) {
+                    alert("设置成功！");
+                } else {
+                    alert(data.Message);
+                }
+                $("#btnSave").attr("onclick", "Publish()");
+            },
+            error: function (err) {
+                alert("设置失败.");
+            }
+        });
+    }
+
+    //身份资料字段信息
+    var DistributionIdentitySetFullDTO = function () {
+        //Id
+        this.Id = newGuid();
+        this.SubTime = getNowFormatDate();
+        this.ModifiedOn = getNowFormatDate();
+        this.SubId = "00000000-0000-0000-0000-000000000000";
+        this.ModifiedId = "00000000-0000-0000-0000-000000000000";
+        //字段名称
+        this.Name = "";
+        //是否必填
+        this.IsRequired = false;
+        //申请资料id
+        this.RuleId = getQueryString('appId');
+        //字段类型
+        this.ValueType = 0;
+        //是否删除
+        this.IsDel = false;
+        //字段类型说明
+        this.NameCategory = 0;
+    }
+
+    var dbIdentitySets = new Array();
+    function initSubmitParam() {
+        var b = true;
+        dbIdentitySets = new Array();
+        $('.item').each(function (k, v) {
+            if ($(v).find('label').length > 0) {
+                var pa = new window.DistributionIdentitySetFullDTO();
+                if ($(v).find('label').text() !== "：") {
+                    pa.Name = $.trim($(v).find('label').text()).substr(0, $.trim($(v).find('label').text()).length - 1);
+                } else {
+                    pa.Name = $.trim($(v).find("input[type='text']").val());
+                }
+                pa.IsRequired = $(v).find("input[type='checkbox']").is(':checked');
+                if ($(v).find('img').length === 0) {
+                    pa.ValueType = 1;
+                } else {
+                    pa.ValueType = 2;
+                }
+
+                if (pa.Name === "") {
+                    alert('字段名不能为空！');
+                    b = false;
+                    return false;
+                }
+
+                dbIdentitySets.push(pa);
+            }
+        });
+        return b;
+    }
+
+    //保存操作
+    function SaveN() {
+        if (initSubmitParam()) {
+            CloseN();
+        }
+    }
+
+    function refreshLayout() {
+        $("body").height($("body").outerHeight() + 80);
+        window.parent.refreshLayout();
+    }
+
+    var partCount = $('#hidItemCount').val() === "0" ? 3 : parseInt($('#hidItemCount').val());
+    function AddAction(actionType) {
+        var itemCount = $('.item').length;
+        itemCount = itemCount - 5;
+        if (itemCount > 10) {
+            $('#addT').removeAttr('href');
+            $('#addP').removeAttr('href');
+        } else {
+            var sbHtml = "<div id=div" + partCount + " class=\"item\" style=\"padding-left: 5px\"><span class=\"tabCell tabCellWth\">";
+            sbHtml += " <input id=text" + partCount + " type=\"text\" class=\"inp-txt w50\" maxlength=\"10\" /><label id=lab" + partCount + ">：</label></span><span class=\"tabCell\">";
+            if (actionType === 0) {
+                sbHtml += " <input type=\"text\" class=\"inp-txt w160\" maxlength=\"50\" disabled=\"disabled\" />";
+            } else {
+                sbHtml += " <div style=\"height: auto; display: inline-block;\"><img class=\"tut\" style=\"margin-top: 5px; cursor: pointer;\" alt=\"\" src=\"/Images/comment_pic5.png\" width=\"80\" height=\"80\" /></div>";
+            }
+            sbHtml += " </span>";
+            sbHtml += "  <span class=\"tabCell\"><input id=chk" + partCount + " type=\"checkbox\" />必填 </span>";
+            sbHtml += "  <span class=\"tabCell\"><a href=\"javascript:DelAction(" + partCount + ");\">删除</a></span></div>";
+
+            $('#addHtml').append(sbHtml);
+            partCount++;
+            refreshLayout();
+        }
+    }
+
+    function DelAction(actionIndex) {
+        $('#div' + actionIndex).remove();
+        partCount--;
+
+        $('#addT').attr('href', 'javascript:AddAction(0);');
+        $('#addP').attr('href', 'javascript:AddAction(1);');
+    }
+
+    function EditRow(isAdd) {
+        //弹出DIV
+        var oWin = document.getElementById("win");
+        var oLay = document.getElementById("overlay");
+        var oClose = document.getElementById("close");
+        var oH2 = oWin.getElementsByTagName("h2")[0];
+        var bDrag = false;
+        var disX = disY = 0;
+
+        oWin.style.display = "block";
+        oLay.style.display = "block";
+
+        oClose.onclick = function () {
+            oLay.style.display = "none";
+            oWin.style.display = "none";
+
+            window.location.reload();
+        };
+        oClose.onmousedown = function (event) {
+            (event || window.event).cancelBubble = true;
+        };
+        oH2.onmousedown = function (event) {
+            var event = event || window.event;
+            bDrag = true;
+            disX = event.clientX - oWin.offsetLeft;
+            disY = event.clientY - oWin.offsetTop;
+            this.setCapture && this.setCapture();
+            return false;
+        };
+        document.onmousemove = function (event) {
+            if (!bDrag) return;
+            var event = event || window.event;
+            var iL = event.clientX - disX;
+            var iT = event.clientY - disY;
+            var maxL = document.documentElement.clientWidth - oWin.offsetWidth;
+            var maxT = document.documentElement.clientHeight - oWin.offsetHeight;
+            iL = iL < 0 ? 0 : iL;
+            iL = iL > maxL ? maxL : iL;
+            iT = iT < 0 ? 0 : iT;
+            iT = iT > maxT ? maxT : iT;
+
+            oWin.style.marginTop = oWin.style.marginLeft = 0;
+            oWin.style.left = iL + "px";
+            oWin.style.top = iT + "px";
+            return false
+        };
+        document.onmouseup = window.onblur = oH2.onlosecapture = function () {
+            bDrag = false;
+            oH2.releaseCapture && oH2.releaseCapture();
+        };
+        $("body").height($("body").outerHeight() + 640);
+        window.parent.refreshLayout();
+    }
+
+    function CloseN() {
+        var oWin = document.getElementById("win");
+        var oLay = document.getElementById("overlay");
+
+        oLay.style.display = "none";
+        oWin.style.display = "none";
+    }
+
+    function getNowFormatDate() {
+        var date = new Date();
+        var seperator1 = "-";
+        var seperator2 = ":";
+        var month = date.getMonth() + 1;
+        var strDate = date.getDate();
+        if (month >= 1 && month <= 9) {
+            month = "0" + month;
+        }
+        if (strDate >= 0 && strDate <= 9) {
+            strDate = "0" + strDate;
+        }
+        var currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate
+            + " " + date.getHours() + seperator2 + date.getMinutes()
+            + seperator2 + date.getSeconds();
+        return currentdate;
+    }
+</script>

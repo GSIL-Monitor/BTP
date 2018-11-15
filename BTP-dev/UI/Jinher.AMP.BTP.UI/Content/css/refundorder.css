@@ -1,0 +1,202 @@
+ul, li {
+    list-style-type: none;
+}
+
+.refund {
+    width: 800px;
+    height: 700px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 100;
+    margin: -350px 0 0 -400px;
+    background: #fff;
+    border: 1px solid #797979;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+}
+
+.refund .close {
+    position: absolute;
+    top: 7px;
+    right: 9px;
+    font-weight: bold;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.refund > .title {
+    height: 40px;
+    line-height: 40px;
+    border-bottom: 1px solid #A9A9A9;
+}
+
+.refund > .title > div {
+    float: left;
+    margin-left: 20px;
+    font-size: 14px;
+}
+
+.refund > .title > div input {
+    vertical-align: top;
+    margin: 14px 5px 0 0;
+}
+
+.refund .part-list {
+    display: none;
+}
+
+.refund .all-list .title, .refund .part-list .title {
+    height: 40px;
+    line-height: 40px;
+    border-bottom: 1px solid #A9A9A9;
+}
+
+.refund .all-list .title > div, .refund .part-list .title > div {
+    font-size: 12px;
+    text-align: center;
+}
+
+.refund .all-list .name, .refund .all-list .count, .refund .all-list .price, .refund .all-list .subtotal, .refund .part-list .name, .refund .part-list .count, .refund .part-list .price, .refund .part-list .subtotal, .refund .part-list .refund-money, .refund .part-list .food-checked {
+    float: left;
+}
+
+.refund .all-list .name {
+    width: 37%;
+}
+
+.refund .all-list .count, .refund .all-list .price, .refund .all-list .subtotal {
+    width: 21%;
+}
+
+.refund .part-list .food-checked {
+    width: 10%;
+    height: 40px;
+}
+
+.refund .part-list li .food-checked {
+    height: 80px;
+}
+
+.refund .part-list li .food-checked input {
+    vertical-align: top;
+    margin-top: 34px;
+}
+
+.refund .part-list .name {
+    width: 30%;
+}
+
+.refund .part-list .count, .refund .part-list .price, .refund .part-list .subtotal, .refund .part-list .refund-money {
+    width: 15%;
+}
+
+.refund .part-list .refund-money input {
+    width: 58px;
+    height: 22px;
+    line-height: 22px;
+    outline: none;
+    border: 1px solid #A9A9A9;
+}
+
+.refund .all-list ul, .refund .part-list ul {
+    height: 347px;
+    overflow-y: auto;
+    border-bottom: 1px solid #A9A9A9;
+}
+
+.refund .all-list li, .refund .part-list li {
+    font-size: 12px;
+    text-align: center;
+    padding: 10px 0;
+    height: 80px;
+    border-bottom: 1px solid #ccc;
+}
+
+.refund .all-list li > div, .refund .part-list li > div {
+    line-height: 80px;
+}
+
+.refund .all-list li .name .food-pic, .refund .all-list li .name .food-info, .refund .part-list li .name .food-pic, .refund .part-list li .name .food-info {
+    float: left;
+    margin-left: 40px;
+}
+
+.refund .all-list li .name .food-pic, .refund .part-list li .name .food-pic {
+    width: 80px;
+    height: 80px;
+}
+
+.refund .part-list li .name .food-pic, .refund .part-list li .name .food-info {
+    margin-left: 20px;
+}
+
+.refund .all-list li .food-info, .refund .part-list li .food-info {
+    margin-top: 16px;
+    line-height: 24px;
+}
+
+.refund .freight, .refund .total {
+    height: 30px;
+    line-height: 30px;
+    font-size: 12px;
+    padding-left: 20px;
+}
+
+.refund .freight {
+    margin-top: 12px;
+}
+
+.refund .freight input {
+    vertical-align: top;
+    margin: 9px 10px 0 0;
+    display: none;
+}
+
+.refund .why {
+    padding: 0 20px;
+    font-size: 12px;
+    height: 100px;
+    margin-top: 12px;
+}
+
+.refund .why > div, .refund .why .refund-why {
+    float: left;
+    display: block;
+}
+
+.refund .why .refund-why {
+    width: 688px;
+    height: 88px;
+    border: 1px solid #A9A9A9;
+    outline: none;
+    resize: none;
+    padding: 5px;
+}
+
+.refund .refund-btn {
+    width: 100px;
+    text-align: center;
+    height: 36px;
+    line-height: 36px;
+    margin: 24px auto;
+    border: 1px solid #ccc;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    background: #ddd;
+    cursor: pointer;
+}
+
+.refund .refund-btn:active {
+    background: #e2e2e2;
+}
+
+.refund .refund-div {
+    width: 100px;
+    text-align: center;
+    height: 36px;
+    line-height: 36px;
+    margin: 24px auto;
+}

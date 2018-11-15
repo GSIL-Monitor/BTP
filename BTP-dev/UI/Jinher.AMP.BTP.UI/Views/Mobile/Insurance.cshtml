@@ -1,0 +1,330 @@
+﻿@using Jinher.AMP.BTP.Common;
+@{
+    Layout = null;
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.InsuranceCompanyDTO> list = ViewBag.Company;
+}
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta content="telephone=no" name="format-detection">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <title>车险推荐</title>
+    <style type="text/css">
+        body {
+            font-family: Helvetica Neue, Helvetica, Arial, sans-serif,"Microsoft YaHei";
+            margin: 0 auto;
+            padding: 0;
+            color: #333;
+            width: 100%;
+            max-width: 500px;
+            background: #fff;
+            font-size: 16px;
+        }
+
+        p {
+            padding: 0;
+            margin: 0;
+        }
+
+        .hide {
+            display: none !important;
+        }
+
+        .pt100 {
+            padding-top: 1rem;
+        }
+        /*header*/
+        .header-wrap {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            align-items: center;
+            height: 1rem;
+            max-width: 500px;
+            margin: 0 auto;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+            .header-wrap .back {
+                padding: 0 .1rem 0 .36rem;
+            }
+
+                .header-wrap .back > img {
+                    width: .21rem;
+                    height: .37rem;
+                }
+
+            .header-wrap .header-title {
+                -webkit-flex: 1;
+                flex: 1;
+                font-size: .4rem;
+                color: #333;
+                text-align: center;
+            }
+
+        .insurance-title {
+            padding: .68rem .36rem 0;
+            font-size: .34rem;
+            color: #333;
+            text-align: center;
+        }
+
+        .insurance-list {
+            padding: 0 .42rem;
+        }
+
+            .insurance-list .item {
+                display: block;
+                margin-top: .3rem;
+            }
+
+                .insurance-list .item .img {
+                    width: 100%;
+                    height: 3.18rem;
+                }
+
+        .more {
+            margin-top: .5rem;
+            font-size: .28rem;
+            color: #999;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <!-- <header class="header-wrap">
+            <a class="back" href="javascript:history.back(-1);"><img src="images/yj-angle-left.png"></a>
+            <h2 class="header-title">车险推荐</h2>
+        </header> -->
+        <section class="content">
+            @foreach (var item in list)
+            {
+                <div class="insurance-list">
+                    <a class="gotoInsurance item" href="javascript:;" data-code=@item.InsuranceCompanyCode><img class="img" src=@item.PicUrl></a>
+                </div>
+            }
+
+            @*<div class="insurance-list">
+            <a id="gotoInsurance1" href="javascript:;" class="item" v-for="item in lists"><img class="img" src="/images/zhongan.png"></a>
+        </div>*@
+            <p class="more">更多保险，敬请期待!</p>
+        </section>
+    </div>
+
+    <script src="/Scripts/jquery-3.2.1.min.js"></script>
+    <script src="/dist/lib/Common.js"></script>
+    <script src="/dist/lib/CookieContextDTO.js"></script>
+    <script src="/dist/lib/login.js"></script>
+    <script>
+        if (window.location.href.indexOf("https") != -1) {
+            window.location.href = window.location.href.replace("https", "http");
+        }
+        var hosturl = '@CustomConfig.InsuranceHost';
+        var url;
+        var pageTwo;
+        $(document).ready(function () {
+            var agent = navigator.userAgent;
+            if (agent.indexOf("from=IOS") != -1 || agent.indexOf("from=android") != -1) {//从APP进入
+            }
+            else {
+                var pageEnum = getQueryString('PageEnum');
+                pageTwo = get_cookie("pageTwo");
+                var urlHref = window.location.href;
+                var sear = new RegExp('shareUrl');
+                //var share = new RegExp('share=');
+                //shareUrl PageTwo=1 PageEnum=1; 同时给满足三个条件（分享页面）
+                if (urlHref.indexOf("share=") != -1 && pageEnum == 1) {
+                    SetCookie('pageTwo', 1);
+                    del_Cookie("CookieContextDTO");
+                    //跳转保险二级页面
+                    window.location.href = urlHref.replace("PageEnum=1", "PageEnum=2");
+                }
+
+                //不包含
+                else {
+                    if (pageEnum == 3) {//判断是否登录
+                        if (!isLogin())
+                            weblogin();
+                    }
+
+                    else if (pageEnum != 1 && pageEnum != 2) {//H5进来，做302重定向
+                        SetCookie('pageTwo', 1);
+                        var url = window.location.href;
+                        if (url.indexOf("?") != -1) {
+                            window.location.href = url + "&source=share&PageEnum=1&shareUrl";
+                        }
+                        else {
+                            window.location.href = url + "?source=share&PageEnum=1&shareUrl";
+                        }
+
+                    }
+
+                }
+            }
+        });
+
+        //Onclick
+        $(".gotoInsurance").on('click',
+            function () {
+                var datacode = this.getAttribute('data-code');
+                var agent = navigator.userAgent;
+                if (agent.indexOf("from=IOS") != -1 || agent.indexOf("from=android") != -1) {//从APP进入
+                    var staffcode = getQueryString("staffCode");
+                    var landPhone = getQueryString("staffPhone");
+                    var appyjuserId = getQueryString("userid");
+                    landSign1 = 0;
+                    if (staffcode != "") {
+                        landSign1 = 1;
+                    }
+                    var url =
+                        hosturl + "/wechatgateway/basic/auth?channel=H5_DBB_ZHONGSH&state=car&hideShare=1&InsuranceCompanyCode=" + datacode +"&userid=" +
+                        appyjuserId +
+                        "&sharePhone=&shareSign=&landPhone=" +
+                        landPhone +
+                        "&landSign=" +
+                        landSign1;
+                    window.location.href = url;
+                }
+                else {//从H5进入
+                    var pageEnum = getQueryString('PageEnum');
+                    if (pageEnum == 1) {
+                        var userId = getUserId();
+                        if (isLogin() && userId != undefined && userId != "") {
+                            var landPhone1 = get_cookie("sharePhone");
+                            var landSign1 = get_cookie("shareSign");
+                            $.ajax(
+                                {
+                                    url: '/Mobile/GetUserInfo', // 请求地址, 就是你的控制器, 如 test.com/home/index/index
+                                    data: JSON.stringify({ userId: userId }), // 需要传送的参数
+                                    type: 'POST', // 请求方式
+                                    dataType: 'json', // 返回数据的格式, 通常为JSON
+                                    contentType: 'application/json',
+                                    success: function (result) {
+                                        landPhone1 = result.UserPhone;
+                                        landSign1 = result.IsShareSign;
+                                        var yjuserId = result.yjUserId;
+                                        var url =
+                                            hosturl + "/wechatgateway/basic/auth?channel=H5_DBB_ZHONGSH&state=car&hideShare=1&InsuranceCompanyCode=" + datacode +"&userid=" +
+                                            yjuserId +
+                                            "&sharePhone=&shareSign=&landPhone=" +
+                                            landPhone1 +
+                                            "&landSign=" +
+                                            landSign1;
+                                        window.location.href = url;
+
+                                    },
+                                    error: function () {
+                                        console.log('false'); // 请求失败时的回调函数
+                                    }
+                                }
+                            );
+                        } else {
+                            del_Cookie("CookieContextDTO");
+                            weblogin();
+                        }
+
+                    } else if (pageEnum == 2) {
+                        var userphone = getQueryString("staffPhone");
+                        var usercode = getQueryString("staffCode");
+                        var usersign = 0;
+                        if (usercode != "") {
+                            usersign = 1;
+                        }
+                        SetCookie('sharePhone', userphone);
+                        SetCookie('shareSign', usersign);
+                        del_Cookie("CookieContextDTO");
+                        var url = window.location.href.replace("PageEnum=2", "PageEnum=3");
+                        window.location.href = url;
+                    } else if (pageEnum == 3) {
+                        var userid = getUserId();
+                        var landPhone;
+                        var landSign;
+                        var sharePhone = get_cookie("sharePhone");
+                        var shareSign = get_cookie("shareSign");
+                        $.ajax(
+                            {
+                                url: '/Mobile/GetUserInfo',     // 请求地址, 就是你的控制器,
+                                data: JSON.stringify({ userId: userid }),   // 需要传送的参数
+                                type: 'POST',   // 请求方式
+                                dataType: 'json', // 返回数据的格式, 通常为JSON
+                                contentType: 'application/json',
+                                success: function (result) {
+                                    landPhone = result.UserPhone;
+                                    landSign = result.IsShareSign;
+                                    var yjuserId = result.yjUserId;
+                                    var url =
+                                        hosturl + "/wechatgateway/basic/auth?channel=H5_DBB_ZHONGSH&state=car&hideShare=1&InsuranceCompanyCode=" + datacode +"&userid=" +
+                                        yjuserId +
+                                        "&sharePhone=" +
+                                        sharePhone +
+                                        "&shareSign=" +
+                                        shareSign +
+                                        "&landPhone=" +
+                                        landPhone +
+                                        "&landSign=" +
+                                        landSign;
+                                    window.location.href = url;
+                                },
+                                error: function () {
+                                    console.log('false'); // 请求失败时的回调函数
+                                }
+                            }
+                        );
+                    }
+                }
+            });
+        (function (doc, win) {
+            var flex = function () {
+                var docEl = doc.documentElement;
+                var deviceWidth = docEl.clientWidth > 500 ? 500 : docEl.clientWidth;
+                docEl.style.fontSize = deviceWidth / 7.5 + "px"; //如果设计图是320的话就除以3.2
+            };
+            flex();
+            win.addEventListener('resize', flex, false);
+        })(document, window);
+
+        function getEsAppId() {
+            //return '1375ad99-de3b-4e93-80d5-5b96e1588967';
+            return '8b4d3317-6562-4d51-bef1-0c05694ac3a6';
+        }
+
+        //web登录
+        function weblogin() {
+            var htmpro = (("https:" == document.location.protocol) ? "https://" : "http://");
+            var url = document.location.href;
+            url = url.replace(/&islogin=[^&]*/g, "");
+            url = url.replace(/\?islogin=[^&]*&/g, "\?");
+            url = url.replace("appid", "appId");   //pip  无法判断appid  appId为同一个参数
+            var urlPrerfix = htmpro;
+            if (url.indexOf(htmpro + "dev") >= 0) {
+                urlPrerfix += "dev";
+            }
+            else if (url.indexOf(htmpro + "test") >= 0) {
+                urlPrerfix += "test";
+            }
+            //if (isWeiXin()) {
+            //    window.location.href = urlPrerfix + "pip.iuoooo.com/newpager/view/userLogin.html?wechatLogin=1&rad=" + rad + "&appId=" + getEsAppId() + "&url=" + encodeURIComponent(url);
+            //} else {
+            //    window.location.href = urlPrerfix + "pip.iuoooo.com/mypager/pages/userLogin.html?rad=" + rad + "&appId=" + getEsAppId() + "&url=" + encodeURIComponent(url);
+            //}
+            window.location.href = urlPrerfix + "pip.iuoooo.com/mypager/pages/userLogin.html?&rad=" + rad + "&appId=" + getEsAppId() + "&url=" + encodeURIComponent(url);
+        }
+        function del_Cookie(name) {
+            var exp = new Date();
+            exp.setTime(exp.getTime() - 1);
+            var cval = get_cookie(name);
+            if (cval != null)
+                document.cookie = name + "=" + cval + ";expires=" + exp.toGMTString() + ";path=/;domain=.iuoooo.com";
+        }
+
+    </script>
+</body>
+</html>

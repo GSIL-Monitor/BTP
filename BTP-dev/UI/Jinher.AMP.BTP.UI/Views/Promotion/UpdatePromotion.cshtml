@@ -1,0 +1,730 @@
+﻿@{
+    ViewBag.Title = "修改促销";
+    Jinher.AMP.BTP.Deploy.CustomDTO.DiscountsVM discountsVM = ViewBag.Promotion;
+
+    int limitBuyTotal = 0;
+    if (discountsVM != null && discountsVM.LimitBuyTotal.HasValue)
+    {
+        limitBuyTotal = discountsVM.LimitBuyTotal.Value;
+    }
+}
+<head>
+    <script src="/Scripts/DatePicker/jquery.ui.datepicker.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhdatetime.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhstartandenddate.js" type="text/javascript"></script>
+    <script src="/Scripts/CommLib.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        function win(url, obj, width, height) {
+            //打开模态子窗体,并获取返回值 
+            var retval = window.showModalDialog(url, obj || window, "center=1;dialogWidth=" + (width || 970) + "px;dialogHeight=" + (height || 620) + "px;")
+            //for chrome 
+            if (retval == undefined) {
+                retval = window.returnValue;
+            }
+            return retval;
+            //            return window.showModalDialog(url, obj || window, "center=1;dialogWidth=" + (width || 970) + "px;dialogHeight=" + (height || 620) + "px;")
+        }
+    </script>
+    <style type="text/css">
+        input.inp-txt
+        {
+            height: 18px;
+            line-height: 18px;
+            border: 1px solid #B6C0CD;
+            padding: 4px 5px;
+            vertical-align: middle;
+            border-radius: 3px;
+            box-shadow: inset 1px 1px 2px #DBDBDB;
+        }
+        .btn120
+        {
+            display: inline-block;
+            width: 120px;
+            height: 28px;
+            line-height: 28px;
+            background: url(../../Content/default/images/btn120.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+        }
+        
+        .content .content_C .content_C_r ul li.five p span a.selectsp
+        {
+            color: #409FFF;
+        }
+        .content .content_C .content_C_r ul li.five p span a.selectsp:hover
+        {
+            color: #80BDE3;
+        }
+    </style>
+</head>
+<div class="box" style="padding: 0;">
+    <div class="content">
+        <div>
+            <div class="content_C" style="width: auto; width: 60%;">
+                <div class="content_C_l">
+                    <ul>
+                        <li style="height: 29px;"><span>*</span>促销手段：</li>
+                        <li class="four" style="width: 85px; height: 21px !important; margin-top: 13px;"><span>
+                        </span></li>
+                        <li class="five" style="height: 30px !important;"><span>*</span>选择促销商品：</li>
+                        <li class="three"><span>*</span>促销时间：</li>
+                        <li class="tow"><span>*</span>促销活动名称：</li>
+                        <li class="one"><span>*</span>促销商品图片：</li>
+                        <li class="five" style="height: 30px !important;"><span></span>活动限购：</li>
+                    </ul>
+                </div>
+                <div class="content_C_r">
+                    <ul>
+                        <li style="height: 29px;">
+                            <input id="rdIntensity" type="radio" style="width: 13px; height: 13px;" name="disc"
+                                checked="checked" />折扣
+                            <input id="rdDiscountPrice" type="radio" style="width: 13px; height: 13px;" name="disc" />优惠价
+                            <span style="color: red;">请在选择商品时设置对应的最终优惠价格</span> </li>
+                        <li class="four fourw" style="height: 21px; margin-top: 13px;">
+                            @{
+                                if (@discountsVM.Intensity.ToString().IndexOf('.') > 0)
+                                {
+                                    string inten = @discountsVM.Intensity.ToString().Substring(0, @discountsVM.Intensity.ToString().IndexOf('.') + 2);
+                                <input id='Intensity' class="inp-txt" type="text" value="@inten" style=" color:Gray;height:19px;line-height:19px;width:327px;"/>
+                                }
+                                else
+                                {
+                                <input id='Intensity' class="inp-txt" type="text" value="@discountsVM.Intensity" style=" color:Gray;height:19px;line-height:19px;width:327px;"/>
+                                }
+                            }
+                            <span style="color: red;">小数点后不能超过一位</span> </li>
+                        <li class="fourf" style="display: none; height: 21px; margin-top: 13px;"></li>
+                        <li class="five" style="height: 30px !important;">
+                            @{
+                                if (discountsVM.IsAll == true)
+                                {
+                                <div class="sall" style="float: left!important;">
+                                    <label>
+                                        <input class="one" id="IsAll" name="IsAll" onchange="change()" type="checkbox" checked="checked" /><span>全部上架商品</span></label>
+                                </div>}
+                                else
+                                {
+                                <div class="sall" style="float: left!important;">
+                                    <label>
+                                        <input class="one" id="IsAll" name="IsAll" onchange="change();" type="checkbox" /><span>选择全部上架商品</span>
+                                    </label>
+                                </div>
+                              
+                                }
+                                <div style="float: left!important;">
+                                    <span id="SelectCommodity"><a href="javascript:viod(0)" class="selectsp">选择部分上架商品</a></span>
+                                </div> 
+                                if (discountsVM.No_Codes != null)
+                                {
+                                    string code = string.Empty;
+                                    foreach (var item in discountsVM.ComPro)
+                                    {
+                                        code += item.Split('|')[0] + "|" + item.Split('|')[1] + "|" + item.Split('|')[2] + "|" + item.Split('|')[3] + "|" + ",";
+                                    }
+                                <div style="display: none;">
+                                    <input type="text" id="CommodityIds" value="@code" style="color:Gray;width:327px;height:19px;line-height:19px;" class="inp-txt"/>
+                                </div>
+                                }
+                                else
+                                {
+                                <div style="display: none;">
+                                    <input type="text" id="CommodityIds" value="" style="color: Gray; width: 327px; height: 19px;
+                                        line-height: 19px;" class="inp-txt" />
+                                </div>
+                                }
+                            }
+                            <p>
+                                <span class="one">已选<label id="num">0</label>件</span></p>
+                        </li>
+                        <li class="three">
+                            <input id="hiddEndTime" type="hidden" value="@discountsVM.EndTime" />
+                            <input class="one inp-txt" type="text" id="StartTime" value="@discountsVM.StartTime" style="color:Gray;width:145px;height:19px;line-height:19px;"/>
+                            <input type="text" id="EndTime" value="@discountsVM.EndTime" class="inp-txt" style="color:Gray;width:145px;height:19px;line-height:19px;"/></li>
+                        <li class="two">
+                            <input type="text" id="PromotionName" value="@discountsVM.Name" class="inp-txt" style=" color:Gray;width:327px;height:19px;line-height:19px;"/></li>
+                        <li class="one" style="height: 45px !important;">
+                            <img src="@discountsVM.PicturesPath" id="Promotion" alt="" width="80" height="80" />
+                            <input type="hidden" value="@discountsVM.PicturesPath" id="picture" />
+                        </li>
+                          <li class="five" style="height: 30px !important;margin-top:65px;">
+                                <div class="sall" style="float: left!important;margin-top:-5px;">
+                                    <span style="display: inline-block;margin-left:0px;" >该活动全场，每人最多可以购买</span>
+                                    <input id="txtLimitBuyTotal" class="txtLimitBuyTotal" type="text" value='@limitBuyTotal' style="width: 55px;border: 1px solid #B8BFCF;border-radius: 3px; line-height: 19px ;display: inline-block;ime-mode:disabled;padding:0px 5px;" maxlength="3" />
+                                    <span style="display: inline-block;margin-left:0px;">件</span>
+                                    <span style="color: red;display: inline-block;">不小于单个商品限购的数量，不填则活动不限购</span>
+                                </div> 
+                            </li>
+                        <li class="six" style="text-align: center;">
+                            <!--button id="btnSubmit">保存</button-->
+                            <a class="btn120" id="btnSubmit" href="###">保存</a> <a href="#" class="btn120" onclick="closeWindow()"
+                                style="margin-left: 20px;">取消</a> </li>
+                    </ul>
+                </div>
+                <input type="hidden" value="@discountsVM.PromotionId" id="PromotionId"/>
+            </div>
+            <div class="content_R" style="margin-top: 33px; float: left;">
+                <ul>
+                    <li>
+                        <img src="/images/tele_top.png" alt="" width="242" height="18" />
+                    </li>
+                    <li>
+                        <img src="/images/chuxiao_r1_c1.png" alt="" width="242" height="40" />
+                    </li>
+                    <li class="thr">
+                        <img src="/images/addpic.png" alt="" width="227" height="301" id="picId" />
+                    </li>
+                    <li>
+                        <p class="dot">
+                            <img src="/images/adddot.png" alt="" width="6" height="6" /><img src="/images/adddot.png"
+                                alt="" width="6" height="6" /><img src="/images/adddot.png" alt="" width="6" height="6" /></p>
+                    </li>
+                    <li class="last">
+                        <img src="/images/chuxhiao_r3_c1.png" alt="" width="242" height="46" />
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="uploadDiv" class='dialog pic-edit' style="top: 50px; margin-left: -300;
+    display: none">
+    <a title="关闭" class="close" href="#nogo" onclick="closeUpload()">关闭</a>
+    <div class="dialog-hd">
+        上传图片
+    </div>
+    <div class="custom-pic">
+        <div class="custom-pic-top">
+            <input type="file" id="file_upload" name="file_upload" />
+            <p>
+                请上传JPG、PNG格式的图片，建议上传尺寸为<br />
+                140px*140px的图片（图片过小会导致图片效果变虚）
+            </p>
+        </div>
+        <div id="custompicdiv" class="custom-pic-bd">
+            <input type="hidden" id="x1" name="x1" value="" />
+            <input type="hidden" id="y1" name="y1" value="" />
+            <input type="hidden" id="x2" name="x2" value="" />
+            <input type="hidden" id="y2" name="y2" value="" />
+        </div>
+    </div>
+    <div class="btn-center">
+        <a class="btn120" href="#nogo" onclick="save()">上传 </a><a class="btn120" href="#nogo"
+            onclick="closeUpload()">取消 </a>
+    </div>
+</div>
+<div id="loadImgDiv" style="overflow: hidden; width: auto; min-height: 0; height: 470px;
+    display: none;">
+    <iframe id="contentFrame" name="contentFrame" scrolling="no" src="" height="480"
+        width="630" frameborder="0" style="border: 0; overflow: hidden;"></iframe>
+</div>
+<div id="loadCommodityList" style="overflow: hidden; width: auto; min-height: 0; height: 470px;
+        display: none;">
+        <iframe id="commodityListFrame" name="commodityListFrame" scrolling="yes" src=""
+            frameborder="0" style="border: 0; overflow: hidden; padding:0; margin:0; height:630px;width:939px" width="939"></iframe>
+    </div>
+<script type="text/javascript">
+    $(function () {
+        changeLoad();
+        $("#PromotionName").bind("blur", function () {
+            if ($("#PromotionName").val().length > 10) {
+                alert("促销活动名称不能大于10个字符");
+            }
+        });
+
+        $("#Intensity").bind("blur", function () {
+            if ($("#Intensity").val() == "") {
+                alert("折扣不能为空");
+            }
+            if ($("#Intensity").val() <= 0) {
+                alert("请填写正确的折扣");
+            }
+            if (!/^\d+(?=\.{0,1}\d$|$)/.test($("#Intensity").val())) {
+                alert("请填写正确的折扣");
+            }
+            if ($("#Intensity").val() >= 10) {
+                alert("请填写正确的折扣");
+            }
+
+        });
+        //start 选择促销方式 
+        $("input[name=disc]").bind("click", function () {
+            $("#CommodityIds").val("");
+            $("#num").val("0");
+            switch ($("input[name=disc]:checked").attr("id")) {
+
+                case "rdIntensity":
+                    $(".sall").show();
+                    $(".fourw").show();
+                    $(".fourf").hide();
+
+                    break;
+                case "rdDiscountPrice":
+                    $(".sall").hide();
+                    $(".fourw").hide();
+                    $(".fourf").show();
+                    break;
+                default:
+                    break;
+            }
+        });
+        //end 选择促销方式
+        if ("@discountsVM.Intensity" == 10) {
+            $("#rdDiscountPrice").attr("checked", "true");
+            $(".sall").hide();
+            $(".fourf").show();
+            $(".fourw").hide();
+        }
+        else {
+            $("#Intensity").val("@discountsVM.Intensity");
+            $("#rdIntensity").attr("checked", "true");
+            $(".sall").show();
+            $(".fourw").show();
+            $(".fourf").hide();
+        }
+
+        $("#Promotion").click(function () {
+            var self = this;
+            upImageCallback.callback_1 = function (data) {
+                self.src = data;
+                $('#picture').val(data);
+                $("#picId").attr("src", data);
+                dialogImgClosed();
+            };
+            ShowUpImg({
+                imgPath: '',
+                width: '600',
+                height: '680',
+                windowTitle: '门店图片',
+                callback: 'callback_1'
+            });
+        });
+
+        //初次加载下方手机图片
+        $("#picId").attr("src", "@discountsVM.PicturesPath");
+
+        var CommodityIds = $("#CommodityIds");
+
+        //选择商品
+        $("#SelectCommodity").click(function () {
+            var startTime = $("#StartTime").val();
+            var endTime = $("#EndTime").val();
+            if (startTime == "") {
+                alert("请选择开始时间");
+                return;
+            }
+            if (endTime == "") {
+                alert("请选择结束时间");
+                return;
+            }
+            var sDate;
+            var eDate;
+            try {
+                sDate = new Date(startTime.replace(/\-/g, "\/"));
+                if (sDate.toString() == "Invalid Date") {
+                    alert("请输入合法的开始时间！");
+                    return;
+                }
+            } catch (Error) {
+                alert("请输入合法的开始时间！");
+                return;
+            }
+            try {
+                eDate = new Date($("#EndTime").val().replace(/\-/g, "\/"));
+                if (eDate.toString() == "Invalid Date") {
+                    alert("请输入合法的结束时间！");
+                    return;
+                }
+            } catch (Error) {
+                alert("请输入合法的结束时间！");
+                return;
+            }
+
+            if (sDate > eDate) {
+                alert("结束时间不能小于开始时间！");
+                return;
+            }
+            var ty = "";
+            switch ($("input[name=disc]:checked").attr("id")) {
+                case "rdIntensity":
+                    ty = "int";
+                    break;
+                case "rdDiscountPrice":
+                    ty = "dis";
+                    break;
+                default:
+                    break;
+            }
+            var url = "/Promotion/CommodityList?starTime=" + startTime + "&endTime=" + endTime + "&type=" + ty + "&promotionId=" + $("#PromotionId").val();
+
+            $("#commodityListFrame").attr("src", url);
+            $("#commodityListFrame").jhtablebox({
+                height: 630,
+                width: 939,
+                resizable: false,
+                title: "选择部分上架商品",
+                modal: true,
+                buttons: {},
+                autoOpen: true,
+                closedByHide: true
+            });
+            $("#commodityListFrame").attr("width", "939");
+            $("#commodityListFrame").css("width", "939px");
+
+//            var ret = win(url, null, null, 620);
+//            if (ret && ret.code) {
+//                if (ret && ret.code) {
+//                    var str = deleteNumber(ret.code, true);
+
+//                    var sva = deleteNumber(CommodityIds.val(), true);
+//                    for (i = 0; i < str.length; i++) {
+//                        for (y = 0; y < sva.length; y++) {
+//                            if (sva[y].split('|')[0] == str[i].split('|')[0]) {
+//                                sva.splice(y, 1);
+//                                //判断 是否商品被删除 
+//                                break;
+//                            }
+//                        }
+//                        //判断 是否商品被删除 
+//                        if (str[i].split('|')[4] == 0) {
+//                            str.splice(i, 1);
+//                            i = i - 1;
+//                        }
+//                    }
+//                    str.unshift(deleteNumber(sva.join(','), false));
+
+//                    var newValue = deleteNumber(str.join(','), true);
+//                    CommodityIds.val(newValue.join(','));
+//                    $("#num").text(newValue.length);
+//                }
+//            }
+        });
+
+        //初次编辑时，显示上次商品数量
+        if ($.trim(CommodityIds.val()) != "") {
+            var strs = deleteNumber(CommodityIds.val(), false);
+            if (strs != "请选择商品编号" && strs != "") {
+                var str = strs.split(',');
+                if (str[str.length - 1] == "") {
+                    $("#num").text(str.length - 1);
+                } else {
+                    $("#num").text(str.length);
+                }
+            }
+        }
+
+
+        CommodityIds.blur(function () {
+            var strs = deleteNumber(CommodityIds.val(), false);
+            CommodityIds.val(strs);
+            if (strs != "请选择商品编号" && strs != "") {
+                var str = strs.split(',');
+                if (str[str.length - 1] == "") {
+                    $("#num").text(str.length - 1);
+                } else {
+                    $("#num").text(str.length);
+                }
+            } else if (strs == "") {
+                $("#num").text(0);
+            }
+        });
+
+
+        $('#EndTime').datepicker({
+
+            changeMonth: true,
+
+            changeYear: true,
+
+            showOtherMonths: true,
+
+            selectOtherMonths: true,
+            timer: true,
+            dateFormat: 'yy-mm-dd hh:ii'
+        });
+
+        $('#StartTime').datepicker({
+
+            changeMonth: true,
+
+            changeYear: true,
+
+            showOtherMonths: true,
+
+            selectOtherMonths: true,
+            timer: true,
+            dateFormat: 'yy-mm-dd hh:ii'
+        });
+
+
+
+        $("#btnSubmit").bind("click", function () {
+
+            var PromotionId = $("#PromotionId").val();
+            var PromotionName = $("#PromotionName").val();
+            var StartTime = $("#StartTime").val();
+            var EndTime = $("#EndTime").val();
+            // var Intensity = $("#Intensity").val();
+            var Intensity = 0;
+            var DiscountPrice = 0;
+            var CommodityIds = $("#CommodityIds").val();
+            var picture = $("#picture").val();
+            var oldEndTime = $("#hiddEndTime").val();
+            var IsAll = "";
+
+
+            switch ($("input[name=disc]:checked").attr("id")) {
+                case "rdIntensity":
+                    Intensity = $("#Intensity").val();
+                    DiscountPrice = -1;
+                    break;
+                case "rdDiscountPrice":
+                    Intensity = 10;
+                    DiscountPrice = $("#txtDiscountPrice").val();
+                    break;
+                default:
+                    break;
+            }
+
+            if (document.getElementById("IsAll").checked) {
+
+                IsAll = "1";
+
+            } else {
+                IsAll = "0";
+            }
+            var PromotionType = "0";
+            var limitBuyTotal = $("#txtLimitBuyTotal").val();
+             
+            var result = Valid();
+            if (result == 0) {
+                $.ajax({
+                    url: '/Promotion/UpdatePromotion/',
+                    type: 'post',
+                    dataType: 'json',
+                    data: {
+                        PromotionName: PromotionName,
+                        StartTime: StartTime,
+                        EndTime: EndTime,
+                        Intensity: Intensity,
+                        CommodityIds: CommodityIds,
+                        picture: picture,
+                        IsAll: IsAll,
+                        PromotionId: PromotionId,
+                        DiscountPrice: DiscountPrice,
+                        oldEndTime: oldEndTime,
+                        PromotionType: PromotionType,
+                        LimitBuyTotal: limitBuyTotal
+                    },
+                    error: function () {
+                        alert("请稍后再试！");
+                    },
+                    beforeSend: function () {
+                        ajaxLoading(1, '');
+                    },
+                    complete: function () {
+                        ajaxLoading(1, '');
+                    },
+                    success: function (data) {
+                        if (data.Result == true) {
+                            alert(data.Messages);
+                            setTimeout(function () { window.location.href = "/Promotion/Index"; }, 1000);
+                        } else {
+                            alert(data.Messages)
+                        }
+                    }
+
+                })
+            } else {
+
+                alert(result);
+            }
+
+        })
+
+        $("#txtLimitBuyTotal").keyup(function (event) {
+            // 退格键
+            if (event.keyCode == '8') {
+                return;
+            }
+            var str = (this.value).replace(/[^\d]/g, "");
+            var maxlen = 3;
+            if (str.length < maxlen) {
+                maxlen = str.length;
+            }
+            var temp = "";
+            for (var i = 0; i < maxlen; i++) {
+                temp = temp + str.substring(i, i + 1);
+                if (i != 0 && (i + 1) % 4 == 0) {
+                    temp = temp + " ";
+                    iNumber = iNumber + 1;
+                }
+            }
+            this.value = temp;
+        });
+    });
+
+    function deleteNumber(str, type) {
+        var arr = str.split(',');
+        var tmpArr = [];
+        var tmpObj = {};
+        var tmpValue = '';
+        for (var i = 0; i < arr.length; i++) {
+            tmpValue = $.trim(arr[i]);
+            if (!tmpObj[tmpValue] && tmpValue) {
+                tmpObj[tmpValue] = true;
+                tmpArr.push(tmpValue);
+            }
+        }
+        return type ? tmpArr : tmpArr.join(',');
+    }
+
+    function closeWindow() {
+        //window.close();
+        window.location.href = "/Promotion/Index";
+    }
+
+    //当全选时，不显示有多少件
+    function change() {
+        var CommodityIds = $('#CommodityIds');
+        if ($("input[name='IsAll']:checked").length == 0) {
+            $('#rdDiscountPrice').removeAttr("disabled");
+            $("#num").text(deleteNumber(CommodityIds.val(), true).length);
+            CommodityIds.prop('disabled', false);
+            $('#SelectCommodity').show();
+        } else {
+            //	        $("#num").parent().hide();
+            $('#rdDiscountPrice').attr("disabled", "disabled");
+            $('#SelectCommodity').hide();
+            CommodityIds.prop('disabled', true);
+            $.ajax({
+                url: '/Promotion/GetAllCommodityListCount/',
+                type: 'get',
+                dataType: 'json',
+                data: { starTime: $.trim($("#StartTime").val()), endTime: $.trim($("#EndTime").val()), promotionid: '@discountsVM.PromotionId' },
+                error: function () {
+                    alert("请稍后再试！");
+                },
+                success: function (data) {
+                    $("#num").text(data.count);
+                }
+
+            })
+        }
+        //        $("#CommodityIds").val("");
+    }
+
+    function changeLoad() {
+        var CommodityIds = $('#CommodityIds');
+        if ($("input[name='IsAll']:checked").length == 0) {
+            $('#rdDiscountPrice').removeAttr("disabled");
+            $("#num").text(deleteNumber(CommodityIds.val(), true).length);
+            CommodityIds.prop('disabled', false);
+            $('#SelectCommodity').show();
+        } else {
+            //	        $("#num").parent().hide();
+            $('#SelectCommodity').hide();
+            $('#rdDiscountPrice').attr("disabled", "disabled");
+            CommodityIds.prop('disabled', true);
+            $.ajax({
+                url: '/Promotion/GetCommodityNum/',
+                type: 'get',
+                dataType: 'json',
+                data: { promotionid: '@discountsVM.PromotionId' },
+                error: function () {
+                    alert("请稍后再试！");
+                },
+                success: function (data) {
+                    $("#num").text(data.count);
+                }
+
+            })
+        }
+    }
+
+    function Valid() {
+        if ($("#picture").val() == "") {
+            return "促销图片不能为空";
+        }
+        if ($.trim($("#PromotionName").val()) == "" && $.trim($("#PromotionName").val()) == "请输入促销类别") {
+            return "促销类别不能为空";
+        }
+        if ($("#PromotionName").val().length > 10) {
+            return "促销名称不能大于10个字符";
+        }
+        if ($.trim($("#StartTime").val()) == "") {
+            return "开始时间不能为空"
+        }
+        if ($.trim($("#EndTime").val()) == "") {
+            return "结束时间不能为空";
+        }
+
+        var sDate = new Date($("#StartTime").val().replace(/\-/g, "\/"));
+        var eDate = new Date($("#EndTime").val().replace(/\-/g, "\/"));
+        if (sDate > eDate) {
+            return "结束时间不能小于开始日期";
+        }
+        if ($("input[name=disc]:checked").attr("id") == "rdIntensity") {
+
+            if ($("#Intensity").val() == "") {
+                return "折扣不能为空";
+            }
+            if ($("#Intensity").val() <= 0) {
+                return "请填写正确的折扣";
+            }
+            if (!/^\d+(?=\.{0,1}\d$|$)/.test($("#Intensity").val())) {
+                return "请填写正确的折扣";
+            }
+            if ($("#Intensity").val() >= 10) {
+                return "请填写正确的折扣";
+            }
+        }
+
+
+        if ($("input[name='IsAll']:checked").length == 0 && $("#CommodityIds").val() == "") {
+            return "请填写促销商品";
+        }
+
+        return 0;
+    }
+
+        //选择的结果
+    function commodityListFrame(ret) {
+        $("#commodityListFrame").jhtablebox("close");
+        $("#commodityListFrame").removeAttr("src");
+ 
+                    if (ret && ret.code) {
+                        if (ret && ret.code) {
+                            var str = deleteNumber(ret.code, true);
+
+                            var sva = deleteNumber($(CommodityIds).val(), true);
+                            for (i = 0; i < str.length; i++) {
+                                for (y = 0; y < sva.length; y++) {
+                                    if (sva[y].split('|')[0] == str[i].split('|')[0]) {
+                                        sva.splice(y, 1);
+                                        //判断 是否商品被删除 
+                                        break;
+                                    }
+                                }
+                                //判断 是否商品被删除 
+                                if (str[i].split('|')[4] == 0) {
+                                    str.splice(i, 1);
+                                    i = i - 1;
+                                }
+                            }
+                            str.unshift(deleteNumber(sva.join(','), false));
+
+                            var newValue = deleteNumber(str.join(','), true);
+                            $(CommodityIds).val(newValue.join(','));
+                            $("#num").text(newValue.length);
+                            //将选择结果保存到cookie中。
+                            var json = newValue;
+                            $.cookie('Promotion.CommoditIds.@ViewBag.AppId', json, { path: '/', expires: 7 });
+                        }
+                    }
+    }
+
+</script>
+
+

@@ -1,0 +1,359 @@
+﻿@{
+    ViewBag.Title = "增票资质";
+    Jinher.AMP.BTP.Deploy.CustomDTO.VatInvoiceProofInfoDTO vatInvoiceProof = ViewBag.InvoiceInfoList;
+    var userId = Request["userId"] ?? "";
+    var sessionId = Request["sessionId"] ?? "";
+    var changeOrg = Request["changeOrg"] ?? "";
+}
+<head>
+    <link href="/Scripts/ueditor_mini/themes/default/css/umeditor.min.css" type="text/css" rel="stylesheet" />
+     <link rel="stylesheet" type="text/css" href="/Content/css/common.css" />
+    <link href="/Scripts/ueditor_mini/dialogs/image/image.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="/Scripts/ueditor_mini/umeditor.config.js"></script>
+    <script type="text/javascript" src="/Scripts/ueditor_mini/umeditor.min.js"></script>
+    <script type="text/javascript" src="/Scripts/ueditor_mini/lang/zh-cn/zh-cn.js"></script>
+    <script type="text/javascript" src="/Scripts/ueditor_mini/dialogs/link/link.js"></script>
+    <script type="text/javascript" src="/Scripts/ueditor_mini/dialogs/image/image.js"></script>
+    <!--弹出选择框使用-->
+    <script type="text/javascript" src="/Scripts/jquery.watermark.js"></script>
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.jhtablebox.css" />
+    <script type="text/javascript" src="/Scripts/TableBox/jquery.ui.jhtablebox.js"></script>
+    <script src="/Scripts/Validator/JValidator.js" type="text/javascript"></script>
+<style type="text/css">
+    .spfb_t_l input {
+        width: 360px;
+        height: 27px;
+        line-height: 27px;
+        border: 1px solid #B8BFCF;
+        border-radius: 3px;
+    }
+    .btn120 {
+        display: inline-block;
+        width: 120px;
+        height: 28px;
+        line-height: 28px;
+        background: url('/Content/default/images/btn120.png') no-repeat;
+        text-align: center;
+        vertical-align: middle;
+        color: #5F7392;
+        box-shadow: 1px 1px 2px #DBDBDB;
+    }
+     .formList .item {
+    line-height: 28px;
+    margin-bottom: 10px;
+    min-height: 28px;
+    padding-left: 130px;
+}
+.formList .item .label {
+    display: block;
+    float: left;
+    width: 125px;
+    line-height: 28px;
+    padding-right: 5px;
+    margin-left: -130px;
+    _display: inline;
+    text-align: right;
+}
+.up-logo.logo-pic {
+    width: 84px;
+    height: 84px;
+    border: 1px solid #B7C0CD;
+    float: left;
+    margin-right: 15px;
+}
+
+</style>
+<script language="javascript" type="text/javascript">
+      
+        $(function() {
+        //隐藏上传图片插件
+        function dialogImgClosed() {
+            $("#loadImgDiv").jhtablebox('close');
+        }
+    
+        $('#CommodityImg').click(function () {
+            var self = this;
+            upImageCallback.callback_1 = function (data) {
+                self.src = data;
+                $('#picture').val(data);
+                dialogImgClosed();
+               };
+            ShowUpImg({
+                imgPath: '',
+                width: '800',
+                height: '600',
+                windowTitle: '商品缩略图',
+                callback: 'callback_1'
+            });
+        });
+        $('#CommodityImg2').click(function () {
+            var self = this;
+            upImageCallback.callback_1 = function (data) {
+                self.src = data;
+                $('#picture2').val(data);
+                dialogImgClosed();
+            };
+            ShowUpImg({
+                imgPath: '',
+                width: '800',
+                height: '600',
+                windowTitle: '商品缩略图',
+                callback: 'callback_1'
+            });
+        });
+        $('#CommodityImg3').click(function () {
+            var self = this;
+            upImageCallback.callback_1 = function (data) {
+                self.src = data;
+                $('#picture3').val(data);
+                dialogImgClosed();
+            };
+            ShowUpImg({
+                imgPath: '',
+                width: '800',
+                height: '600',
+                windowTitle: '商品缩略图',
+                callback: 'callback_1'
+            });
+        });
+    });
+    function getQueryString(name) {
+        var r;
+        if (arguments.length > 1) {
+            r = arguments[1].split('?')[1];
+        } else {
+            r = window.location.search.substr(1);
+        }
+        //	var r = str ? str.split('?')[1] : '' || window.location.search.substr(1);
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        r = r.match(reg);
+        if (r != null) return unescape(r[2]);
+        return null;
+    }
+ 
+ function toSave() {
+     var postData = {};
+     postData.CompanyName = $.trim($("#companyName").val());
+     postData.IdentifyNo = $.trim($("#identifyNo").val());
+     postData.Address = $('#address').val();
+     postData.Phone = $.trim($("#phone").val());
+     postData.BankName = $.trim($("#bankName").val());
+     postData.BankCode = $.trim($("#bankCode").val());
+     postData.BusinessLicence = $("#picture").val();
+     postData.TaxRegistration = $("#picture2").val();
+     postData.PersonalProof = $("#picture3").val();
+     
+     function valid() {
+         if ($.trim($("#companyName").val()) == "") {
+             return "单位名称不能为空";
+         }
+         if ($.trim($("#identifyNo").val()) == "") {
+             return "纳税人识别码不能为空";
+         }
+         if ($.trim($("#address").val()) == "") {
+             return "注册地址不能为空";
+         }
+         if ($.trim($("#phone").val()) == "") {
+             return "注册电话不能为空";
+         }
+         if (isMobileOrPhoneOrNull($.trim($("#phone").val())) == false)
+         {
+             return "请填写正确的电话号码";
+         }
+         if ($("#bankName").val() == "") {
+             return "开户银行不能为空";
+         }
+         if ($("#bankCode").val() == "") {
+             return "银行账户不能为空";
+         }
+         if ($("#picture").val() == "") {
+             return "营业执照复印件不能为空";
+         }
+         if ($("#picture2").val() == "") {
+             return "税务登记复印件不能为空";
+         }
+         if ($("#picture3").val() == "") {
+             return "一般纳税人资格认证复印件不能为空";
+         }
+         return 0;
+     }
+     var result = valid();
+     if (result == 0) {
+         $.ajax({
+             url: '/Invoice/VatInvoiceProof',
+             type: 'post',
+             data: postData,
+            success: function(data) {
+                if (data.ResultCode == 0) {
+                     alert("保存成功");
+                 } else {
+                     alert("保存失败");
+                }
+             }
+         });
+     } else {
+              alert(result);
+          }
+     
+ }
+
+</script> 
+</head>
+<body>
+    <div class="tabs-box" style="height: 50px; margin-top: 0px;">
+        <div class="tabs-top">
+           <a href="@(Jinher.AMP.BTP.Common.CustomConfig.CBCUrl + "/UserInfo/Index?userId=" + @userId + "&sessionId=" + @sessionId + "&changeOrg=" + @changeOrg)">基本资料</a>
+            <a href="@(Jinher.AMP.BTP.Common.CustomConfig.CBCUrl + "/UserInfo/ChangePwd?userId=" + @userId + "&sessionId=" + @sessionId + "&changeOrg=" + @changeOrg)">密码修改</a>
+            <a href="@(Jinher.AMP.BTP.Common.CustomConfig.CBCUrl + "/UserInfo/ChangeAccount?userId=" + @userId + "&sessionId=" + @sessionId + "&changeOrg=" + @changeOrg)">帐号绑定</a>
+           <a href="@(Jinher.AMP.BTP.Common.CustomConfig.CSSUrl + "/PersonalCertification/Index?userId=" + @userId + "&sessionId=" + @sessionId + "&changeOrg=" + @changeOrg)">个人实名认证</a>
+            <a href="#nogo" class="current">增票资质</a>
+                
+        </div>
+    </div>
+    
+    <div class="wrapper padding10">
+	<div class="titA">增票资质</div>
+    <div class="account">
+        <div class="formList">
+            <div class="tips-error w230" style="margin-left:300px;width:228px;"></div>
+            <div >
+                <span style="font-weight:bold; font-size: 14px">填写增票资质信息</span>  <span style="color: red;font-size: 14px">（所有信息均为必填） </span><span style="font-weight:bold; font-size: 14px">请保证填写信息正确，否则造成的后果，开票方不承担任何责任。</span>
+            </div>
+             @if (@vatInvoiceProof != null)
+             {
+                 <div class="item" style="margin-top: 12px">
+                     <span class="label">单位名称：</span>
+                            <input type="text" style="width: 360px;" class="inp-txt w200" id="companyName" maxlength="50" value="@vatInvoiceProof.CompanyName" />
+                 </div>
+                 <div class="item">
+                     <span class="label">纳税人识别码：</span>
+                            <input type="text" style="width: 360px;" class="inp-txt w200" id="identifyNo" maxlength="50" value="@vatInvoiceProof.IdentifyNo" />
+                 </div>
+                 <div class="item">
+                     <span class="label">注册地址：</span>
+                     <input type="text" style="width: 360px;" class="inp-txt w200" id="address" maxlength="50" value="@vatInvoiceProof.Address" />
+                 </div>
+                 
+                 <div class="item">
+                    <span class="label">注册电话：</span>
+                            <input type="text" style="width: 360px;" class="inp-txt w200" id="phone" maxlength="50" value="@vatInvoiceProof.Phone" />
+                 </div>
+                 <div class="item">
+                     <span class="label">开户银行：</span>
+                            <input type="text" style="width: 360px;" class="inp-txt w200" id="bankName" maxlength="50" value="@vatInvoiceProof.BankName" />
+                 </div>
+                 <div class="item">
+                     <span class="label">银行账户：</span>
+                     <input type="text" style="width: 360px;" class="inp-txt w200" id="bankCode" maxlength="50" value="@vatInvoiceProof.BankCode" />
+                 </div>
+                 <div class="item">
+                    <span class="label">营业执照复印件：</span>
+                            <div class="up-logo">
+                                <div class="logo-pic">
+                                    <img alt="" src="@vatInvoiceProof.BusinessLicence"
+                                         width="84" height="84" id="CommodityImg"/>
+                                    <input type="hidden" id="picture" value="@vatInvoiceProof.BusinessLicence" />
+                                </div>
+                            </div>
+                 </div>
+                 <div class="item">
+                     <span class="label">税务登记复印件：</span>
+                            <div class="up-logo">
+                                <div class="logo-pic">
+                              
+                                    <img alt="" src="@vatInvoiceProof.TaxRegistration"
+                                         width="84" height="84" id="CommodityImg2"/>
+                                    <input type="hidden" id="picture2" value="@vatInvoiceProof.TaxRegistration" />
+                             
+                                </div>
+                            </div>
+                 </div>
+                 <div class="item">
+                     <span class="label">一般纳税人资格认证复印件：</span>
+                            <div class="up-logo">
+                                <div class="logo-pic">
+                             
+                                    <img alt="" src="@vatInvoiceProof.PersonalProof"
+                                         width="84" height="84" id="CommodityImg3"/>
+                                    <input type="hidden" id="picture3" value="@vatInvoiceProof.PersonalProof" />
+                           
+                                </div>
+                            </div>
+                 </div>
+             }
+             else
+             {
+              <div class="item">
+                     <span class="label">单位名称：</span>
+                            <input type="text" style="width: 360px;" class="inp-txt w200" id="companyName" maxlength="50" value="" />
+                 </div>
+                 <div class="item">
+                     <span class="label">纳税人识别码：</span>
+                            <input type="text" style="width: 360px;" class="inp-txt w200" id="identifyNo" maxlength="50" value="" />
+                 </div>
+                 <div class="item">
+                     <span class="label">注册地址：</span>
+                     <input type="text" style="width: 360px;" class="inp-txt w200" id="address" maxlength="50" value="" />
+                 </div>
+                 
+                 <div class="item">
+                    <span class="label">注册电话：</span>
+                            <input type="text" style="width: 360px;" class="inp-txt w200" id="phone" maxlength="50" value="" />
+                 </div>
+                 <div class="item">
+                     <span class="label">开户银行：</span>
+                            <input type="text" style="width: 360px;" class="inp-txt w200" id="bankName" maxlength="50" value="" />
+                 </div>
+                 <div class="item">
+                     <span class="label">银行账户：</span>
+                     <input type="text" style="width: 360px;" class="inp-txt w200" id="bankCode" maxlength="50" value="" />
+                 </div>
+                 <div class="item">
+                    <span class="label">营业执照复印件：</span>
+                            <div class="up-logo">
+                                <div class="logo-pic">
+                                    <img alt="" src="/Images/comment_pic5.png"
+                                         width="86" height="86" id="CommodityImg"/>
+                                    <input type="hidden" id="picture" value="" />
+                                </div>
+                            </div>
+                 </div>
+                 <div class="item">
+                     <span class="label">税务登记复印件：</span>
+                            <div class="up-logo">
+                                <div class="logo-pic">
+                              
+                                    <img alt="" src="/Images/comment_pic5.png"
+                                         width="80" height="80" id="CommodityImg2"/>
+                                    <input type="hidden" id="picture2" value="" />
+                             
+                                </div>
+                            </div>
+                 </div>
+                 <div class="item">
+                     <span class="label">一般纳税人资格认证复印件：</span>
+                            <div class="up-logo">
+                                <div class="logo-pic">
+                             
+                                    <img alt="" src="/Images/comment_pic5.png"
+                                         width="80" height="80" id="CommodityImg3"/>
+                                    <input type="hidden" id="picture3" value="" />
+                           
+                                </div>
+                            </div>
+                 </div>
+             }
+            <div class="btn-center bor-top"><a href="#nogo" class="btn120" id="btnSubmit" onclick="toSave()">保存</a></div>
+             <div id="loadImgDiv" style="overflow: hidden; width: auto; min-height: 0; height: 470px;
+                                                                                                                                                                                                                                                                                                              display: none;">
+        <iframe id="contentFrame" name="contentFrame" scrolling="no" src="" height="480"
+                width="630" frameborder="0" style="border: 0; overflow: hidden;"></iframe>
+    </div>
+        </div>
+    </div>
+</div> 
+</body>
+    
+
+
+

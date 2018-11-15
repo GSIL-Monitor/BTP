@@ -1,0 +1,198 @@
+body{
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    background: #eee;
+    font-family: 'Microsoft YaHei';
+}
+.top44{
+    padding-top: 44px;
+}
+a{
+    color: #4b4b4b;
+    text-decoration: none;
+}
+*{
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+}
+.hide{
+    display: none !important;
+}
+ul,li{padding:0;margin:0;}
+/* header*/
+.header{
+    position: fixed;
+    top: 0;
+    left:0;
+    right: 0;
+    max-width: 500px;
+    margin: 0 auto;
+    display: -webkit-box;
+    display: flex;
+    background-color: #fff;
+    border-bottom: 1px solid #ddd;
+    font-family: 'Microsoft Yahei';
+    z-index: 1;
+}
+.header-left{
+    width: 44px;
+    height: 44px;
+    line-height: 44px;
+    text-align: center;
+}
+.header-left img{
+    width: 30px;
+    height: 30px;
+    margin-top: 8px;
+}
+.header-title{
+    -webkit-box-flex: 1;
+    flex: 1;
+    font-size: 17px;
+    font-weight: 500;
+    color: #4b4b4b;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    -ms-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+}
+/*物流单号*/
+.order-logistics-wrap{
+    padding: 10px 15px;
+    border-top: 1px solid #e8e8e8;
+    background: #fff;
+}
+.order-logistics-wrap .order-logistics{
+    display: -webkit-box;
+    -webkit-box-flex:1;
+    width: 100%;
+    height: 100%;
+}
+.order-logistics-wrap .order-logistics img{
+    width: 22px;
+    height: 22px;
+}
+.order-logistics-wrap .order-logistics img{
+    width: 22px;
+    height: 22px;
+}
+.order-logistics-wrap .order-logistics-info{
+    -webkit-box-flex:1;
+    padding-left: 10px;
+}
+.order-logistics-wrap .order-logistics-info .name{
+    font-size: 13px;
+    color: #000;
+}
+.order-logistics-wrap .order-logistics-info .number{
+    padding-top: 8px;
+    font-size: 13px;
+    color: #000;
+}
+.order-logistics-wrap .order-logistics-info .number .copy{
+    float: right;
+    color: #02b1d1;
+    font-size: 11px;
+}
+
+/*物流跟踪*/
+.check-logistics {
+    width: 100%;
+    padding: 0 10px;
+    margin-top: 5px;
+    background: #fff;
+}
+
+.check-logistics .name, .logistics-info li .introduce {
+    border-bottom: 1px solid #f3f3f3;
+}
+
+.check-logistics .name {
+    padding: 10px;
+    color:#525252;
+}
+.logistics-info{
+
+}
+.logistics-info li {
+    display: -webkit-flex;
+    display: flex;
+    display: -webkit-box;
+}
+
+.logistics-info li .mark {
+    width: 30px;
+    position: relative;
+    padding:6px 0;
+}
+
+.logistics-info li .mark .line {
+    position: absolute;
+    top: 30px;
+    left: 14.5px;
+    height: 100%;
+    width: 1px;
+    background: #dedede;
+}
+
+.logistics-info li:last-child .mark .line {
+    height: 0;
+}
+
+.logistics-info li .mark i{
+    position: absolute;
+    top: 15px;
+    left: 8px;
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    background-image: url(/Content/Mobile/wuliu2.png);
+    background-size: 100% 100%;
+}
+.logistics-info li:first-child .mark i{
+    background-image: url(/Content/Mobile/wuliu1.png);
+}
+
+.logistics-info li .mark .current {
+    background: none;
+    color: #ff5106;
+    font-size: 1.4rem;
+    margin-left: 9px;
+}
+
+.logistics-info li:last-child .introduce {
+    border: none;
+}
+
+.logistics-info li .introduce {
+    -webkit-flex: 1;
+    flex: 1;
+    -webkit-box-flex: 1;
+    color: #b5b5b5;
+    padding:6px;
+}
+
+.logistics-info li:first-child .introduce {
+    color: #525252;
+}
+
+.logistics-info li .introduce .introduce-info
+{
+    font-size:.85rem;
+    margin: 10px 0 5px;
+}
+
+.introduce .introduce-info a {
+    color: #ff5106;
+    text-decoration: underline;
+}
+
+.logistics-info li .introduce .time {
+    margin-bottom: 10px;
+    font-size: .7rem;
+    padding-left:2px
+}

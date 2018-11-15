@@ -1,0 +1,437 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<activityRootModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm4="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm5="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" xmlns:dm9="http://schemas.microsoft.com/dsltools/SimpleShapesModel" dslVersion="1.0.0.0" Id="38da64a7-87eb-40b3-a5b7-285cbc887efa" name="Activity1" linkedPackageId="f8781510-1a56-491e-945d-641b43a63c85" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/ActivityDesigner">
+  <ownedCommentsInternal>
+    <comment Id="681b31f2-569a-43a0-a8fb-9ca20ef94972">
+      <elementDefinition Id="d346b3cb-5be7-4469-aa46-874b3d3c37d5" />
+      <body>原流程</body>
+    </comment>
+    <comment Id="29e9359f-4e4d-4d7b-a6a3-96d366ff89b7">
+      <elementDefinition Id="dbde37ea-5874-4f95-9445-b237fe3d0bef" />
+      <body>加入payUrl返回结果</body>
+      <annotatedElements>
+        <callOperationActionMoniker Id="c9da3907-c379-4b64-9930-9056c3758ab0" LastKnownName="SV的SavePrizeCommodityOrder" />
+      </annotatedElements>
+    </comment>
+    <comment Id="8068629a-51cb-4e5c-a31e-55db8a75cf89">
+      <elementDefinition Id="c34f4191-eaa7-4c44-8dab-dca130c52e5a" />
+      <body>加入payUrl返回结果</body>
+      <annotatedElements>
+        <callOperationActionMoniker Id="779ac95b-7cc0-4f52-9f94-a19a5c16cb3a" LastKnownName="SV的SaveCommodityOrder" />
+      </annotatedElements>
+    </comment>
+    <comment Id="5efe29b8-2fc8-47c7-9bde-35bda9f7fcab">
+      <elementDefinition Id="4eba8e12-de72-4112-b392-5c8ebb4775c3" />
+      <body>加入FSP预支付功能以及生成payUrl返回结果</body>
+      <annotatedElements>
+        <callOperationActionMoniker Id="86105a46-8b88-4ad0-a15a-753c8a71112d" LastKnownName="SV的SaveSetCommodityOrderNew" />
+      </annotatedElements>
+    </comment>
+  </ownedCommentsInternal>
+  <packagedElements>
+    <activityRootModelHasActivity>
+      <activity Id="90a3eea3-bbd9-4ec1-8632-2b0d9f7a64fc" name="Activity1" isAbstract="false" isLeaf="false" isActiveClass="false" isReentrant="false" isReadOnly="false" isSingleExecution="false">
+        <elementDefinition Id="4b2bd57a-2a28-423a-b7df-5f4a9fd53a6d" />
+        <nodes>
+          <initialNode Id="2d43556c-dd14-4c79-8a5e-1426709b1e38" name="Initial1" isLeaf="false">
+            <elementDefinition Id="a1aaa814-257e-417a-9bd3-9b00c25224a0" />
+            <flowNodeTargets>
+              <controlFlow Id="e8a2fd63-0ed6-457b-97fe-ed0add3cf94e" isLeaf="false">
+                <opaqueActionMoniker Id="c946517e-985a-46e0-b191-39ae0e6c1189" LastKnownName="下订单" />
+                <elementDefinition Id="72c52ccf-3ae5-482e-8e51-f192d3c8302f" />
+              </controlFlow>
+            </flowNodeTargets>
+          </initialNode>
+          <opaqueAction Id="c946517e-985a-46e0-b191-39ae0e6c1189" name="下订单" isLeaf="false">
+            <elementDefinition Id="829d2dcc-d02a-4fef-8bca-fcec01d65837" />
+            <objectFlowTargets>
+              <objectFlow Id="cc9aacdb-fbd6-4b15-804f-b59db73e9534" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="094005fb-8fcd-4a37-9296-af7a2b3a685f" LastKnownName="submitOrder" />
+                <elementDefinition Id="064b0e3d-a1a3-48a8-8e35-884d643c4116" />
+              </objectFlow>
+            </objectFlowTargets>
+          </opaqueAction>
+          <objectNode Id="094005fb-8fcd-4a37-9296-af7a2b3a685f" name="submitOrder" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="a30e2dd4-28e8-421d-9d45-462593c7143b" />
+            <objectFlowTargets>
+              <objectFlow Id="037225c7-40d9-46db-bb30-570a9c96fadf" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="efd222c5-fe82-4fb4-97dc-024b89bf4ef1" LastKnownName="SaveCommodityOrder" />
+                <elementDefinition Id="fec4d4d6-5a6d-4824-992a-c6f11f2380b3" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="b3974b9b-252a-46da-b4ab-afc8cd74d735" name="2147483647" value="2147483647">
+                <elementDefinition Id="89a72e9a-82a8-41e2-b2ad-da3ba4ccfa18" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <objectNode Id="efd222c5-fe82-4fb4-97dc-024b89bf4ef1" name="SaveCommodityOrder" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="28083def-5993-4320-b9c4-0a628fbf357a" />
+            <objectFlowTargets>
+              <objectFlow Id="c05685d1-274a-465d-bc65-7dea97b2b1cd" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <callBehaviorActionMoniker Id="c9310d42-cf5b-48bb-b73f-612897dd6149" LastKnownName="/Mobile/SaveCommodityOrderNew" />
+                <elementDefinition Id="5fc6b16f-665b-4c4b-9b79-ff74cc6ffe56" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="9a043e92-042e-4e33-8a09-38b576489211" name="2147483647" value="2147483647">
+                <elementDefinition Id="ced88f6f-6618-4e92-9c4a-f3068b4dd2ad" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <callBehaviorAction Id="c9310d42-cf5b-48bb-b73f-612897dd6149" name="/Mobile/SaveCommodityOrderNew" isLeaf="false">
+            <elementDefinition Id="7c333f6d-7780-40a0-bb84-8e771848643b" />
+            <flowNodeTargets>
+              <controlFlow Id="42458255-b6c9-4274-b03d-4a159a5c50e8" isLeaf="false">
+                <forkNodeMoniker Id="dedb9892-3402-45de-b564-16cf0a82e36c" LastKnownName="Fork1" />
+                <elementDefinition Id="1e81a22e-55b0-44e8-b2e1-db0cdcebb972" />
+              </controlFlow>
+            </flowNodeTargets>
+          </callBehaviorAction>
+          <forkNode Id="dedb9892-3402-45de-b564-16cf0a82e36c" name="Fork1" isLeaf="false">
+            <elementDefinition Id="7f32a312-01f8-4a30-a104-2febad96a8c0" />
+            <objectFlowTargets>
+              <objectFlow Id="d4a5520a-0e0c-420c-8085-cdde61c63d9c" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="eeb1da65-47fb-482f-a354-b0b02cd51356" LastKnownName="好运来" />
+                <elementDefinition Id="2efb763a-c243-4525-8c1f-0b2f25efc526" />
+              </objectFlow>
+              <objectFlow Id="1984628d-ee5d-4633-b02e-46b2a3bec370" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="84ae4e2d-5af8-43f3-bbac-1fcc9a806467" LastKnownName="单App订单" />
+                <elementDefinition Id="a22a38ab-fc2e-4dfa-bc52-f7e93416aac4" />
+              </objectFlow>
+              <objectFlow Id="bd304fa7-b0a2-446b-8512-0adc4b0f8263" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="c6d7ebad-bbab-40f0-8aab-6b323ebe7066" LastKnownName="多App订单" />
+                <elementDefinition Id="567f7592-8ae0-4a6b-9b96-6dd135384490" />
+              </objectFlow>
+            </objectFlowTargets>
+          </forkNode>
+          <objectNode Id="eeb1da65-47fb-482f-a354-b0b02cd51356" name="好运来" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="8655a867-26cc-4e8c-9df1-17c82d350dd8" />
+            <objectFlowTargets>
+              <objectFlow Id="81130a63-445f-4888-aa8e-aeb6d489aa77" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <callOperationActionMoniker Id="c9da3907-c379-4b64-9930-9056c3758ab0" LastKnownName="SV的SavePrizeCommodityOrder" />
+                <elementDefinition Id="24a0738c-844b-42be-afdb-006324ea65b0" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="3e231126-6c8a-4a7e-9602-032d78e6648c" name="2147483647" value="2147483647">
+                <elementDefinition Id="c8ee6776-e4dc-46d1-86b5-c6088ae50959" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <callOperationAction Id="c9da3907-c379-4b64-9930-9056c3758ab0" name="SV的SavePrizeCommodityOrder" isLeaf="false">
+            <elementDefinition Id="e469fd06-a919-4068-b263-a9e672e43213" />
+            <flowNodeTargets>
+              <controlFlow Id="5b52e517-99c1-4558-8d26-8fa922439bba" isLeaf="false">
+                <joinNodeMoniker Id="cd6e0360-185c-4454-a3c9-2097894acde5" LastKnownName="Join1" />
+                <elementDefinition Id="900357b5-c6c3-4c12-8929-697592504e8e" />
+              </controlFlow>
+            </flowNodeTargets>
+          </callOperationAction>
+          <objectNode Id="84ae4e2d-5af8-43f3-bbac-1fcc9a806467" name="单App订单" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="bb0419d6-51cb-4def-9e94-df9bcf5da83b" />
+            <objectFlowTargets>
+              <objectFlow Id="3735041d-e5d5-4c4a-acc4-7d3ee017b06f" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <callOperationActionMoniker Id="779ac95b-7cc0-4f52-9f94-a19a5c16cb3a" LastKnownName="SV的SaveCommodityOrder" />
+                <elementDefinition Id="ef36ac88-2de0-4569-b1c3-1bb066e3a95a" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="3b83abb3-56a6-44d3-9ea5-7bcd3d56be57" name="2147483647" value="2147483647">
+                <elementDefinition Id="e0123dab-30f9-47ba-bc37-dcbe2e89717d" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <objectNode Id="c6d7ebad-bbab-40f0-8aab-6b323ebe7066" name="多App订单" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="8069cacd-ff42-438b-8d4d-15924c1521dc" />
+            <objectFlowTargets>
+              <objectFlow Id="d09fed7c-3f04-4eea-8db2-7924f5a254fb" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <callOperationActionMoniker Id="86105a46-8b88-4ad0-a15a-753c8a71112d" LastKnownName="SV的SaveSetCommodityOrderNew" />
+                <elementDefinition Id="c3bca963-dc35-4bad-8991-6f9bc16f8406" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="f284d785-c3e3-4623-9554-7615ec3a775b" name="2147483647" value="2147483647">
+                <elementDefinition Id="d79cd3c3-841e-4213-a63d-afa72b4220ff" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <callOperationAction Id="779ac95b-7cc0-4f52-9f94-a19a5c16cb3a" name="SV的SaveCommodityOrder" isLeaf="false">
+            <elementDefinition Id="a143a7c3-0908-49df-9738-3c6b2af2a9d6" />
+            <flowNodeTargets>
+              <controlFlow Id="a8570f70-ecd4-4ffc-9514-709162dfb7a1" isLeaf="false">
+                <joinNodeMoniker Id="cd6e0360-185c-4454-a3c9-2097894acde5" LastKnownName="Join1" />
+                <elementDefinition Id="2978315d-ace1-4d61-8de2-27ac946d8beb" />
+              </controlFlow>
+            </flowNodeTargets>
+          </callOperationAction>
+          <callOperationAction Id="86105a46-8b88-4ad0-a15a-753c8a71112d" name="SV的SaveSetCommodityOrderNew" isLeaf="false">
+            <elementDefinition Id="4d85975a-27a7-4cef-8db6-09a99ada28d3" />
+            <flowNodeTargets>
+              <controlFlow Id="c86a4fec-9763-4df6-9edc-246be0865df6" isLeaf="false">
+                <joinNodeMoniker Id="cd6e0360-185c-4454-a3c9-2097894acde5" LastKnownName="Join1" />
+                <elementDefinition Id="e75740af-a9ed-4962-9f8a-1e3aa211db4b" />
+              </controlFlow>
+            </flowNodeTargets>
+          </callOperationAction>
+          <joinNode Id="cd6e0360-185c-4454-a3c9-2097894acde5" name="Join1" isLeaf="false">
+            <elementDefinition Id="ba9999b2-65c8-4717-b005-05e298d5e34a" />
+            <objectFlowTargets>
+              <objectFlow Id="b3442b03-bce3-4bcc-a8cd-d2de3f253ea9" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="a9cf67c6-0030-45a5-a712-999688121762" LastKnownName="返回结果" />
+                <elementDefinition Id="33579f28-23dd-48f3-b72d-721ed0598f0b" />
+              </objectFlow>
+            </objectFlowTargets>
+          </joinNode>
+          <objectNode Id="a9cf67c6-0030-45a5-a712-999688121762" name="返回结果" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="8048d571-24b3-4aad-9bb3-685fae89639c" />
+            <objectFlowTargets>
+              <objectFlow Id="a511b10c-adac-4503-bc16-7701c215ec0a" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <forkNodeMoniker Id="2a8dc6ec-dedc-4a91-8a8e-9e2b66d93834" LastKnownName="Fork2" />
+                <elementDefinition Id="e667e860-1273-40cb-8ccd-388c100438e0" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="a8e26930-f9fe-480a-bf2c-caa13758768c" name="2147483647" value="2147483647">
+                <elementDefinition Id="e4ede379-0f4b-4214-a2cf-a83521aa55de" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <forkNode Id="2a8dc6ec-dedc-4a91-8a8e-9e2b66d93834" name="Fork2" isLeaf="false">
+            <elementDefinition Id="c78b2075-d787-4719-ab3e-21945cc20da7" />
+            <objectFlowTargets>
+              <objectFlow Id="6b253f73-4c34-4ebd-bae3-6cbe0064e463" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="909fd4c5-4908-4a4f-b0b8-7d12d9620048" LastKnownName="0：成功" />
+                <elementDefinition Id="a8212a07-38e8-4514-a8cd-3f0f68cd7103" />
+              </objectFlow>
+              <objectFlow Id="d167d009-e002-43d9-bba0-913d6354fd00" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="8dbce79e-6730-487f-bb83-2c7657482217" LastKnownName="1：出错" />
+                <elementDefinition Id="90f37215-84ec-4103-8fc8-a7ac64a05c2f" />
+              </objectFlow>
+              <objectFlow Id="89457c0c-291f-4bef-8c5e-31ad54214c51" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="317062d5-9203-4341-8e78-32164da8e582" LastKnownName="2：支付失败" />
+                <elementDefinition Id="3828ace2-1867-4cf4-b009-3abd62a85076" />
+              </objectFlow>
+              <objectFlow Id="7e2a7b6a-b658-4fe9-b9be-271dfc47f9f9" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="90ae0db1-7771-40c7-81ee-4e8d0960de87" LastKnownName="3：支付成功" />
+                <elementDefinition Id="3c46c1b3-7525-4765-8082-6d8d95c056df" />
+              </objectFlow>
+            </objectFlowTargets>
+          </forkNode>
+          <objectNode Id="909fd4c5-4908-4a4f-b0b8-7d12d9620048" name="0：成功" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="f0e263c8-3d03-42f0-aa91-f1f2b9b75b7e" />
+            <objectFlowTargets>
+              <objectFlow Id="f10dc69d-da29-4060-8706-9a863f67d203" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="48952dd3-ec5e-4f73-ae13-acd822f26069" LastKnownName="实付款为0" />
+                <elementDefinition Id="07528749-b3ab-4264-ad82-3f332a546ad7" />
+              </objectFlow>
+              <objectFlow Id="a75bddd3-f944-4a1e-83e9-e57c3f2fa158" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="d5f887e3-ce64-4d39-8c5e-06564630562a" LastKnownName="实付款不为0" />
+                <elementDefinition Id="d970c8d1-275f-4ef6-8236-aebd041ac239" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="ec6679a2-b779-4e8e-8511-e86786d81a72" name="2147483647" value="2147483647">
+                <elementDefinition Id="51c1b4ef-4aed-4a4d-a249-8456450ce3be" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <objectNode Id="8dbce79e-6730-487f-bb83-2c7657482217" name="1：出错" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="67709faa-3082-4f8b-aa65-c438aea17ce8" />
+            <objectFlowTargets>
+              <objectFlow Id="817f6462-9719-493f-a722-b15db47510cd" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <activityFinalNodeMoniker Id="491caf6a-bac8-4e7e-97c6-cad0f8ae2671" LastKnownName="ActivityFinal1" />
+                <elementDefinition Id="96dfa87d-0721-4bbd-bb5d-7f7318c88c5c" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="984db50f-95fe-4f5d-a847-6d682126da31" name="2147483647" value="2147483647">
+                <elementDefinition Id="b37466aa-7c98-4342-b795-cd002b58daa1" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <objectNode Id="317062d5-9203-4341-8e78-32164da8e582" name="2：支付失败" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="36b6fb74-290a-43ad-8d48-9c6bcbc9bf77" />
+            <objectFlowTargets>
+              <objectFlow Id="f7d4e373-e1c1-41ea-ae91-c55bc93c7139" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <activityFinalNodeMoniker Id="0510076f-e178-4ee5-9fcc-e7062f01b925" LastKnownName="ActivityFinal2" />
+                <elementDefinition Id="84fbc10f-77cd-49e0-a072-cc3a06b23b6f" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="f98b8bf4-c524-4994-8b75-ebef790a5424" name="2147483647" value="2147483647">
+                <elementDefinition Id="2e7b51db-af55-4fa9-b666-29dd37a142f6" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <objectNode Id="90ae0db1-7771-40c7-81ee-4e8d0960de87" name="3：支付成功" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="24f59074-b0bf-4ed4-bd40-01d78e4c63c8" />
+            <objectFlowTargets>
+              <objectFlow Id="725de6e9-bb84-4377-b001-84ff3a6598ee" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <activityFinalNodeMoniker Id="a1a9f40e-67d1-4ed8-af7a-08e3f0ff91ea" LastKnownName="ActivityFinal3" />
+                <elementDefinition Id="af867c87-aba3-41cc-81ff-1cbe3995ccac" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="fe29c83a-a13e-495a-b0ad-81a6d850e91c" name="2147483647" value="2147483647">
+                <elementDefinition Id="e08c359c-a930-4d20-9f31-e7ace37ac94d" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <objectNode Id="48952dd3-ec5e-4f73-ae13-acd822f26069" name="实付款为0" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="190e6d89-1f9a-4c96-97f5-30e00f84181e" />
+            <objectFlowTargets>
+              <objectFlow Id="d9244315-8b82-4d0b-9173-0a43ab12a784" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="90ae0db1-7771-40c7-81ee-4e8d0960de87" LastKnownName="3：支付成功" />
+                <elementDefinition Id="6b988221-bddd-4981-b808-d95dc4d1107f" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="9c8f1742-8da2-48af-832e-8de2355744d8" name="2147483647" value="2147483647">
+                <elementDefinition Id="4b6ddd0f-e162-42fa-b2e5-5afd8440a476" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <objectNode Id="d5f887e3-ce64-4d39-8c5e-06564630562a" name="实付款不为0" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="78f59074-341e-4bf3-8193-680248a66be3" />
+            <objectFlowTargets>
+              <objectFlow Id="64872a3b-b80e-44ce-9125-d18f1aa263a3" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <forkNodeMoniker Id="87045011-9ba2-4b43-b104-76a7e05ce611" LastKnownName="Fork3" />
+                <elementDefinition Id="93469151-5162-49de-a3c4-b991d6209135" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="58304c5d-88d7-4468-829a-59d9c9470704" name="2147483647" value="2147483647">
+                <elementDefinition Id="1225f91c-947c-411a-a677-0e3dbccb694c" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <activityFinalNode Id="491caf6a-bac8-4e7e-97c6-cad0f8ae2671" name="ActivityFinal1" isLeaf="false">
+            <elementDefinition Id="05b3c94f-c265-48bc-a0b1-3fa888c08932" />
+          </activityFinalNode>
+          <activityFinalNode Id="0510076f-e178-4ee5-9fcc-e7062f01b925" name="ActivityFinal2" isLeaf="false">
+            <elementDefinition Id="547dc2a2-ef1c-4efc-b4f4-fca3e9f96c51" />
+          </activityFinalNode>
+          <activityFinalNode Id="a1a9f40e-67d1-4ed8-af7a-08e3f0ff91ea" name="ActivityFinal3" isLeaf="false">
+            <elementDefinition Id="04b0a78e-3d31-4082-b94c-3778122138a7" />
+          </activityFinalNode>
+          <forkNode Id="87045011-9ba2-4b43-b104-76a7e05ce611" name="Fork3" isLeaf="false">
+            <elementDefinition Id="3f0ac02c-ed79-4a4d-aa79-f8068223a16f" />
+            <objectFlowTargets>
+              <objectFlow Id="a5371cad-a8af-4e6b-b5c6-c9115e3e09ed" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="0d979c61-ec6f-46c9-8447-2cfd315710bf" LastKnownName="ProductType非appcjzy，webcjzy" />
+                <elementDefinition Id="fa96c115-f89e-40c4-bb30-c2e1019906b5" />
+              </objectFlow>
+              <objectFlow Id="b9c99dab-4462-4f65-979c-68df1cf5d84c" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="8adc9176-845c-4c74-b22d-d8dc81eaeba3" LastKnownName="ProductType为appcjzy，webcjzy1" />
+                <elementDefinition Id="73382eea-d413-403a-ab96-312f1ce8b370" />
+              </objectFlow>
+            </objectFlowTargets>
+          </forkNode>
+          <objectNode Id="0d979c61-ec6f-46c9-8447-2cfd315710bf" name="ProductType非appcjzy，webcjzy" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="1171b411-a05a-4168-9bb3-6add4a0d97a0" />
+            <objectFlowTargets>
+              <objectFlow Id="d8377d2b-8a56-4d6f-9a66-b624db859134" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="1ae9bad6-c7d7-4b0e-8b41-4abfba479c1d" LastKnownName="用返回的payUrl跳转" />
+                <elementDefinition Id="6f2a4794-d1ea-4e30-81a8-cf44ebc9e72e" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="4b549029-c05b-46bf-a7cc-b21b634918d6" name="2147483647" value="2147483647">
+                <elementDefinition Id="dadd0740-2fe3-4500-9a2d-035317230724" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <objectNode Id="8adc9176-845c-4c74-b22d-d8dc81eaeba3" name="ProductType为appcjzy，webcjzy1" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="9a15361b-cadf-4309-b3ee-f6f46098aa6f" />
+            <objectFlowTargets>
+              <objectFlow Id="8e235b6e-1862-4e46-9c79-3562060e8bef" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <forkNodeMoniker Id="b55da320-e274-4bde-b8c1-1a67c92f1e01" LastKnownName="Fork4" />
+                <elementDefinition Id="a53877a6-826c-4dc3-8a25-d75c1892c25c" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="9142ff4d-9e15-415c-b40d-6e7bb0d59842" name="2147483647" value="2147483647">
+                <elementDefinition Id="cda734b9-6a94-4ce0-9c5d-9f4468956ab4" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <forkNode Id="b55da320-e274-4bde-b8c1-1a67c92f1e01" name="Fork4" isLeaf="false">
+            <elementDefinition Id="22792de2-6411-4e84-a930-94e5721b50ca" />
+            <objectFlowTargets>
+              <objectFlow Id="fa89fa34-56e4-4bcc-a695-f952d02982d6" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="0995d6b7-4ff3-4596-9547-321f71627e28" LastKnownName="单App订单" />
+                <elementDefinition Id="274f2e02-51f0-40b6-8512-40441d397742" />
+              </objectFlow>
+              <objectFlow Id="d3f83533-d17c-4be9-bb5e-abd9238bf454" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="a84e5f62-9e01-41e4-a1b5-4172f30cc92c" LastKnownName="多App订单" />
+                <elementDefinition Id="a2b41af3-ebfa-4a8a-8a92-c136f4aad471" />
+              </objectFlow>
+            </objectFlowTargets>
+          </forkNode>
+          <objectNode Id="a84e5f62-9e01-41e4-a1b5-4172f30cc92c" name="多App订单" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="23ebd725-028f-42c4-87c5-5eb2c3326c43" />
+            <objectFlowTargets>
+              <objectFlow Id="d41a2e8d-18da-4a89-b445-a549855db049" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="1ae9bad6-c7d7-4b0e-8b41-4abfba479c1d" LastKnownName="用返回的payUrl跳转" />
+                <elementDefinition Id="3c700ff2-0968-4c69-bb79-290ca021ddf9" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="bcee18dd-1662-4118-beee-b7020287e15e" name="2147483647" value="2147483647">
+                <elementDefinition Id="04cf0479-098a-4d59-894c-4e1228242a12" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <objectNode Id="0995d6b7-4ff3-4596-9547-321f71627e28" name="单App订单" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="cfeb9530-a363-41e6-aaad-eaa3e1f99fa0" />
+            <objectFlowTargets>
+              <objectFlow Id="c281a4ba-66d1-4c82-971d-30ae4023f293" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <objectNodeMoniker Id="1ae9bad6-c7d7-4b0e-8b41-4abfba479c1d" LastKnownName="用返回的payUrl跳转" />
+                <elementDefinition Id="60b72b64-6e40-4244-9e02-e30c252397fa" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="96d8f695-adf7-4274-9373-c0459fda2a49" name="2147483647" value="2147483647">
+                <elementDefinition Id="d892c154-2671-4e3d-b63e-db99ce159d18" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <objectNode Id="1ae9bad6-c7d7-4b0e-8b41-4abfba479c1d" name="用返回的payUrl跳转" isLeaf="false" ordering="Unordered" isControlType="false">
+            <elementDefinition Id="d571f23e-77aa-4e25-8123-c6d8e4e27879" />
+            <objectFlowTargets>
+              <objectFlow Id="fa1b859f-6451-433c-a87b-fe6084a35f1e" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <activityFinalNodeMoniker Id="edd61273-63fb-45dd-a20f-73480243bf01" LastKnownName="ActivityFinal4" />
+                <elementDefinition Id="0cf059f1-6c52-4a5f-b47f-2a205dd8d197" />
+              </objectFlow>
+            </objectFlowTargets>
+            <upperBound>
+              <literalInteger Id="0f5d22f0-ac13-4384-b27c-cef078c81eb8" name="2147483647" value="2147483647">
+                <elementDefinition Id="c371d72d-123f-41b6-91ca-8432c8250ea1" />
+              </literalInteger>
+            </upperBound>
+          </objectNode>
+          <activityFinalNode Id="edd61273-63fb-45dd-a20f-73480243bf01" name="ActivityFinal4" isLeaf="false">
+            <elementDefinition Id="69c4376b-1731-4697-8b8d-9c54e9ceaf46" />
+          </activityFinalNode>
+        </nodes>
+      </activity>
+    </activityRootModelHasActivity>
+  </packagedElements>
+  <package Id="f8781510-1a56-491e-945d-641b43a63c85" name="Jinher.AMP.BTP.UML">
+    <elementDefinition Id="f2301d4e-995c-471f-a03f-000aca214d35" />
+    <profileInstances>
+      <packageHasProfileInstances Id="961fbfe4-7f0b-4b1e-8475-c06da811e1b9">
+        <profileInstance Id="b3c12aa1-71bf-4155-ad3f-5463fe858986" name="StandardProfileL2">
+          <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+        </profileInstance>
+        <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+      </packageHasProfileInstances>
+      <packageHasProfileInstances Id="75e55e4d-5dd3-4c4c-949c-d4565e21d9ee">
+        <profileInstance Id="f082107d-2a8b-4d44-9221-6554b822eee3" name="StandardProfileL3">
+          <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+        </profileInstance>
+        <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+      </packageHasProfileInstances>
+    </profileInstances>
+  </package>
+</activityRootModel>

@@ -1,0 +1,250 @@
+﻿@{
+    Layout = null;
+}
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta content="telephone=no" name="format-detection">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <title>订单详情</title>
+    <link rel="stylesheet" href="/dist/css/common.css">
+    <link rel="stylesheet" href="/dist/css/MyOrderDetail.css">
+</head>
+<body>
+<div id="app" class="page">
+    <!--内容-->
+    <!--顶部导航-->
+    <mk-header v-if="headerShow" v-bind:title="'订单详情'"></mk-header>
+    <!--内容-->
+    <div class="content" :class="{'padding-top44':headerShow}">
+        <!--订单状态-->
+        <div class="order-state" v-text="orderState"></div>
+        <div v-show="orderStateTips" class="order-state-tips" v-text="orderStateTips"></div>
+        <!--物流-->
+       <!-- <div class="order-logistics-wrap top10" v-show="this.orderDetail.State == 2 || this.orderDetail.State == 3 || this.orderDetail.State == 9 || (this.orderDetail.State == 12 && this.orderDetail.RefundExpOrderNo)">
+            <a href="javascript:void(0)" class="order-logistics" v-on:click="goPage('exp')">
+                <img src="/Content/Mobile/xiaoqiche.png">
+                <div class="order-logistics-info">
+                    <div class="name">物流公司：{{orderDetail.ShipExpCo}}</div>
+                    <div class="number">订单号：{{orderDetail.ExpOrderNo}}</div>
+                </div>
+                <img class="ico" src="/Content/Mobile/angle-right2.png">
+            </a>
+        </div>-->
+        <!--自提地址-->
+        <div v-if="orderDetail.SelfTakeFlag" class="self-take-address-wrap top10">
+            <div class="self-take-person">
+                <span class="name">{{orderDetail.SelfTakeName}}</span>
+                <a v-if="orderDetail.SelfTakePhone" :href="orderDetail.SelfTakePhone | phoneHref" class="pull-right tel">
+                    <img class="pull-left" src="/Content/Mobile/dianhua.png"/>
+                    <span class="pull-left">{{orderDetail.SelfTakePhone}}</span>
+                </a>
+            </div>
+            <div class="self-take-address" style="margin-top: 4px;">
+                <span class="title">取货地址：</span>
+                <span class="text">{{orderDetail.SelfTakeAddress}}</span>
+            </div>
+            <div class="self-take-address" style="margin-top: 8px;">
+                <span class="title">取货时间：</span>
+                <span class="text">{{orderDetail.PickUpTime | pickUpDateFilter}} {{orderDetail.PickUpStartTime | pickUpTimeFilter(orderDetail.PickUpEndTime)}}</span>
+            </div>
+            <div class="self-take-address">
+                <span class="title" style="line-height: 30px;">提货人及提货码：</span>
+					<span class="text">
+						<img v-if="orderDetail.PickUpCodeUrl && orderDetail.PickUpCode && orderDetail.State != 4 && orderDetail.State != 5 && orderDetail.State != 6" v-on:click="clickCode" class="self-take-codeurl pull-right" :src="orderDetail.PickUpCodeUrl" title="取货二维码"/>
+						<span v-if="orderDetail.PickUpCodeUrl && orderDetail.PickUpCode && orderDetail.State != 4 && orderDetail.State != 5 && orderDetail.State != 6" class="self-take-code pull-right">{{orderDetail.PickUpCode}}</span>
+						<span v-else class="self-take-code pull-right">{{orderDetail.PickUpPhone}}</span>
+						<span class="pull-right name">{{orderDetail.PickUpName}}</span>
+					</span>
+            </div>
+        </div>
+        <!--订单地址-->
+        <div v-if="!orderDetail.SelfTakeFlag" class="order-address-wrap top10">
+            <div class="order-address-person">
+                <img src="/Content/Mobile/zuobiao.png"/>
+                <span class="name">{{orderDetail.ReceiptUserName}}</span>
+                <span class="tel">{{orderDetail.ReceiptPhone}}</span>
+            </div>
+            <div class="order-address-info">{{orderDetail.Province}}{{orderDetail.City}}{{orderDetail.District}}</div>
+            <div class="order-address-info">{{orderDetail.ReceiptAddress}}</div>
+        </div>
+        <!--商品列表-->
+        <div class="shopping-wrap top10">
+            <div class="shopping-shop clearfix">
+                <img src="/Content/Mobile/tangguoqijiandian.png">
+                <span class="name" v-text="appName"></span>
+                <a href="javascript: void(0);" class="pull-right chat" v-on:click="goPage('contact')">联系商家</a>
+            </div>
+            <div v-if="IsCheck=false">
+                <div class="logistics-wrap">
+                    <span class="package">包裹1</span>
+                    <span class="logistics pull-right" v-on:click="goPage('exp')" v-show="this.orderDetail.State == 2 || this.orderDetail.State == 3 || this.orderDetail.State == 9 || (this.orderDetail.State == 12 && this.orderDetail.RefundExpOrderNo)">查看物流</span>
+                </div>
+                <div v-for="shopping in orderDetail.ShoppingCartItemSDTO" class="shopping-lists border-bottom">
+                    <div class="list">
+                        <div class="pic">
+                            <img :src="shopping.Pic" />
+                        </div>
+                        <div class="shopping-info">
+                            <div class="title">{{shopping.Name}}</div>
+                            <div class="info">
+                                <span class="contex font11">{{shopping.Size.split(',').join(' ')}}</span>
+                                <span class="contex font11">数量：{{shopping.CommodityNumber}}</span>
+                                <span class="price font11">{{shopping.Price | currency}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="shopping-lists-btns">
+                        <a href="javascript:void(0);" v-if="shoppingListBtn.indexOf(2) > -1" class="btn active" v-on:click="$confirm('建议先与商家进行沟通，协商一致后再申请退款。</br>确定继续申请？',refund)">退款</a>
+                        <a href="javascript:void(0);" v-if="shoppingListBtn.indexOf(3) > -1" class="btn active" v-on:click="refundclick()">申请退款/退货</a>
+                        <a href="javascript:void(0);" v-if="!shopping.HasReview && shoppingListBtn.indexOf(7) > -1" class="btn" v-on:click="orderComReview(shopping.OrderId,shopping.CommodityId,shopping.Name)">评价</a>
+                        <span style="font-size:12px;color:#e4393c;" v-if="shopping.HasReview && shoppingListBtn.indexOf(7) > -1">已评价</span>
+                        <a href="javascript:void(0);" v-if="shoppingListBtn.indexOf(8) > -1 || shoppingListBtn.indexOf(25) > -1 || shoppingListBtn.indexOf(31) > -1" class="btn" v-on:click="goPage('refundInfo')">退款详情</a>
+                    </div>
+                </div>
+           </div>
+
+           <div v-if="IsCheck=true" v-for="(shopping,index) in orderDetail.ShoppingCartItemSDTO">
+                 
+                   <div class="logistics-wrap">
+                        <span class="package">包裹{{index+1}}</span>
+                        <span class="logistics pull-right" v-on:click="goPage('exp',shopping.JdOrderid)" v-show="OrderDetailState == 2 || OrderDetailState == 3 || OrderDetailState == 9 || (OrderDetailState == 12 && OrderDetailRefundExpOrderNo)">查看物流</span>
+                   </div>
+
+                 <div  class="shopping-lists border-bottom">
+                    
+                    <div class="list">
+                        <div class="pic">
+                            <img :src="shopping.Pic" />
+                        </div>
+                        <div class="shopping-info">
+                            <div class="title">{{shopping.Name}}</div>
+                            <div class="info">
+                                <span class="contex font11">{{shopping.Size.split(',').join(' ')}}</span>
+                                <span class="contex font11">数量：{{shopping.CommodityNumber}}</span>
+                                <span class="price font11">{{shopping.Price | currency}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="shopping-lists-btns">
+                        <a href="javascript:void(0);" v-if="shoppingListBtn.indexOf(2) > -1" class="btn active" v-on:click="$confirm('建议先与商家进行沟通，协商一致后再申请退款。</br>确定继续申请？',refund)">退款</a>
+                        <a href="javascript:void(0);" v-if="shoppingListBtn.indexOf(3) > -1" class="btn active" v-on:click="refundclick()">申请退款/退货</a>
+                        <a href="javascript:void(0);" v-if="!shopping.HasReview && shoppingListBtn.indexOf(7) > -1" class="btn" v-on:click="orderComReview(shopping.OrderId,shopping.CommodityId,shopping.Name)">评价</a>
+                        <span style="font-size:12px;color:#e4393c;" v-if="shopping.HasReview && shoppingListBtn.indexOf(7) > -1">已评价</span>
+                        <a href="javascript:void(0);" v-if="shoppingListBtn.indexOf(8) > -1 || shoppingListBtn.indexOf(25) > -1 || shoppingListBtn.indexOf(31) > -1" class="btn" v-on:click="goPage('refundInfo')">退款详情</a>
+                    </div>
+                </div>
+           </div>
+
+        </div>
+        <div class="top10">
+            <!--订单编号-->
+            <div class="order-time-wrap">
+                <span class="title">订单编号:</span>
+                <span class="pull-right" v-text="orderDetail.Code"></span>
+            </div>
+            <!--下单时间-->
+            <div class="order-time-wrap">
+                <span class="title">下单时间:</span>
+                <span class="pull-right"> {{orderDetail.SubTime | timeFilter}}</span>
+            </div>
+            <!--支付方式-->
+            <div class="order-time-wrap">
+                <span class="title">支付方式:</span>
+					<span v-if="orderDetail.State == 0" class="pull-right">
+						<label class="i-check" v-if="payPatternData.IsHdfk"><input v-model="payMethod" type="radio" name="iCheck" data-tag="hdfk" value="货到付款"/><img src="/Content/Mobile/checkbox.png">货到付款</label>
+						<label class="i-check"><input v-model="payMethod" type="radio" name="iCheck" data-tag="onlinePay" checked value="在线支付"/><img src="/Content/Mobile/checkbox-active.png">在线支付</label>
+					</span>
+                <span v-else class="pull-right">{{orderDetail.Payment | paymentFilter}}</span>
+            </div>
+            <!--发票信息-->
+            <div class="order-time-wrap">
+                <span class="title">发票信息:</span>
+                <span v-if="orderDetail.InvoiceDTO && orderDetail.InvoiceDTO.Category == 1" class="pull-right" style="text-align:right;max-width:76%;">增值税普通发票 <span style="padding-left:10px;">{{orderDetail.InvoiceDTO.InvoiceTitle}}</span></span>
+                <span v-else-if="orderDetail.InvoiceDTO && orderDetail.InvoiceDTO.Category == 2" class="pull-right" style="text-align:right;max-width:76%;">电子发票 <span style="padding-left:10px;word-break:break-all;">{{orderDetail.InvoiceDTO.InvoiceTitle}}<br/>{{orderDetail.InvoiceDTO.ReceiptPhone}}<span style="padding-left:5px;">{{orderDetail.InvoiceDTO.ReceiptEmail}}</span></span></span>
+                <span v-else-if="orderDetail.InvoiceDTO && orderDetail.InvoiceDTO.Category == 4" class="pull-right" style="text-align:right;max-width:76%;" >增值税专用发票</span>
+                <span v-else class="pull-right" style="text-align:right;max-width:76%;">不开发票</span>
+            </div>
+        </div>
+        <div v-show="goldCouponFlag" class="top10">
+            <div v-if="payPatternData.IsAllAppInZPH" v-on:click="goPage('coupon')" class="coupon-pay" style="cursor:pointer;">
+                <span class="paddr10">代金券</span>
+                <span class="gray">有{{payPatternData.GoldCouponCount}}张可用</span>
+                <span class="money red pull-right">{{couponInfo}}</span>
+            </div>
+            <div class="coupon-pay">
+                <span class="paddr10">金币</span>
+                <span class="gray">可抵用</span>
+                <span class="red">{{goldbalance | currency}}</span>
+                <my-switch v-model="toggle" class="pull-right" :checkedState="switchChecked" :disabledState="switchDisabled"></my-switch>
+            </div>
+        </div>
+        <div class="top10">
+            <div class="order-pay clearfix">
+                <span class="name">订单金额(含优惠券、积分、运费)</span>
+                <span class="pull-right contex">{{orderDetail.Price | totalPriceFilter(orderDetail.CouponValue,orderDetail.ScorePrice)}}</span>
+            </div>
+            <div class="order-pay clearfix">
+                <span class="name">优惠券抵用</span>
+                <span class="pull-right contex">{{orderDetail.CouponValue | currency}}</span>
+            </div>
+            <div class="order-pay clearfix">
+                <span class="name">积分抵现</span>
+                <span class="pull-right contex">{{orderDetail.ScorePrice | currency(1)}}</span>
+            </div>
+            <div class="order-pay clearfix">
+                <span class="name">金币抵用</span>
+                <span class="pull-right contex">{{goldPrice | currency(1)}}</span>
+            </div>
+            <div class="order-pay clearfix">
+                <span class="name">代金券抵用</span>
+                <span class="pull-right contex">{{goldCoupon | currency(1)}}</span>
+            </div>
+            <div v-if="orderDetail.Duty" class="order-pay clearfix">
+                <span class="name">关税</span>
+                <span class="pull-right contex">{{orderDetail.Duty}}</span>
+            </div>
+            <div class="order-pay clearfix">
+                <span class="name">运费</span>
+                <span class="pull-right contex">{{freight | currency}}</span>
+            </div>
+            <div class="order-pay clearfix">
+                <span class="name active font-bold">实付款</span>
+                <span class="pull-right contex font-bold">{{payPrice | currency}}</span>
+            </div>
+        </div>
+        <!--代付款中的订单操作按钮-->
+        <div class="order-pay-btns top10 clearfix">
+            <a v-if="orderBtnAll.indexOf(0) > -1" v-on:click="confirmPayPrice" class="pull-right btn active" href="javascript:void(0);">确认付款</a>
+            <a v-if="orderBtnAll.indexOf(1) > -1" class="pull-right btn" :href="orderDetail.ShoppingCartItemSDTO[0].OrderId | goPageCancelOrder(orderDetail.AppId)">取消订单</a>
+            <a v-if="orderBtnAll.indexOf(4) > -1" class="pull-right btn active" href="javascript:void(0);" v-on:click="confirmReceiptClick">确认收货</a>
+            <a v-if="orderBtnAll.indexOf(11) > -1" class="pull-right btn" href="javascript:void(0);" v-on:click="$confirm('确定要延长收货时间吗？',delayShip)">延长收货时间</a>
+            <a v-if="orderBtnAll.indexOf(9) > -1" class="pull-right btn" href="javascript:void(0);" v-on:click="$confirm('确定要删除订单吗？',deletOrder)">删除订单</a>
+        </div>
+        <set-pwd-dialog v-bind:show="setPwdDialog" v-on:ok="setPwdDialogOk" v-on:close="setPwdDialogClose"></set-pwd-dialog>
+        <pay-dialog v-bind:show="showPayDialog" v-on:ok="payDialogOk" v-on:close="payDialogClose"><a href="javascript:void(0)" v-on:close="forgotPassword">忘记密码？</a></pay-dialog>
+    </div>
+    <div class="previewImg" :class="{hide: !bigCodeShow}" v-on:click="bigCodeClick">
+        <img :src="orderDetail.PickUpCodeUrl" class="img" title="提货二维码">
+    </div>
+</div>
+<script src="http://uir.iuoooo.com/api/bridge/1.0.1/bridge.js" type="text/javascript"></script>
+<script src="/dist/lib/mercury.js"></script>
+<script src="/dist/lib/vue.min.js"></script>
+<script src="/dist/lib/vue-resource.min.js"></script>
+<script src="/dist/lib/vue-mobileKit.js"></script>
+<script src="/dist/lib/Common.js"></script>
+<script src="/dist/lib/behaviorRecord.js"></script>
+<script src="/dist/lib/md5.js"></script>
+<script src="/dist/lib/base64.js"></script>
+<script src="/dist/js/MyOrderDetail.js"></script>
+<script>
+    var service_type = "0x0007";
+    var logOrderId = 'orderid:' + getQueryString("orderId") + '|';
+    var FSPUr = "@ViewBag.FSPUrl";
+    var WebImUrl = "@Html.Raw(Jinher.AMP.BTP.Common.CustomConfig.WebImUrl)";
+    var PromotionUrl = "@ViewBag.PromotionUrl";
+</script>
+</body>
+</html>

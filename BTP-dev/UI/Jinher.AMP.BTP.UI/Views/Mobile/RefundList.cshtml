@@ -1,0 +1,49 @@
+﻿@{
+    ViewBag.Title = "退款/售后";
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+}
+@section CssStyles{
+    <link rel="stylesheet" href="/dist/css/common.css">
+    <link rel="stylesheet" href="/dist/css/refundList.css">
+}
+<div id="app" v-cloak>
+    <div class="content">
+        <!--订单列表-->
+        <div v-for="(list,index) in orderList" class="order-wrap top20">
+            <div class="order-title">
+                <span class="name">{{list.AppName}}</span>
+                <span class="state">{{list.RefundShowState}}</span>
+                <!--<span class="state red">换货 沟通中</span>-->
+            </div>
+            <div class="order-content">
+                <div class="item" v-on:click="goPage('orderDetail',list)">
+                    <div class="pic"><img class="pic"  v-bind:src="list.ItemPic" /></div>
+                    <div class="order-info">
+                        <div class="title">{{list.ItemName}}</div>
+                        <div class="size" v-if="list.ItemSize">{{list.ItemSize | sizeFilter}} </div>
+                        <div class="price-wrap">
+                            <div class="price">￥<span class="num">{{list.ItemPrice}}</span></div>
+                            <div class="count">x{{list.CommodityNumber}}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-opera clearfix">
+                    <a class="pull-right btn active" href="javascript:void(0)" v-on:click="goPage('refundInfo',list)">查看详情</a>
+                </div>
+            </div>
+        </div>
+        <div v-show="tips" class="tips">- 没有更多了 -</div>
+        <div v-show="empty" class="empty-page">
+            <img src="/Content/Mobile/no-order.png">
+            <p>没有找到相关订单</p>
+        </div>
+    </div>
+</div>
+@section ClientScript
+{
+    <script src="/dist/lib/vue.min.js"></script>
+    <script src="/dist/lib/vue-resource.min.js"></script>
+    <script src="/dist/lib/vue-mobileKit.js"></script>
+    <script src="/dist/lib/mercury.js"></script>
+    <script src="/dist/js/refundList.js"></script>
+}

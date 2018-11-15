@@ -1,0 +1,183 @@
+﻿@{
+    ViewBag.Title = "结算管理";
+    Layout = "~/Views/Shared/_VueLayout.cshtml";
+}
+<div class="breadcrumb">
+    <span>入驻管理</span>
+    <span> > </span>
+    <span style="color:red">结算管理 </span>
+    <a class="back" href="javascript:window.history.back();">
+        <img  src="/Content/images/wx-back.png" /><span>&nbsp;返回上一级</span>
+    </a>
+</div>
+<div class="content">
+    <div id="listWithFiltersPage">
+        <div class="content-inner">
+            <!-- filters start -->
+            <div class="filters">
+                <el-form :inline="true" :model="searchForm" :rules="searchrules" ref="searchForm">
+                    <el-form-item label="商城名称：" prop="EsAppName">
+                        <el-input v-model="searchForm.EsAppName"></el-input>
+                    </el-form-item>
+                    <el-form-item label="商家类型：" prop="SellerType">
+                        <el-select v-model="searchForm.SellerType">
+                            <el-option label="全部" value=""></el-option>
+                            <el-option v-for="item in mallTypeOptions" :key="item.value" :label="item.label" :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @@click="handleSearch">查询</el-button>
+                        <a class="el-button el-button--text" href="@Url.Action("history",new {appId = Request.QueryString["appId"], userId = Request.QueryString["userId"]})">查看历史结算单</a>  
+                    </el-form-item>
+                </el-form>
+            </div> 
+            <el-table :data="tableData" style="width: 100%" element-loading-text="拼命加载中" v-loading="loading" border stripe @@selection-change="handleSelectionChange">
+                <el-table-column type="selection" :selectable="canSelect" width="55"></el-table-column>
+                <el-table-column type="index" lable="序号" width="60"></el-table-column>
+                <el-table-column prop="EsAppName" label="商城名称" min-width="120"></el-table-column>
+                <el-table-column prop="SellerType" label="商家类型" min-width="100">
+                    <template scope="scope">
+                        {{RN.getMallType(scope.row.SellerType)}}
+                    </template>
+                </el-table-column>
+                <el-table-column prop="OrderAmount" label="订单总额" min-width="100"></el-table-column>
+                <el-table-column prop="SellerAmount" label="商家结算金额 " min-width="110"></el-table-column>
+                <el-table-column label="结算日期" min-width="110" :formatter="dateFormat"></el-table-column>
+                <el-table-column label="结算状态" min-width="90" :formatter="statusFormat"></el-table-column>
+                <el-table-column label="操作" width="195" align="center">
+                    <template scope="scope">
+                        <el-button :disabled="scope.row.State!=1" type="success" size="mini" @@click="viewUpdateStatusConfirm(scope.$index, scope.row)">确认结算单</el-button>
+                        <el-button type="info" size="mini" @@click="details(scope.row.Id)">查看结算单</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <!--<div class="pagination-wrapper" v-show="!loading">
+                <el-pagination layout="total, sizes, prev, pager, next, jumper" @@size-change="handleSizeChange" @@current-change="handleCurrentChange" :total="total" :current-page="page" :page-sizes="[10, 20, 50, 100]" :page-size="pageSize" >
+                </el-pagination>
+            </div>-->
+        </div>
+    </div>
+</div>
+
+<template>
+<el-dialog
+  title="确认结算单" :visible.sync="showUpdateStatusConfirm" size="tiny">
+  <span>【{{currentRow.EsAppName}}】的结算单金额为：{{currentRow.SellerAmount}}元，确认结算吗？</span>
+  <span slot="footer" class="dialog-footer">
+    <el-button @@click="showUpdateStatusConfirm = false">取 消</el-button>
+    <el-button type="primary" @@click="updateConfirmStatus">确 定</el-button>
+  </span>
+</el-dialog>
+</template>
+
+@section Script{
+    <script>
+        var defaultVue = new Vue({
+            el: '#app',
+            data: {
+                searchForm: {
+                    EsAppName: '',
+                    SellerType:''
+                },
+                searchrules: {
+                    EsAppName: [
+                        { max: 30, message: '最多输入30个字', trigger: 'change' }
+                    ]
+                },
+                loading: true,
+                tableData: [],
+                total:0,
+                page:1,
+                pageSize:20,
+                selectedAppIds: [],
+                showUpdateStatusConfirm:false,
+                currentRow:{},
+                mallTypeOptions: RN.mallTypeOptions
+            },
+            methods: {
+                 handleSelectionChange: function(val) {
+                    var tempArr = new Array();
+                    val.forEach(function(v) {
+                        if(v.State==0) tempArr.push(v.AppId);
+                        });
+                    this.selectedAppIds = tempArr;
+                },
+                handleSearch: function() {
+                    this.$refs['searchForm'].validate(function(valid) {
+                        if (valid) {
+                            defaultVue.page=1;
+                            defaultVue.fetchData();
+                        } else {
+                            console.log('error submit!!');
+                        }
+                    });
+                },
+                handleSizeChange: function(val){
+                    this.pageSize =val;
+                    this.page=1;
+                    this.fetchData();
+                },
+                handleCurrentChange: function(page) {
+                    this.page = page || this.page;
+                    this.fetchData();
+                },
+                fetchData: function(){
+                    this.loading = true;
+                    this.$http.post('@Url.Action("GetSellerData")', {
+                        PageSize:this.pageSize, 
+                        PageIndex:this.page, 
+                        EsAppName:this.searchForm.EsAppName,
+                        SellerType:this.searchForm.SellerType }).
+                    then(function(res) {
+                        defaultVue.loading = false;
+                        if(res.body.isSuccess){
+                            defaultVue.tableData = res.body.Data.List;
+                            defaultVue.total = res.body.Data.Count;
+                        } else {
+                            defaultVue.$message.error(res.body.Message);
+                        }
+                    });
+                },
+                canSelect: function(row, index) {
+                    return row.State == 0;
+                },
+                dateFormat: function(row, column) { 
+                    return moment(row.AmountDate).format("YYYY-MM-DD"); 
+                },
+                statusFormat: function(row, column){
+                    switch(row.State){
+                        case 0 : return '待结算';
+                        case 1 : return '等待商家确认';
+                        case 2 : return '待打款';
+                        case 3 : return '已结算';
+                        default : return '';
+                    }                   
+                },
+                // 查看结算单
+                details: function(id){
+                    window.location.href="@Url.Action("Details")/"+id;
+                },
+                viewUpdateStatusConfirm:function($index, row){
+                    this.showUpdateStatusConfirm = true;
+                    this.currentRow = row;
+                },
+                updateConfirmStatus: function(){
+                    this.$http.post('@Url.Action("UpdateConfirmStatus")', {Id: this.currentRow.Id}).
+                    then(function(res) {
+                        if(res.body.isSuccess) {
+                            defaultVue.currentRow.State = 2;
+                            defaultVue.showUpdateStatusConfirm = false;
+                            defaultVue.$message.success('操作成功');
+                        } else {
+                            defaultVue.$message.error(res.body.Message);
+                        }
+                    });
+                }
+            },
+            mounted:function () {
+                this.fetchData();
+            }
+        })
+    </script>
+}

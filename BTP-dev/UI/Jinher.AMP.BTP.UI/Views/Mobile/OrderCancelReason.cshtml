@@ -1,0 +1,178 @@
+﻿@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+}
+@section TitleHtml
+{
+    <title>取消订单</title>
+}
+@section CssStyles{
+    <link rel="stylesheet" href="../../Content/style/style.css" />
+    <style type="text/css">
+        .footer_4
+        {
+            border-radius: 4px;
+            background-color: #e0e0e0;
+            text-align: center;
+            color: #505050;
+            font-size: 1em;
+            letter-spacing: 3px;
+            padding: 3% 12%;
+            display: inline-block;
+            margin-left: 30px;
+        }
+        
+        .footer_2
+        {
+            border-radius: 4px;
+            background-color: rgb(255, 0, 84);
+            text-align: center;
+            color: #fff;
+            font-size: 1em;
+            letter-spacing: 3px;
+            padding: 3% 12%;
+            display: inline-block;
+            margin-left: 5px;
+        }
+    </style>
+}
+@section ClientScript
+{
+    <script type="text/javascript">
+        function JsVilaDataNull(obj) {
+            if (obj != undefined && obj != "" && obj != "null" && obj != null && obj != "undefined" && obj) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+
+        $(function () {
+            saveContextDTOByUrl();
+            if (!isWeiXin() && sessionStorage.source == "share") {
+                $(".mobile-header").show();
+            }
+            else {
+                $(".mobile-header").hide();
+            }
+            var limitNum = 140;
+            var pattern = limitNum + '字';
+            $('.word-count').html(pattern);
+            //            $('#Content').on('keydown keyup keypress submit focus blur copy cut paste change input', function (event) {
+            //                var value = $.trim($(this).val());
+            //                var remain = value.length;
+
+            //                if (remain > limitNum) {
+            //                    $(this).val(value.substring(0, limitNum));
+            //                    pattern = '0字';
+
+            //                } else {
+            //                    var result = limitNum - remain;
+            //                    pattern = result + '字';
+            //                }
+
+            //                $('.word-count').html(pattern);
+            //            });
+
+
+
+
+            $("#btnOk").click(function () {
+                if ((!isLogin())) {
+                    //toast("请先登录再保存取消订单原因！");
+                    return;
+                }
+
+                var mess = $("#Content").val();
+
+                if (mess == "0") {
+                    toast("请选择取消订单原因！");
+                    return;
+                }
+
+//                if ($.trim(mess).length == 0) {
+//                    $('.word-count').html("取消原因不能为空");
+//                    return;
+//                } else if ($.trim(mess).length > 140) {
+
+//                    $('.word-count').html("取消原因字数超过限制");
+
+//                    return;
+
+//                }
+//                else {
+
+                    var orderId = getQueryString('orderId');
+                    var appId = getQueryString('shopId');
+
+                    getDataAjax({
+                        url: '/Mobile/ClickOKCancelOrder',
+                        data: { orderId: orderId, userId: getUserId(), appId: appId, mess: mess },
+                        callback: function (data) {
+                            $("#ajaxLoadBlind").remove();
+                            if (data.ResultCode == 0) {
+                                window.location.href = urlAppendCommonParams("/Mobile/MyOrderDetail?shopId=" + appId + "&orderId=" + orderId);
+                            } else {
+                                toast(data.Message);
+                            }
+
+                        },
+                        beforeSend: function () {
+                            ajaxLoading('22', '');
+                        },
+                        error: function () {
+                            $("#ajaxLoadBlind").remove();
+                        }
+                    });
+//                }
+
+            });
+
+            $("#btnCancel").click(function () {
+                CancelSubmit();
+            });
+
+        });
+
+        function CancelSubmit() {
+            var orderId = getQueryString('orderId');
+            var appId = getQueryString('shopId');
+            window.location.href = urlAppendCommonParams("/Mobile/MyOrderDetail?shopId=" + appId + "&orderId=" + orderId);
+        }
+    </script>
+}
+<header class="mobile-header" style="display: none">
+	    <h1 class="page-name">取消订单</h1>
+    </header>
+<div class="main">
+    <ul class="groups">
+        <li>
+@*            <div class="reason-desc">
+                <textarea name="" placeholder="请填写取消订单原因" id="Content"></textarea>
+                <div class="word-count">
+                    140字</div>
+            </div>*@
+
+            <label class="t2">
+                取消订单原因：</label>
+            <div class="controls">
+                <select id="Content" class="reason-type">
+                    <option value="0">请选择取消订单原因</option>
+                    <option value="1">不想买了</option>
+                    <option value="2">信息填写错误，重新拍</option>
+                    <option value="3">商家缺货</option>
+                    <option value="4">太贵了，不划算</option>
+                    <option value="5">其他原因</option>
+                </select>
+            </div>
+
+        </li>
+        <li>
+            <div style="text-align: center;">
+                <span class="footer_4" id="btnCancel">取消</span> <span class="footer_2" id="btnOk">提交</span>
+            </div>
+        </li>
+    </ul>
+    <div style="clear: both">
+    </div>
+</div>

@@ -1,0 +1,240 @@
+*{	margin: 0;
+	padding: 0;
+}
+html{
+	background-color: #eee;
+	color: #000;
+	font-family:'Microsoft YaHei';
+}
+a{
+	text-decoration: none;
+	color: #000000;
+	display: inline-block;
+}
+.container{
+	width: 100%;
+	max-width: 500px;
+	margin: 0 auto;
+}
+.distribution_tab_top, .distribution_user_shop{
+	background-color: #fff;
+}
+.distribution_tab_top{
+	height: 40px;
+	border-top: 1px solid #dbd6d6;
+}
+.distribution_tab{
+	float:left;
+	display: inline-block;
+	width: 50%;
+	height: 40px;
+	line-height: 40px;
+	text-align: center;
+}
+.distribution_tab_btn{
+	position: relative;
+	display: inline-block;
+	height:100%;
+	font-size: 14px;
+	color: #333;
+}
+.distribution_tab_btn.selected{
+	background-color: #fff;
+}
+.distribution_tab_btn.selected:after{
+	content:'';
+	position: absolute;
+	bottom:1px;
+	left:0;
+	width: 100%;
+	border-bottom: 2px solid #000;
+}
+.distribution_user_shop{
+	height: 80px;
+	padding: 10px 15px;
+	border-top: 1px solid #dbd6d6;
+	display: -webkit-box;
+	-webkit-box-flex: 1;
+}
+.borderR{
+	border-right: 1px solid #dbd6d6;
+}
+.borderB{
+	border-bottom: 1px solid #dbd6d6;
+}
+.distribution_user_shop_left, .distribution_user_shop_right, .shop_name{
+	display: inline-block;
+	position: relative;
+}
+.distribution_user_shop_left{
+	-webkit-box-flex: 1;
+	display: -webkit-box;
+	-webkit-box-orient: horizontal;
+	-webkit-box-align: center;
+}
+.distribution_user_shop_right{
+	float: right;
+}
+.list_tab{
+	height: 40px;
+}
+.shop_name_wrap{
+	display: -webkit-box;
+	max-width: 50%;
+	padding-left: 11px;
+	font-size: 14px;
+}
+.shop_name{
+	position: relative;
+	width: 100%;
+	color: #333;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	padding-right: 20px;
+	display: block;
+}
+#up,#down{
+	margin-bottom: 80px;
+}
+
+.submit{
+	position: fixed;
+	margin: 0 auto;
+	bottom: 0;
+	width: 100%;
+	max-width: 500px;
+	height: 44px;
+	line-height: 44px;
+	text-align: center;
+	background: #e4393c;
+	font-size: 17px;
+}
+.submit a{
+	color: #fff;
+	width: 100%;
+}
+.edite{
+	position:absolute;
+	top:0;
+	right:0;
+	width: 22px;
+	height: 22px;
+	content:'';
+	background: url('/Content/images/bianji.png') no-repeat center center;
+	background-size: 100% 100%;
+	cursor: pointer;
+}
+.active {
+	/* border: 1px solid #e4393c;*/
+	color: #e4393c;
+}
+.yonghuhong{
+	display: inline-block;
+	width: 60px;
+	height: 60px;
+	background: url('/Content/images/yonghuhong.png') no-repeat center center;
+	background-size: 100% 100%;
+	-webkit-border-radius: 50%;
+	-moz-border-radius: 50%;
+	-ms-border-radius: 50%;
+	border-radius: 50%;
+	cursor:pointer;
+}
+.qrimg{
+	float: right;
+}
+.qrimg img{
+	width: 60px;
+	height: 60px;
+}
+.margB-10{
+	margin-bottom: 10px;
+}
+.list .item p {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	overflow: hidden;
+	padding-right: 4px;
+	padding-top: 2px;
+}
+.bg{
+	background-color: #fff;
+}
+.item{
+	display: -webkit-box;
+	-webkit-box-flex: 1;
+	-webkit-box-orient: horizontal;
+	padding: 15px 11px 0 15px;
+	height: 121px;
+	position: relative;
+	border-bottom: 1px solid #e8e8e8;
+}
+.pos_abs{
+	position: absolute;
+	top: 35px;
+}
+.item_img{
+	width: 90px;
+	height: 90px;
+	border: 1px solid #ddd;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	overflow: hidden;
+}
+.item_img img {
+	width: 100%;
+}
+.info{
+	position: relative;
+	padding-left: 10px
+}
+.item_info{
+	-webkit-box-flex: 1;
+}
+.info_text{
+	line-height: 14px;
+	font-size: 13px;
+}
+
+.info_type,.share_yuan_num,.commission{
+	padding-right: 20px;
+	margin-top: 5px;
+	color: #999999;
+	font-size: 11px;
+}
+.mrg-r-5{
+	margin-right: 5px;
+}
+.share_yuan_num{
+	text-decoration:line-through;
+}
+
+.list_yuan,.list_yuan_num{
+	display: inline-block;
+}
+.list_yuan{
+	color: #e4393c;
+	font-size: 10px;
+}
+.dis{
+	display: none;
+}
+.list_yuan_num{
+	font-size: 14px;
+}
+
+#up:target, #down:target {
+	display: block;
+}
+.gouwuche{
+	position: absolute;
+	top: 67px;
+	right: 0;
+}
+.gouwuche img{
+	width: 24px;
+	height: 24px;
+}

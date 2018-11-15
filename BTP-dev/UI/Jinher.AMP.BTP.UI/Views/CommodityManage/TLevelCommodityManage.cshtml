@@ -1,0 +1,859 @@
+﻿<link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.jhtablebox.css" />
+<link rel="stylesheet" type="text/css" href="/Content/default/ui.jqgrid.css" />
+<link rel="stylesheet" type="text/css" href="/Content/css/common.css" />
+<link href="../../Scripts/ztreejs/zTreeStyle/zTreeStyle.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="/Scripts/ztreejs/jquery.ztree.core-3.5.js"></script>
+<script type="text/javascript" src="/Scripts/ztreejs/jquery.ztree.excheck-3.5.js"></script>
+<script src="/Scripts/ztreejs/jquery.ztree.exedit-3.5.js" type="text/javascript"></script>
+<script type="text/javascript" src="/Scripts/jquery.nicescroll.min.js"></script>
+<script type="text/javascript" src="/Scripts/Grid/jquery.grid.base.js"></script>
+<style type="text/css">
+    .contentLeft
+    {
+        float: left; /*width:20%;*/
+        width: 235px;
+        height: 100%;
+        min-width: 235px;
+        overflow: hidden;
+        border-right: 1px solid #CCD3DC;
+    }
+    
+    .nav
+    {
+        height: 45px;
+        background: url(../../Content/images/presentManage/bg.png) no-repeat;
+    }
+    .nav .navItemPic
+    {
+        float: left;
+        display: block;
+        width: 21px;
+        height: 18px;
+    }
+    .nav .navItemText
+    {
+        margin-top: 20px;
+        display: block;
+    }
+    .nav .nava
+    {
+        cursor: pointer;
+        color: #53667F;
+    }
+    
+    .contentRight
+    {
+        float: left;
+        width: 80.5%;
+    }
+    .contentRight .title
+    {
+        height: 98px;
+        color: #4E7093;
+        line-height: 50px;
+        background-color: #EFF1F4;
+        padding-left: 10px;
+        min-width: 600px;
+    }
+    .contentRight .label
+    {
+        padding-left: 10px;
+    }
+    
+    .btn-primary
+    {
+        background-color: #77a701;
+        background-image: none;
+    }
+</style>
+<style type="text/css">
+    li
+    {
+        list-style: circle;
+        font-size: 12px;
+    }
+    li.title
+    {
+        list-style: none;
+    }
+    ul.list
+    {
+        margin-left: 17px;
+    }
+    div.content_wrap
+    {
+        width: 600px;
+        height: 380px;
+    }
+    div.content_wrap div.left
+    {
+        float: left;
+        width: 250px;
+    }
+    div.content_wrap div.right
+    {
+        float: right;
+        width: 340px;
+    }
+    div.zTreeDemoBackground
+    {
+        width: 250px;
+        height: 362px;
+        text-align: left;
+    }
+    ul.ztree
+    {
+        margin-top: 10px;
+        border: 1px solid #617775;
+        background: #f0f6e4;
+        overflow: auto;
+    }
+    ul.log
+    {
+        border: 1px solid #617775;
+        background: #f0f6e4;
+        width: 300px;
+        height: 170px;
+        overflow: hidden;
+    }
+    ul.log.small
+    {
+        height: 45px;
+    }
+    ul.log li
+    {
+        color: #666666;
+        list-style: none;
+        padding-left: 10px;
+    }
+    ul.log li.dark
+    {
+        background-color: #E3E3E3;
+    }
+    /* ruler */div.ruler
+    {
+        height: 20px;
+        width: 220px;
+        background-color: #f0f6e4;
+        border: 1px solid #333;
+        margin-bottom: 5px;
+        cursor: pointer;
+    }
+    div.ruler div.cursor
+    {
+        height: 20px;
+        width: 30px;
+        background-color: #3C6E31;
+        color: white;
+        text-align: right;
+        padding-right: 5px;
+        cursor: pointer;
+    }
+    
+      .ui-jqgrid td.edit-cell input{border:1px solid #A9BAC9;}
+</style>
+<div>
+    @*左侧分类树*@
+    <div class="contentLeft">
+        <div class="titA" style="text-align: center">
+            分类管理
+        </div>
+        <div class="content_wrap padding10" style="width: 234px; height: auto;">
+            <div class="zTreeDemoBackground left">
+                <ul id="leftTree" class="ztree" style="margin-top: 0px; width: 200px; height: 520px;">
+                </ul>
+            </div>
+        </div>
+    </div>
+    @*右侧媒体列表*@
+    <div class="contentRight" id="storycontentRight">
+        @*表格操作区域*@
+        <div class="title">
+            <div>
+                <label class="label">
+                    APP名称：
+                </label>
+                <input type="text" class="inp-txt" id="txtAppName" maxlength="30" />
+                <label class="label">
+                    商品名称：
+                </label>
+                <input type="text" class="inp-txt" id="txtCommodityName" maxlength="30" />
+                <a href="#Nogo" class="btn80 ml10" onclick="RefreshList();">查询</a>
+            </div>
+            <div>
+                <a id="btnAddCommodity" href="#Nogo" class="btn80 ml10" onclick="AddCommodity();">添加商品</a><span
+                    id="OtherCategoryArea"><a href="#Nogo" class="btn80 ml10" onclick="DelCommodityFromCategory();">
+                        移除分类</a> <a id="btnReOrder" href="#Nogo" class="btn80 ml10" data-opt="show">设置排序</a></span>
+            </div>
+            <div style="clear: both">
+            </div>
+        </div>
+        @*表格区域*@
+        <div>
+            <table id="CommodityGrid">
+            </table>
+            <div id="page">
+            </div>
+        </div>
+    </div>
+</div>
+<div id="loadImgDiv" style="overflow: hidden; width: auto; min-height: 0; height: 470px;
+    display: none;">
+    <iframe id="contentFrame" name="contentFrame" scrolling="no" src="" height="480"
+        width="630" frameborder="0" style="border: 0; overflow: hidden;"></iframe>
+</div>
+<input type="hidden" id="hidCategoryId" />
+<input type="hidden" id="picture" />
+<div id="dialogSelectCommodity" style="display: none;">
+    <iframe id="MyIframeSelectCommodity" frameborder="0" style="width: 100%; height: 700px;
+        overflow-y: auto; border: 0px;"></iframe>
+</div>
+<script type="text/javascript">
+    //表格相关全局变量
+    var Grid = {
+        PageSize: 20,
+        IsScroll: false,
+        LastScrollTop: 0
+    };
+    var selectedNode;
+    //左侧分类树设置
+    var setting = {
+        view: {
+            dblClickExpand: false,
+            showLine: true,
+            showIcon: true,
+            selectedMulti: false
+        },
+        check: {
+            enable: false,
+            chkboxType: {
+                "Y": "p",
+                "N": "s"
+            },
+            chkStyle: "radio",
+            radioType: "all" //标识整个Tree只准选中一个节点
+        },
+        callback: {
+            onClick: zTreeOnClick,
+            beforeDrag: function () { return false; }
+        },
+        data: {
+            simpleData: {
+                enable: true,
+                idKey: "id",
+                pIdKey: "pId"
+            }
+        },
+        edit: {
+            enable: true,
+            drag: {
+                isMove: false,
+                prev: false,
+                next: false,
+                inner: false
+            },
+            showRemoveBtn: false,
+            showRenameBtn: false
+        }
+    };
+    //分类选择树设置
+    var settingchx = {
+        view: {
+            dblClickExpand: false,
+            showLine: true,
+            showIcon: true,
+            selectedMulti: false
+        },
+        check: {
+            enable: true,
+            chkboxType: {
+                "Y": "p",
+                "N": "s"
+            },
+            chkStyle: "checkbox"
+        },
+        callback: {
+            onClick: zTreeChxOnClick,
+            beforeDrag: function () { return false; }
+        },
+        data: {
+            simpleData: {
+                enable: true,
+                idKey: "id",
+                pIdKey: "pId"
+            }
+        },
+        edit: {
+            enable: true,
+            drag: {
+                isMove: false,
+                prev: false,
+                next: false,
+                inner: false
+            },
+            showRemoveBtn: false,
+            showRenameBtn: false
+        }
+    };
+    //获取tree数据
+    function GetTreeData() {
+        var zNodes = [];
+        var zNodesChx = [];
+        var zNodesPar = [];
+        var appId = getQueryString('appId');
+        $.ajax({
+            url: "./GetSetTLevelCategory?appId=" + appId + "",
+            type: "POST",
+            datatype: "json",
+            async: false,
+            success: function (res) {
+                if (res.Success) {
+                    for (var i = 0; i < res.data.length; i++) {
+                        if (res.data[i].ParentId == "00000000-0000-0000-0000-000000000000") {
+                            zNodes.push({
+                                id: res.data[i].CategoryId,
+                                name: res.data[i].CategoryName,
+                                pId: "0",
+                                open: true,
+                                cName: res.data[i].CategoryName,
+                                cCount: res.data[i].CommodityCount,
+                                hasChildren: res.data[i].HasChildren,
+                                picturesPath: res.data[i].PicturesPath
+                            });
+                        }
+                    }
+                    var parentIds = [];
+                    for (var i = 0; i < res.data.length; i++) {
+                        if (res.data[i].ParentId != "00000000-0000-0000-0000-000000000000") {
+                            parentIds.push(res.data[i].ParentId);
+                        }
+                    }
+
+                    for (var i = 0; i < res.data.length; i++) {
+                        if (res.data[i].ParentId != "00000000-0000-0000-0000-000000000000") {
+                            var node = {
+                                open: true,
+                                id: res.data[i].CategoryId,
+                                name: res.data[i].CategoryName,
+                                pId: res.data[i].ParentId,
+                                cName: res.data[i].CategoryName,
+                                cCount: res.data[i].CommodityCount,
+                                hasChildren: res.data[i].HasChildren,
+                                picturesPath: res.data[i].PicturesPath
+                            };
+                            if (!node.hasChildren) {
+                                node.name = node.cName + "(" + node.cCount + ")";
+                            }
+                            zNodes.push(node);
+                        }
+                    }
+                }
+            }
+        });
+        return { zNodes: zNodes, zNodesChx: zNodesChx, zNodesPar: zNodesPar };
+    }
+    //左侧树获取并选中一个节点
+    function SelectFirstFinalNode() {
+        var firstFinalNode = null;
+        var treeObj = $.fn.zTree.getZTreeObj("leftTree");
+        var root = treeObj.getNodes()[0];
+        if (root.isParent) {
+            if (root.children[0].isParent) { 
+                if (root.children[0].children[0].isParent) {
+                    firstFinalNode = root.children[0].children[0].children[0];
+                } else {
+                    firstFinalNode = root.children[0].children[0];
+                }
+            } else {
+                firstFinalNode = root.children[0];
+            }
+        }
+        if (firstFinalNode != null) {
+            treeObj.selectNode(firstFinalNode, false);
+            $("#hidCategoryId").val(firstFinalNode.id);
+            selectedNode = firstFinalNode;
+        }
+        return firstFinalNode;
+    }
+    //设置父级分类
+    function InitSelParentNodes(zNodesPar, curVal) {
+        $("#selParentNodes").empty();
+        var optionDefault = $("<option>").val("1").text("根目录");
+        $("#selParentNodes").append(optionDefault);
+        var isSeled = false;
+        if (zNodesPar && zNodesPar.length > 0) {
+            for (var i = 0; i < zNodesPar.length; i++) {
+                if (zNodesPar[i].id.toLowerCase() == '324517bd-e303-48d1-977f-43203f5b88bc') {
+                    continue;
+                }
+                var option = $("<option>").val(zNodesPar[i].id).text(zNodesPar[i].Name);
+                $("#selParentNodes").append(option);
+                if (curVal && zNodesPar[i].id == curVal) {
+                    $("#selParentNodes").val(curVal);
+                    isSeled = true;
+                }
+            }
+        }
+        if (!isSeled) {
+            $("#selParentNodes").val("1");
+        }
+    }
+    //左侧树节点点击事件
+    function zTreeOnClick(event, treeId, treeNode) {
+        if (treeNode.isParent) {
+            var zTree = $.fn.zTree.getZTreeObj("leftTree");
+            zTree.expandNode(treeNode);
+        }
+        $("#hidCategoryId").val(treeNode.id);
+        selectedNode = treeNode;
+        $("#btnSelCategory").hide();
+        $("#OtherCategoryArea").show();
+
+        // 恢复排序
+        $("#btnReOrder").data("opt", "show").html("设置排序");
+
+        RefreshList();
+    }
+    //左侧树节点点击事件
+    function zTreeChxOnClick(event, treeId, treeNode) {
+        if (treeNode.isParent) {
+            var zTree = $.fn.zTree.getZTreeObj("selectTree");
+            zTree.expandNode(treeNode);
+        }
+    }
+
+    //刷新分类节点商品数
+    function UpdateCommodityCount(categoryId) {
+        $.ajax({
+            async: false,
+            type: "POST",
+            data: { categoryId: categoryId },
+            url: './GetCommodityCountInCategory2',
+            dataType: "json",
+            success: function (res) {
+                var treeObj = $.fn.zTree.getZTreeObj("leftTree");
+                var node = treeObj.getNodeByParam("id", categoryId, null);
+                node.cCount = res.Count;
+                node.name = node.cName + "(" + node.cCount + ")";
+                treeObj.updateNode(node);
+            }
+        });
+    }
+</script>
+<script type="text/javascript">
+    function AddCommodity() {
+        if (selectedNode.isParent) {
+            alert("只能在最末一级添加商品！");
+            return false;
+        }
+        if (selectedNode.level === 0) {
+            alert("根目录不允许添加商品！");
+            return false;
+        }
+
+        var appId = getQueryString('appId');
+        $("#MyIframeSelectCommodity").attr("src", '/SelectCommodity/' + ("@ViewBag.IsPavilion" == "True" ? "index" : "AoSelComdty") + '?appId=' + appId + '&random=' + Math.random());
+        var left = document.documentElement.clientWidth / 2 - 1050 / 2;
+        var top = 100;
+        try {
+            top = window.parent.getScrollTop();
+        }
+        catch (Error) {
+        }
+
+        $("#dialogSelectCommodity").jhtablebox({
+            width: "@ViewBag.IsPavilion" == "True" ? 1060 : 880,
+            height: 690,
+            modal: true,
+            resizable: false,
+            title: "商品选择",
+            position: [left, top]
+        });
+    }
+
+    function GoodsWallComplete(goodsList) {
+        var categoryIds = $("#hidCategoryId").val(), commodityIds = "";
+        for (var s = 0; s < goodsList.length; s++) {
+            commodityIds += goodsList[s].Id + ",";
+        }
+        $.ajax({
+            async: false,
+            type: "POST",
+            data: { categoryIds: categoryIds, commodityIds: commodityIds },
+            url: '/CommodityManage/AddCommodityToCategory2',
+            dataType: "json",
+            success: function (res) {
+                alert(res.Message);
+                UpdateCommodityCount(categoryIds);
+            }
+        });
+        //$("#CommodityGrid").addRowData(newGuid(), { "AppId": goodsList[s].appid, "AppName": goodsList[s].appname, "CommodityPic": goodsList[s].pic, "CommodityId": goodsList[s].Id, "CommodityName": goodsList[s].name, "DiscountPrice": goodsList[s].price, "RankNo": s + count + 1, "Type": "1" });
+        RefreshList();
+        windowClose();
+    }
+
+    function windowClose() {
+        $("#dialogSelectCommodity").jhtablebox("close");
+    }
+</script>
+<script type="text/javascript">
+    // 设置排序
+    $("#btnReOrder").click(function () {
+        var $this = $(this),
+            opt = $this.data("opt"),
+            preSellGrid = $('#CommodityGrid'),
+            rows = preSellGrid.jqGrid("getDataIDs"),
+            checkedNodes = $.fn.zTree.getZTreeObj("leftTree").getSelectedNodes()[0],
+            i = 0,
+            len = rows && rows.length,
+            cellData = "",
+            isChecked = true,
+            sendData = { "idSort": "", "cryId": checkedNodes.id },
+            sortrow = $this.data("sortrow"),
+            sortcell = $this.data("sortcell");
+
+        if (opt === "show") {
+            if (len <= 0) {
+                return false;
+            }
+
+            if (sortrow) {
+                preSellGrid.jqGrid("restoreCell", sortrow, sortcell);
+            }
+
+            for (i = len - 1; i >= 0; i -= 1) {
+                preSellGrid.jqGrid("editRow", rows[i]);
+            }
+            $this.html("保存排序");
+            $this.data("opt", "set");
+        } else if (opt === "set") {
+            for (; i < len; i += 1) {
+                cellData = "";
+                cellData = $("#" + rows[i] + "_SetCategorySort").val();
+                if (cellData != undefined && cellData.match(/^-?0{1}([.]\d{1,2})?$|^-?[1-9]\d*([.]{1}[0-9]{1,2})?$/) === null) {
+                    isChecked = false;
+                    break;
+                }
+                if ($("#" + rows[i] + " .edit-cell").length > 0) {
+                    cellData = rows[i] + "," + cellData;
+                    sendData.idSort += cellData + "|";
+                }
+            }
+
+            if (!isChecked) {
+                cellData = "";
+                sendData.idSort = "";
+
+                alert("请输入正确排序号，可以是负数；例：-1.20");
+                return false;
+            }
+
+            if (!sendData.idSort) {
+                return false;
+            }
+
+            sortSave(sendData, $this);
+            $this.data("opt", "show");
+        }
+
+        return false;
+    });
+
+    // 排序保存
+    function sortSave(sendData, elem) {
+        $.ajax({
+            async: true,
+            type: "POST",
+            dataType: "json",
+            data: sendData,
+            url: "SetRankNoMultiTLevel",
+            success: function (ret) {
+                if (ret.Success === 0) {
+                    alert("排序成功");
+                } else {
+                    alert(ret.Message);
+                }
+                elem.html("设置排序");
+                RefreshList(0);
+            },
+            error: function (err) {
+                alert("操作失败.");
+            }
+        });
+    }
+
+    //从分类中移除商品
+    function DelCommodityFromCategory() {
+        var categoryId = $("#hidCategoryId").val();
+        var commodityIds = "";
+        var commodityIdArr = $("#CommodityGrid").jqGrid('getGridParam', 'selarrrow');
+        if (commodityIdArr.length == 0) {
+            alert("请选择需要移除的商品");
+            return false;
+        }
+        var result = confirm("您确认要移除该商品吗？");
+        if (result !== true) {
+            return false;
+        }
+        for (var i = 0; i < commodityIdArr.length; i++) {
+            commodityIds += commodityIdArr[i] + ",";
+        }
+        commodityIds = commodityIds.length > 0 ? commodityIds.substr(0, commodityIds.length - 1) : commodityIds;
+        $.ajax({
+            async: false,
+            type: "POST",
+            data: { categoryId: categoryId, commodityIds: commodityIds },
+            url: './DelCommodityFromCategory2',
+            dataType: "json",
+            success: function (res) {
+                alert(res.Message);
+                RefreshList();
+                UpdateCommodityCount(categoryId);
+            }
+        });
+    }
+
+    //初始化表格
+    function InitGrid() {
+        var appName = $.trim($("#txtAppName").val());
+        var commodityName = $.trim($("#txtCommodityName").val());
+        var categoryId = $("#hidCategoryId").val();
+        var data = {
+            "appName": appName,
+            "commodityName": commodityName,
+            "categoryId": categoryId,
+            "PageNo": 1,
+            "PageSize": Grid.PageSize,
+            "appId": getQueryString('appId')
+        };
+        $("#CommodityGrid").jqGrid({
+            datatype: "json",
+            postData: data,
+            url: "GetCommodityInTLevelCategory",
+            mtype: 'POST',
+            colNames: ['AppId', 'APP图标', 'APP名称', '商品图片', '商品名称', '价格(元)', '已上架分类', '库存', '排序号'],
+            colModel: [{
+                name: 'AppId',
+                index: 'AppId',
+                width: 5,
+                align: "center",
+                sortable: false,
+                hidden: true
+            },
+                {
+                    name: 'AppIcon',
+                    index: 'AppIcon',
+                    width: 60,
+                    align: "center",
+                    sortable: false,
+                    formatter: FormatterColumnAppIcon
+                },
+                {
+                    name: 'AppName',
+                    index: 'AppName',
+                    width: 200,
+                    align: "center",
+                    sortable: false
+                },
+                {
+                    name: 'CommodityPic',
+                    index: 'CommodityPic',
+                    width: 60,
+                    align: "center",
+                    sortable: false,
+                    formatter: FormatterColumnCommodityPic
+                },
+                {
+                    name: 'CommodityName',
+                    index: 'CommodityName',
+                    width: 200,
+                    align: "center",
+                    sortable: false
+                },
+                {
+                    name: 'CommodityPrice',
+                    index: 'CommodityPrice',
+                    width: 100,
+                    align: "center",
+                    sortable: false
+                },
+                {
+                    name: 'CommodityCategory',
+                    index: 'CommodityCategory',
+                    width: 100,
+                    align: "center",
+                    sortable: false
+                },
+                {
+                    name: 'CommodityStock',
+                    index: 'CommodityStock',
+                    width: 100,
+                    align: "center",
+                    sortable: false
+                },
+                {
+                    name: 'SetCategorySort',
+                    index: 'SetCategorySort',
+                    width: 100,
+                    align: "center",
+                    sortable: false,
+                    editable: true,
+                    editrules:
+                    { custom: true, custom_func: CheckRankNoInput, required: true }
+                }
+            ],
+            rowNum: Grid.PageSize,
+            pager: 'page',
+            height: '450',
+            pagerAlone: true,
+            multiselect: true,
+            autowidth: true,
+            multiboxonly: false,
+            rownumbers: true,
+            forceFit: true,
+            scroll: false,
+            shrinkToFit: true,
+            cellEdit: true,
+            cellsubmit: "remote",
+            beforeSubmitCell: function (rowid, cellname, value, iRow, iCol) {
+                $("#CommodityGrid").setGridParam({ "cellurl": "SetRankNoMultiTLevel?idSort={rowId},{rankNo}&cryId={cryId}".replace("{rowId}", rowid).replace("{rankNo}", value).replace("{cryId}", $.fn.zTree.getZTreeObj("leftTree").getSelectedNodes()[0].id) });
+            },
+            afterSaveCell: function (rowid, cellname, value, iRow, iCol, result) {
+                if (result != undefined) {
+                    var resp = eval('(' + result.responseText + ')');
+                    if (resp.Success === 1) {
+                        alert(resp.Message);
+                    }
+                }
+                $("#CommodityGrid").trigger("reloadGrid");
+            },
+            beforeEditCell: function (rowid, cellname, v, iRow, iCol) {
+                $("#btnReOrder").data({ "sortrow": iRow, "sortcell": iCol });
+            },
+            gridComplete: function () {
+                if (Grid.IsScroll) $(".ui-jqgrid-bdiv").scrollTop(Grid.LastScrollTop);
+                Grid.IsScroll = false;
+                Grid.LastScrollTop = 0;
+
+                var curPage = $("#CommodityGrid").getGridParam("page");
+                var records = $("#CommodityGrid").getGridParam("records");
+                var totalPage = 0;
+                var temp = records % Grid.PageSize;
+                if (temp == 0) totalPage = records / Grid.PageSize;
+                else totalPage = parseInt(records / Grid.PageSize) + 1;
+                if (curPage == 1) {
+                    $(".ui-row-ltr:first > td:last > a:last").hide();
+                    $(".ui-row-ltr:first > td:last > a:first").hide();
+                }
+                if (curPage == totalPage) $(".ui-row-ltr:last > td:last > a:first").next().hide();
+
+
+                // 设置排序列的展示隐藏
+                var treeObj = $.fn.zTree.getZTreeObj("leftTree");
+                var curSelectNodes = treeObj.getSelectedNodes();
+                if (curSelectNodes && curSelectNodes.length > 0) {
+                    var node = curSelectNodes[0];
+
+                    if (node.id == "1" || node.id === "00000000-0000-0000-0000-000000000000") {
+                        $("#CommodityGrid").hideCol('SetCategorySort');
+                        AdjustLayout();
+                    } else {
+                        $("#CommodityGrid").showCol('SetCategorySort');
+                        AdjustLayout();
+                    }
+                }
+            }
+        });
+    }
+    //格式化app图标
+    function FormatterColumnAppIcon(callvalue, opts, rowdata) {
+        return "<img width=\"45\" height=\"40\" src=\"" + callvalue + "\" />";
+    }
+    //格式化商品图片
+    function FormatterColumnCommodityPic(callvalue, opts, rowdata) {
+        return "<img width=\"45\" height=\"40\" src=\"" + callvalue + "\" />";
+    }
+    //更新排序
+    function CheckRankNoInput(cellvalue, opts, rowdata) {
+        if (cellvalue != undefined && cellvalue.match(/^-?0{1}([.]\d{1,2})?$|^-?[1-9]\d*([.]{1}[0-9]{1,2})?$/) == null) {
+            alert("请输入正确排序号，可以是负数；例：-1.20");
+            return false;
+        }
+        return [true, ""];
+    }
+    //刷新列表
+    function RefreshList(pageNo) {
+        var isPageNo = typeof (pageNo) == "number";
+        if (isPageNo) {
+            if (pageNo <= 0) pageNo = $("#CommodityGrid").getGridParam("page");
+            Grid.IsScroll = true;
+            Grid.LastScrollTop = $(".ui-jqgrid-bdiv").scrollTop();
+        } else {
+            pageNo = 1;
+        }
+        var appName = $.trim($("#txtAppName").val());
+        var commodityName = $.trim($("#txtCommodityName").val());
+        var categoryId = $("#hidCategoryId").val();
+        $("#btnReOrder").show().next("label").show();
+
+        var data = {
+            "appName": appName,
+            "commodityName": commodityName,
+            "categoryId": categoryId,
+            "PageNo": pageNo,
+            "PageSize": Grid.PageSize
+        };
+        $('#CommodityGrid').jqGrid('setGridParam', {
+            datatype: "json",
+            postData: data,
+            url: 'GetCommodityInTLevelCategory?' + new Date().getTime(),
+            mtype: 'POST'
+        });
+        $('#CommodityGrid').trigger("reloadGrid", [{
+            page: pageNo
+        }]);
+    }
+</script>
+<script type="text/javascript">
+    //调整页面布局
+    function AdjustLayout() {
+        $(".contentLeft").height($(window).height());
+        $("#leftTree").height($(window).height() - $(".contentLeft .titA").height() - $(".contentLeft .nav").height() - 50);
+        $(".contentRight").width($(window).width() - $(".contentLeft").width() - 5);
+        $("#CommodityGrid").setGridWidth($(window).width() - $(".contentLeft").width() - 15);
+        $("#CommodityGrid").setGridHeight($(window).height() - $(".contentRight .title").height() - 65);
+    }
+    //页面加载
+    $(function () {
+        var treeData = GetTreeData();
+        $.fn.zTree.init($("#leftTree"), setting, treeData.zNodes);
+
+
+        var firstFinalNode = SelectFirstFinalNode();
+        if (firstFinalNode != null) {
+            $("#btnSelCategory").hide();
+            $("#OtherCategoryArea").show();
+            InitGrid();
+        }
+
+        AdjustLayout();
+        $(window).resize(function () {
+            AdjustLayout();
+        });
+        $('#CategoryImg').click(function () {
+            var self = this;
+            upImageCallback.callback_1 = function (data) {
+                self.src = data;
+                $('#picture').val(data);
+                dialogImgClosed();
+            };
+            ShowUpImg({
+                imgPath: '',
+                width: '100',
+                height: '100',
+                windowTitle: '商品缩略图',
+                callback: 'callback_1'
+            });
+        });
+    });
+</script>

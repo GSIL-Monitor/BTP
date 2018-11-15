@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<LogEntitys>
+  <LogEntity name="default">
+    <Regex><![CDATA[[\{@]{1,1}[^\}]{0,}\}{1,1}]]></Regex>
+    <Content>
+      <![CDATA[
+截获器标记：{@InterceptorFlag}
+时间：{@datetime}
+输入参数：
+{@Input}
+=================================================================]]>
+    </Content>
+  </LogEntity>
+  <LogEntity name="sys_log_executing">
+    <Regex><![CDATA[[\{@]{1,1}[^\}]{0,}\}{1,1}]]></Regex>
+    <Content>
+      <![CDATA[
+截获器标记：{@InterceptorFlag}
+截 获 方式：{@InterceptManner}
+请求上下文：{@RequestContext}
+调用方法：{@MethodInfo}
+处理开始时间：{@DateTime}
+方法输入参数：
+{@InputArgs}
+=================================================================]]>
+    </Content>
+  </LogEntity>
+  <LogEntity name="sys_log_executed">
+    <Regex><![CDATA[[\{@]{1,1}[^\}]{0,}\}{1,1}]]></Regex>
+    <Content>
+      <![CDATA[
+截获器标记：{@InterceptorFlag}
+调用方法：{@MethodInfo}
+处理结束时间：{@DateTime}
+=================================================================]]>
+    </Content>
+  </LogEntity>
+</LogEntitys>

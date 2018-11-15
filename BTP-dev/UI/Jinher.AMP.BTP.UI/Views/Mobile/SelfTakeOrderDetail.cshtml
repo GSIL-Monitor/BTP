@@ -1,0 +1,389 @@
+﻿@using System
+@using System.Web
+@using Jinher.AMP.BTP.Deploy.CustomDTO
+@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+    CommodityOrderSDTO coModel = this.Model as CommodityOrderSDTO;
+    //总件数
+    int count = 0;
+    if (coModel.ShoppingCartItemSDTO != null && coModel.ShoppingCartItemSDTO.Count > 0)
+    {
+        foreach (var item in coModel.ShoppingCartItemSDTO)
+        {
+            count += item.CommodityNumber;
+        }
+    }
+    string pay = coModel.Payment == 1 ? "货到付款" : "在线支付";
+    string rInfo = "不开发票";
+    string title = "";
+    string elecInfo = "";
+    if (coModel.InvoiceDTO != null)
+    {
+        switch (coModel.InvoiceDTO.Category)
+        {
+            case 1:
+                rInfo = "增值税普通发票 ";
+                title = coModel.InvoiceDTO.InvoiceTitle;
+                break;
+            case 2:
+                rInfo = "电子发票";
+                title = coModel.InvoiceDTO.InvoiceTitle;
+
+                elecInfo = coModel.InvoiceDTO.ReceiptPhone;
+                if (!string.IsNullOrEmpty(coModel.InvoiceDTO.ReceiptEmail))
+                {
+                    elecInfo += coModel.InvoiceDTO.ReceiptEmail;
+                }
+                break;
+            case 4:
+                rInfo = "增值税专用发票";
+                break;
+        }
+    }
+    string callDisplay = string.IsNullOrEmpty(coModel.PickUpPhone) ? "display:none" : "";
+    var receiptAddress = coModel.Province + "" + coModel.City + "" + coModel.District + "" + coModel.ReceiptAddress;
+    var brainhoopAppId = new Guid("cf063155-e6e9-4019-ba12-6b44b704243f");
+}
+@helper   formatTime(TimeSpan? time)
+    { string timeStr = "";
+      if (time.HasValue)
+      { timeStr = time.Value.ToString("hh") + "：" + time.Value.ToString("mm"); } 
+    @timeStr;
+}
+@helper Currency()
+    {
+    @Jinher.AMP.BTP.UI.Util.MobileCookies.GetCurrency();
+}
+@section TitleHtml
+{
+    <title>订单详情</title>
+}
+@section CssStyles{
+    <link rel="stylesheet" href="/Content/Mobile/css.css" />
+    <link rel="stylesheet" href="/Content/style/ratchet.css" />
+    <link rel="stylesheet" href="/Content/style/skin.css" />
+    <link rel="stylesheet" href="/Content/Mobile/zphStyle/font-awesome.css" />
+    <link rel="stylesheet" href="/Content/style/icons.css" />
+    <link rel="stylesheet" href="/Content/style/iCheck.css" />
+    <link rel="stylesheet" href="/Content/style/iSpinner.css" />
+    <link rel="stylesheet" href="/Content/Mobile/zphStyle/zOrder.css" />
+    <style type="text/css">
+        .addressInfo p
+        {
+            margin-top: 5px;
+            color: #000;
+        }
+        .addressInfo p > span
+        {
+            float: right;
+            color: #3d4041;
+        }
+        .addressInfo p > span > span
+        {
+            margin-left: 20px;
+        }
+        .addressInfo p > span .icon
+        {
+            transform: rotate(-95deg);
+            margin-left: 10px;
+            font-size: 16px;
+            display: inline-block;
+        }
+        p
+        {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 12px;
+            color: #777;
+        }
+    </style>
+}
+@section ClientScript
+{
+    <script type="text/javascript">
+       function JsVilaDataNull(obj) {
+            if (obj != undefined && obj != "" && obj != "null" && obj != null && obj != "undefined" && obj) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+         function ChangeDateFormatCur(cellval, state) {
+            try {
+                var date = new Date(cellval);
+                var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+                var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+                var hour = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+                var minu = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+                if (state == 1) {
+                    return date.getFullYear() + "-" + month + "-" + currentDate + " " + hour + ":" + minu;
+                }
+                else {
+                    return date.getFullYear() + "-" + month + "-" + currentDate;
+                }
+            } catch (e) {
+                return "";
+            }
+        }
+        //获取售后状态显示文本。
+        function getAfterSaleState_so(afterSaleState)
+        {
+             //售后-订单状态（必填）：确认收货=3，售后退款中=5,已退款=7，商家未收到货=10 ,金和处理退款中=12,售后交易成功=15
+             var text = "";
+             if(afterSaleState == 3)
+             {
+                text = "交易成功";
+             }
+             else if(afterSaleState == 5)
+             {
+                  text = "退款中";
+             }
+             else if(afterSaleState == 7)
+             {
+                text = "已退款";
+             }
+             else if(afterSaleState == 10)
+             {
+                 text = "退款中";
+             }
+             else if(afterSaleState == 12)
+             {
+                text = "处理退款中";
+             }
+             else if(afterSaleState == 15)
+             {
+                 text = "交易成功";
+             }
+             return text;
+
+        }
+       
+        //获取状态的文本内容。
+        function getOrderStateText_aso(state,afterSaleState,shipmentsTime) {
+            //最新请参见Model.CommodityOrder.
+            //订单状态（必填）：未支付=0，未发货=1，已发货=2，确认收货=3，商家取消订单=4，客户取消订单=5，超时交易关闭=6，已退款=7，待发货退款中=8，已发货退款中=9,已发货退款中商家同意退款，商家未收到货=10,付款中=11,金和处理退款中=12,出库中=13，出库中退款中=14
+//            var state = data.State;
+//            var afterSaleState = data.StateAfterSales;
+//            var shipmentsTime = data.ShipmentsTime;
+              //转换时间格式 为了计算日期时间差
+            var myDate = new Date();
+            var month = myDate.getMonth() + 1 < 10 ? "0" + (myDate.getMonth() + 1) : myDate.getMonth() + 1;
+            var currentDate = myDate.getDate() < 10 ? "0" + myDate.getDate() : myDate.getDate();
+            var eDate = myDate.getFullYear() + "-" + month + "-" + currentDate;
+
+            var text = "";
+            switch (state) {
+                case 0:
+                    text = "待付款";
+                    break;
+                case 1:
+                    text = "待发货";
+                    break;
+                case 13:
+                    text = "出库中";
+                    break;
+                case 2:
+                   //计算时间差
+                    var sDate = ChangeDateFormatCur(shipmentsTime, 2);
+                    var sArr = sDate.split("-");
+                    var eArr = eDate.split("-");
+                    var sRDate = new Date(sArr[0], sArr[1], sArr[2]);
+                    var eRDate = new Date(eArr[0], eArr[1], eArr[2]);
+                    var result = (eRDate - sRDate) / (24 * 60 * 60 * 1000) + 1;
+                    //
+                    text ="已发货(第" + result + "天)";
+                    break;
+                case 3:
+                    text = "交易成功";
+                    //已开始售后，显示售后状态。 
+                    if(JsVilaDataNull(afterSaleState))
+                    {
+                        var asText = getAfterSaleState_so(afterSaleState);
+                        if(JsVilaDataNull(asText))
+                        {
+                            text = asText;
+                        }
+                    }
+                    break;
+                case 4:
+                    text = "交易失败";
+                    break;
+                case 5:
+                    text = "交易失败";
+                    break;
+                case 6:
+                    text = "交易关闭";
+                    break;
+                case 7:
+                    text = "已退款";
+                    break;
+                case 8:
+                case 9:
+                case 10:
+                case 14:
+                    text = "退款中";
+                    break;
+                case 11:
+                    text = "待发货";
+                    break;
+                case 12:
+                    text = "处理退款中";
+                    break;
+                default:
+                    text = "";
+                    break;
+            }
+            return text;
+        }
+        $(function () {
+            
+            saveContextDTOByUrl();
+            var stateText = getOrderStateText_aso(@coModel.State,@coModel.StateAfterSales,"@coModel.ShipmentsTime");
+            $("#fstate").text(stateText);
+            var url = getBtpDomain() + 'Mobile/CommodityView?orderId=' + '@coModel.CommodityOrderId' + "&shopId=" + sessionStorage.appId + "&type=tuwen";
+            shareAndroid("我已经购买了这个商品,还不错哦,你也快去看看吧!", '@coModel.ShoppingCartItemSDTO[0].Name', '@coModel.ShoppingCartItemSDTO[0].Pic', url, 2, 2);
+        });
+         function ChangeDateFormatNew(cellval) {
+            try {
+                var date = new Date(parseInt(cellval.replace("/Date(", "").replace(")/", ""), 10));
+                var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+                var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+                return date.getFullYear() + "年" + month + "月" + currentDate + "日";
+               
+            } catch (e) {
+                return "";
+            }
+        }
+    </script>
+}
+<body style="background-color: #B4B4B4;">
+    <!--底部支付按钮-->
+    <nav class="bar bar-tab" style="z-index: 999;">
+        <div class="tab-item pay-cancal" style="width: 2%">
+            <div class="h4">实付款:<span id="payprice">@Currency()@coModel.Price.ToString("0.00")</span> <small class="f-m-l10">共<span id="spanCommodityNum">@count</span>件</small> </div>
+        </div>
+    </nav>
+    <div class="content">
+        <ul class="table-view">
+            <li class="table-view-cell full-cell" style="height: 50px;">订单状态: <span class="f-heightlight"
+                id="fstate">待发货</span></li>
+        </ul>
+        <ul class="table-view" id="liExp" style="display: none;">
+            <li class="table-view-cell full-cell" style="border-bottom: 0px; padding-bottom: 0px;">
+                物流公司：<span id="ShipExpCo"></span> </li>
+            <li class="table-view-cell" style="padding-top: 6px;">物流单号：<span id="ExpOrderNo"></span>
+                <button id="btnExpressRoute" class="btn btn-primary" style="float: right; right: 10px;
+                    top: 5px;">
+                    物流详情</button>
+                <span style="clear: both"></span></li>
+        </ul>
+        <ul class="table-view">
+            <li class="table-view-cell media" style="width: 100%; padding-right: 30px;"><a class="f-mail">
+                <div class="media-body">
+                    <span id="ReceiptUserName">@coModel.ReceiptUserName</span>&nbsp;&nbsp;<span id="ReceiptPhone">@coModel.ReceiptPhone</span>
+                    <p id="ReceiptAddress">
+                        @receiptAddress</p>
+                </div>
+            </a></li>
+        </ul>
+        @if (coModel.SelfTakeFlag == 1)
+        {
+            <ul class="table-view addressInfo">
+                <li class="table-view-cell media" style="width: 100%; padding-right: 20px;">
+                    <p>
+                        提货地址:<span>@coModel.SelfTakeAddress</span></p>
+                    @if (coModel.PickUpTime.HasValue && coModel.PickUpStartTime.HasValue && coModel.PickUpEndTime.HasValue)
+                    {
+                        <p style="font-size: 12px;">
+                            提货时间:<span>@coModel.PickUpTime.Value.ToString("yyyy年MM月dd日")<span>@formatTime(coModel.PickUpStartTime)~@formatTime(coModel.PickUpEndTime)</span></span></p>
+                    }
+                    else
+                    {
+                        <p style="font-size: 12px;">
+                            提货时间:<span>空</span></p>
+                    }
+                    <p>
+                        提货人:<span>@coModel.PickUpName<span> @coModel.PickUpPhone</span><a href="tel:@coModel.PickUpPhone"><i class="icon icon-phone" style="color: #3d4041; @callDisplay"></i></a></span></p>
+                </li>
+            </ul>
+        }
+        <div class="table-view" style="margin-bottom: 0px; over-flow: hidden;">
+            <div style="margin-top: 10px; margin-bottom: 10px; margin-left: 10px; margin-right: 10px;">
+                <span><span id="spanShopName">@ViewBag.AppName</span></span>
+            </div>
+        </div>
+        <ul id="ulCommodityList" class="table-view" style="border-top: 0px;" selftakeflag="1">
+            @foreach (var item in coModel.ShoppingCartItemSDTO)
+            {
+                string size = string.IsNullOrEmpty(item.Size) ? item.Size = "," : item.Size;
+                <li class="table-view-cell media full-cell" commodityid="@item.Id"
+                selftakeflag="1"><a>
+                    <div class="media-object pull-left " style="position: relative; width: 70px; height: 70px;">
+                        <img class="img" src="@item.Pic"
+                            style="width: 70px; height: 70px;">
+                        @if (coModel.SelfTakeFlag == 1)
+                        {
+                            <div class="selfTake" style="display: block">
+                                <img class="selfTakeImg" style="display: block; width: 70px;" src="/Images/selftake.png"
+                                    alt="自提">
+                            </div>
+                        }
+                    </div>
+                    <div class="media-body">
+                        <b class="product f-double-row f-double-row">@item.Name</b>
+                        <p class="summary" style="font-size: .8rem;">
+                            <span style="overflow: hidden; max-height: 1.2rem; display: block;">@(size.Replace("，", " ").Replace(",", " "))</span>
+                            <span>数量:@item.CommodityNumber</span>
+                        </p>
+                        <p class="price">
+                            <span>@Currency()@item.Price</span></p>
+                    </div>
+                </a></li>
+            }
+        </ul>
+        <ul class="table-view">
+            <li class="table-view-cell full-cell"><span class="pull-right" id="payType">@pay</span>支付方式
+            </li>
+            @if (string.IsNullOrEmpty(elecInfo))
+            {
+                <li class="table-view-cell full-cell"><span id="spanReceiptInfo" class="pull-right"
+                    style="max-width: 80%;">@rInfo@if (!string.IsNullOrEmpty(title))
+                                                  {
+                        <span>&nbsp; &nbsp; &nbsp; &nbsp;</span>
+                                                  }@title</span>发票信息 </li>
+            }
+            else
+            {
+                <li class="table-view-cell full-cell"><span id="spanReceiptInfo" class="pull-right"
+                    style="max-width: 80%;">@rInfo@if (!string.IsNullOrEmpty(title))
+                                                  {
+                        <span>&nbsp; &nbsp; &nbsp; &nbsp;</span>
+                                                  }@title<br />@elecInfo</span>发票信息 </li>   
+            }
+        </ul>
+        <ul class="table-view">
+            <li class="table-view-cell full-cell" style="border-bottom: 0px; padding-bottom: 0px;">
+                下单时间： <span id="SubTime">@coModel.SubTime</span></li>
+            <li class="table-view-cell" style="padding-top: 0px;">订单编号： <span id="Code">@coModel.Code</span>
+            </li>
+        </ul>
+        @if (Jinher.AMP.BTP.UI.Util.MobileCookies.AppId != brainhoopAppId)
+        {
+        <ul class="table-view">
+            <li class="table-view-cell full-cell" style="border-bottom: 0px; padding-bottom: 0px;">
+              <span>备</span><span style="padding-left: 25px;">注：</span> <span id="Details">@coModel.Details</span></li>
+            
+        </ul>
+        }
+        else
+        {
+        <ul class="table-view">
+            <li class="table-view-cell full-cell" style="border-bottom: 0px; padding-bottom: 0px;">
+              <span>邮</span><span style="padding-left: 25px;">箱：</span> <span id="Details">@coModel.Details</span></li>
+            
+        </ul>          
+        }
+        
+    </div>
+</body>

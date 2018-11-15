@@ -1,0 +1,453 @@
+﻿@{
+    ViewBag.Title = "Index";
+
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.FreightDTO> freightList = ViewBag.FreightList;
+}
+<head>
+    <title>Index</title>
+    <style type="text/css">
+        .hDiv
+        {
+            float: right;
+            padding-right: 10px;
+        }
+        .hDiv a.state
+        {
+            color: #409FFF;
+        }
+        .hDiv a.state:hover
+        {
+            color: #80BDE3;
+        }
+        .t_trNew
+        {
+            height: 30px;
+        }
+        .t_tr_tdHead
+        {
+            width: 100%;
+            text-align: left;
+            padding-left: 10px;
+            border-bottom: none;
+            color: #6d819a;
+            font-size: 16px;
+            font-weight: 100;
+        }
+        .btn120
+        {
+            background: url("../Content/default/images/btn120.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+            box-shadow: 1px 1px 2px #dbdbdb;
+            color: #5f7392;
+            display: inline-block;
+            height: 28px;
+            line-height: 28px;
+            text-align: center;
+            vertical-align: middle;
+            width: 120px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+    </style>
+    <script type="text/javascript">
+
+        var request = {
+            appId: "@(ViewBag.AppId)",
+            templateId: ""
+        };
+
+        function getQueryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]); return null;
+        }
+        function GroupReturnUrl() {
+            var url = "";
+            var flag = getQueryString("flag");
+            if (flag == "add") {
+                url = "?flag=add";
+                if (getQueryString("state")) {
+                    url = url + "&state=" + getQueryString("state");
+                    if (getQueryString("appId")) {
+                        url = url + "&appId=" + getQueryString("appId");
+                    }
+                }
+                else if (getQueryString("appId")) {
+                    url = url + "&appId=" + getQueryString("appId");
+                }
+            }
+            else if (flag == "edit") {
+                url = "?flag=edit";
+                if (getQueryString("commodityId")) {
+                    url = url + "&commodityId=" + getQueryString("commodityId");
+                }
+                if (getQueryString("state")) {
+                    url = url + "&state=" + getQueryString("state");
+                }
+            }
+            else {
+
+            }
+            return url;
+        }
+        function OpenUpdate(id) {
+            var url = GroupReturnUrl();
+            if (url == "") {
+                url = "?Id=" + id;
+            }
+            else {
+                url = url + "&Id=" + id;
+            }
+            window.location.href = "/Freight/UpdateFreight" + url;
+        }
+        $(document).ready(function () {
+            var flag = getQueryString("flag");
+            if (flag == "add") {
+                $("#btnBack").click(function () {
+                    var url = "/Commodity/AddCommodity"
+                    if (getQueryString("state")) {
+                        url = url + "?state=" + getQueryString("state");
+                        if (getQueryString("appId")) {
+                            url = url + "&appId=" + getQueryString("appId");
+                        }
+                    }
+                    else if (getQueryString("appId")) {
+                        url = url + "?appId=" + getQueryString("appId");
+                    }
+
+                    window.location.href = url;
+                });
+            }
+            else if (flag == "edit") {
+                $("#btnBack").click(function () {
+                    var url = "/Commodity/UpdateCommodity?commodityId=" + getQueryString("commodityId");
+                    if (getQueryString("state")) {
+                        url = url + "&state=" + getQueryString("state");
+                    }
+                    window.location.href = url;
+                });
+            }
+            else {
+                $("#btnBack").css("display", "none");
+            }
+
+            $("#pager").jhpager({
+                dataType: 'html',
+                requestType: 'post',
+                dataSource: '/Freight/PartialIndex',
+                async: true,
+                totalCount: '@ViewBag.Count',
+                rowNum: 20,
+                requestSuccess: showContent,
+                beforeRequest: function () {
+                    $("#content_makes").empty();
+                    $(window.parent.document).scrollTop(0);
+                    ajaxLoading(1, '#content_makes');
+                },
+                requestFailure: function () {
+                }
+            });
+            //$("#action").bind("click", function ()
+            //{
+            //    //window.open("/Store/AddStore/");
+            //    window.location.href = "/Freight/AddFreight"+GroupReturnUrl();
+            //})
+        });
+        function showContent(event, data) {
+            $("#content_makes").html(data);
+            newSetIframeHeight();
+            //                $("#dataTable").replaceWith(data);
+        }
+        function IsContactCommodity(id) {
+            var isContact = false;
+            var postData = {};
+            postData.Id = id;
+            $.ajax({
+                url: '/Freight/IsContactCommodity',
+                type: 'post',
+                data: postData,
+                dataType: 'json',
+                async: false,
+                success: function (data) {
+                    if (data.ResultCode == "0") {
+                        isContact = true;
+                    }
+                },
+                error: function () {
+                    isContact = false;
+                }
+            });
+            return isContact;
+        }
+        function DelFreight(id) {
+            var iscontact = IsContactCommodity(id);
+            var tip = "是否确定删除运费模板?";
+            if (iscontact) {
+                //                tip = "该模板已被使用，删除后运费数据将消失，是否确认删除？";
+                alert("该模板已被使用，不允许删除。");
+                return;
+            }
+            if (!confirm(tip)) {
+                return;
+            }
+
+            var postData = {};
+            postData.Id = id;
+            $.ajax({
+                url: '/Freight/DelFreight',
+                type: 'post',
+                data: postData,
+                dataType: 'json',
+                success: function (data) {
+                    if (data.ResultCode == "0") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    alert('删除运费模板失败');
+                }
+            });
+
+        }
+        //查看关联的商品
+        function unjoinCommodity(templateId){
+            console.log(templateId);
+
+            showDialog(templateId, true, "closeDialog", "关联的商品");
+        }
+        //关联适用的商品
+        function joinCommodity(templateId){
+            console.log(templateId);
+            showDialog(templateId, false, "closeDialog", "选择商品");
+        }
+
+        function showDialog(templateId, showAssociated, callback, dislogTitle){
+
+            request.templateId = templateId;
+
+            var url = "/selectCommodity/freightTemplateJoinCommodity?appId=" + request.appId 
+                                                                 + "&templateId=" + templateId 
+                                                                 + "&showAssociated=" + showAssociated
+                                                                 + "&callback=" + callback;
+
+            $("#iframe").attr("src", url);
+            
+            var left = document.documentElement.clientWidth / 2 - 1050 / 2;
+            var top = 100;
+            try {
+                top = window.parent.getScrollTop();
+            }
+            catch (error) { }
+
+            $("#dialog").jhtablebox({
+                width: 880,
+                height: 690,
+                modal: true,
+                resizable: false,
+                title: dislogTitle,
+                position: [left, top]
+            });
+        }
+
+        function closeDialog(){
+            $("#dialog").jhtablebox("hide");
+        }
+    </script>
+</head>
+<div class="box" style="padding: 10px 0 10px 0px;">
+    <div class="content">
+        <div class="right1">
+            <div class="manag_bot" style="width: 100%;">
+                <div id="content_makes" style="margin-top: 10px;">
+                    @{
+                        if (freightList != null && freightList.Count > 0)
+                        {
+                            
+                        <a class="btn120" href="/freight/addFreight?appId=@(ViewBag.AppId)&userId=@(Request.QueryString["userId"])&sessionId=@(Request.QueryString["sessionId"])" id="action">
+                            新增运费模板</a> <a class="btn120" href="#" id="btnBack">返回</a>
+                            foreach (Jinher.AMP.BTP.Deploy.CustomDTO.FreightDTO freight in freightList)
+                            {
+                        <table border="0" cellspacing="0" cellpadding="0" class="m_talbe m_talbe2">
+                            <tr class="t_tr1">
+                                <td class="t_tr_tdHead" style="text-align: left; border-bottom: none;">
+                                    @freight.Name
+                                    <div class="hDiv">
+                                        <a href="javascript:;" class="state" onclick="unjoinCommodity('@freight.Id');">查看关联的商品</a>
+                                        &nbsp;|&nbsp; <a href="javascript:;" class="state" onclick="joinCommodity('@freight.Id');">
+                                            关联适用的商品</a> &nbsp;|&nbsp; <a href="#" class="state" onclick="OpenUpdate('@freight.Id')">
+                                                修改</a> &nbsp;|&nbsp; <a href="#" class="state" onclick="DelFreight('@freight.Id')">删除</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                                if (freight.PricingMethod == 3)
+                                {
+                        <table border="0" cellspacing="0" cellpadding="0" class="m_talbe m_talbe2">
+                            <tr class="t_trNew">
+                                <td style="width: 290px;">
+                                    运送方式
+                                </td>
+                                <td style="width: 400px;">
+                                    运送到
+                                </td>
+                                <td>
+                                    运费
+                                </td>
+                            </tr>
+                            <tbody>
+                                @foreach (var details in freight.RangeFreights)
+                                {
+                                    <tr>
+                                        <td>@(details.DefaultFreight)</td>
+                                        <td>@(details.ExpressProvinces)</td>
+                                        <td style="text-align: left;">@(details.FreightCosts)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <div style="height: 10px;">
+                        </div>
+                                continue;
+                                }
+
+                                string methodName = "";
+                                if (freight.FreightMethod == 0)
+                                {
+                                    methodName = "快递";
+                                }
+                                else if (freight.FreightMethod == 1)
+                                {
+                                    methodName = "EMS";
+                                }
+                                else
+                                {
+                                    methodName = "平邮";
+                                }
+                                string calcTypeString = "件";
+                                string calcTypeUnit = "个";
+                                decimal firstCountDef = 0;
+                                decimal nextCountDef = 0;
+                                if (freight.PricingMethod == 0)
+                                {
+                                    calcTypeString = "件";
+                                    calcTypeUnit = "个";
+                                    firstCountDef = decimal.Round(freight.FirstCount, 0);
+                                    nextCountDef = decimal.Round(freight.NextCount, 0);
+                                }
+                                else
+                                {
+                                    calcTypeString = "重";
+                                    calcTypeUnit = "kg";
+                                    firstCountDef = freight.FirstCount;
+                                    nextCountDef = freight.NextCount;
+
+                                }
+                        <table border="0" cellspacing="0" cellpadding="0" class="m_talbe m_talbe2">
+                            <tr class="t_trNew">
+                                <td>
+                                    运送方式
+                                </td>
+                                <td style="width: 400px;">
+                                    运送到
+                                </td>
+                                <td>
+                                    首 @calcTypeString (@calcTypeUnit)
+                                </td>
+                                <td>
+                                    运费(元)
+                                </td>
+                                <td>
+                                    续 @calcTypeString (@calcTypeUnit)
+                                </td>
+                                <td>
+                                    运费(元)
+                                </td>
+                            </tr>
+                            @if (freight.IsFreeExp == true)
+                            {
+                                <tr class="t_trNew">
+                                    <td>
+                                        包邮
+                                    </td>
+                                    <td colspan="5">
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr class="t_trNew">
+                                    <td>
+                                        默认运费
+                                    </td>
+                                    <td style="width: 400px; text-align: left; padding-left: 5px;">
+                                    </td>
+                                    <td>
+                                        @firstCountDef
+                                    </td>
+                                    <td>
+                                        @freight.FirstCountPrice
+                                    </td>
+                                    <td>
+                                        @nextCountDef
+                                    </td>
+                                    <td>
+                                        @freight.NextCountPrice
+                                    </td>
+                                </tr>
+                                if (freight.FreightDetailList != null && freight.FreightDetailList.Count > 0)
+                                {
+                                    foreach (Jinher.AMP.BTP.Deploy.FreightTemplateDetailDTO detail in freight.FreightDetailList)
+                                    {
+                                        decimal detailFC = detail.FirstCount;
+                                        decimal detailNC = detail.NextCount;
+                                        if (freight.PricingMethod == 0)
+                                        {
+                                            detailFC = decimal.Round(detail.FirstCount, 0);
+                                            detailNC = decimal.Round(detail.NextCount, 0);
+                                        }
+                                <tr class="t_trNew">
+                                    <td>
+                                        @methodName
+                                    </td>
+                                    <td style="width: 400px; text-align: left; padding-left: 5px;">
+                                        @detail.FreightTo
+                                    </td>
+                                    <td>
+                                        @detailFC
+                                    </td>
+                                    <td>
+                                        @detail.FirstCountPrice
+                                    </td>
+                                    <td>
+                                        @detailNC
+                                    </td>
+                                    <td>
+                                        @detail.NextCountPrice
+                                    </td>
+                                </tr>
+                                    }
+                                }
+                            }
+                        </table>
+                        <div style="height: 10px;">
+                        </div>
+                            }
+                        }
+                        else
+                        {
+                        <script type="text/javascript">
+                            window.location.href = "/Freight/AddFreight/" + GroupReturnUrl();
+                        </script>
+                        }
+                    }
+                </div>
+                <div id="pager">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="dialog" style="display: none;">
+    <iframe id="iframe" frameborder="0" style="width: 100%; height: 700px;
+        overflow-y: auto; border: 0px;"></iframe>
+</div>

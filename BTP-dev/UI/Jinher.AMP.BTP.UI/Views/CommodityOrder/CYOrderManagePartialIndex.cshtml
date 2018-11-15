@@ -1,0 +1,271 @@
+﻿@{
+    Layout = null;
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.CommodityOrderVM> commodityOrderList = ViewBag.commodityOrderList;
+}
+@helper getOrderState(Jinher.AMP.BTP.Deploy.CustomDTO.CommodityOrderVM covm)
+    {
+    string stateStr = string.Empty;
+    switch (covm.State)
+    {
+        case 20:
+        case 21:
+            stateStr = "交易关闭";
+            break;
+        case 7:
+            stateStr = "已退款";
+            break;
+        case 12:
+            stateStr = "退款中";
+            break;
+        case 18:
+            stateStr = "待处理";
+            break;
+        case 19:
+            stateStr = "已处理";
+            break;
+    }
+    <td class="orderItem">@stateStr</td>
+}
+@helper getSizeAndColor(Jinher.AMP.BTP.Deploy.CustomDTO.OrderItemsVM oivm){
+    if(!oivm.SizeAndColorId.Equals(",")){
+        <br /><span>@oivm.SizeAndColorId</span>
+    }
+}
+@helper getOptionBtn(Jinher.AMP.BTP.Deploy.CustomDTO.CommodityOrderVM covm){
+    var orderRefound = string.Empty;
+    var orderCancel = string.Empty;
+    var orderPrint = string.Empty;
+    switch (covm.State)
+    {
+        case 20:
+        case 21:
+            orderCancel = "cancelDetail" + covm.CommodityOrderId;
+            <td class="orderItem"><a id="@orderRefound" href="javascript:void(0);" onclick="ShowRefound(this, '@covm.CommodityOrderId')">查看取消原因</a></td>
+            break;
+        case 7:
+        case 12:
+            orderRefound = "refoundDetail" + covm.CommodityOrderId;
+            <td class="orderItem"><a id="@orderRefound" href="javascript:void(0);" onclick="ShowRefound(this, '@covm.CommodityOrderId')">查看退款详情</a></td>
+            break;
+        case 18:
+            orderCancel = "cancel" + covm.CommodityOrderId;
+            orderPrint = "print" + covm.CommodityOrderId;
+            <td class="orderItem">
+                <a id="@orderCancel" href="javascript:void(0);" onclick="CancelOrder(this, '@covm.CommodityOrderId', '@covm.UserId');">取消订单</a><br />
+                <a id="@orderPrint" class="btn120" href="javascript:void(0);" onclick="PrintOrder(this, '@covm.CommodityOrderId', '@covm.UserId')">接单并打印</a></td>
+            break;
+        case 19:
+            orderRefound = "refound" + covm.CommodityOrderId;
+            <td class="orderItem">
+                <a id="@orderRefound" class="btn120" href="javascript:void(0);" onclick="orderRefound(this, '@covm.CommodityOrderId', '@covm.UserId')">退款</a></td>
+            break;
+    }
+}
+<input type="hidden" id="rowcounts" value="@ViewBag.Count"/>
+<table id="dataTable" class="order-manage" border="0" cellspacing="5" cellpadding="0">
+    <thead>
+    <tr class="title">
+        <td style="width:30px; padding-left:10px;">
+            <input type="checkbox" id="selecetall" />全选
+        </td>
+        <td class="titleItem">商品名称</td>
+        <td class="titleItem">数量</td>
+        <td class="titleItem">单价</td>
+        <td class="titleItem">实收款</td>
+        <td class="titleItem">优惠</td>
+        <td class="titleItem">用餐方式</td>
+        <td class="titleItem">下单人</td>
+        <td class="titleItem">下单备注</td>
+        <td class="titleItem">交易状态</td>
+        <td class="titleItem">操作</td>
+    </tr>
+    </thead>
+    <script type="text/javascript">
+        //上移一页下移一页
+        function mouseOver(tr) {
+            var page = $.trim($(".ui-jhpager-pager").html()).substring(0, 1);
+            var cd = $.trim($(".ui-jhpager-pager").html()).length;
+            var page1 = $.trim($(".ui-jhpager-pager").html()).substring(cd, cd - 1);
+            if (page != 1)
+                $(tr).find("#upPut").show();
+            if (page != page1)
+                $(tr).find("#downPut").show();
+        }
+        function mouseOut(tr) {
+            $(tr).find("#upPut").hide();
+            $(tr).find("#downPut").hide();
+        }
+        $("#selecetall").on('click', function () {
+            var s = document.getElementsByName("itemCheckBox");
+            if ($(this).prop('checked')) {
+                for (var i = 0; i < s.length; i += 1)
+                    s[i].checked = "checked";
+            } else {
+                for (var i = 0; i < s.length; i += 1)
+                    s[i].checked = "";
+            }
+        });
+        _rowCount = "@ViewBag.Count";
+        function upPutCom(id) {
+
+            var page = parseInt(($.trim($(".ui-jhpager-pager").html()).substring(0, 1)), 10);
+            var sz = "";
+            $(".wysort").each(function () {
+                var comid = $(this).attr("data-items-id");
+                sz = sz + ',' + comid;
+            });
+            if (sz.length > 0) {
+                sz = sz.substring(1, sz.length);
+                $.ajax({
+                    url: '/Commodity/SaveUpCommoditySort',
+                    type: 'post',
+                    data: { Id: id, comIds: sz },
+                    success: function () {
+                        $.ajax({
+                            url: '/CommodityOrder/CYOrderManagePartialIndex?currentPage=' + page,
+                            type: 'post',
+                            data: _searchEntity,
+                            error: function () {
+                                window.location.href = "/CommodityOrder/CYOrderManage?appId=" + getQueryString('appId');
+                            },
+                            beforeSend: beforeSends,
+                            complete: function () {
+                                //ajaxLoading(1, '#content_makes');
+                            },
+                            success: function (msg) {
+                                sendSuccess(msg);
+                                var rowCount = $("#rowcounts").val();
+                                if (rowCount == 0 || rowCount == "0") {
+                                    alert("当前没有查到相匹配的数据！");
+                                }
+                                $("#pager").jhpager("refresh", page, _rowCount);
+                            }
+                        });
+                    },
+                    error: function () {
+                        alert("请稍候再试");
+                    }
+                });
+            }
+        }
+
+        function downPutCom(id) {
+            var page = parseInt(($.trim($(".ui-jhpager-pager").html()).substring(0, 1)), 10);
+            var sz = "";
+            $(".wysort").each(function () {
+                var comid = $(this).attr("data-items-id");
+                sz = sz + ',' + comid;
+            });
+            if (sz.length > 0) {
+                sz = sz.substring(1, sz.length);
+                $.ajax({
+                    url: '/CommodityOrder/SaveDownCommoditySort',
+                    type: 'post',
+                    data: { Id: id, comIds: sz },
+                    success: function () {
+                        $.ajax({
+                            url: '/CommodityOrder/CYOrderManagePartialIndex?currentPage=' + page,
+                            type: 'post',
+                            data: _searchEntity,
+                            error: function () {
+                                window.location.href = "/CommodityOrder/CYOrderManage?appId=" + getQueryString('appId');
+                            },
+                            beforeSend: beforeSends,
+                            complete: function () {
+                                //ajaxLoading(1, '#content_makes');
+                            },
+                            success: function (msg) {
+                                sendSuccess(msg);
+                                var rowCount = $("#rowcounts").val();
+                                if (rowCount == 0 || rowCount == "0") {
+                                    alert("当前没有查到相匹配的数据！");
+                                }
+                                $("#pager").jhpager("refresh", page, _rowCount);
+                            }
+                        });
+                    },
+                    error: function () {
+                        alert("请稍候再试");
+                    }
+                });
+            }
+        }
+    </script>
+    <tbody>
+    @foreach (var item in commodityOrderList)
+    {
+        <tr class="info">
+            <td colspan="3">
+                <span class="Serial">
+                    <input type="checkbox" />
+                    <a id="batchnum" target="_self" href="javascript:void(0);" batchnums="/CommodityOrder/CYOrderDetails?commodityOrderId=@item.CommodityOrderId">流水号：@item.Batch</a>
+                </span>
+            </td>
+            <td colspan="8">支付时间：@item.PaymentTime</td>
+        </tr>
+        var commodityCount = item.OrderItems.Count;
+        if (commodityCount == 1)
+        {
+            <tr class="lists border">
+                <td class="listItem space"><img src="@item.OrderItems[0].PicturesPath" width="91" height="84" alt=""/></td>
+                <td class="listItem">@item.OrderItems[0].CommodityIdName@getSizeAndColor(@item.OrderItems[0])</td>
+                <td class="listItem">@item.OrderItems[0].Number</td>
+                <td class="listItem">@item.OrderItems[0].Price</td>
+                <td colspan="7" rowspan="@commodityCount" class="border">
+                    <table class="order-info" style="width:100%">
+                        <tr>
+                            <td class="orderItem">@item.CurrentPrice</td>
+                            <td class="orderItem">优惠券：￥@item.CouponValue</td>
+                            <td class="orderItem">外卖</td>
+                            <td class="orderItem">@item.Uname</td>
+                            <td class="orderItem">@item.Details</td>
+                            @getOrderState(item)
+                            @getOptionBtn(item)
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        }
+        else
+        {
+            for (int i = 0; i < commodityCount; i++)
+            {
+                switch (i)
+                {
+                    case 0:
+                        <tr class="lists">
+                            <td class="listItem space"><img src="@item.OrderItems[i].PicturesPath" width="91" height="84" alt=""/></td>
+                            <td class="listItem">@item.OrderItems[i].CommodityIdName@getSizeAndColor(@item.OrderItems[i])</td>
+                            <td class="listItem">@item.OrderItems[i].Number</td>
+                            <td class="listItem">@item.OrderItems[i].Price</td>
+                            <td colspan="7" rowspan="@commodityCount" class="border">
+                                <table class="order-info" style="width:100%">
+                                    <tr>
+                                        <td class="orderItem">@item.CurrentPrice</td>
+                                        <td class="orderItem">优惠券：￥@item.CouponValue</td>
+                                        <td class="orderItem">外卖</td>
+                                        <td class="orderItem">@item.Uname</td>
+                                        <td class="orderItem">@item.Details</td>
+                                        @getOrderState(item)
+                                        @getOptionBtn(item)
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                                   break;
+                    default:
+                                   string lastClassStr = i == commodityCount - 1 ? "lists border" : "lists";
+                        <tr class="@lastClassStr">
+                            <td class="listItem"><img src="@item.OrderItems[i].PicturesPath" width="91" height="84" alt=""/></td>
+                            <td class="listItem">@item.OrderItems[i].CommodityIdName@getSizeAndColor(@item.OrderItems[i])</td>
+                            <td class="listItem">@item.OrderItems[i].Number</td>
+                            <td class="listItem">@item.OrderItems[i].Price</td>
+                            <td colspan="7"></td>
+                        </tr>
+                        break;
+                }
+            }
+        }
+    }
+    </tbody>
+</table>

@@ -1,0 +1,657 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{77DC4033-3DB5-4A90-B490-A6180CC64E44}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Jinher.AMP.BTP.Deploy</RootNamespace>
+    <AssemblyName>Jinher.AMP.BTP.Deploy</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\..\..\..\..\..\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>obj\Debug\Jinher.AMP.BTP.Deploy.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\..\Lib\BizApp\Interface\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Jinher.AMP.App.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.App.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.BabyStory.BE">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Implement\Jinher.AMP.BabyStory.BE.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.BabyStory.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.BabyStory.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.Coupon.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.Coupon.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.LBP.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.LBP.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.YJB.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.YJB.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.ZPH.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.ZPH.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.BF.BE.Deploy">
+      <HintPath>..\..\..\..\..\Lib\JAP\Interface\Jinher.JAP.BF.BE.Deploy.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Jinher.JAP.Common">
+      <HintPath>..\..\..\..\..\Lib\JAP\Implement\Jinher.JAP.Common.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Jinher.JAP.Metadata">
+      <HintPath>..\..\..\..\..\Lib\JAP\Implement\Jinher.JAP.Metadata.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Jinher.JAP.PL">
+      <HintPath>..\..\..\..\..\Lib\JAP\Implement\Jinher.JAP.PL.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MongoDB.Bson, Version=1.8.2.34, Culture=neutral, PublicKeyToken=f686731cfb9cc103, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\TP\MongoDB.Bson.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\TP\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BEDTO\DTO.cs" />
+    <Compile Include="CustomDTO\AddOrderRefundExpDTO.cs" />
+    <Compile Include="CustomDTO\AfterSales\SNAfterOrderDetailDTO.cs" />
+    <Compile Include="CustomDTO\AfterSales\SNAfterOrderDetailListDTO.cs" />
+    <Compile Include="CustomDTO\AfterSales\SNApplyRejectedReturnDTO.cs" />
+    <Compile Include="CustomDTO\AfterSales\SNApplyRejectedSkusDTO.cs" />
+    <Compile Include="CustomDTO\AfterSales\SNApplyRejectedDTO.cs" />
+    <Compile Include="CustomDTO\AfterSales\SNAreaDTO.cs" />
+    <Compile Include="CustomDTO\AfterSales\SNComponentExport.cs" />
+    <Compile Include="CustomDTO\AfterSales\SNFactoryDeliveryDTO.cs" />
+    <Compile Include="CustomDTO\AfterSales\SNFactoryDeliveryReturnDTO.cs" />
+    <Compile Include="CustomDTO\AfterSales\SNGetOrderServiceDTO.cs" />
+    <Compile Include="CustomDTO\AfterSales\SNGetOrderServiceReturnDTO.cs" />
+    <Compile Include="CustomDTO\AfterSales\SNOrderLogistInputDTO.cs" />
+    <Compile Include="CustomDTO\AfterSales\SNOrderLogistOutPutDTO.cs" />
+    <Compile Include="CustomDTO\AfterSales\SNOrderLogistStatusResDTO.cs" />
+    <Compile Include="CustomDTO\AfterSales\SNOrderRefundDto.cs" />
+    <Compile Include="CustomDTO\AfterSales\SNOrderStatusDTO.cs" />
+    <Compile Include="CustomDTO\AfterSales\SNReturnPartOrderAddSkusDTO.cs" />
+    <Compile Include="CustomDTO\AfterSales\SNReturnPartOrderDTO.cs" />
+    <Compile Include="CustomDTO\AfterSales\SNReturnPartOrderReturnDTO.cs" />
+    <Compile Include="CustomDTO\AppAbout\AppDetailAndPackageDTO.cs" />
+    <Compile Include="CustomDTO\AppAbout\AppExtDTO.cs" />
+    <Compile Include="CustomDTO\AppAbout\AppExtensionDTO.cs" />
+    <Compile Include="CustomDTO\AppAbout\APPManageDTO.cs" />
+    <Compile Include="CustomDTO\AppAbout\AppNameDTO.cs" />
+    <Compile Include="CustomDTO\AppAbout\AppSearchDTO.cs" />
+    <Compile Include="CustomDTO\AppAbout\AppSelfTakeStationDefaultInfoDTO.cs" />
+    <Compile Include="CustomDTO\AppAbout\AppSelfTakeStationSDTO.cs" />
+    <Compile Include="CustomDTO\AppAbout\AppSelfTakeStationResultDTO.cs" />
+    <Compile Include="CustomDTO\AppAbout\AppSelfTakeStationSearchDTO.cs" />
+    <Compile Include="CustomDTO\AppAbout\AppSelfTakeStationSearchResultSDTO.cs" />
+    <Compile Include="CustomDTO\AppAbout\AppSelfTakeStationSearchSDTO.cs" />
+    <Compile Include="CustomDTO\AppAbout\AppSelfTakeTimeForOrder.cs" />
+    <Compile Include="CustomDTO\AppAbout\AppSetAppDTO.cs" />
+    <Compile Include="CustomDTO\AppAbout\AppSetCategoryDTO.cs" />
+    <Compile Include="CustomDTO\AppAbout\AppSetCommodity2DTO.cs" />
+    <Compile Include="CustomDTO\AppAbout\AppSetCommodityDTO.cs" />
+    <Compile Include="CustomDTO\AppAbout\AppSetSearch2DTO.cs" />
+    <Compile Include="CustomDTO\AppAbout\AppSetSortDTO.cs" />
+    <Compile Include="CustomDTO\AppAbout\AppStsManagerSDTO.cs" />
+    <Compile Include="CustomDTO\AppAbout\AppStsOfficeTimeSDTO.cs" />
+    <Compile Include="CustomDTO\AppAbout\BrowseParameter.cs" />
+    <Compile Include="CustomDTO\AppSceneUserDTO.cs" />
+    <Compile Include="CustomDTO\CalFreightTemplate.cs" />
+    <Compile Include="CustomDTO\CancelOrderRefundDTO.cs" />
+    <Compile Include="CustomDTO\CancelTheOrderDTO.cs" />
+    <Compile Include="CustomDTO\CarInsurancePolymerizationDTO.cs" />
+    <Compile Include="CustomDTO\Category\CategoryCache2DTO.cs" />
+    <Compile Include="CustomDTO\Category\CategoryS2DTO.cs" />
+    <Compile Include="CustomDTO\Category\CategorySearchDTO.cs" />
+    <Compile Include="CustomDTO\CateringDTO\BusinessDTO\FCateringBusinessHoursCDTO.cs" />
+    <Compile Include="CustomDTO\CateringDTO\BusinessDTO\FCateringSettingCDTO.cs" />
+    <Compile Include="CustomDTO\CateringDTO\BusinessDTO\FCateringShiftTimeCDTO.cs" />
+    <Compile Include="CustomDTO\CateringDTO\BusinessDTO\FCYSettingCDTO.cs" />
+    <Compile Include="CustomDTO\CateringDTO\BusinessDTO\FShiftLogCDTO.cs" />
+    <Compile Include="CustomDTO\CateringDTO\DBBase.cs" />
+    <Compile Include="CustomDTO\CateringDTO\EFDTO\ShiftLogDTO.cs" />
+    <Compile Include="CustomDTO\CateringDTO\EFDTO\WeChatQRCodeDTO.cs" />
+    <Compile Include="CustomDTO\CfDividendMoreDTO.cs" />
+    <Compile Include="CustomDTO\CheckCommodityDTO.cs" />
+    <Compile Include="CustomDTO\AddressSDTO.cs" />
+    <Compile Include="CustomDTO\Category\CategoryCacheDTO.cs" />
+    <Compile Include="CustomDTO\Category\CategorySDTO.cs" />
+    <Compile Include="CustomDTO\CateNameDTO.cs" />
+    <Compile Include="CustomDTO\CheckCommodityParam.cs" />
+    <Compile Include="CustomDTO\CheckCommodityVM.cs" />
+    <Compile Include="CustomDTO\CheckShopCommodityParam.cs" />
+    <Compile Include="CustomDTO\ColorAndSizeAttributeVM.cs" />
+    <Compile Include="CustomDTO\CommodityPriceFloatListDto.cs" />
+    <Compile Include="CustomDTO\Commodity\AuditCommodity.cs" />
+    <Compile Include="CustomDTO\Commodity\ComAttributeCacheDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\ComAttributeDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\ComAttributeSDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\ComdtyList4SelCDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\ComdtySearch4SelCDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityAndCategoryDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityChangeDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityCookie.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityDistributionDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityDividendListDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityForOrderDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityListCDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityListResultDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityListInferSearchDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityListSDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityOrderCheckAccount.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityOrderDistributionInfoDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityOrderDistributionResultDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityOrderDistributionSearchDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityOrderExceptionParamDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityOrderItemDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityOrderListDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityOrderMoneyToDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityOrderMoneyToSearch.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityOrderSearchDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommoditySearchInput.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityTaxRateCDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityThumb.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityAndOrderItemDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\ComOrderExpressNew.cs" />
+    <Compile Include="CustomDTO\Commodity\FreightJoinCommodityInputDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\JCActivityItemsListCDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\MicroshopCommodityDistributionDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\SearchCommodityByFreightTemplateInputDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\SearchCommodityByFreightTemplateOutputDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\SkuActivityCDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommoditySummaryDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\NotificationsDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\SNComCostDiffDTO.cs" />
+    <Compile Include="CustomDTO\CreateOrder\CreateOrderNeedDTO.cs" />
+    <Compile Include="CustomDTO\CreateOrder\CreateOrderSearchDTO.cs" />
+    <Compile Include="CustomDTO\CreateOrder\AppDuty.cs" />
+    <Compile Include="CustomDTO\DaMiWang\AppStatisticsDTO.cs" />
+    <Compile Include="CustomDTO\Distribute\AuditDistributionResultDTO.cs" />
+    <Compile Include="CustomDTO\Distribute\DistributionApplyResultDTO.cs" />
+    <Compile Include="CustomDTO\Distribute\DistributionIdentityFullDTO.cs" />
+    <Compile Include="CustomDTO\Distribute\DistributionIdentityResultDTO.cs" />
+    <Compile Include="CustomDTO\Distribute\DistributionMicroshopComDTO.cs" />
+    <Compile Include="CustomDTO\Distribute\DistributionMicroShopDTO.cs" />
+    <Compile Include="CustomDTO\Distribute\DistributorsHasIdentityResultDTO.cs" />
+    <Compile Include="CustomDTO\Distribute\UpdateQrCodeRequestDTO.cs" />
+    <Compile Include="CustomDTO\Distribute\UserDistributionCheckResultDTO.cs" />
+    <Compile Include="CustomDTO\Distribute\DistributionSearchDTO.cs" />
+    <Compile Include="CustomDTO\Distribute\DistributionIdentitySetFullDTO.cs" />
+    <Compile Include="CustomDTO\Distribute\DistributApplyFullDTO.cs" />
+    <Compile Include="CustomDTO\Distribute\DistributRuleFullDTO.cs" />
+    <Compile Include="CustomDTO\Distribute\DistributionApplyAuditListDTO.cs" />
+    <Compile Include="CustomDTO\DiyGroup\CheckDiyGroupInputDTO.cs" />
+    <Compile Include="CustomDTO\DiyGroup\CheckDiyGroupOutputDTO.cs" />
+    <Compile Include="CustomDTO\DiyGroup\DiyGroupOrderDetailDTO.cs" />
+    <Compile Include="CustomDTO\DiyGroup\UnfinishedDiyGroupInputDTO.cs" />
+    <Compile Include="CustomDTO\DiyGroup\UnfinishedDiyGroupOutputDTO.cs" />
+    <Compile Include="CustomDTO\ElectronicInvoiceDTO.cs" />
+    <Compile Include="CustomDTO\ExpressTemplateDTO.cs" />
+    <Compile Include="CustomDTO\Freigh\FreightRangeDetailsDTO.cs" />
+    <Compile Include="CustomDTO\Freigh\FreightRangeDTO.cs" />
+    <Compile Include="CustomDTO\Freigh\RangeFreightTemplateInputDTO.cs" />
+    <Compile Include="CustomDTO\InsuranceCompanyDTO.cs" />
+    <Compile Include="CustomDTO\InvoiceExportDTO.cs" />
+    <Compile Include="CustomDTO\JdCommodity\JdCommoditySearchDTO.cs" />
+    <Compile Include="CustomDTO\JdEclp\AddOrderRefundExpDTO.cs" />
+    <Compile Include="CustomDTO\JdEclp\JDEclpJourneyExtendDTO.cs" />
+    <Compile Include="CustomDTO\JdJos\AddOrderResponse.cs" />
+    <Compile Include="CustomDTO\JdJos\BaseResponse.cs" />
+    <Compile Include="CustomDTO\JdJos\CreateServiceOrderResponse.cs" />
+    <Compile Include="CustomDTO\JdJos\GetTrackMessagePlusByOrderResponse.cs" />
+    <Compile Include="CustomDTO\JdJos\QueryOrderPacksResponse.cs" />
+    <Compile Include="CustomDTO\JdlogsDTO.cs" />
+    <Compile Include="CustomDTO\JD\AddressInfo.cs" />
+    <Compile Include="CustomDTO\JD\AfsServicebyCustomerPinPage.cs" />
+    <Compile Include="CustomDTO\JD\AfterSaleDto.cs" />
+    <Compile Include="CustomDTO\JD\AreaDTO.cs" />
+    <Compile Include="CustomDTO\JD\CompatibleServiceDetailDTO.cs" />
+    <Compile Include="CustomDTO\JD\JdBTPRefreshCache.cs" />
+    <Compile Include="CustomDTO\JD\JdComDetailDto.cs" />
+    <Compile Include="CustomDTO\JD\JdComponentExport.cs" />
+    <Compile Include="CustomDTO\JD\JdMessageDto.cs" />
+    <Compile Include="CustomDTO\JD\JdPriceDto.cs" />
+    <Compile Include="CustomDTO\JD\JdPriceMessageDto.cs" />
+    <Compile Include="CustomDTO\JD\JdResultDto.cs" />
+    <Compile Include="CustomDTO\JD\JdStockDto.cs" />
+    <Compile Include="CustomDTO\JD\JdSkuStateDto.cs" />
+    <Compile Include="CustomDTO\JD\JdComPicturesDto.cs" />
+    <Compile Include="CustomDTO\JsonConvert.cs" />
+    <Compile Include="CustomDTO\MallApply\MallTypeDTO.cs" />
+    <Compile Include="CustomDTO\MallApply\AppInfoDTO.cs" />
+    <Compile Include="CustomDTO\MallApply\BaseCommissionDTO.cs" />
+    <Compile Include="CustomDTO\MallApply\MallApplyDTO.cs" />
+    <Compile Include="CustomDTO\MallApply\CategoryCommissionDTO.cs" />
+    <Compile Include="CustomDTO\MallApply\CommodityCommissionDTO.cs" />
+    <Compile Include="CustomDTO\MallApply\SellerInfoDTO.cs" />
+    <Compile Include="CustomDTO\MobileMsgDTO.cs" />
+    <Compile Include="CustomDTO\OptionModel.cs" />
+    <Compile Include="CustomDTO\OrderInfoAndCarRebateDTO.cs" />
+    <Compile Include="CustomDTO\OrderPrint\OrderPrintTemplate.cs" />
+    <Compile Include="CustomDTO\OrderPrint\PrintOrderDTO.cs" />
+    <Compile Include="CustomDTO\OrderPay\OrderPayedConfig.cs" />
+    <Compile Include="CustomDTO\Order\BOrderRefundInfoCDTO.cs" />
+    <Compile Include="CustomDTO\Order\FOrderRefundInfoCDTO.cs" />
+    <Compile Include="CustomDTO\Order\OrderRefundCompareDTO.cs" />
+    <Compile Include="CustomDTO\Order\OrderRefundSearchDTO.cs" />
+    <Compile Include="CustomDTO\Order\OrderStatisticsSDTO.cs" />
+    <Compile Include="CustomDTO\Order\ExportOrderForJDDTO.cs" />
+    <Compile Include="CustomDTO\Order\RefundOrderListDTO.cs" />
+    <Compile Include="CustomDTO\PayOrderToFspDTO.cs" />
+    <Compile Include="CustomDTO\PresentPromotion\CommodiyPresentDTO.cs" />
+    <Compile Include="CustomDTO\PresentPromotion\PresentPromotionCommodityDetailsDTO.cs" />
+    <Compile Include="CustomDTO\PresentPromotion\PresentPromotionSearchDTOs.cs" />
+    <Compile Include="CustomDTO\PresentPromotion\PresentPromotionCommoditySearchDtos.cs" />
+    <Compile Include="CustomDTO\PresentPromotion\PresentPromotionCreateDTO.cs" />
+    <Compile Include="CustomDTO\Promotion\PromotionSurplusLimitBuyTotalDto.cs" />
+    <Compile Include="CustomDTO\RefundCouponSearchDTO.cs" />
+    <Compile Include="CustomDTO\Score\OrderScoreDTO.cs" />
+    <Compile Include="CustomDTO\Score\CostScoreInfoDTO.cs" />
+    <Compile Include="CustomDTO\SetReview\BtpScoreDTO.cs" />
+    <Compile Include="CustomDTO\SettleAccount\ChargeAccountDTO.cs" />
+    <Compile Include="CustomDTO\SettleAccount\CommoditySettleAmountHistoryDTO.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CustomDTO\SettleAccount\CommoditySettleAmountInputDTO.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CustomDTO\SettleAccount\CommoditySettleAmountListDTO.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CustomDTO\SettleAccount\CommoditySettleAmountSearchDTO.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CustomDTO\SettleAccount\SettleAccountOrderDTO.cs" />
+    <Compile Include="CustomDTO\SettleAccount\SettleAccountPeriodDTO.cs" />
+    <Compile Include="CustomDTO\SettleAccount\SettleAccountSearchDTO.cs" />
+    <Compile Include="CustomDTO\SettleAccount\SettleAccountListDTO.cs" />
+    <Compile Include="CustomDTO\SettleAccount\SettleAccountCreateDTO.cs" />
+    <Compile Include="CustomDTO\SettleAccount\SettleAccountHistorySearchDTO.cs" />
+    <Compile Include="CustomDTO\SettleAccount\SettleAccountUpdateSettleStatueDto.cs" />
+    <Compile Include="CustomDTO\SettleAccount\SettleAccountDetailsDTO.cs" />
+    <Compile Include="CustomDTO\SettleAccount\SettleAccountOrderItemDTO.cs" />
+    <Compile Include="CustomDTO\SettleAccount\SettleAccountOrderSearchDTO.cs" />
+    <Compile Include="CustomDTO\SettleAccount\SettleAccountUpdateStateDTO.cs" />
+    <Compile Include="CustomDTO\SettleAccount\SettleAccountDetailsCreateDTO.cs" />
+    <Compile Include="CustomDTO\Share\ShareOrderDTO.cs" />
+    <Compile Include="CustomDTO\ShopAttributeCommodityUpdateDTO.cs" />
+    <Compile Include="CustomDTO\ShopCart\ShopCartCommodityAttrDTO.cs" />
+    <Compile Include="CustomDTO\ShopCart\ShopCartCommoditySDTO.cs" />
+    <Compile Include="CustomDTO\ShopCart\ShopCartUpdateResultDTO.cs" />
+    <Compile Include="CustomDTO\SN\SNComDetailDto.cs" />
+    <Compile Include="CustomDTO\SN\SNComPicturesDto.cs" />
+    <Compile Include="CustomDTO\SN\SNMsgChangeDto.cs" />
+    <Compile Include="CustomDTO\SN\SNGetMessageDto.cs" />
+    <Compile Include="CustomDTO\SN\SNOrderLogisticsDto.cs" />
+    <Compile Include="CustomDTO\SN\SNPriceDto.cs" />
+    <Compile Include="CustomDTO\SN\SNQueryParamsDto.cs" />
+    <Compile Include="CustomDTO\Spread\SpreadBindWeChatQrCodeDTO.cs" />
+    <Compile Include="CustomDTO\Spread\SpreadSearchDTO.cs" />
+    <Compile Include="CustomDTO\Spread\SpreadSaveDTO.cs" />
+    <Compile Include="CustomDTO\Spread\SpreadInfoShowDTO.cs" />
+    <Compile Include="CustomDTO\Spread\SpreadUpdateStateDTO.cs" />
+    <Compile Include="CustomDTO\Spread\SpreadUpdateSubSpreadCountDTO.cs" />
+    <Compile Include="CustomDTO\Spread\SpreadUpdateDividendPercentDTO.cs" />
+    <Compile Include="CustomDTO\Spread\SpreadAppDTO.cs" />
+    <Compile Include="CustomDTO\Store\StoreSResultDTO.cs" />
+    <Compile Include="CustomDTO\Supplier\SupplierSearchDTO.cs" />
+    <Compile Include="CustomDTO\Supplier\SupplierListDTO.cs" />
+    <Compile Include="CustomDTO\Supplier\SupplierUpdateDTO.cs" />
+    <Compile Include="CustomDTO\ThirdECommerce\ThirdOrderCreate.cs" />
+    <Compile Include="CustomDTO\ThirdECommerce\ThirdOrderCreateSku.cs" />
+    <Compile Include="CustomDTO\ThirdECommerce\ThirdApiInfo.cs" />
+    <Compile Include="CustomDTO\ThirdECommerce\ThirdResponse.cs" />
+    <Compile Include="CustomDTO\ThirdECommerce\ThirdOrderCancelResult.cs" />
+    <Compile Include="CustomDTO\ThirdECommerce\ThirdServiceCreate.cs" />
+    <Compile Include="CustomDTO\ThirdECommerce\ThirdOrderPackage.cs" />
+    <Compile Include="CustomDTO\ThirdECommerce\ThirdExpressTrace.cs" />
+    <Compile Include="CustomDTO\ThirdECommerce\ThirdOrderItemExpress.cs" />
+    <Compile Include="CustomDTO\ThirdECommerce\ThirdOrderPackageExpress.cs" />
+    <Compile Include="CustomDTO\ThirdECommerce\ThirdOrderCancelResultCallBack.cs" />
+    <Compile Include="CustomDTO\ThirdECommerce\ThirdServiceCreateResult.cs" />
+    <Compile Include="CustomDTO\ThirdECommerce\ThirdServiceAgreeResult.cs" />
+    <Compile Include="CustomDTO\ThirdECommerce\ThirdServiceRejectResult.cs" />
+    <Compile Include="CustomDTO\ThirdECommerce\ThirdAddress.cs" />
+    <Compile Include="CustomDTO\ThirdECommerce\ThirdMailReceiveResult.cs" />
+    <Compile Include="CustomDTO\ThirdECommerce\ThirdServiceRefundResult.cs" />
+    <Compile Include="CustomDTO\ThirdECommerce\ThirdMailNotReceiveResult.cs" />
+    <Compile Include="CustomDTO\TodayPromotionExtendDTO.cs" />
+    <Compile Include="CustomDTO\AppAbout\AppDownloadDTO.cs" />
+    <Compile Include="CustomDTO\Share\ShareInfoDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\ComListStyleDTO.cs" />
+    <Compile Include="CustomDTO\FspTradeSettingDTO.cs" />
+    <Compile Include="CustomDTO\Order\OrderCheckDTO.cs" />
+    <Compile Include="CustomDTO\WeChat\AccessCertifDTO.cs" />
+    <Compile Include="CustomDTO\WeChat\WcpBusiDto.cs" />
+    <Compile Include="CustomDTO\WeChat\ForeverQrcodeDTO.cs" />
+    <Compile Include="CustomDTO\WeChat\QrcodeScanEventDTO.cs" />
+    <Compile Include="CustomDTO\WeChat\SendMsgDTO.cs" />
+    <Compile Include="CustomDTO\WeChat\TempQrcodeDTO.cs" />
+    <Compile Include="CustomDTO\PayWxMessageDTO.cs" />
+    <Compile Include="CustomDTO\WeChat\WeChatMenuDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityScoreDTO.cs" />
+    <Compile Include="CustomDTO\WeChat\WebChatMessageDTO.cs" />
+    <Compile Include="CustomDTO\WeChat\WcpBusiRetDto.cs" />
+    <Compile Include="CustomDTO\WeChat\WeChatQRCodeShowDTO.cs" />
+    <Compile Include="CustomDTO\WeChat\WeChatQRCodeUpdateStateDTO.cs" />
+    <Compile Include="CustomDTO\WeChat\WeChatSearchDTO.cs" />
+    <Compile Include="CustomDTO\WeChat\ArticleNewsDTO.cs" />
+    <Compile Include="CustomDTO\WeChat\NewsSendBaseDTO.cs" />
+    <Compile Include="CustomDTO\WeChat\WeChatQRCodeSearchDTO.cs" />
+    <Compile Include="CustomDTO\WeChat\QrCodeCreateDTO.cs" />
+    <Compile Include="CustomDTO\WeChat\QrCodeTypeDTO.cs" />
+    <Compile Include="CustomDTO\WeChat\ForeverQrcodeBatchDTO.cs" />
+    <Compile Include="CustomDTO\InnerCategory\InnerCategoryCacheDTO.cs" />
+    <Compile Include="CustomDTO\InnerCategory\InnerCategoryDTO.cs" />
+    <Compile Include="CustomDTO\InnerCategory\InnerCategorySearchDTO.cs" />
+    <Compile Include="CustomDTO\YingKe\YingKeResultDTO.cs" />
+    <Compile Include="CustomDTO\YingKe\YingKeCouponDTO.cs" />
+    <Compile Include="CustomDTO\YJBCarInsuranceRebateDTO.cs" />
+    <Compile Include="CustomDTO\YJBCarInsuranceRebateSearchDTO.cs" />
+    <Compile Include="CustomDTO\YJBCarInsuranceReportDTO.cs" />
+    <Compile Include="CustomDTO\YJBCarInsuranceReportSearchDTO.cs" />
+    <Compile Include="CustomDTO\YJBDSFOrderInformationDTO.cs" />
+    <Compile Include="CustomDTO\YJBDSFOrderInfoSearchDTO.cs" />
+    <Compile Include="CustomDTO\YJEmployee\YJEmployeeSearchDTO.cs" />
+    <Compile Include="CustomDTO\YJEmployee\YJEmployeeCodeDTO.cs" />
+    <Compile Include="CustomDTO\YPK\YPKComDetailDto.cs" />
+    <Compile Include="CustomDTO\YX\ApplyInfo.cs" />
+    <Compile Include="CustomDTO\YX\DeliveryInfo.cs" />
+    <Compile Include="CustomDTO\YX\ExpressConfirm.cs" />
+    <Compile Include="CustomDTO\YX\OrderBaseVO.cs" />
+    <Compile Include="CustomDTO\YX\OrderCancelResult.cs" />
+    <Compile Include="CustomDTO\YX\JobOrderPackage.cs" />
+    <Compile Include="CustomDTO\YX\OrderOut.cs" />
+    <Compile Include="CustomDTO\YX\OrderRefundApplyEnums.cs" />
+    <Compile Include="CustomDTO\YX\OrderRefundApplyResponse.cs" />
+    <Compile Include="CustomDTO\YX\OrderSkuVO.cs" />
+    <Compile Include="CustomDTO\YX\OrderVO.cs" />
+    <Compile Include="CustomDTO\YX\RefundApply.cs" />
+    <Compile Include="CustomDTO\YX\RefundResult.cs" />
+    <Compile Include="CustomDTO\YX\RejectInfo.cs" />
+    <Compile Include="CustomDTO\YX\ReturnAddr.cs" />
+    <Compile Include="CustomDTO\YX\APIitemTO.cs" />
+    <Compile Include="CustomDTO\YX\YXResult.cs" />
+    <Compile Include="CustomDTO\YX\YXComDetail.cs" />
+    <Compile Include="CustomDTO\YX\YXSignParam.cs" />
+    <Compile Include="CustomDTO\YX\OrderNotify.cs" />
+    <Compile Include="CustomDTO\YX\SystemCancel.cs" />
+    <Compile Include="CustomDTO\YX\ExceptionInfo.cs" />
+    <Compile Include="Enum\ComCantBuyReasonEnum.cs" />
+    <Compile Include="Enum\CommodityStateEnum.cs" />
+    <Compile Include="Enum\ComPromotionStatusEnum.cs" />
+    <Compile Include="CustomDTO\DirectArrivalDTO.cs" />
+    <Compile Include="CustomDTO\CreateOrderToFspDTO.cs" />
+    <Compile Include="CustomDTO\Distribute\DistributorInfoDTO.cs" />
+    <Compile Include="CustomDTO\Distribute\DistributeMoneySearch.cs" />
+    <Compile Include="CustomDTO\Distribute\DistributorMoneyDTO.cs" />
+    <Compile Include="CustomDTO\Distribute\DistributorMoneyResultDTO.cs" />
+    <Compile Include="CustomDTO\DiyGroup\DiyGroupDetailDTO.cs" />
+    <Compile Include="CustomDTO\DiyGroup\DiyGroupDetailSearchDTO.cs" />
+    <Compile Include="CustomDTO\DiyGroup\DiyGroupManageMM.cs" />
+    <Compile Include="CustomDTO\DiyGroup\DiyGroupManageVM.cs" />
+    <Compile Include="CustomDTO\DiyGroup\DiyGroupOrderListDTO.cs" />
+    <Compile Include="CustomDTO\InvoiceResultDTO.cs" />
+    <Compile Include="CustomDTO\InvoiceInfoDTO.cs" />
+    <Compile Include="CustomDTO\InvoiceSearchDTO.cs" />
+    <Compile Include="CustomDTO\InvoiceSettingDTO.cs" />
+    <Compile Include="CustomDTO\InvoiceUpdateDTO.cs" />
+    <Compile Include="CustomDTO\Order\OrderFullInfo.cs" />
+    <Compile Include="CustomDTO\Distribute\DistributorProfitsInfoDTO.cs" />
+    <Compile Include="CustomDTO\Distribute\DistributorProfitsResultDTO.cs" />
+    <Compile Include="CustomDTO\Distribute\DistributorProfitsSearchDTO.cs" />
+    <Compile Include="CustomDTO\Distribute\DistributorUserRelationDTO.cs" />
+    <Compile Include="CustomDTO\ManageDTO.cs" />
+    <Compile Include="CustomDTO\ManageNumDTO.cs" />
+    <Compile Include="CustomDTO\ManagerSDTO.cs" />
+    <Compile Include="CustomDTO\ManageVM.cs" />
+    <Compile Include="CustomDTO\Order\OrderQueryParamDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityOrderSDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityOrderVM.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityOrderVMDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityPictureCDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityPromVM.cs" />
+    <Compile Include="CustomDTO\Commodity\CommoditySDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommoditySearchByAppIdListDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommoditySearchDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityListDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommoditySearchResultDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommoditySelfTakeListDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityShareInfoDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityVM.cs" />
+    <Compile Include="CustomDTO\CrowdfundingMessageDTO.cs" />
+    <Compile Include="CustomDTO\DiscountsVM.cs" />
+    <Compile Include="CustomDTO\ExportParamDTO.cs" />
+    <Compile Include="CustomDTO\ExportResultDTO.cs" />
+    <Compile Include="CustomDTO\FCategorySDTO.cs" />
+    <Compile Include="CustomDTO\Freigh\FreighMultiAppResultDTO.cs" />
+    <Compile Include="CustomDTO\Freigh\FreightDetailDTO.cs" />
+    <Compile Include="CustomDTO\Freigh\FreightDTO.cs" />
+    <Compile Include="CustomDTO\Freigh\FreightPartialFreeExtDTO.cs" />
+    <Compile Include="CustomDTO\Freigh\FreightResultDTO.cs" />
+    <Compile Include="CustomDTO\GetCommodityByNameParam.cs" />
+    <Compile Include="CustomDTO\GetCrowdfundingsDTO.cs" />
+    <Compile Include="CustomDTO\GetUserCrowdfundingsDTO.cs" />
+    <Compile Include="CustomDTO\KdNotifyDTO.cs" />
+    <Compile Include="CustomDTO\KdSubscribeDTO.cs" />
+    <Compile Include="CustomDTO\KdSubscribeResultDTO.cs" />
+    <Compile Include="CustomDTO\MainOrdersDTO.cs" />
+    <Compile Include="CustomDTO\MyOrderResultDTO.cs" />
+    <Compile Include="CustomDTO\Order\OrderExpressRouteExtendDTO.cs" />
+    <Compile Include="CustomDTO\Order\OrderRefundAfterSalesDTO.cs" />
+    <Compile Include="CustomDTO\Order\OrderRefundDTO.cs" />
+    <Compile Include="CustomDTO\Promotion\PromotionLimitParam.cs" />
+    <Compile Include="CustomDTO\Promotion\PromotionOutSideVM.cs" />
+    <Compile Include="CustomDTO\QryCommodityDTO.cs" />
+    <Compile Include="CustomDTO\QryOrderTradeMoneyDTO.cs" />
+    <Compile Include="CustomDTO\RefundInfoDTO.cs" />
+    <Compile Include="CustomDTO\RefuseDTO.cs" />
+    <Compile Include="CustomDTO\RelationCommodityDTO.cs" />
+    <Compile Include="CustomDTO\RentAgreementConfigDTO.cs" />
+    <Compile Include="CustomDTO\ReviewNofityDTO.cs" />
+    <Compile Include="CustomDTO\RuleDescriptionDTO.cs" />
+    <Compile Include="CustomDTO\Freigh\FreightTempFullDTO.cs" />
+    <Compile Include="CustomDTO\SaveShoppingCartParamDTO.cs" />
+    <Compile Include="CustomDTO\SelfTakeStation\SelfTakeStationAndManagerDTO.cs" />
+    <Compile Include="CustomDTO\SelfTakeStation\SelfTakeStationManagerSDTO.cs" />
+    <Compile Include="CustomDTO\SelfTakeStation\SelfTakeStationResult.cs" />
+    <Compile Include="CustomDTO\SelfTakeStation\SelfTakeStationSearchResultDTO.cs" />
+    <Compile Include="CustomDTO\SelfTakeStation\SelfTakeStationSearchDTO.cs" />
+    <Compile Include="CustomDTO\SelfTakeStation\SelfTakeStationSearchSDTO.cs" />
+    <Compile Include="CustomDTO\ServiceCommodityAndCategoryDTO.cs" />
+    <Compile Include="CustomDTO\SetCollectionSearchDTO.cs" />
+    <Compile Include="CustomDTO\SetCommodityOrderDTO.cs" />
+    <Compile Include="CustomDTO\SetOrderResultDTO.cs" />
+    <Compile Include="CustomDTO\SettlingAccountHistorySearchDTO.cs" />
+    <Compile Include="CustomDTO\SettlingAccountHistoryVM.cs" />
+    <Compile Include="CustomDTO\SettlingAccountSearchDTO.cs" />
+    <Compile Include="CustomDTO\SettlingAccountVM.cs" />
+    <Compile Include="CustomDTO\Share\ShareItemDTO.cs" />
+    <Compile Include="CustomDTO\Share\ShareOrderMoneyDTO.cs" />
+    <Compile Include="CustomDTO\Share\ShareOrderMoneyResultDTO.cs" />
+    <Compile Include="CustomDTO\Share\ShareOrderMoneySearchDTO.cs" />
+    <Compile Include="CustomDTO\Share\ShareOrderMoneySumDTO.cs" />
+    <Compile Include="CustomDTO\Share\ShareOrderMoneySumSearchDTO.cs" />
+    <Compile Include="CustomDTO\Share\ShareRedMessageDTO.cs" />
+    <Compile Include="CustomDTO\ShopCart\ShopCarCommodityListDTO.cs" />
+    <Compile Include="CustomDTO\SignUrlDTO.cs" />
+    <Compile Include="CustomDTO\SpreaderAndBuyerWxDTO.cs" />
+    <Compile Include="CustomDTO\SpreadInfoResultDTO.cs" />
+    <Compile Include="CustomDTO\SpreadInfoSearchDTO.cs" />
+    <Compile Include="CustomDTO\SquareHotCommodityDTO.cs" />
+    <Compile Include="CustomDTO\ImportOrderDTO.cs" />
+    <Compile Include="CustomDTO\NStoreSDTO.cs" />
+    <Compile Include="CustomDTO\NumResultSDTO.cs" />
+    <Compile Include="CustomDTO\Order\OrderForShareDTO.cs" />
+    <Compile Include="CustomDTO\Order\OrderItemSDTO.cs" />
+    <Compile Include="CustomDTO\Order\OrderItemsVM.cs" />
+    <Compile Include="CustomDTO\Order\OrderListAllCDTO.cs" />
+    <Compile Include="CustomDTO\Order\OrderListCDTO.cs" />
+    <Compile Include="CustomDTO\Order\OrderListItemCDTO.cs" />
+    <Compile Include="CustomDTO\Order\OrderQueueDTO.cs" />
+    <Compile Include="CustomDTO\Order\OrderResultDTO.cs" />
+    <Compile Include="CustomDTO\Order\OrderSDTO.cs" />
+    <Compile Include="CustomDTO\ParamDTO.cs" />
+    <Compile Include="CustomDTO\PaymentsForEditDTO.cs" />
+    <Compile Include="CustomDTO\PaymentsSDTO.cs" />
+    <Compile Include="CustomDTO\PaymentsVM.cs" />
+    <Compile Include="CustomDTO\PhoneSDTO.cs" />
+    <Compile Include="CustomDTO\Promotion\PromotionCookieDTO.cs" />
+    <Compile Include="CustomDTO\Promotion\PromotionHotSDTO.cs" />
+    <Compile Include="CustomDTO\Promotion\PromotionItemShortCDTO.cs" />
+    <Compile Include="CustomDTO\Promotion\PromotionSDTO.cs" />
+    <Compile Include="CustomDTO\ProvinceSDTO.cs" />
+    <Compile Include="CustomDTO\ReplySDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityReplyVM.cs" />
+    <Compile Include="CustomDTO\ReplyVM.cs" />
+    <Compile Include="CustomDTO\ResultDTO.cs" />
+    <Compile Include="CustomDTO\ReviewSDTO.cs" />
+    <Compile Include="CustomDTO\ReviewVM.cs" />
+    <Compile Include="CustomDTO\SCategorySDTO.cs" />
+    <Compile Include="CustomDTO\ShopCart\ShopCartCommodityUpdateDTO.cs" />
+    <Compile Include="CustomDTO\ShopCart\ShoppingCartItemSDTO.cs" />
+    <Compile Include="CustomDTO\SimpleAttributeDTO.cs" />
+    <Compile Include="CustomDTO\StoreCacheDTO.cs" />
+    <Compile Include="CustomDTO\StoreLocationParam.cs" />
+    <Compile Include="CustomDTO\StoreSDTO.cs" />
+    <Compile Include="CustomDTO\Promotion\PromotionItemsVM.cs" />
+    <Compile Include="CustomDTO\SubmitOrderRefundDTO.cs" />
+    <Compile Include="CustomDTO\TCategorySDTO.cs" />
+    <Compile Include="CustomDTO\TemplateCountDTO.cs" />
+    <Compile Include="CustomDTO\UCategoryVM.cs" />
+    <Compile Include="CustomDTO\UpdateCommodityOrderParamDTO.cs" />
+    <Compile Include="CustomDTO\User\UserCrowdfundingDTO.cs" />
+    <Compile Include="CustomDTO\User\UserOrderCarDTO.cs" />
+    <Compile Include="CustomDTO\User\UserPrizeRecordDTO.cs" />
+    <Compile Include="CustomDTO\User\UserRedEnvelopeDTO.cs" />
+    <Compile Include="CustomDTO\User\UserScoreDTO.cs" />
+    <Compile Include="CustomDTO\User\UserSDTO.cs" />
+    <Compile Include="CustomDTO\AlipayDTO.cs" />
+    <Compile Include="CustomDTO\MoreCrowdfundingDTO.cs" />
+    <Compile Include="CustomDTO\CrowdfundingFullDTO.cs" />
+    <Compile Include="CustomDTO\UcDailyDTO.cs" />
+    <Compile Include="CustomDTO\Commodity\CommoditySearchZPHDTO.cs" />
+    <Compile Include="CustomDTO\SearchBase.cs" />
+    <Compile Include="CustomDTO\Commodity\CommodityZPHResultDTO.cs" />
+    <Compile Include="CustomDTO\AppAbout\AppSetSearchDTO.cs" />
+    <Compile Include="CustomDTO\Order\OrderShippingExtDTO.cs" />
+    <Compile Include="CustomDTO\ReviewSearchDTO.cs" />
+    <Compile Include="CustomDTO\ReviewOnlyDTO.cs" />
+    <Compile Include="CustomDTO\User\UserInfoCountDTO.cs" />
+    <Compile Include="CustomDTO\User\UserSpreaderBindDTO.cs" />
+    <Compile Include="CustomDTO\VatInvoiceProofInfoDTO.cs" />
+    <Compile Include="CustomDTO\ZPHECDTO.cs" />
+    <Compile Include="CustomDTO\ZPHProxyContentCDTO.cs" />
+    <Compile Include="CustomDTO\AppAbout\AppShareDTO.cs" />
+    <Compile Include="CustomDTO\User\UserOrderCountDTO.cs" />
+    <Compile Include="CustomDTO\Param2DTO.cs" />
+    <Compile Include="CustomDTO\AppAbout\AppScoreSettingDTO.cs" />
+    <Compile Include="CustomDTO\CateringDTO\CateringCommodityDTO.cs" />
+    <Compile Include="CustomDTO\DiyGroup\DiyGroupSearchDTO.cs" />
+    <Compile Include="CustomDTO\DiyGroup\DiyGroupManageDTO.cs" />
+    <Compile Include="CustomDTO\VipPromotionDTO.cs" />
+    <Compile Include="Enum\CommoditySortEnum.cs" />
+    <Compile Include="Enum\CommodityStatusEnum.cs" />
+    <Compile Include="Enum\DeliverystatusEnum.cs" />
+    <Compile Include="Enum\Distribution\CalcOrderStateEnum.cs" />
+    <Compile Include="Enum\Distribution\DistributeApplyStateEnum.cs" />
+    <Compile Include="Enum\Distribution\MicroshopTypeEnum.cs" />
+    <Compile Include="Enum\FieldSort4Mobile.cs" />
+    <Compile Include="Enum\JDEclpOrderStateEnum.cs" />
+    <Compile Include="Enum\MallApplyEnum.cs" />
+    <Compile Include="Enum\MobileMsgCodeEnum.cs" />
+    <Compile Include="Enum\MobileMsgSecondTypeEnum.cs" />
+    <Compile Include="Enum\OperateCommodiyEnum.cs" />
+    <Compile Include="Enum\OrderSrcTypeEnum.cs" />
+    <Compile Include="Enum\OrderStatusEnum.cs" />
+    <Compile Include="Enum\OrderType.cs" />
+    <Compile Include="Enum\PaymentEnum.cs" />
+    <Compile Include="Enum\BehaviorTypeEnum.cs" />
+    <Compile Include="Enum\InvoiceCategoryEnum.cs" />
+    <Compile Include="Enum\QRType.cs" />
+    <Compile Include="Enum\RefundTypeEnum.cs" />
+    <Compile Include="Enum\ReturnCodeEnum.cs" />
+    <Compile Include="Enum\SNAfterSales.cs" />
+    <Compile Include="Enum\TemplatePropertyType.cs" />
+    <Compile Include="Enum\TradeTypeEnum.cs" />
+    <Compile Include="Enum\WeekDayEnum.cs" />
+    <Compile Include="Enum\ScoreTypeEnum.cs" />
+    <Compile Include="Enum\Distribution\ApprovalTypeEnum.cs" />
+    <Compile Include="Enum\Distribution\ApplyInfoTypeEnum.cs" />
+    <Compile Include="Enum\JdEnum.cs" />
+    <Compile Include="Enum\OperateTypeEnum.cs" />
+    <Compile Include="Enum\JDEclpServicesStateEnum.cs" />
+    <Compile Include="Enum\ThirdECommerceTypeEnum.cs" />
+    <Compile Include="Enum\NoticeTypeEnum.cs" />
+    <Compile Include="ExportDTO\YJBCarInsuranceExportDTO.cs" />
+    <Compile Include="MongoDTO\StoreMgDTO.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="BEDTOLogic\" />
+    <Folder Include="Exception\" />
+    <Folder Include="Resources\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy $(TargetDir)$(TargetName).dll $(ProjectDir)..\..\..\..\..\Lib\BizApp\Interface\ /y
+xcopy $(TargetDir)$(TargetName).pdb $(ProjectDir)..\..\..\..\..\Lib\BizApp\Interface\ /y
+xcopy $(TargetDir)$(TargetName).xml $(ProjectDir)..\..\..\..\..\Lib\BizApp\Interface\ /y
+xcopy $(TargetDir)$(TargetName).dll $(ProjectDir)..\..\..\..\..\Product\Portal\BizApp\Interface\ /y
+xcopy $(TargetDir)$(TargetName).pdb $(ProjectDir)..\..\..\..\..\Product\Portal\BizApp\Interface\ /y
+xcopy $(TargetDir)$(TargetName).xml $(ProjectDir)..\..\..\..\..\Product\Portal\BizApp\Interface\ /y
+</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

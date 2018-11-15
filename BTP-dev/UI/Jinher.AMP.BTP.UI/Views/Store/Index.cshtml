@@ -1,0 +1,283 @@
+﻿@{
+    ViewBag.Title = "Index";
+
+    List<Jinher.AMP.BTP.Deploy.StoreDTO> storeDTOList = ViewBag.StoreList; 
+}
+<head>
+    <title>门店信息</title>
+    <script type="text/javascript" src="/Scripts/jquery.watermark.js"></script>
+    <script src="/Scripts/pcProvinceCity.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        document.ondragstart = function () { return false; }
+
+        var pleaseSelect = new Object();
+        pleaseSelect.AreaCode = "";
+        pleaseSelect.Name = "请选择";
+        pleaseSelect.Level = 1;
+        pleaseSelect.SpellCode = "qxz";
+
+        $(document).ready(function () {
+            $("#pager").jhpager({
+                dataType: 'html',
+                requestType: 'post',
+                dataSource: '/Store/PartialIndex',
+                async: true,
+                totalCount: '@ViewBag.Count',
+                rowNum: 20,
+                requestSuccess: showContent,
+                beforeRequest: function () {
+                    $("#content_makes").empty();
+                    $(window.parent.document).scrollTop(0);
+                    ajaxLoading(1, '#content_makes');
+                },
+                requestFailure: function () {
+                }
+            });
+
+            $("#search").bind("click", function () {
+                var store = $("#storeName").val();
+                var province = $("#provinceSelect").val();
+                var city = $("#citySelect").val();
+                var district = $("#zoneSelect").val();
+                var pag = 1;
+                $.ajax({
+                    url: '/Store/PartialIndex',
+                    type: 'post',
+                    data: { storeName: store, province: province, city: city, district: district, pageIndex: pag },
+                    error: function () {
+                        alert("请稍后再试！");
+                    },
+                    beforeSend: beforeSends,
+                    complete: function () {
+                        //		                ajaxLoading(1, '');
+                    },
+                    success: function (msg) {
+                        sendSuccess(msg);
+                        var rowCount = $("#rowcounts").val();
+                        if (rowCount == 0) {
+                            alert("当前没有查到相匹配的数据！");
+                        }
+                        $("#pager").jhpager("refresh", 1, rowCount);
+                    }
+
+                })
+            });
+
+            $("#action").bind("click", function () {
+                //window.open("/Store/AddStore/");
+                window.location.href = "/Store/AddStore/";
+            })
+
+            $(".del").live("click", function () {
+                var storeId = this.id;
+                if (confirm("确定要删除吗?")) {
+                    $.ajax({
+                        url: '/Store/DelStore/',
+                        type: 'post',
+                        dataType: 'json',
+                        data: { storeId: storeId },
+                        error: function () {
+                            alert("删除错误");
+                        },
+                        success: function () {
+                            window.location.href = location.href;
+                        }
+
+                    });
+                }
+            });
+
+            //显示省份。
+            var pall = getAllProvinces();
+            pleaseSelect.Level = 1;
+            pall.unshift(pleaseSelect);
+            if (pall.length > 0) {
+                var pHtml = "";
+                for (var i = 0; i < pall.length; i++) {
+                    pHtml += '<option value="' + pall[i].AreaCode + '">' + pall[i].Name + '</option>';
+                }
+                $("#provinceSelect").html(pHtml);
+            }
+        });
+
+        function showContent(event, data) {
+            $("#content_makes").html(data);
+            newSetIframeHeight();
+            //$("#dataTable").replaceWith(data);
+
+            $("#provinceSelect").append();
+        }
+
+
+
+        var quSelect = "<select id=\"zoneSelect\"><option value=\"\">区域</option></select>";
+        var shiSelect = "<select id=\"citySelect\"><option value=\"\">城市</option></select>";
+
+        function toSelectCity(obj) {
+            var province = $("#provinceSelect").val();
+            if (province != "" && province != "000000") {
+                var pCitys = getProvinceCities(province);
+                pleaseSelect.Level = 2;
+                pCitys.unshift(pleaseSelect);
+                var chtml = "";
+                if (pCitys.length > 0) {
+                    for (var i = 0; i < pCitys.length; i++) {
+                        chtml += ' <option value="' + pCitys[i].AreaCode + '">' + pCitys[i].Name + '</option>';
+                    }
+                }
+                $("#citySelect").html(chtml);
+            }
+            else {
+                $("#zoneSelect").replaceWith(quSelect);
+                $("#citySelect").replaceWith(shiSelect);
+            }
+        }
+
+        function toSelectZone(obj) {
+            var city = $("#citySelect").val();
+            if (city != "" && city != "000000") {
+                var districts = getCityDistricts(city);
+                pleaseSelect.Level = 3;
+                districts.unshift(pleaseSelect);
+                var dhtml = "";
+                for (var i = 0; i < districts.length; i++) {
+                    dhtml += '<option value="' + districts[i].AreaCode + '">' + districts[i].Name + '</option>';
+                }
+                $("#zoneSelect").html(dhtml);
+            } else {
+                $("#zoneSelect").replaceWith(quSelect);
+            }
+        }
+
+    </script>
+    <style type="text/css">
+        .btn120
+        {
+            display: inline-block;
+            width: 120px;
+            height: 28px;
+            line-height: 28px;
+            background: url(../Content/default/images/btn120.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+        }
+        input.inp-txt
+        {
+            height: 18px;
+            line-height: 18px;
+            border: 1px solid #B6C0CD;
+            padding: 4px 5px;
+            vertical-align: middle;
+            border-radius: 3px;
+            box-shadow: inset 1px 1px 2px #DBDBDB;
+        }
+    </style>
+</head>
+<div class="box" style="padding: 10px 0 10px 0px;">
+    <div class="content">
+        <div class="right1">
+            <div class="manag_top  manag_top2" style="margin: 0; padding-right: 0; margin-top: 10px;
+                height: 45px;">
+                <div style="float: left;">
+                    <ul>
+                        <li class="door_one"><span>门店名称：</span>
+                            <input type="text" id="storeName" class="inp-txt" style="width: 150px; height: 17px;
+                                line-height: 17px;" />
+                        </li>
+                        <li class="door_two"><span></span>
+                            <select id="provinceSelect" onchange="toSelectCity(this)" style="width: 130px; height: 27px;
+                                line-height: 27px; color: #8c94a9">
+                            </select>
+                        </li>
+                        <li class="door_three"><span></span>
+                            <select id="citySelect" onchange="toSelectZone(this)" style="width: 130px; height: 27px;
+                                line-height: 27px; color: #8c94a9">
+                                <option value="">请选择</option>
+                            </select>
+                        </li>
+                        <li class="door_four"><span></span>
+                            <select id="zoneSelect" style="width: 130px; height: 27px; line-height: 27px; color: #8c94a9">
+                                <option value="">请选择</option>
+                            </select>
+                        </li>
+                    </ul>
+                </div>
+                <div style="float: left;">
+                    <a href="###" id="search" class="btn120">查询</a>
+                </div>
+                <div style="clear: both;">
+                </div>
+            </div>
+            <div style="background: #F2F2F2; margin-bottom: 0; font-size: 14px; height: 40px;
+                line-height: 35px; text-align: right;">
+                <a class="btn120" href="javascript:;" id="action" style="margin-right: 15px;">添加门店</a>
+            </div>
+            <div class="manag_bot" style="width: 100%;">
+                <!--h1 style="height: auto">
+                        <button id="action" class="btn120">
+                            添加门店</button>
+                        @*<a href="###" id="action" class="btn120">添加门店</a>*@
+                    </h1-->
+                <div id="content_makes" style="margin-top: 10px;">
+                    <table id="dataTable" border="0" cellspacing="0" cellpadding="0" class="m_talbe m_talbe2">
+                        <tr class="t_tr1">
+                            <td class="one" style="width: 43px;">
+                                序号
+                            </td>
+                            <td class="two">
+                                门店名称
+                            </td>
+                            <td class="three">
+                                门店地址
+                            </td>
+                            <td class="four" width="200px">
+                                联系电话
+                            </td>
+                            <td class="five">
+                                门店图片
+                            </td>
+                            <td class="eight">
+                                操作
+                            </td>
+                        </tr>
+                        @{
+                            if (storeDTOList.Count() > 0)
+                            {
+                                int index = 1;
+                                foreach (Jinher.AMP.BTP.Deploy.StoreDTO tempModel in storeDTOList)
+                                { 
+                               
+                            <tr class="t_tr2">
+                                <td class="one" style="width: 43px;">
+                                    @index
+                                </td>
+                                <td class="two">
+                                    @tempModel.Name
+                                </td>
+                                <td class="three">
+                                    @tempModel.Address
+                                </td>
+                                <td class="four">
+                                    @tempModel.Phone
+                                </td>
+                                <td class="five" style="padding: 10px 0;">
+                                    <img src="@tempModel.picture" alt=""  width="140" height="140" draggable="false" />
+                                </td>
+                                <td class="eight">
+                                    <span><a href="/Store/UpdateStore?storeId=@tempModel.Id">编辑</a></span> <span><a href="javascript:void(0)" class="del" id="@tempModel.Id">
+                                        删除</a></span>
+                                </td>
+                            </tr>
+                                    index++;
+                                }
+                            }}
+                    </table>
+                </div>
+                <div id="pager">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

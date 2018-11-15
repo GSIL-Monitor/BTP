@@ -1,0 +1,314 @@
+﻿@using System.Web
+@{
+    Layout = "~/Views/Shared/_MobileFittedLayout.cshtml";
+}
+@section LTitleHtml
+{
+    <title>@ViewBag.Title</title>
+}
+@section CssStyles{
+    <link rel="stylesheet" type="text/css" href="/Content/Mobile/distribute/distribution_index.css">
+    <input id="hiddnumshop" type="hidden" value="" />
+}
+@section ClientScript{
+    <script type="text/javascript" src="/Content/js/scroll.js"></script>
+    <script type="text/javascript" src="/Content/js/template.js"></script>
+    <script type="text/javascript">
+        //        window.onload = function () {
+        //            var hash = "";
+        //            hash = (!window.location.hash) ? "#all" : window.location.hash;
+        //            window.location.hash = hash;
+        //
+        //            scrollEvent.scroll();
+        //        }
+    </script>
+}
+<div class="container">
+    <div class="users">
+        <div class="users_img">
+            <img id="mainPic" src="/Content/images/touxiang.png">
+        </div>
+        <div class="users_name" id="microShopName">
+            发动机的小店
+        </div>
+        <div class="users_search">
+            <input id="searchName" type="text" name="" class="search_text" placeholder="搜索商品">
+            <i class="search-icon" href="javascript:void(0)" onclick="search()"></i>
+        </div>
+    </div>
+    <div class="list_tab bg borderB">
+        <div class="tab distribution_tab borderR" style="width: 50%">
+            <a id="searchall" href="#all" class="distribution_tab_btn">全部商品
+                <div class="num_shop" id="allCount">
+                    166
+                </div>
+            </a>
+        </div>
+        <div class="tab distribution_tab" style="width: 48%">
+            <a id="searchnewest" href="#new" class="distribution_tab_btn">新品上架
+                <div class="num_shop" id="newestCount">
+                    166
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="list" id="list">
+        <div class="" id="lstContent">
+            <script id="lstScript" type="text/html">
+                    {{each list as line iLine}}
+                    <div class="dis">
+                        <div class="item_line">
+                            {{each line.Pros as pro i}}
+                            <!-- 内容 -->
+                            <div class="{{pro.ItemClass}}">
+                                <div class="item_img">
+                                    <img src="{{pro.pic}}" onclick="commodityLink('{{pro.id}}','{{pro.appId}}')">
+                                </div>
+                                <div class="item_info">
+                                    <p class="info_text">
+                                        {{pro.name}}
+                                    </p>
+                                </div>
+                                <div>
+                                    <span class="list_yuan mrg-r-5">¥ <span class="list_yuan_num">{{pro.leftPrice}}.</span><span>{{pro.rightPrice}}</span>
+                                    </span>{{if !pro.hideDisplayPrice}}<span class="share_yuan_num">¥ <span>{{pro.leftDisplayPrice}}.</span><span>{{pro.rightDisplayPrice}}</span> </span>{{/if}} 
+                                </div>
+                            </div>
+                            {{/each}}
+                        </div>
+                    </div>
+                    {{/each}}
+            </script>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function() {
+
+        $('#searchall').on('click', function() {
+            search("all");
+        });
+        $('#searchnewest').on('click', function() {
+            search("newest");
+        });
+
+        var summaryInfo = @Html.Raw(@ViewBag.SummaryInfo);
+        var allCount = summaryInfo.allCount;
+        var newestCount = summaryInfo.newestCount;
+        var microShopName = summaryInfo.microShopName;
+        window.microshopId = summaryInfo.microshopId;
+
+        var ajaxResult = @Html.Raw(@ViewBag.Commoditys);
+
+        $("#allCount").html(allCount);
+        $("#newestCount").html(newestCount);
+        $("#microShopName").html(microShopName);
+        $("#mainPic").attr("src", '@ViewBag.MainPic');
+
+        var commodityList = ajaxResult.CommodityList;
+        displayList(commodityList);
+    });
+
+    function commodityLink(commodityId,shopId) {
+        window.location.href = urlAppendCommonParams('/Mobile/CommodityDetail?commodityId=' + commodityId + '&shopId=' + shopId);
+    }
+
+    function displayList(commodityList)
+    {
+        if (commodityList == null) {
+            console.error("错误，没有数据！");
+            return;
+        }
+        if (commodityList.length == 0) {
+            $("#lstContent").html('<div style="color: #999;font-size: 14px;text-align: center;padding-top: 50px;">未找到您要搜索的产品。</div>');
+        }
+        else{
+            var productVms = toProductVms(commodityList);
+            var itemLines = toItemLines(productVms);
+            injectListTemplate("lstScript", "lstContent", itemLines);
+        }
+    }
+
+    function search(type) {
+        type=type||'keywords';
+        var searchData;
+        var url;
+        
+        switch(type){
+        case "newest":
+            searchData = {microshopId:window.microshopId};
+            url = '/Distribute/GetNewestMicroshopCommoditys';
+            break;
+        case 2:
+            searchData = {microshopId:window.microshopId};
+            url = '/Distribute/SearchAllMicroshopCommoditys';
+            break;
+        default:
+            var searchName = $("#searchName").val();
+            searchData = {microshopId:window.microshopId,name:searchName};
+            url = '/Distribute/SearchAllMicroshopCommoditys';
+        }
+
+        $.post(url, searchData, function(data, status) {
+            if (status == 'success') {
+                var commodityList = data.CommodityList;
+                displayList(commodityList);
+            } else {
+                alert('搜索失败');
+            }
+        });
+
+    }
+    function toProductVms(products) {
+        var productVms = new Array();
+
+        for (var i in products) {
+            var originProduct = products[i];
+
+            var displayPrice = originProduct.MarketPrice;
+            var price = originProduct.Price;
+            
+            var pro = new ProductVm(i, originProduct.Id, originProduct.AppId, originProduct.Name, originProduct.Pic, "", displayPrice, price,
+                originProduct.Stock);
+
+            PRICE.alterPrice(pro, originProduct.Intensity, originProduct.DiscountPrice);
+
+            productVms.push(pro);
+        }
+        return productVms;
+    }
+
+    function injectListTemplate(lstScriptDom, lstContentDom, itemLines) {
+        var html = template(lstScriptDom, {
+            list: itemLines
+        });
+        $("#" + lstContentDom).html(html);
+    }
+
+    function toItemLines(productVms) {
+        var itemLines = new Array();
+        var line;
+        var lineClosed;
+        var iLine = 0;
+        for (var i in productVms) {
+            var pro = productVms[i];
+            var isOdd = i % 2 == 0;
+
+            if (isOdd) {
+                iLine++;
+                line = {
+                    No: iLine,
+                    Pros: new Array()
+                };
+                pro.ItemClass = "item";
+                line.Pros.push(pro);
+                lineClosed = false;
+            } else {
+                pro.ItemClass = "item_right";
+                line.Pros.push(pro);
+
+                itemLines.push(line);
+                lineClosed = true;
+            }
+        }
+        if (lineClosed == false) {
+            itemLines.push(line);
+        }
+        return itemLines;
+    }
+
+    function ProductVm(index,id,appId, name, pic, url, displayPrice, price, stock) {
+
+        //if (arguments.length !== 9)
+        //    console.error("构造函数实参数目不对！");
+
+        //--------------构造函数初始化---------------
+        this.id = id;
+        this.appId = appId;
+        this.name = name;
+        this.pic = pic;
+        this.url = url;
+        this.displayPrice = displayPrice;
+        this.price = price;
+        this.stock = stock;
+
+        //--------------PRICELOGIC.alterPrice函数初始化并修改所有价格---------------
+        this.hasDiscount = false; //是否有优惠活动
+    }
+
+    window.PRICE = (function(mod) {
+
+        //修饰price字符串，保留两位小数
+        function alterPriceTxt(price) {
+            if (typeof(price) === 'number') //包括整数和浮点数
+                price += "";
+
+            //price已经是字符串，这时候Boolean('0'),Boolean('0.0')都是true
+            //Boolean(price)=false说明price没有值
+            if (!price)
+                return null;
+
+            price = Number(price).toFixed(2);
+            return price;
+        }
+
+        function getLeftPriceTxt(priceTxt) {
+            return priceTxt.split('.')[0];
+        }
+
+        function getRightPriceTxt(priceTxt) {
+            return priceTxt.split('.')[1];
+        }
+
+        function runDiscount(price, intensity, discountPrice) {
+            if (discountPrice > 0) {
+                price = discountPrice;
+            } else {
+                price = price * intensity / 10;
+            }
+            return price;
+        }
+
+        mod.alterPrice = function(pro, intensity, discountPrice) {
+
+            pro.hasDiscount = (0 < intensity && 10 > intensity) || discountPrice > 0;
+
+            if (pro.hasDiscount) {
+                pro.displayPrice = pro.price;
+                pro.price = runDiscount(pro.price, intensity, discountPrice);
+            }
+
+            if (pro.displayPrice== null || isNaN(pro.displayPrice)) {
+                pro.displayPrice = pro.price;
+            }
+
+            //格式化
+            pro.displayPrice = alterPriceTxt(pro.displayPrice);
+            pro.price = alterPriceTxt(pro.price);
+
+            pro.leftDisplayPrice = getLeftPriceTxt(pro.displayPrice);
+            pro.rightDisplayPrice=getRightPriceTxt(pro.displayPrice);
+
+            pro.leftPrice = getLeftPriceTxt(pro.price);
+            pro.rightPrice=getRightPriceTxt(pro.price);
+
+            //两个价格相同时，不显示displayPrice
+            pro.hideDisplayPrice = (pro.leftDisplayPrice == pro.leftPrice && pro.rightDisplayPrice==pro.rightPrice);
+            console.log(pro.price, pro.displayPrice, pro.hideDisplayPrice);
+        }
+        return mod;
+    })(window.PRICE || {});
+</script>
+<div id="divNotLoginTemplate" style="display: none">
+    <div class="ui-notice">
+        <i>
+            <img src="../../Content/Mobile/redredenvelope/fail.png" alt="" style="margin: auto;
+                width: 160px;">
+        </i>
+        <p class="loginTitle">
+            还未登录，请先登录</p>
+        <div class="ui-notice-btn" style="text-align: center">
+            <a class="btn btn-primary" id="btnLogin">点此登录</a>
+        </div>
+    </div>
+</div>

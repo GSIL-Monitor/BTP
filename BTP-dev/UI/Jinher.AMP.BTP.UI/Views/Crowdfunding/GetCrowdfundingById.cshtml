@@ -1,0 +1,362 @@
+﻿@{
+    ViewBag.Title = "修改众筹";
+    Jinher.AMP.BTP.Deploy.CrowdfundingDTO crowdfundingDTO = ViewBag.Crowdfunding;
+}
+<head>
+    <!--<link href="/Scripts/ueditor_mini/dialogs/video/video.css" type="text/css" rel="stylesheet" />-->
+    <style type="text/css">
+        .txtColor
+        {
+            color: #8c94a9;
+        }
+        
+        
+        
+        .btn120
+        {
+            display: inline-block;
+            width: 120px;
+            height: 28px;
+            line-height: 28px;
+            background: url('/Content/default/images/btn120.png') no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+        }
+        
+        .spfb_t_l tr
+        {
+            height: 45px;
+        }
+        
+        .ble
+        {
+            text-align: right;
+        }
+    </style>
+    <!--富文本使用-->
+    <link href="/Scripts/ueditor_mini/themes/default/css/umeditor.min.css" type="text/css"
+        rel="stylesheet" />
+    <script type="text/javascript">
+        function win(url, obj, width, height) {
+            return window.showModalDialog(url, obj || window, "center=1;dialogWidth=" + (width || 970) + "px;dialogHeight=" + (height || 720) + "px;")
+        }
+    </script>
+    <link href="/Scripts/ueditor_mini/dialogs/image/image.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="/Scripts/ueditor_mini/umeditor.config.js"></script>
+    <script type="text/javascript" src="/Scripts/ueditor_mini/umeditor.min.js"></script>
+    <script type="text/javascript" src="/Scripts/ueditor_mini/lang/zh-cn/zh-cn.js"></script>
+    <script type="text/javascript" src="/Scripts/ueditor_mini/dialogs/link/link.js"></script>
+    <script type="text/javascript" src="/Scripts/ueditor_mini/dialogs/image/image.js"></script>
+    <script src="../../Scripts/Validator/JValidator.js" type="text/javascript"></script>
+    <script src="../../Scripts/FunctionJS.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.datepicker.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhdatetime.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhstartandenddate.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(function () {
+
+            //众筹资金
+            JsMoney();
+
+            var crofen = " @crowdfundingDTO.DividendPercent";
+            //分红比例
+            $("#crofen").val(parseFloat(crofen) * 100);
+
+            var mess = "@crowdfundingDTO.Slogan";
+            if (mess != null) {
+                ue.setContent(decodeURIComponent(mess));
+            } else {
+                ue.setContent('');
+            }
+
+
+            var mess1 = "@crowdfundingDTO.Description";
+            if (mess1 != null) {
+                ue1.setContent(decodeURIComponent(mess1));
+            } else {
+                ue1.setContent('');
+            }
+
+        });
+
+        function toSave() {
+            if (!CheckDataValid('.spfb_t_l')) {
+                return false;
+            }
+
+            var strxuan = encodeURIComponent(ue.getContent());
+            var strxiang = encodeURIComponent(ue1.getContent());
+
+            var crowdfundingDTO = {};
+            crowdfundingDTO.Id = "@crowdfundingDTO.Id";
+            crowdfundingDTO.AppName = $.trim($("#croappname").val());
+            crowdfundingDTO.AppId = $.trim($("#croappid").val());
+            crowdfundingDTO.ShareCount = $.trim($("#crocount").val());
+            crowdfundingDTO.PerShareMoney = $.trim($("#cromiane").val());
+            crowdfundingDTO.DividendPercent = $.trim($("#crofen").val()) / 100;
+            crowdfundingDTO.StartTime = $.trim($("#StartTime").val() + ":00");
+            crowdfundingDTO.Slogan = $.trim(strxuan);
+            crowdfundingDTO.Description = $.trim(strxiang);
+            crowdfundingDTO.State = 0;
+
+            $.ajax({
+                url: '/Crowdfunding/UpdateCrowdfunding',
+                type: 'post',
+                data: crowdfundingDTO,
+                beforeSend: function () {
+                    ajaxLoading(1, '');
+                },
+                complete: function () {
+                    ajaxLoading(1, '');
+                },
+                success: function (data) {
+                    if (data.Result == 0) {
+                        alert("修改成功");
+
+                        setInterval(closeWindow, 2000);
+
+                    }
+                    else {
+                        alert(data.Messages);
+                    }
+                }
+            });
+        }
+
+        function JsMoney() {
+            var crc = $.trim($("#crocount").val());
+            var crm = $.trim($("#cromiane").val());
+
+            if (crc == "" && crm == "") {
+                $(".crozi").html("0");
+            } else if (crc == "" && crm != "") {
+                $(".crozi").html(crm);
+            }
+            else if (crc != "" && crm == "") {
+                $(".crozi").html(crc);
+            }
+            else {
+                $(".crozi").html((crc * crm).toFixed(2));
+            }
+        }
+
+        //取消
+        function closeWindow() {
+
+            window.location.href = "/Crowdfunding/Index";
+            //            var mess = "@crowdfundingDTO.Slogan";
+            //            if (mess != null) {
+            //                ue.setContent(decodeURIComponent(mess));
+            //            } else {
+            //                ue.setContent('');
+            //            }
+
+
+            //            var mess1 = "@crowdfundingDTO.Description";
+            //            if (mess1 != null) {
+            //                ue1.setContent(decodeURIComponent(mess1));
+            //            } else {
+            //                ue1.setContent('');
+            //            }
+
+        }
+    </script>
+</head>
+<div class="box">
+    <div class="content">
+        <div class="right right1">
+            <div class="spfb_t">
+                <div class="spfb_t_l">
+                    <h2>
+                        基本信息</h2>
+                    <table>
+                        <tr>
+                            <td class="ble">
+                                <span style="margin-left: 0;">众筹APPID：</span>
+                            </td>
+                            <td>
+                                <input type="text" id="croappid" value="@crowdfundingDTO.AppId" class="txtColor" readonly="readonly" datacol="yes" err="众筹APPID"
+                                    checkexpession="NotNull" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="ble">
+                                <span style="margin-left: 0;">众筹APP名称：</span>
+                            </td>
+                            <td>
+                                <input type="text" id="croappname" readonly="readonly" value="@crowdfundingDTO.AppName" class="txtColor" datacol="yes" err="众筹APP名称"
+                                    checkexpession="NotNull" readonly="readonly" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="ble">
+                                <span style="margin-left: 0;">众筹开始时间：</span>
+                            </td>
+                            <td>
+                                <input type="text" id="StartTime" readonly="readonly" class="txtColor" value="@crowdfundingDTO.StartTime"  />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="ble">
+                                <span style="margin-left: 0;">众筹股点数：</span>
+                            </td>
+                            <td>
+                                <input type="text" id="crocount" readonly="readonly" value="@crowdfundingDTO.ShareCount" class="txtColor" datacol="yes" err="众筹股点数"
+                                    checkexpession="Num" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="ble">
+                                <span style="margin-left: 0;">每股面额：</span>
+                            </td>
+                            <td>
+                                <input type="text" id="cromiane" readonly="readonly" value="@crowdfundingDTO.PerShareMoney" class="txtColor" datacol="yes" checkexpession="Double"
+                                    err="每股面额" eqvalue="1" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="ble">
+                                <span style="margin-left: 0;">众筹资金：</span>
+                            </td>
+                            <td>
+                                <span style="margin-left: 0;" class="crozi">0</span>元
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="ble">
+                                <span style="margin-left: 0;">每股分红比例：</span>
+                            </td>
+                            <td>
+                                <input type="text" id="crofen" value="" class="txtColor" datacol="yes" checkexpession="Double"
+                                    err="每股分红比例" eqvalue="1" readonly="readonly" />% 每一笔订单成交额的百分比（不含运费）
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <!-- 右侧图片预览 -->
+                <div style="clear: both;">
+                </div>
+            </div>
+            <div class="spfb_b">
+                <div class="spfb_b1">
+                    <div class="spfb_b1t">
+                        <span class="zihao1">众筹宣传语</span>
+                    </div>
+                    <div id="textDiv" class="item" style="padding-left: 0; width: 100%;">
+                        <script type="text/plain" id="myEditor"></script>
+                    </div>
+                </div>
+            </div>
+            <div class="spfb_b">
+                <div class="spfb_b1">
+                    <div class="spfb_b1t">
+                        <span class="zihao1">众筹详情介绍</span>
+                    </div>
+                    <div id="textDiv1" class="item" style="padding-left: 0; width: 100%;">
+                        <script type="text/plain" id="myEditor1"></script>
+                    </div>
+                </div>
+            </div>
+            <div class="butt" style="text-align: center; width: 98%; margin: 20px;">
+                <a href="javascript:;" class="btn120" id="btnSubmit" onclick="toSave()">保存</a> <a
+                    id="btnCancel" href="javascript:;" class="btn120" onclick="closeWindow()" style="margin-left: 20px;">
+                    取消</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="loadImgDiv" style="overflow: hidden; width: auto; min-height: 0; height: 470px;
+    display: none;">
+    <iframe id="contentFrame" name="contentFrame" scrolling="no" src="" height="480"
+        width="630" frameborder="0" style="border: 0; overflow: hidden;"></iframe>
+</div>
+<script type="text/javascript">
+    var textDivWidth = $("#textDiv").width();
+    var ue = UM.getEditor('myEditor', {
+        //这里可以选择自己需要的工具按钮名称
+        toolbar: ['undo redo | bold italic underline strikethrough | forecolor | removeformat |',
+			'insertorderedlist insertunorderedlist | selectall cleardoc | paragraph fontsize',
+			'| justifyleft justifycenter justifyright justifyjustify |',
+			'link unlink | image | horizontal '],
+        //focus时自动清空初始化时的内容
+        autoClearinitialContent: false,
+        //关闭字数统计
+        wordCount: false,
+        //关闭elementPath
+        elementPathEnabled: false,
+        //默认的编辑区域高度
+        initialFrameHeight: 300,
+        //宽度
+        initialFrameWidth: '100%',
+        //自适应高度
+        autoHeightEnabled: false,
+        //工具条保持不动
+        autoFloatEnabled: false,
+        zIndex: 5,
+        //更多其他参数，请参考umeditor.config.js中的配置项
+        filterRules: function () {
+            return {
+                //$:{}表示不保留任何属性
+                p: { $: {} },
+                h3: { $: {} },
+                h2: { $: {} },
+                img: function (node) {
+                    var src = node.getAttr('src');
+                    node.setAttr();
+                    node.setAttr({ 'src': src })
+                },
+                //黑名单，以下标签及其子节点都会被过滤掉
+                '-': 'script style meta iframe embed object'
+            }
+        } ()
+    });
+
+  
+	
+</script>
+<script type="text/javascript">
+    var textDivWidth1 = $("#textDiv1").width();
+    var ue1 = UM.getEditor('myEditor1', {
+        //这里可以选择自己需要的工具按钮名称
+        toolbar: ['undo redo | bold italic underline strikethrough | forecolor | removeformat |',
+			'insertorderedlist insertunorderedlist | selectall cleardoc | paragraph fontsize',
+			'| justifyleft justifycenter justifyright justifyjustify |',
+			'link unlink | image | horizontal '],
+        //focus时自动清空初始化时的内容
+        autoClearinitialContent: false,
+        //关闭字数统计
+        wordCount: false,
+        //关闭elementPath
+        elementPathEnabled: false,
+        //默认的编辑区域高度
+        initialFrameHeight: 300,
+        //宽度
+        initialFrameWidth: '100%',
+        //自适应高度
+        autoHeightEnabled: false,
+        //工具条保持不动
+        autoFloatEnabled: false,
+        zIndex: 5,
+        //更多其他参数，请参考umeditor.config.js中的配置项
+        filterRules: function () {
+            return {
+                //$:{}表示不保留任何属性
+                p: { $: {} },
+                h3: { $: {} },
+                h2: { $: {} },
+                img: function (node) {
+                    var src = node.getAttr('src');
+                    node.setAttr();
+                    node.setAttr({ 'src': src })
+                },
+                //黑名单，以下标签及其子节点都会被过滤掉
+                '-': 'script style meta iframe embed object'
+            }
+        } ()
+    });
+
+  
+	
+</script>

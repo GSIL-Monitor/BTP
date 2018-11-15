@@ -1,0 +1,533 @@
+﻿@{
+    ViewBag.Title = "众筹发布";
+}>
+<head>
+    <meta charset="utf-8">
+    <!--<link href="/Scripts/ueditor_mini/dialogs/video/video.css" type="text/css" rel="stylesheet" />-->
+    <!--富文本使用-->
+    <style type="text/css">
+        .txtColor
+        {
+            color: #8c94a9;
+        }
+        
+        
+        
+        .btn120
+        {
+            display: inline-block;
+            width: 120px;
+            height: 28px;
+            line-height: 28px;
+            background: url('/Content/default/images/btn120.png') no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+        }
+        
+        .spfb_t_l tr
+        {
+            height: 45px;
+        }
+        
+        .ble
+        {
+            text-align: right;
+        }
+    </style>
+    <link href="/Scripts/ueditor_mini/themes/default/css/umeditor.min.css" type="text/css"
+        rel="stylesheet" />
+    <script type="text/javascript">
+        function win(url, obj, width, height) {
+            return window.showModalDialog(url, obj || window, "center=1;dialogWidth=" + (width || 970) + "px;dialogHeight=" + (height || 720) + "px;")
+        }
+    </script>
+    <link href="/Scripts/ueditor_mini/dialogs/image/image.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="/Scripts/ueditor_mini/umeditor.config.js"></script>
+    <script type="text/javascript" src="/Scripts/ueditor_mini/umeditor.min.js"></script>
+    <script type="text/javascript" src="/Scripts/ueditor_mini/lang/zh-cn/zh-cn.js"></script>
+    <script type="text/javascript" src="/Scripts/ueditor_mini/dialogs/link/link.js"></script>
+    <script type="text/javascript" src="/Scripts/ueditor_mini/dialogs/image/image.js"></script>
+    <script src="../../Scripts/Validator/JValidator.js" type="text/javascript"></script>
+    <script src="../../Scripts/FunctionJS.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.datepicker.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhdatetime.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhstartandenddate.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var minStartTime = new Date();
+        $(function () {
+
+            $("#croappid").bind("blur", function () {
+
+                if ($.trim($("#croappid").val()).length != 36) {
+                    alert("请输入正确的AppId");
+                    return;
+                }
+                $.ajax({
+                    url: '/Crowdfunding/GetAppNameByAppId',
+                    type: 'post',
+                    async: true,
+                    dataType: "json",
+                    data: { appId: $.trim($("#croappid").val()) },
+                    beforeSend: function () {
+                        ajaxLoading(1, '');
+                    },
+                    complete: function () {
+                        ajaxLoading(1, '');
+                    },
+                    success: function (data) {
+                        if (data.Result == 1) {
+                            $("#croappname").val(data.Messages);
+                        }
+                        else {
+                            alert(data.Messages);
+                        }
+                    }
+                });
+
+            });
+
+            $("#crocount").bind("blur", function () {
+                if (!isZhengNumber($(this).val())) {
+                    $(this).val("");
+                    return false;
+                }
+                JsMoney();
+                JsBaiMoney();
+
+            });
+
+            $("#cromiane").bind("blur", function () {
+                if (!isZhengNumber($(this).val())) {
+                    $(this).val("");
+                    return false;
+                }
+                JsMoney();
+                JsBaiMoney();
+            });
+
+
+            $("#crofen").bind("blur", function () {
+                if (!isMoney($(this).val()) && !isZhengNumber($(this).val())) {
+                    $(this).val("");
+                    return false;
+                }
+                JsBaiMoney();
+            });
+        });
+        function getDate(strDate) {
+            var date = eval('new Date(' + strDate.replace(/\d+(?=-[^-]+$)/,
+           function (a) { return parseInt(a, 10) - 1; }).match(/\d+/g) + ')');
+            return date;
+        }
+        //修改出错的input的外观
+        function ChangeStartTimeCss(obj, Validatemsg) {
+            //top.showTopMsg(Validatemsg, 5000, 'error');
+            $('#tipTable').hide();
+            if ($(obj).attr('class') != 'tooltipinputerr') {
+                $('.tooltipinputerr').removeClass("tooltipinputerr");
+            }
+            $(obj).removeClass("x");
+            if ($(obj).attr('class') == 'txt') {
+                $(obj).addClass("tooltipinputerr");
+                $(obj).removeClass("txt");
+            } else if ($(obj).attr('class') == 'select') {
+                $(obj).addClass("tooltipselecterr");
+                $(obj).removeClass("select");
+            }
+            // $(obj).focus(); //焦点
+            $('body').append('<table id="tipTable" class="tableTip"><tr><td  class="leftImage"></td> <td class="contenImage" align="left"></td> <td class="rightImage"></td></tr></table>');
+            var X = $(obj).offset().top;
+            var Y = $(obj).offset().left;
+            $('#tipTable').css({ left: Y - 2 + 'px', top: X + 25 + 'px' });
+            $('#tipTable').show()
+            $('.contenImage').html(Validatemsg);
+            $(obj).change(function () {
+                if ($(obj).val() != "") {
+                    if ($(obj).attr('class') == 'txt') {
+                        $(obj).addClass("txt");
+                        $(obj).removeClass("tooltipinputerr");
+                    } else if ($(obj).attr('class') == 'select') {
+                        $(obj).addClass("select");
+                        $(obj).removeClass("tooltipselecterr");
+                    }
+                    $('#tipTable').remove()
+                }
+            });
+            $(obj).blur(function () {
+                if ($(obj).val() != "") {
+                    if ($(obj).attr('type') == 'text') {
+                        $(obj).addClass("txt");
+                        $(obj).removeClass("tooltipinputerr");
+                    } else {
+                        $(obj).removeClass("tooltipselecterr");
+                    }
+                    $('#tipTable').remove()
+                }
+            });
+        }
+
+        $(function () {
+            $("#StartTime").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                showOtherMonths: true,
+                selectOtherMonths: true,
+                timer: true,
+                dateFormat: 'yy-mm-dd hh:i',
+                minDate: minStartTime
+
+            });
+        });
+        function toSave() {
+            if (!CheckDataValid('.spfb_t_l')) {
+                return false;
+            }
+
+            var now = new Date();
+            if (isDateTime($("#StartTime").val() + ":00") && (now < getDate($("#StartTime").val() + ":00")))
+                ;
+            else {
+                ChangeStartTimeCss($("#StartTime"), "众筹开始时间必须晚于当前时间！");
+                return false;
+            }
+
+            var con = ue.getContent();
+            if ($.trim(con) == "") {
+                alert("众筹宣传语不能为空。");
+                return false;
+            }
+
+            if (!JsBaiMoney()) {
+                return false;
+            }
+
+            con = con.replace(/<\/?(img)[^>]*>|&nbsp;/ig, "");
+            if (con.length > 0 && con.length > 300) {
+                alert("众筹宣传语不能超过300个字符。");
+                return false;
+            }
+            var con1 = ue1.getContent();
+            if ($.trim(con1) == "") {
+                alert("众筹详情介绍不能为空。");
+                return false;
+            }
+            con1 = con1.replace(/<\/?(img)[^>]*>|&nbsp;/ig, "");
+            if (con1.length > 0 && con1.length > 5000) {
+                alert("众筹详情介绍不能超过5000个字符。");
+                return false;
+            }
+            var strxuan = encodeURIComponent(ue.getContent());
+            var strxiang = encodeURIComponent(ue1.getContent());
+
+            var crowdfundingDTO = {};
+            crowdfundingDTO.AppName = $.trim($("#croappname").val());
+            crowdfundingDTO.AppId = $.trim($("#croappid").val());
+            crowdfundingDTO.ShareCount = $.trim($("#crocount").val());
+            crowdfundingDTO.PerShareMoney = $.trim($("#cromiane").val());
+            crowdfundingDTO.DividendPercent = $.trim($("#crofen").val()) / 100;
+            crowdfundingDTO.StartTime = $.trim($("#StartTime").val() + ":00");
+            crowdfundingDTO.Slogan = $.trim(strxuan);
+            crowdfundingDTO.Description = $.trim(strxiang);
+            crowdfundingDTO.State = 0;
+
+            $.ajax({
+                url: '/Crowdfunding/AddCrowdfunding',
+                type: 'post',
+                data: crowdfundingDTO,
+                beforeSend: function () {
+                    ajaxLoading(1, '');
+                },
+                complete: function () {
+                    ajaxLoading(1, '');
+                },
+                success: function (data) {
+                    if (data.Result == 0) {
+
+                        alert("发布成功");
+
+                        setInterval(closeWindow, 2000);
+
+                    }
+                    else {
+                        alert(data.Messages);
+                    }
+                }
+            });
+        }
+
+        function closeWindow() {
+
+            window.location.href = "/Crowdfunding/Index";
+
+
+        }
+
+        function JsMoney() {
+            var crc = $.trim($("#crocount").val());
+            var crm = $.trim($("#cromiane").val());
+
+            if (crc == "" && crm == "") {
+                $(".crozi").html("0");
+            } else if (crc == "" && crm != "") {
+                $(".crozi").html(crm);
+            }
+            else if (crc != "" && crm == "") {
+                $(".crozi").html(crc);
+            }
+            else {
+                $(".crozi").html((crc * crm).toFixed(0));
+            }
+        }
+
+        function JsBaiMoney() {
+            var result = true;
+            var crc = $.trim($("#crocount").val());
+            var crm = $.trim($("#cromiane").val());
+            var cba = $.trim($("#crofen").val());
+            if (crc != "" && crm != "" && cba != "") {
+                $(".tiorderbi").show();
+                $(".tiyu").html(crc * cba);
+                if (crc * cba > 50 && crc * cba < 99) {
+                    $(".tanzhong").show();
+                    $(".tizhong").html("您的分红支出已超50%，请注意收支平衡！");
+
+                }
+                else if (crc * cba >= 99) {
+                    $(".tanzhong").show();
+                    $(".tizhong").html("您的订单成交额已不足抵扣分红，请重新设置！");
+                    result = false;
+                }
+                else {
+                    $(".tanzhong").hide();
+                }
+            }
+            return result;
+        }
+    </script>
+</head>
+<div class="box">
+    <div class="content">
+        <div class="right right1">
+            <div class="spfb_t">
+                <div class="spfb_t_l">
+                    <h2>
+                        基本信息</h2>
+                    <table>
+                        <tr>
+                            <td class="ble">
+                                <img src="/Images/xin.png" />
+                                <span style="margin-left: 0;">众筹APPID：</span>
+                            </td>
+                            <td>
+                                <input type="text" id="croappid" value="" class="txtColor" datacol="yes" err="众筹APPID"
+                                    checkexpession="NotNull" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="ble">
+                                <img src="/Images/xin.png" />
+                                <span style="margin-left: 0;">众筹APP名称：</span>
+                            </td>
+                            <td>
+                                <input type="text" id="croappname" value="" class="txtColor" datacol="yes" err="众筹APP名称"
+                                    checkexpession="NotNull" readonly="readonly" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="ble">
+                                <img src="/Images/xin.png" />
+                                <span style="margin-left: 0;">众筹开始时间：</span>
+                            </td>
+                            <td>
+                                @*<input type="text" class="hasDatepicker" id="StartTime" value="@DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")" class="txtColor" datacol="yes" checkexpession="DateTime"
+                                    err="众筹开始时间" />*@
+                                <input class="txtColor one inp-txt" type="text" id="StartTime" value="@DateTime.Now.ToString("yyyy-MM-dd HH:mm")"  />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="ble">
+                                <img src="/Images/xin.png" />
+                                <span style="margin-left: 0;">众筹股点数：</span>
+                            </td>
+                            <td>
+                                <input type="text" id="crocount" value="" class="txtColor" datacol="yes" err="众筹股点数"
+                                    checkexpession="ZhengNum" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="ble">
+                                <img src="/Images/xin.png" />
+                                <span style="margin-left: 0;">每股面额：</span>
+                            </td>
+                            <td>
+                                <input type="text" id="cromiane" value="" class="txtColor" datacol="yes" checkexpession="ZhengNum"
+                                    err="每股面额" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="ble">
+                                <span style="margin-left: 0;">众筹资金：</span>
+                            </td>
+                            <td>
+                                <span style="margin-left: 0;" class="crozi">0</span>元
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="ble">
+                                <img src="/Images/xin.png" />
+                                <span style="margin-left: 0;">每股分红比例：</span>
+                            </td>
+                            <td>
+                                <input type="text" id="crofen" value="" class="txtColor" />% 每一笔订单成交额的百分比（不含运费）
+                            </td>
+                        </tr>
+                        <tr class="tiorderbi" style="color: red; display: none;">
+                            <td class="ble">
+                                提示：
+                            </td>
+                            <td>
+                                众筹股点全部售出后，每成交一单，您将支出订单金额的<span class="tiyu"></span>%作为众筹分红
+                            </td>
+                        </tr>
+                        <tr class="tanzhong" style="color: red; display: none;">
+                            <td class="ble">
+                            </td>
+                            <td>
+                                <span class="tizhong"></span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <!-- 右侧图片预览 -->
+                <div style="clear: both;">
+                </div>
+            </div>
+            <div class="spfb_b">
+                <div class="spfb_b1">
+                    <div class="spfb_b1t">
+                        <span class="zihao1">众筹宣传语</span>
+                    </div>
+                    <div id="textDiv" class="item" style="padding-left: 0; width: 100%;">
+                        <script type="text/plain" id="myEditor"></script>
+                    </div>
+                </div>
+            </div>
+            <div class="spfb_b">
+                <div class="spfb_b1">
+                    <div class="spfb_b1t">
+                        <span class="zihao1">众筹详情介绍</span>
+                    </div>
+                    <div id="textDiv1" class="item" style="padding-left: 0; width: 100%;">
+                        <script type="text/plain" id="myEditor1"></script>
+                    </div>
+                </div>
+            </div>
+            <div class="butt" style="text-align: center; width: 98%; margin: 20px;">
+                <a href="javascript:;" class="btn120" id="btnSubmit" onclick="toSave()">保存</a> <a
+                    id="btnCancel" href="javascript:;" class="btn120" onclick="closeWindow()" style="margin-left: 20px;">
+                    取消</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="loadImgDiv" style="overflow: hidden; width: auto; min-height: 0; height: 470px;
+    display: none;">
+    <iframe id="contentFrame" name="contentFrame" scrolling="no" src="" height="480"
+        width="630" frameborder="0" style="border: 0; overflow: hidden;"></iframe>
+</div>
+<script type="text/javascript">
+    var textDivWidth = $("#textDiv").width();
+    var ue = UM.getEditor('myEditor', {
+        //这里可以选择自己需要的工具按钮名称
+        toolbar: ['undo redo | bold italic underline strikethrough | forecolor | removeformat |',
+            'insertorderedlist insertunorderedlist | selectall cleardoc | paragraph fontsize',
+            '| justifyleft justifycenter justifyright justifyjustify |',
+            'link unlink | image | horizontal '],
+        //focus时自动清空初始化时的内容
+        autoClearinitialContent: false,
+        //关闭字数统计
+        wordCount: false,
+        //关闭elementPath
+        elementPathEnabled: false,
+        //默认的编辑区域高度
+        initialFrameHeight: 300,
+        //宽度
+        initialFrameWidth: '100%',
+        //自适应高度
+        autoHeightEnabled: false,
+        //工具条保持不动
+        autoFloatEnabled: false,
+        zIndex: 5,
+        //更多其他参数，请参考umeditor.config.js中的配置项
+        filterRules: function () {
+            return {
+                //$:{}表示不保留任何属性
+                p: { $: {} },
+                h3: { $: {} },
+                h2: { $: {} },
+                img: function (node) {
+                    var src = node.getAttr('src');
+                    node.setAttr();
+                    node.setAttr({ 'src': src })
+                },
+                //黑名单，以下标签及其子节点都会被过滤掉
+                '-': 'script style meta iframe embed object'
+            }
+        } ()
+    });
+
+    //    ue.addListener("contentChange", function () {
+    //        ajaxSaveInfo();
+    //    });
+    var textDivWidth1 = $("#textDiv1").width();
+    var ue1 = UM.getEditor('myEditor1', {
+        //这里可以选择自己需要的工具按钮名称
+        toolbar: ['undo redo | bold italic underline strikethrough | forecolor | removeformat |',
+            'insertorderedlist insertunorderedlist | selectall cleardoc | paragraph fontsize',
+            '| justifyleft justifycenter justifyright justifyjustify |',
+            'link unlink | image | horizontal '],
+        //focus时自动清空初始化时的内容
+        autoClearinitialContent: false,
+        //关闭字数统计
+        wordCount: false,
+        //关闭elementPath
+        elementPathEnabled: false,
+        //默认的编辑区域高度
+        initialFrameHeight: 300,
+        //宽度
+        initialFrameWidth: '100%',
+        //自适应高度
+        autoHeightEnabled: false,
+        //工具条保持不动
+        autoFloatEnabled: false,
+        zIndex: 5,
+        //更多其他参数，请参考umeditor.config.js中的配置项
+        filterRules: function () {
+            return {
+                //$:{}表示不保留任何属性
+                p: { $: {} },
+                h3: { $: {} },
+                h2: { $: {} },
+                img: function (node) {
+                    var src = node.getAttr('src');
+                    node.setAttr();
+                    node.setAttr({ 'src': src })
+                },
+                //黑名单，以下标签及其子节点都会被过滤掉
+                '-': 'script style meta iframe embed object'
+            }
+        } ()
+    });
+	
+</script>
+<script type="text/javascript">
+
+
+    //    ue.addListener("contentChange", function () {
+    //        ajaxSaveInfo();
+    //    });
+
+	
+</script>

@@ -1,0 +1,120 @@
+﻿@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+
+    string appIdStr = this.Request.QueryString["appId"];
+    Guid appId = Guid.Empty;
+    Guid.TryParse(appIdStr, out appId);
+
+    bool isZph = appId == Jinher.AMP.BTP.Common.CustomConfig.ZPHAppId ? true : false;
+    bool isWxBroswer = ViewBag.isWxBroswer;
+
+    string openInBrowserTip = "hide";    //提示在微信外下载。
+    string zphQRCode = "hide";      //关注 正品会 二维码
+    string downloadAndPreview = "hide";     //下载，预览
+    if (isWxBroswer)
+    {
+        if (isZph)
+        {
+            //在微信里显示 关注 正品O2O 二维码。
+            zphQRCode = "";
+        }
+        else
+        {
+            //显示“下载与快速预览”页面并提示在微信外下载。
+            openInBrowserTip = "";
+            downloadAndPreview = "";
+        }
+    }
+    else
+    {
+        //显示“下载与快速预览”页面.
+        downloadAndPreview = "";
+    } 
+     
+    
+}
+@section TitleHtml
+{
+    <title>@ViewBag.appName</title>
+}
+@section CssStyles{
+    <link href="/Content/Mobile/zphStyle/mobileKit-min.css" rel="stylesheet" type="text/css" />
+    <link href="/Content/Mobile/zphStyle/clickDownload.css" rel="stylesheet" type="text/css" />
+    <link href="/Content/Mobile/zphStyle/scancodeDownload.css" rel="stylesheet" type="text/css" />
+}
+@section ClientScript
+{
+    <script src="/Content/js/mobileKit.js" type="text/javascript"></script>
+    <script type="text/jscript">
+        $(function () {
+            $("#btnDownload").on("click", function () {
+                if ("@openInBrowserTip" == "") {
+                    $(".prompt-message").show();
+                    return;
+                }
+                var downloadUrl = "";
+                if ($.os.ios) {
+                    if ("@ViewBag.shelvesToAppStore".toLowerCase() == "true") {
+                        downloadUrl = "@ViewBag.ipaUrl";
+                    }
+                    else {
+                        toast("暂不支持苹果机!");
+                        return;
+                    }
+                }
+                else {
+                    downloadUrl = "@ViewBag.apkUrl";
+                }
+                document.location.href = downloadUrl;
+            });
+
+            $("#btnPreview").on("click", function () {
+                var previewUrl = "";
+                if ("@isZph".toLowerCase() == "true") {
+                    previewUrl = '@Jinher.AMP.BTP.Common.CustomConfig.ZPHUrl?speader=@Request.QueryString["speader"]';
+                }
+                else {
+                    previewUrl = "@Jinher.AMP.BTP.Common.CustomConfig.BacEUrl" + '/AppPage/TemplatePage/BusinessActive.html?speader=@Request.QueryString["speader"]&apptype=4&esappid=@Request.QueryString["appId"]&appid=@Request.QueryString["esAppId"]&srctype=49&linkmall=1&source=share&isshowsharebenefitbtn=1';
+                }
+                document.location.href = previewUrl;
+            });
+        });
+    </script>
+}
+<div class="page">
+    <header class="bar bar-nav hide">
+        <a class="fa fa-times pull-left" href="javascript:void(0);"></a>
+        <a class="fa fa-ellipsis-v pull-right" href="javascript:void(0);"></a>
+        <h1 class="title">@ViewBag.appName</h1>
+    </header>
+    <div class="content">
+        <div class="prompt-message" style="display: none;">
+            <p>
+                微信内无法下载，请点击<span>右上角</span>按钮<span class="arrow"></span></p>
+            <p>
+                选择<span>『在浏览器中打开』</span>即可正常下载</p>
+        </div>
+        <div class="click-download">
+            <div class="title text-center">
+                <h1>@ViewBag.appName</h1>
+                <h3>
+                    正品·特卖·O2O轻松到家</h3>
+            </div>
+            <div class="download-btn text-center @downloadAndPreview">
+                <button id="btnDownload" class="btn btn-block download">
+                    <i class="fa fa-download"></i>立即下载
+                </button>
+                <button id="btnPreview" class="btn btn-block preview">
+                    <i class="fa fa-eye"></i>快速浏览
+                </button>
+            </div>
+            <div class="quick-response-code @zphQRCode">
+                <div class="center-block">
+                    <img src="/Content/Mobile/zphStyle/images/quickResponseCode.png" />
+                </div>
+                <h3 style="text-align: center;">
+                    长按二维码关注微信公众号</h3>
+            </div>
+        </div>
+    </div>
+</div>

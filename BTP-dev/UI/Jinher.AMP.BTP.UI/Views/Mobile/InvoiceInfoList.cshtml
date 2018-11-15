@@ -1,0 +1,84 @@
+﻿@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+    ViewBag.Title = "历史单位信息";
+ }
+<link href="/Content/Mobile/zphStyle/mobileKit-min.css" rel="stylesheet" type="text/css" />
+<link href="/Content/Mobile/zphStyle/icons.css" rel="stylesheet" type="text/css" />
+<link href="/Content/Mobile/zphStyle/skin.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="/Content/Mobile/zphStyle/InvoiceInfoList.css"/>
+<script src="../../Scripts/InvoiceInfoList.js"></script>
+<div class="page">
+    <div class="content">
+        <!--发票列表-->
+        <ul id="invoice-lists" class="invoice-lists">
+        </ul>
+        <!--确认删除弹窗-->
+        <div id="modal" class="confirm-wrap hide">
+            <div class="confirm">
+                <div class="confirm-content">您确认要删除当前开票单位吗？</div>
+                <div class="confirm-bottom">
+                    <a href="javascript:void(0)" class="confirm-btn confirm-cancel">取消</a>
+                    <a href="javascript:void(0)" class="confirm-btn confirm-submit">确定</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section ClientScript{
+    <script type="text/javascript">
+        var postdata = {
+            appId: getQueryString('appId'),
+            category: getQueryString('category'),
+            userId: getUserId()
+        };
+        var items = $("#invoice-lists"), noDataMsg = "暂无可用的开票单位";
+
+        $(function() {
+            $.ajax({
+                async: true,
+                type: "POST",
+                dataType: "json",
+                url: "/Mobile/GetInvoiceInfoList?r=" + Math.random(),
+                data: postdata,
+                success: function(data) {
+                    if (data && data.isSuccess) {
+                        if (data.Data.length > 0) {
+                            for (var i = 0; i < data.Data.length; i++) {
+                                var info = createItem(data.Data[i]);
+                                items.append(info);
+                            }
+                        } else {
+                            $(items).html(noDataMsg);
+                        }
+                    }
+                }
+            });
+        });
+
+        var actTemplate = '<li id={Id} onclick="{rurl}" class="swipe-toggle invoice-lists-list"><div class="swipeout" data-fn="swipeToggle"><div class="swipeout-content invoice-lists-item">'
+            + '<label class="ui-radio"><input name="radio" type="radio"/><span class="icon-checked"></span></label>'
+            + '<div><span>{InvoiceTitle}</span><span>{Code}</span></div>'
+            + '</div><div class="swipeout-actions-button"><a class="del" href="javascript:void(0)">删除</a></div></div></li>';
+
+        function createItem(data) {
+            var str = actTemplate;
+            str = str.replace("{Id}", data.Id);
+            str = str.replace(new RegExp("{InvoiceTitle}", "gm"), data.InvoiceTitle);
+            str = str.replace(new RegExp("{Code}", "gm"), data.Code);
+            str = str.replace(new RegExp("{rurl}", "gm"), "rurl('"+ data.InvoiceTitle +"','"+ data.Code +"')");
+            return str;
+        }
+
+        function rurl(invoiceTitle, code) {
+            var url = document.referrer;
+            if (url.indexOf("invoiceTitle") === -1) {
+                url = url + "&invoiceTitle=" + escape(invoiceTitle) + "&code=" + code + "&category=" + getQueryString('category');
+            } else {
+                //替换相关值
+                url = url.substring(0, url.indexOf("&invoiceTitle"));
+                url = url + "&invoiceTitle=" + escape(invoiceTitle) + "&code=" + code + "&category=" + getQueryString('category');
+            }
+            window.location.href = url;
+        }
+    </script>
+}

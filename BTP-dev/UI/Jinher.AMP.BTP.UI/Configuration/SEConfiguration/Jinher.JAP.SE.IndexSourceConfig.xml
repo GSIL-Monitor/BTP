@@ -1,0 +1,497 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Index>
+  <!--默认索引文件存储位置-->
+  <DefaultPath>D:\蒋海斌\c6v3\搜索引擎\SearchDemo\Index</DefaultPath>
+  <!--是否多目录索引-->
+  <MultiIndex>0</MultiIndex>
+  <!--分词器-->
+  <Analyzer>IKAnalyzerNet.IKAnalyzer</Analyzer>
+  <AnalyzerAssembly>D:\Work\JAP\08Program\Lib\TP\IKAnalyzerNet.dll</AnalyzerAssembly>
+  <Source>
+    <!-- 文件系统-->
+    <Module type="filesystem" ID="SEDocuments">
+      <Name>搜索引擎</Name>
+      <Order></Order>
+      <!--文件路径-->
+      <Directory>D:\项目\解决方案</Directory>
+     <!--根目录,用于查询索引-->
+      <Root></Root>
+      <!--相对路径根目录-->
+      <RelativePathRoot></RelativePathRoot>
+      <IndexPath></IndexPath>
+    </Module>
+    <!-- 数据库-->
+    <Module type="db" ID="Tag">
+      <Name>标签</Name>
+      <Order>2</Order>
+      <IndexPath></IndexPath>
+      <Entities>
+        <Entity Name="SystemTag" Assembly="D:\Work\JAP\08Program\Lib\JAP\Implement\Jinher.C6V3.CBC.BE.dll" FullNameOfClass="Jinher.C6V3.CBC.BE.SystemTag">
+          <Properties>
+            <Property>
+              <!-- 属性ID-->
+              <Name>Id</Name>
+              <!-- 属性中文名-->
+              <CNName>Id</CNName>
+              <!--数据类型-->
+              <DataType>GUID</DataType>
+              <!--搜索时显示格式,如日期格式的yyyy-MM-dd-->
+              <ShowFormat></ShowFormat>
+              <!-- 索引权重-->
+              <Weight></Weight>
+              <!--是否高亮显示:1是，其他否-->
+              <HighLight></HighLight>
+              <!--是否保存到索引中：1是，0否；默认1-->
+              <Stored>1</Stored>
+              <!--是否分词，1是，0否；默认1-->
+              <Tokenize>0</Tokenize>
+              <!--属性是否文件路径-->
+              <IsFilePath>0</IsFilePath>
+            </Property>
+            <Property>
+              <!-- 属性ID-->
+              <Name>TagName</Name>
+              <!-- 属性中文名-->
+              <CNName>标签</CNName>
+              <!--数据类型-->
+              <DataType>string</DataType>
+              <!--搜索时显示格式,如日期格式的yyyy-MM-dd-->
+              <ShowFormat></ShowFormat>
+              <!-- 索引权重-->
+              <Weight></Weight>
+              <!--是否高亮显示:1是，其他否-->
+              <HighLight></HighLight>
+              <!--是否保存到索引中：1是，0否；默认1-->
+              <Stored>1</Stored>
+              <!--是否分词，1是，0否；默认1-->
+              <Tokenize>1</Tokenize>
+              <!--属性是否文件路径-->
+              <IsFilePath>0</IsFilePath>
+            </Property>
+            <Property>
+              <!-- 属性ID-->
+              <Name>Creator</Name>
+              <!-- 属性中文名-->
+              <CNName>创建人</CNName>
+              <!--数据类型-->
+              <DataType>string</DataType>
+              <!--搜索时显示格式,如日期格式的yyyy-MM-dd-->
+              <ShowFormat></ShowFormat>
+              <!-- 索引权重-->
+              <Weight></Weight>
+              <!--是否高亮显示:1是，其他否-->
+              <HighLight></HighLight>
+              <!--是否保存到索引中：1是，0否；默认1-->
+              <Stored>1</Stored>
+              <!--是否分词，1是，0否；默认1-->
+              <Tokenize>1</Tokenize>
+              <!--属性是否文件路径-->
+              <IsFilePath>0</IsFilePath>
+            </Property>
+            <Property>
+              <!-- 属性ID-->
+              <Name>UseCount</Name>
+              <!-- 属性中文名-->
+              <CNName>使用次数</CNName>
+              <!--数据类型-->
+              <DataType>int</DataType>
+              <!--搜索时显示格式,如日期格式的yyyy-MM-dd-->
+              <ShowFormat></ShowFormat>
+              <!-- 索引权重-->
+              <Weight></Weight>
+              <!--是否高亮显示:1是，其他否-->
+              <HighLight></HighLight>
+              <!--是否保存到索引中：1是，0否；默认1-->
+              <Stored>1</Stored>
+              <!--是否分词，1是，0否；默认1-->
+              <Tokenize>0</Tokenize>
+              <!--属性是否文件路径-->
+              <IsFilePath>0</IsFilePath>
+            </Property>
+          </Properties >
+          <!--判断权限和数据去重使用-->
+          <KeyProperty>
+            Id
+          </KeyProperty>
+        </Entity>
+        <Entity Name="BizTag" Assembly="D:\Work\JAP\08Program\Lib\JAP\Implement\Jinher.C6V3.CBC.BE.dll" FullNameOfClass="Jinher.C6V3.CBC.BE.BizTag">
+          <Properties>
+            <Property>
+              <!-- 属性ID-->
+              <Name>Id</Name>
+              <!-- 属性中文名-->
+              <CNName>Id</CNName>
+              <!--数据类型-->
+              <DataType>GUID</DataType>
+              <!--搜索时显示格式,如日期格式的yyyy-MM-dd-->
+              <ShowFormat></ShowFormat>
+              <!-- 索引权重-->
+              <Weight></Weight>
+              <!--是否高亮显示:1是，其他否-->
+              <HighLight></HighLight>
+              <!--是否保存到索引中：1是，0否；默认1-->
+              <Stored>1</Stored>
+              <!--是否分词，1是，0否；默认1-->
+              <Tokenize>0</Tokenize>
+              <!--属性是否文件路径-->
+              <IsFilePath>0</IsFilePath>
+            </Property>
+            <Property>
+              <!-- 属性ID-->
+              <Name>UserTag.Id</Name>
+              <!-- 属性中文名-->
+              <CNName>Id</CNName>
+              <!--数据类型-->
+              <DataType>GUID</DataType>
+              <!--搜索时显示格式,如日期格式的yyyy-MM-dd-->
+              <ShowFormat></ShowFormat>
+              <!-- 索引权重-->
+              <Weight></Weight>
+              <!--是否高亮显示:1是，其他否-->
+              <HighLight></HighLight>
+              <!--是否保存到索引中：1是，0否；默认1-->
+              <Stored>1</Stored>
+              <!--是否分词，1是，0否；默认1-->
+              <Tokenize>0</Tokenize>
+              <!--属性是否文件路径-->
+              <IsFilePath>0</IsFilePath>
+            </Property>
+            <Property>
+              <!-- 属性ID-->
+              <Name>BizInfo.Id</Name>
+              <!-- 属性中文名-->
+              <CNName>Id</CNName>
+              <!--数据类型-->
+              <DataType>GUID</DataType>
+              <!--搜索时显示格式,如日期格式的yyyy-MM-dd-->
+              <ShowFormat></ShowFormat>
+              <!-- 索引权重-->
+              <Weight></Weight>
+              <!--是否高亮显示:1是，其他否-->
+              <HighLight></HighLight>
+              <!--是否保存到索引中：1是，0否；默认1-->
+              <Stored>1</Stored>
+              <!--是否分词，1是，0否；默认1-->
+              <Tokenize>0</Tokenize>
+              <!--属性是否文件路径-->
+              <IsFilePath>0</IsFilePath>
+            </Property>
+          </Properties >
+          <KeyProperty>
+            Id
+          </KeyProperty>
+        </Entity>
+        <Entity Name="UserTag" Assembly="D:\Work\JAP\08Program\Lib\JAP\Implement\Jinher.C6V3.CBC.BE.dll" FullNameOfClass="Jinher.C6V3.CBC.BE.UserTag">
+          <Properties>
+            <Property>
+              <!-- 属性ID-->
+              <Name>Id</Name>
+              <!-- 属性中文名-->
+              <CNName>Id</CNName>
+              <!--数据类型-->
+              <DataType>GUID</DataType>
+              <!--搜索时显示格式,如日期格式的yyyy-MM-dd-->
+              <ShowFormat></ShowFormat>
+              <!-- 索引权重-->
+              <Weight></Weight>
+              <!--是否高亮显示:1是，其他否-->
+              <HighLight></HighLight>
+              <!--是否保存到索引中：1是，0否；默认1-->
+              <Stored>1</Stored>
+              <!--是否分词，1是，0否；默认1-->
+              <Tokenize>0</Tokenize>
+              <!--属性是否文件路径-->
+              <IsFilePath>0</IsFilePath>
+            </Property>
+            <Property>
+              <!-- 属性ID-->
+              <Name>SystemTag.Id</Name>
+              <!-- 属性中文名-->
+              <CNName>Id</CNName>
+              <!--数据类型-->
+              <DataType>GUID</DataType>
+              <!--搜索时显示格式,如日期格式的yyyy-MM-dd-->
+              <ShowFormat></ShowFormat>
+              <!-- 索引权重-->
+              <Weight></Weight>
+              <!--是否高亮显示:1是，其他否-->
+              <HighLight></HighLight>
+              <!--是否保存到索引中：1是，0否；默认1-->
+              <Stored>1</Stored>
+              <!--是否分词，1是，0否；默认1-->
+              <Tokenize>0</Tokenize>
+              <!--属性是否文件路径-->
+              <IsFilePath>0</IsFilePath>
+            </Property>
+          </Properties >
+          <KeyProperty>
+            Id
+          </KeyProperty>
+        </Entity>
+        <Entity Name="BizInfo" Assembly="D:\Work\JAP\08Program\Lib\JAP\Implement\Jinher.C6V3.CBC.BE.dll" FullNameOfClass="Jinher.C6V3.CBC.BE.BizInfo">
+          <Properties>
+            <Property>
+              <!-- 属性ID-->
+              <Name>Id</Name>
+              <!-- 属性中文名-->
+              <CNName>Id</CNName>
+              <!--数据类型-->
+              <DataType>GUID</DataType>
+              <!--搜索时显示格式,如日期格式的yyyy-MM-dd-->
+              <ShowFormat></ShowFormat>
+              <!-- 索引权重-->
+              <Weight></Weight>
+              <!--是否高亮显示:1是，其他否-->
+              <HighLight></HighLight>
+              <!--是否保存到索引中：1是，0否；默认1-->
+              <Stored>1</Stored>
+              <!--是否分词，1是，0否；默认1-->
+              <Tokenize>0</Tokenize>
+              <!--属性是否文件路径-->
+              <IsFilePath>0</IsFilePath>
+            </Property>
+            <Property>
+              <!-- 属性ID-->
+              <Name>BizID</Name>
+              <!-- 属性中文名-->
+              <CNName>Id</CNName>
+              <!--数据类型-->
+              <DataType>GUID</DataType>
+              <!--搜索时显示格式,如日期格式的yyyy-MM-dd-->
+              <ShowFormat></ShowFormat>
+              <!-- 索引权重-->
+              <Weight></Weight>
+              <!--是否高亮显示:1是，其他否-->
+              <HighLight></HighLight>
+              <!--是否保存到索引中：1是，0否；默认1-->
+              <Stored>1</Stored>
+              <!--是否分词，1是，0否；默认1-->
+              <Tokenize>0</Tokenize>
+              <!--属性是否文件路径-->
+              <IsFilePath>0</IsFilePath>
+            </Property>
+          </Properties >
+          <KeyProperty>
+            Id
+          </KeyProperty>
+        </Entity>
+      </Entities>
+      <SearchConfig>
+        <Biz>
+          <!--业务标识ID，唯一-->
+          <BizID>Tag</BizID>
+          <!--业务名称-->
+          <BizName>标签</BizName>
+          <PropertyValues></PropertyValues>
+          <!-- Url生成规则-->
+          <UrlRule></UrlRule>
+          <!-- 内容生成规则-->
+          <ContentRule><![CDATA[标签：$SystemTag.TagName$<br/>创建者：$SystemTag.Creator$<br/>使用次数：$SystemTag.UseCount$]]></ContentRule>
+        </Biz>
+      </SearchConfig>
+    </Module>
+    <Module type="db" ID="Diary">     
+      <Name>日记</Name>
+      <Order>1</Order>
+      <IndexPath></IndexPath>
+      <Entities>
+        <Entity Name="Diary" Assembly="D:\Work\JAP\08Program\Lib\BizApp\Implement\Jinher.C6V3.Diary.BE.dll" FullNameOfClass="Jinher.C6V3.Diary.BE.Diary">
+          <Properties>
+            <Property>
+              <!-- 属性ID-->
+              <Name>Id</Name>
+              <!-- 属性中文名-->
+              <CNName>Id</CNName>
+              <!--数据类型-->
+              <DataType>GUID</DataType>
+              <!--搜索时显示格式,如日期格式的yyyy-MM-dd-->
+              <ShowFormat></ShowFormat>
+              <!-- 索引权重-->
+              <Weight></Weight>
+              <!--是否高亮显示:1是，其他否-->
+              <HighLight></HighLight>
+              <!--是否保存到索引中：1是，0否；默认1-->
+              <Stored>1</Stored>
+              <!--是否分词，1是，0否；默认1-->
+              <Tokenize>0</Tokenize>
+              <!--属性是否文件路径-->
+              <IsFilePath>0</IsFilePath>
+            </Property>
+            <Property>
+              <!-- 属性ID-->
+              <Name>DiaryContent</Name>
+              <!-- 属性中文名-->
+              <CNName>日记内容</CNName>
+              <!--数据类型-->
+              <DataType>string</DataType>
+              <ShowFormat></ShowFormat>
+              <!-- 索引权重-->
+              <Weight></Weight>
+              <!--是否高亮显示:1是，其他否-->
+              <HighLight></HighLight>
+              <!--是否保存到索引中：1是，0否；默认1-->
+              <Stored>0</Stored>
+              <!--是否分词，1是，0否；默认1-->
+              <Tokenize>1</Tokenize>
+              <!--属性是否文件路径-->
+              <IsFilePath>0</IsFilePath>
+            </Property>
+            <Property>
+              <!-- 属性ID-->
+              <Name>SubName</Name>
+              <!-- 属性中文名-->
+              <CNName>提交人</CNName>
+              <!--数据类型-->
+              <DataType>string</DataType>
+              <!-- 索引权重-->
+              <Weight></Weight>
+              <!--是否高亮显示:1是，其他否-->
+              <HighLight></HighLight>
+              <!--是否保存到索引中：1是，0否；默认1-->
+              <Stored>1</Stored>
+              <!--是否分词，1是，0否；默认1-->
+              <Tokenize>1</Tokenize>
+              <!--属性是否文件路径-->
+              <IsFilePath>0</IsFilePath>
+            </Property>
+            <Property>
+              <!-- 属性ID-->
+              <Name>DiaryDate</Name>
+              <!-- 属性中文名-->
+              <CNName>日记日期</CNName>
+              <!--数据类型-->
+              <DataType>datetime</DataType>
+              <!-- 索引权重-->
+              <Weight></Weight>
+              <!--是否高亮显示:1是，其他否-->
+              <HighLight></HighLight>
+              <!--是否保存到索引中：1是，0否；默认1-->
+              <Stored>1</Stored>
+              <!--是否分词，1是，0否；默认1-->
+              <Tokenize>0</Tokenize>
+              <!--属性是否文件路径-->
+              <IsFilePath>0</IsFilePath>
+            </Property>
+            <Property>
+              <!-- 属性ID-->
+              <Name>User.Id</Name>
+              <!-- 属性中文名-->
+              <CNName>作者ID</CNName>
+              <!--数据类型-->
+              <DataType>guid</DataType>
+              <!-- 索引权重-->
+              <Weight></Weight>
+              <!--是否高亮显示:1是，其他否-->
+              <HighLight></HighLight>
+              <!--是否保存到索引中：1是，0否；默认1-->
+              <Stored>1</Stored>
+              <!--是否分词，1是，0否；默认1-->
+              <Tokenize>0</Tokenize>
+              <!--属性是否文件路径-->
+              <IsFilePath>0</IsFilePath>
+            </Property>
+          </Properties>
+          <KeyProperty>
+            Id
+          </KeyProperty>
+        </Entity>
+        <Entity Name="User" Assembly="D:\Work\JAP\08Program\Lib\JAP\Implement\Jinher.C6V3.CBC.BE.dll" FullNameOfClass="Jinher.C6V3.CBC.BE.User">
+          <Properties>
+            <Property>
+              <!-- 属性ID-->
+              <Name>Id</Name>
+              <!-- 属性中文名-->
+              <CNName>Id</CNName>
+              <!--数据类型-->
+              <DataType>GUID</DataType>
+              <!--搜索时显示格式,如日期格式的yyyy-MM-dd-->
+              <ShowFormat></ShowFormat>
+              <!-- 索引权重-->
+              <Weight></Weight>
+              <!--是否高亮显示:1是，其他否-->
+              <HighLight></HighLight>
+              <!--是否保存到索引中：1是，0否；默认1-->
+              <Stored>1</Stored>
+              <!--是否分词，1是，0否；默认1-->
+              <Tokenize>0</Tokenize>
+              <!--属性是否文件路径-->
+              <IsFilePath>0</IsFilePath>
+            </Property>
+            <Property>
+              <!-- 属性ID-->
+              <Name>Name</Name>
+              <!-- 属性中文名-->
+              <CNName>用户名称</CNName>
+              <!--数据类型-->
+              <DataType>string</DataType>
+              <!--搜索时显示格式,如日期格式的yyyy-MM-dd-->
+              <ShowFormat></ShowFormat>
+              <!-- 索引权重-->
+              <Weight></Weight>
+              <!--是否高亮显示:1是，其他否-->
+              <HighLight></HighLight>
+              <!--是否保存到索引中：1是，0否；默认1-->
+              <Stored>1</Stored>
+              <!--是否分词，1是，0否；默认1-->
+              <Tokenize>1</Tokenize>
+              <!--属性是否文件路径-->
+              <IsFilePath>0</IsFilePath>
+            </Property>
+          </Properties >
+        </Entity>
+      </Entities>
+      <SearchConfig>
+        <Biz>
+          <!--业务标识ID-->
+          <BizID>Diary</BizID>
+          <!--业务名称-->
+          <BizName>日记</BizName>
+          <!--需要返回值的属性-->
+          <PropertyValues>
+            <!--属性，格式为实体名.属性名-->
+            <Property><![CDATA[Diary.Id]]></Property>
+          </PropertyValues>
+          <!-- Url生成规则-->
+          <UrlRule><![CDATA[../Jinher.C6V3.UI.Diary/DiaryInput?id=$Diary.Id$]]></UrlRule>
+          <!-- 内容生成规则-->
+          <ContentRule><![CDATA[作者：$Diary.User.Name$<br/>标签：$Diary.BizInfo.BizTag.UseTag.SystemTag.TagName$<br/>日期：$Diary.DiaryDate$]]></ContentRule>
+          <KeyEntity>Diary</KeyEntity>
+        </Biz>
+      </SearchConfig>
+    </Module>
+    <!-- 爬虫-->
+    <Module type="crawler" ID="">      
+      <Name></Name>
+      <Order></Order>
+      <IndexPath></IndexPath>
+    </Module>
+    <!-- 数据库关系-->
+    <Associations>
+      <Association>
+        <!--关联实体以及关联属性-->
+        <End EntityName="Diary" PropertyRef="User.Id"/>
+        <End EntityName="User" PropertyRef="Id"/>
+      </Association>
+      <Association>
+        <!--关联实体以及关联属性-->
+        <End EntityName="UserTag" PropertyRef="SystemTag.Id"/>
+        <End EntityName="SystemTag" PropertyRef="Id"/>
+      </Association>
+      <Association>
+        <!--关联实体以及关联属性-->
+        <End EntityName="BizTag" PropertyRef="UserTag.Id"/>
+        <End EntityName="UserTag" PropertyRef="Id"/>
+      </Association>
+      <Association>
+        <!--关联实体以及关联属性-->
+        <End EntityName="BizTag" PropertyRef="BizInfo.Id"/>
+        <End EntityName="BizInfo" PropertyRef="Id"/>
+      </Association>
+      <Association>
+        <!--关联实体以及关联属性-->
+        <End EntityName="Diary" PropertyRef="Id"/>
+        <End EntityName="BizInfo" PropertyRef="BizID"/>
+      </Association>
+    </Associations>
+  </Source>
+</Index>

@@ -1,0 +1,240 @@
+﻿@using Jinher.JAP.MVC
+@using Jinher.JAP.MVC.UIJquery
+@using Jinher.JAP.MVC.UIJquery.Validate
+@using Jinher.JAP.Common.TypeDefine
+@{
+   
+    Layout = "~/Views/Shared/_btpLayout.cshtml";
+}
+@section Css{
+    <link href="/Content/css/style.css" rel="stylesheet" type="text/css" />
+    @{Html.jQuery().StyleSheetRegistrar().DefaultGroup(group => group.Add("default/jquery.ui.all.css").Add("default/ui.jqgrid.css"));}
+}
+<style type="text/css">
+    .ui-jqgrid tr.jqgrow td
+    {
+        white-space: normal;
+    }
+    
+      .item
+        {
+            line-height: 28px;
+            margin-bottom: 10px;
+            min-height: 28px;
+            padding-left: 10px;
+        }
+        
+        .lable
+        {
+            display: block;
+            float: left;
+            width: 125px;
+            line-height: 28px;
+            padding-right: 5px;
+            margin-left: -130px;
+            _display: inline;
+            text-align: right;
+        }
+        input.inp-txt
+        {
+            height: 18px;
+            line-height: 18px;
+            border: 1px solid #B6C0CD;
+            padding: 4px 5px;
+            vertical-align: middle;
+            border-radius: 3px;
+            box-shadow: inset 1px 1px 2px #DBDBDB;
+        }
+        .btn120
+        {
+            display: inline-block;
+            width: 120px;
+            height: 28px;
+            line-height: 28px;
+            background: url(../Content/default/images/btn120.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+        }
+        .floa2 h1,
+		.bbtn h1{
+			font-size: 14px;
+			color: #8c94a9;
+			padding-bottom: 5px;
+			border-bottom: 1px solid #DDDDDD;	
+		}
+		.close{
+			margin-top: 10px;
+			float: right;
+			display: inline-block;
+			*zoom:1;
+			*display: inline;
+			width: 7px;
+			height: 7px;
+			color:transparent;
+			background: url(/Images/shut.png) center no-repeat;
+		}
+		
+		
+		.floa2 ul {
+			padding: 0px 0 10px 10px;
+		}
+		
+		.floa2 ul li{
+			margin-top: 5px;
+			color:#8c94a9;
+		}
+		.addfloa2{
+			display: none; 
+			z-index: 3;
+			padding: 5px 10px;
+			height:auto;
+			border:1px solid #B8BFCF;
+			
+			-webkit-border-radius: 3px;
+			-moz-border-radius: 3px;
+			border-radius: 3px;
+		}
+		
+		/*erci*/
+		.btn60
+        {
+            display: inline-block;
+            width: 60px;
+            height: 28px;
+            line-height: 28px;
+            background: url(../Content/default/images/btn60.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+        }
+    
+</style>
+<div class="box" style="padding: 10px 0 10px 0px;">
+    <div class="content">
+        @*        <div style="margin-top: 10px; height: 45px; margin-left: 22px">
+            <span>分享人：</span>
+            <input type="text" id="shareUserId" class="inp-txt" style="width: 70px;" />
+            <span style="margin-left: 10px;">状态：</span>
+            <select id="State" class="inp-txt" style="width: 150px; height: 24px;">
+                <option value="-1">请选择</option>
+                <option value="0">进行中</option>
+                <option value="1">众筹成功</option>
+            </select>
+            <a class="btn60" id="search" href="javascript:;" onclick="seach()" style="/*margin-left: 10px;
+                */">查询</a> <a href="javascript:;" class="reset btn60" onclick="toResetSearch()" id="reset"
+                    style="margin-left: 5px;">重置</a>
+        </div>*@
+    </div>
+    <div id="clsContent" style="margin-right: 50px; margin-top: 15px; margin-left: 22px">
+        <table id="ShareListTable">
+        </table>
+        <div id="pager1">
+        </div>
+    </div>
+</div>
+@section ClientScript{
+    <script src="/Content/Business/BusinessAllEvent.js" type="text/javascript"></script>
+    <script src="/Scripts/jquery.cookie.js" type="text/javascript"></script>
+    <script type="text/javascript">
+
+        $(function () {
+            //开始
+
+            var data = { "pageSize": 20, "pageIndex": 1 };
+            $("#ShareListTable").jqGrid({
+                url: "/ShareRedEnvelope/GetShareList",
+                mtype: "post",
+                datatype: "json",
+                postData: data,
+                colNames: ["分享人", "分享人账号", "分享平台", "获奖金额（元）", "分享时间", "来源订单编号"],
+                colModel: [
+            { name: 'ShareUserName', index: 'ShareUserName', width: 220, align: "center", sortable: false, title: false },
+            { name: 'ShareUserCode', index: 'ShareUserCode', width: 200, align: "center", sortable: false, title: false },
+            { name: 'ThirdPartName', index: 'ThirdPartName', width: 200, align: "center", sortable: false, title: false },
+            { name: 'TotalDividend', index: 'TotalDividend', width: 200, align: "center", sortable: false, title: false },
+            { name: 'ShareDate', index: 'ShareDate', width: 200, align: "center", sortable: false, title: false },
+            { name: 'OrderCode', index: 'OrderCode', width: 200, align: "center", sortable: false, title: false }
+            ],
+                rowNum: 20,
+                pager: "pager1",
+                height: "100%",
+                rownumbers: true,
+                autowidth: true,
+                forceFit: true,
+                scroll: false,
+                shrinkToFit: true,
+                footerrow: true,
+                jsonReader: { repeatitems: true },
+                gridComplete: function () {
+                    var rowNum = parseInt($(this).getGridParam('records'), 10);
+                    if (rowNum > 0) {
+                        $(".ui-jqgrid-sdiv").show();
+                        var sumInfo = GetCookie("GridSum");
+                        var sumUser = sumInfo.split('&')[0].split('=')[1];
+                        var sumdividend = sumInfo.split('&')[1].split('=')[1];
+                        $(this).footerData("set", { ShareUserName: "合计", ShareUserCode: sumUser, TotalDividend: sumdividend
+                        });
+                    } else {
+                        $(".ui-jqgrid-sdiv").hide();
+                    }
+                    refreshEnd();
+                }
+            });
+            //结束
+
+        });
+        //调整列表的高度
+
+        function refreshEnd() {
+            if (typeof window.parent.refreshLayout === 'function') {
+                window.parent.refreshLayout();
+            }
+        }
+
+        function SetCookie(name, value) {
+            var Days = 30;
+            var exp = new Date();
+            exp.setTime(exp.getTime() + Days * 24 * 60 * 60 * 1000);
+            document.cookie = name + "=" + escape(value) + ";expires=" + exp.toGMTString();
+            var strsec = 2; //getsec(time);
+
+            var exp = new Date();
+            exp.setTime(exp.getTime() + strsec * 1);
+            document.cookie = name + "=" + escape(value) + ";expires=" + exp.toGMTString();
+
+
+
+
+        }
+
+        function GetCookie(name) {
+
+            var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+
+
+            if (arr = document.cookie.match(reg))
+
+                return (arr[2]);
+            else
+                return null;
+
+
+        }
+
+    </script>
+}
+@section Script{
+    @{Html.jQuery().ScriptRegistrar().DefaultGroup(group => group.Add("jquery.extend.js")
+        .Add("i18n/jquery.ui-zh.js")
+        .Add("jquery.ui.base.js")
+        .Add("Grid/jquery.grid.base.js")
+        .Add("TableBox/jquery.ui.jhtablebox.js")
+        .Add("Pager/jquery.ui.jhpager.js")
+
+
+
+        );}
+}

@@ -1,0 +1,21 @@
+﻿@{
+    Layout = null;
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.CategorySDTO> catelist = ViewBag.catelist;
+}
+<ul id="newcatelist">
+    <li class="one1">
+        <input type="text" value="搜索商品" />
+    </li>
+    <li class="two1"><a href="javascript:;">所有商品</a></li>
+    @foreach (var tempSDTO1 in catelist)
+    {
+        <li class="three1"><a href="javascript:;">@tempSDTO1.Name</a></li>
+                                  foreach (var tempSDTO2 in tempSDTO1.SecondCategory)
+                                  {
+        <li class="four1 @if(tempSDTO2.ThirdCategory.Count() > 0) { <text>tele_l_bg</text> }">
+	        <a href="javascript:;">@tempSDTO2.Name</a></li>
+                                 foreach (var tempSDTO3 in tempSDTO2.ThirdCategory)
+                                 {<li class="five four2"><a href="javascript:;">@tempSDTO3.Name</a></li>}
+                                  }
+    }
+</ul>

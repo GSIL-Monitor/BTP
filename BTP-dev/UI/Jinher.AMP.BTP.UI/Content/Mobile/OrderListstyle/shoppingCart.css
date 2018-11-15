@@ -1,0 +1,182 @@
+/*购物车*/
+.u-cart-list{
+    background-color: #fff;
+    margin:0 auto 6px auto;
+    padding: 3px;
+    max-width: 500px;
+}
+.u-cart-list .shop{
+    border-bottom: 1px solid #d9d9d9;
+    padding: 4px;
+}
+.u-cart-list .sel,.u-cart-list .goods-photo,.u-cart-list .goods-info,.u-cart-list .title,.total .sel,.total .title{
+    display: table-cell;
+    position: relative;
+    vertical-align: top;
+}
+.u-cart-list .goods-info{
+    padding-right: 60px;
+    width: 2000px;
+}
+.u-cart-list .title,.total .title{
+    width: 2000px;
+}
+.u-cart-list .title .primary{
+    line-height: 1.6;
+    font-size: 1.2rem;
+}
+.u-cart-list .title .primary:after{
+    content: ">";
+    margin: 0 6px;
+}
+.u-cart-list .title .sub{
+    font-size: .7rem;
+}
+.u-cart-list .sel,.total .sel{
+    width: 35px;
+    text-align: center;
+    vertical-align: middle;
+}
+.u-cart-list .sel input,.total .sel input{
+    width: 18px;
+    height: 18px;
+    margin: 6px;
+    opacity: .5;
+}
+.u-cart-list .goods{
+    padding: 4px;
+    border-bottom: 1px solid #ececec;
+}
+.u-cart-list .goods:last-child{
+    border: 0;
+}
+.u-cart-list .goods-photo{
+    padding: 4px;
+    width: 70px;
+    vertical-align: middle;
+}
+.u-cart-list .goods-photo img{
+    width: 60px;
+    height: 60px;
+}
+.u-cart-list .goods-info .goods-name{
+    display: block;
+    font-size: 1rem;
+    line-height: 1.2;
+    height: 2.4rem;
+    text-align: left;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    white-space: normal;
+    word-break: break-all;
+}
+.u-cart-list .goods-info .goods-remark{
+    margin-bottom: 1.4rem;
+    margin-top: .2rem;
+    color:  #a1a1a1;
+    font-size: .9rem;
+    max-height: 2.4rem;
+    line-height: 1.3;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    white-space: normal;
+    word-break: break-all;
+}
+.u-cart-list .goods-info .goods-price{
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    font-size: .8rem;
+    color: #a1a1a1;
+}
+.u-cart-list .goods-info .goods-quantity{
+    position: absolute;
+    bottom: 3px;
+    right: 3px;
+    font-size: 1rem;
+    color: #a1a1a1;
+}
+.u-cart-list .goods-info .goods-quantity .icon{
+    font-size: 1.1rem;
+    color: #adadad;
+}
+.bar-footer{
+    padding: 0;
+}
+.total{
+    max-width: 500px;
+    margin: 0 auto;
+    padding:4px 8px;
+}
+.total .sub{
+    font-size: .6rem;
+    color: #cccccc;
+}
+.total span{
+    font-size: 1.2rem;
+    color: #FF0054;
+}
+
+/*众筹*/
+.crowd{
+    display: inline-block;
+    background-color: #FF0054;
+    color: #fff;
+    border-radius: 4px;
+    font-size: .6rem;
+    line-height: 1.2;
+    padding: 1px 4px;
+    margin: 0 2px;
+}
+.crowd:after{
+    content: "众筹";
+}
+/*spinner*/
+.ispinner-box{
+    border: 1px solid #dddddd;
+    border-radius: 2px;
+    background-color: #fff;
+    display: inline-block;
+    margin: 0 10px;
+}
+.ispinner-box > a{
+    color: #b5b5b5;
+    display: inline-block;
+    font-size: 1rem;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    vertical-align: middle;
+    background-color: #f5f5f5;
+    margin-top: -2px;
+}
+.ispinner-box > .plus:after{
+    content: "+";
+}
+.ispinner-box > .minus:after{
+    content: "-";
+}
+.ispinner-box > input{
+    border: none;
+    border-right: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    display: inline-block;
+    width:38px;
+    height: 30px;
+    line-height: 30px;
+    padding:0;
+    margin: 0;
+    border-radius: 0;
+    text-align: center;
+}
+.ispinner-disable-left .minus{
+    color: #e0e0e0;
+}
+.ispinner-disable-right .plus{
+    color: #e0e0e0;
+}

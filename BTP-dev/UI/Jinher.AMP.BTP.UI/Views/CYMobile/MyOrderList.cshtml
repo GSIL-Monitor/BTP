@@ -1,0 +1,386 @@
+﻿@{
+    Layout = "~/Views/Shared/_CYMobileLayout.cshtml"; 
+}
+@section TitleHtml
+{
+    <title>我的订单</title>
+}
+<div class="page" id="ordersCY">
+    <header class="bar bar-nav process-header" id="headerOrderCY">
+        <a href="javascript:window.history.back();" class="pull-left fa">
+             <img src="/Content/style/images/fanhui.png"/>
+        </a>
+        <h1 id="orderTitleCY" class="title">我的订单</h1>
+    </header>
+    <div class="content">
+        <div class="order-detail">
+            <div class="order-state">
+                <ul id="orderItemCY">
+                    <li class="order-state-all active" state="6"><span>全部</span></li>
+                    <li class="order-state-all" state="4"><span>待处理</span></li>
+                    <li class="order-state-all" state="5"><span>已处理</span></li>
+                </ul>
+            </div>
+            <div class="no-order-state hide" id="hno-order-state">
+                <div class="no-order">
+                    <img src="/Content/style/images/meiyoudingdan.png">
+                    <span class="title">您还没有订单哦~</span>
+                </div>
+            </div>
+            <div class="order-list" id="scroller" class="scroll-load">
+                <div id="orderItemsCY">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="container" style="display: none;">
+</div>
+<div id="shopItemTemplateCY" style="display: none;">
+    <div class="order-item" ctag="shopItem" orderid="{CommodityOrderId}" appid="{AppId}">
+        <div class="title">
+            <span class="name">{AppName}</span> <span class="state">{StateText}</span> <span
+                class="take-out">外卖</span>
+        </div>
+        <div class="com-detail">
+            <div class="com-two clearfix">
+                {CommodityItemsHtml}
+            </div>
+            <div class="total-price">
+                <span>¥{Price}</span></div>
+        </div>
+        <div class="introduction">
+            <div class="intro clearfix">
+                <span class="serial-number">流水号：{Batch}</span> <span class="pay-time">支付时间：{PaymentTime}</span>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="commodityItemTemplateCY" style="display: none;">
+    <div class="com-name">
+        <div class="com-change">
+            <div class="com-name-one">
+                <span class="dish">{Name}</span>
+            </div>
+            <div class="com-name-two" style="display: {IsAttr}">
+                <span class="taste" style="{IsOneAttr}">{OneAttr}</span> <span class="size"
+                    style="{IsTwoAttr}">{TwoAttr}</span>
+            </div>
+        </div>
+    </div>
+    <div class="com-number">
+        <span>×{CommodityNumber}</span></div>
+</div>
+@section CssFile
+{
+    <link href="/Content/style/mobile_cy/myorder.css" rel="stylesheet" type="text/css" />
+}
+@section ScriptCode
+{
+    <script type="text/javascript">
+        function getOrderListHtmlCY(data) {
+            if (data == null || data.length == 0) {
+                return "";
+            }
+            var len = data.length;
+            var allHtml = "";
+            for (var i = 0; i < len; i++) {
+                allHtml += getOrderItemHtmlCY(data[i]);
+            }
+            return allHtml;
+        }
+        //生成单个订单列表html.
+        function getOrderItemHtmlCY(data) {
+            var ciHtml = "";
+            if (data.ShoppingCartItemSDTO && data.ShoppingCartItemSDTO.length > 0) {
+                var len = data.ShoppingCartItemSDTO.length;
+                var reviewLength = 0;
+                for (var i = 0; i < len; i++) {
+                    var cartItem = data.ShoppingCartItemSDTO[i];
+                    var attrs = cartItem.CommodityAttributes;
+                    if (JsVilaDataNull(attrs) && attrs != ",") {
+                        cartItem.IsAttr = "block";
+                        var ss = attrs.split(',');
+                        if (ss[0] && JsVilaDataNull(ss[0])) {
+                            cartItem.IsOneAttr = "";
+                            cartItem.OneAttr = ss[0];
+                        }
+                        else {
+                            cartItem.IsOneAttr = "display: none";
+                        }
+                        if (ss.length > 1 && ss[1] && JsVilaDataNull(ss[1])) {
+                            cartItem.IsTwoAttr = "";
+                            cartItem.TwoAttr = ss[1];
+                        }
+                        else {
+                            cartItem.IsTwoAttr = "display: none";
+                        }
+                    }
+                    else {
+                        cartItem.IsAttr = "none";
+                    }
+                    ciHtml += commodityItemTemplate.format(cartItem);
+                    if (cartItem.HasReview) {
+                        reviewLength++;
+                    }
+                }
+            }
+
+            data.CommodityItemsHtml = ciHtml;
+            data.StateText = getOrderStateTextCY(data.State, data.StateAfterSales);
+            data.AppName = data.AppName == undefined ? "" : data.AppName;
+            data.PaymentTime = ChangeDateFormat(data.PaymentTime, 1);
+            data.Batch = JsVilaDataNull(data.Batch) ? data.Batch : "";
+            var html = shopItemTemplate.format(data);
+            return html;
+        }
+    </script>
+    <script type="text/javascript">
+        //订单项模板。
+        var shopItemTemplate = "";
+        var commodityItemTemplate = "";
+        function ChangeDateFormat(cellval, state) {
+            try {
+                var date = new Date(parseInt(cellval.replace("/Date(", "").replace(")/", ""), 10));
+                var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+                var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+                var hour = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+                var minu = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+                if (state == 1) {
+                    return date.getFullYear() + "-" + month + "-" + currentDate + " " + hour + ":" + minu;
+                } else {
+                    return date.getFullYear() + "-" + month + "-" + currentDate;
+                }
+            } catch (e) {
+                return "";
+            }
+        }
+        function changeMenu() {
+            var orderState = JsVilaDataNull(getQueryString('orderState')) ? getQueryString('orderState') : "6";
+            $(".order-state-all").each(function () {
+                $(this).removeClass("active");
+                if (orderState == $(this).attr("state")) {
+                    $(this).addClass("active");
+                }
+            });
+        }
+        function showTitle(orderState) {
+            var urlparam = window.location.search.substr(1);
+            urlparam = urlparam.setUrlParam("orderState", orderState);
+            window.location = getCYDomain() + "/Mobile/CYMyOrderList?" + urlparam;
+        }
+        $(function () {
+            if (DealLoginPartial == undefined) {
+                return;
+            }
+            DealLoginPartial.setCallback(function () {
+                ajaxLoadingSingle.show();
+                getOrderListCY(function (obj) {
+                    ajaxLoadingSingle.hide();
+                });
+                initScroller();
+            });
+            DealLoginPartial.initPartialPage();
+
+
+            shopItemTemplate = $("#shopItemTemplateCY").html();
+            commodityItemTemplate = $("#commodityItemTemplateCY").html();
+            changeMenu();
+            $(".order-state-all").on("click", function () {
+                var state = $(this).attr("state");
+                showTitle(state);
+            });
+        });
+
+    </script>
+    <script type="text/javascript">
+        //当前页码
+        var _pageIndex = 1;
+        //每页加载数据条数。
+        var _pageSize = 10;
+
+        //是不是最后一页。
+        var _isLastPage = false;
+        /* 上拉刷新，下拉更多加载数据*/
+        function initScroller() {
+            //滚动加载
+            var scroller = $('#scroller').scrollLoad({
+                loadDownFn: function (me) { //下拉加载数据
+                    if (!_isLastPage) {
+                        _pageIndex++;
+                        getOrderListCY(function () {
+
+                        });
+                    }
+                    /*在这添加数据*/
+                    me.resetload();
+                },
+                loadUpFn: function (me) {//上拉刷新
+                    _pageIndex = 1;
+                    _isLastPage = false;
+                    $("#orderItemsCY").html("");
+                    getOrderListCY(function () {
+
+                    });
+                    me.resetload();
+                }
+            });
+        }
+    </script>
+    <script type="text/javascript">
+        function getOrderListCY(fn) {
+            var orderState = JsVilaDataNull(getQueryString('orderState')) ? getQueryString('orderState') : "6";
+            getOrder({
+                userId: getUserId(),
+                pageIndex: _pageIndex,
+                pageSize: _pageSize,
+                orderState: orderState,
+                callback: function (data) {
+                    sessionStorage.OrderState = getQueryString('orderState');
+                    var items = $('#orderItemsCY');
+                    //用加载的数据生成订单html.
+                    var html = getOrderListHtmlCY(data);
+                    items.append(html);
+                    //注册每个订单项点击事件。
+                    registOrderEventCY();
+                    fn && fn("OK");
+
+                    if (data == null || data.length == 0 || data.length < _pageSize) {
+                        _isLastPage = true;
+                    }
+                    if (_pageIndex <= 1 && (data == null || data.length == 0)) {
+                        $("#hno-order-state").removeClass("hide");
+                    }
+                },
+                error: function (date, text) {
+                    fn && fn("error");
+                }
+            });
+        }
+
+
+        //获取订单列表 ajax
+        function getOrderCY(obj) {
+            var data = {
+                userId: obj.userId,
+                pageIndex: obj.pageIndex,
+                pageSize: obj.pageSize,
+                state: obj.orderState,
+                esAppId: getQueryString("appId")
+            };
+            return getDataAjax({
+                url: '/Mobile/GetOrder',
+                data: data,
+                complete: obj.complete,
+                callback: obj.callback,
+                error: obj.error
+            });
+        }
+
+
+        //注册每个(所有)订单的点击事件。
+        function registOrderEventCY() {
+            $('div[ctag="shopItem"]').off("click", "**");
+            $('div[ctag="shopItem"]').on("click", function (e) {
+                var orderId = $(e.target).attr("orderId");
+                orderId = orderId == null ? $(e.currentTarget).attr("orderId") : orderId;
+                var appId = $(e.target).attr("appId");
+                appId = appId == null ? $(e.currentTarget).attr("appId") : appId;
+                var url = '/Mobile/CYMyOrderDetail?orderId=' + orderId + '&shopId=' + appId;
+                var orderState = getQueryString("orderState");
+                if (JsVilaDataNull(orderState)) {
+                    url += "&orderState=" + orderState;
+                }
+                url += "&appId=" + getQueryString("appId");
+                window.location.href = url;
+            });
+        }
+        //获取状态的文本内容。
+        function getOrderStateTextCY(state, afterSaleState) {
+            var text = "";
+            switch (state) {
+                case 18:
+                    text = "待处理";
+                    break;
+                case 19:
+                    text = "已处理";
+                    break;
+                case 7:
+                    text = "已退款";
+                    break;
+                default:
+                    text = "";
+                    break;
+            }
+            return text;
+        }
+    </script>
+    <script type="text/javascript">
+        /*数据加载效果*/
+        var ajaxLoadingSingle = (function () {
+            function initLoading() {
+                var blind = $('body').find("#ajaxLoadBlind");
+                if (blind.length > 0) {
+                    return;
+                }
+                //蒙版
+                blind = $('<div></div>');
+                //蒙版相关css
+                blind.css({
+                    'position': 'fixed',
+                    'z-index': '10000',
+                    'opacity': 0.2,
+                    'backgroundColor': '#ccc',
+                    'height': '100%',
+                    'width': '100%',
+                    'top': 0,
+                    'left': 0
+                });
+                //蒙版ID值
+                blind.attr('id', 'ajaxLoadBlind');
+
+                //ajaxLoading盒子ID对象
+                var loading = $('#ajaxLoading_img');
+                loading = $('<div></div>');
+                loading.attr('id', 'ajaxLoading_img');
+                loading.css({
+                    'position': 'absolute',
+                    'z-index': '99',
+                    'left': '50%',
+                    'margin-left': '-16px',
+                    'top': '50%',
+                    'margin-top': '-16px'
+                });
+                loading.append('<img src="/Content/images/ajax-loader.gif" />');
+                //blind.css({ 'position': 'relative' });
+                blind.append(loading);
+                $('body').append(blind);
+            }
+
+            function show() {
+                initLoading();
+                var blind = $('body').find("#ajaxLoadBlind");
+                if (blind.length == 0) {
+                    return;
+                }
+                blind.show();
+            }
+            function hide() {
+                var blind = $('body').find("#ajaxLoadBlind");
+                if (blind.length == 0) {
+                    return;
+                }
+                blind.hide();
+            }
+
+            var loadingSingle = new Object();
+            loadingSingle.show = show;
+            loadingSingle.hide = hide;
+            return loadingSingle;
+        } ())
+    </script>
+}
+@section ScriptFile
+{
+    <script type="text/javascript" src="/content/js/mobile_cy/myorder.js"></script>
+}

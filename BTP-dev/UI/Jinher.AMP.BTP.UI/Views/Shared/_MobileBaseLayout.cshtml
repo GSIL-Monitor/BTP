@@ -1,0 +1,86 @@
+﻿@{
+    var skinType = Jinher.AMP.BTP.UI.Util.MobileCookies.GetSkinType();
+}
+<!doctype html>
+<html>
+<head>
+    @RenderSection("TitleHtml", required: false)
+    <meta charset="UTF-8">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="x5-orientation" content="portrait">
+    <meta name="full-screen" content="yes">
+    <meta name="x5-fullscreen" content="true">
+    <meta name="browsermode" content="application">
+    <meta name="x5-page-mode" content="app">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="black" name="apple-mobile-web-app-status-bar-style">
+    <meta content="telephone=no" name="format-detection">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*.iuoooo.com">
+    @RenderSection("CssStyles", required: false)
+    @if (skinType == 1)
+    {
+        <link rel="stylesheet" type="text/css" href="/Content/Mobile/zphStyle/skinRed.css" />
+    }
+    else if (skinType == 2)
+    {
+        <link rel="stylesheet" type="text/css" href="/Content/Mobile/zphStyle/skinGreen.css" />
+    }
+    else if (skinType == 3)
+    {
+        <link rel="stylesheet" type="text/css" href="/Content/Mobile/zphStyle/skinBlue.css" />
+    }
+    else if (skinType == 4)
+    {
+        <link rel="stylesheet" type="text/css" href="/Content/Mobile/zphStyle/skinBlack.css" />
+    }
+    <script type="text/javascript">
+        var _pageId = "1";
+        var _zphId = "@Jinher.AMP.BTP.Common.CustomConfig.ZPHAppId";
+        var shareOperation = true;
+        //设置当前域为顶级域
+        var arr = window.location.host.split('.');
+        if (arr.length > 0) {
+            document.domain = arr[arr.length - 2] + "." + arr[arr.length - 1];
+        }
+    </script>
+    @*<script src="http://uir.iuoooo.com/api/bridge/1.0.1/bridge.js" type="text/javascript"></script>*@
+    <script src="/Content/Mobile/bridge.js" type="text/javascript"></script>
+    <script src="/Content/Mobile/Common.js" type="text/javascript"></script>
+    <script src="/Content/Mobile/zepto.min.js" type="text/javascript"></script>
+    @*<script type="text/javascript" src="http://uir.iuoooo.com/api/jssdk/1.0.1/jh-jssdk.js?ver=1"></script>*@
+    <script type="text/javascript" src="/Scripts/jh-jssdk-dev.js"></script>
+    <script src="/Content/Mobile/login.js" type="text/javascript"></script>
+    <script src="/Content/Mobile/allEvent.min.js" type="text/javascript"></script>
+    <script src="/Scripts/CookieContextDTO.js" type="text/javascript"></script>
+    <script src="/Scripts/base64.js" type="text/javascript"></script>
+    <script src="/Content/js/mobileKit.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(function () {
+            if (!shareOperation) {
+                return;
+            }
+            if ("undefined" == typeof (jh))
+                return;
+            if (getQueryString("isshowsharebenefitbtn") == 1) {
+                jh.setMoreButtonShowOrHidden({
+                    showMoreButton: 1,
+                    showItemViews: "more_share",
+                    hiddenItemViews: "copy_url,open_url"
+                });
+            } else {
+                jh.setMoreButtonShowOrHidden({
+                    showMoreButton: 0,
+                    showItemViews: "",
+                    hiddenItemViews: "more_share,copy_url,open_url"
+                });
+            }
+        })
+    </script>
+</head>
+<body>
+    @RenderBody()
+    @RenderSection("ClientScript", required: false)
+</body>
+</html>

@@ -1,0 +1,254 @@
+﻿@{
+    Layout = null;
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.CommodityOrderVM> commodityOrderList = ViewBag.commodityOrderList;
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.CommodityOrderMoneyToModelDTO> moneyToList = ViewBag.MoneyToList;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>我的订单</title>
+    <link href="/Content/common.css" rel="stylesheet" type="text/css" />
+    <link href="/Content/css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/ui.jqgrid.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.all.css" />
+    <script type="text/javascript" src="/Scripts/jquery.js"></script>
+    <script type="text/javascript" src="/Scripts/jquery.extend.js"></script>
+    <script type="text/javascript" src="/Scripts/jquery.ui.base.js"></script>
+    <script type="text/javascript" src="/Scripts/i18n/jquery.ui-zh.js"></script>
+    <script type="text/javascript" src="/Scripts/Grid/jquery.grid.base.js"></script>
+    <script type="text/javascript" src="/Scripts/Pager/jquery.ui.jhpager.js"></script>
+    <script src="/Content/Business/BusinessAllEvent.js" type="text/javascript"></script>
+    <script src="/Scripts/TableBox/jquery.ui.jhtablebox.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+    // 标签切换
+
+        var PriceLow = "";
+        var PriceHight = "";
+        var SeacrhContent = "";
+        var SearchPhone = "";
+        var searchMarketing = 0;
+        var DayCount = "";
+        var State = "";
+        var CommodityOrderState = "";
+        var Payment = "";
+        var StartOrderTime = "";
+        var EndOrderTime = "";
+        var RefundDetailPageIndex = 1;
+        var RefundDetailPageSize = 5;
+        var RefundOrderId = "";
+        var EsAppId = "";
+        var OrderSourceId = "";
+        var dapStr = "";
+        var stwogStr = "";
+        var isSystemDirectRefund = '@Jinher.AMP.BTP.Common.CustomConfig.IsSystemDirectRefund'.toLowerCase() == "true";
+
+
+    function refreshOrderSource() {
+        var orderSourceName = [];
+        $("span[orderSoucre]").each(function () {
+            orderSourceName.push({ appId: $(this).attr("orderSoucre").toLowerCase(), appName: $(this).html() });
+        });
+
+        $("div[ordersource]").each(function () {
+            var _ordersourceId = $(this).attr("ordersource").toLowerCase();
+            var _el = orderSourceName.GetFirstElement("appId", _ordersourceId);
+            $(this).html(_el.appName);
+        });
+    }
+
+    $(function () {
+        //InitGrid();
+        $(".tabzph").click(function () {
+            if ($(this).hasClass("current")) {
+                return false;
+            }
+        // 改编标签样式
+            $(this).addClass("current").siblings().removeClass("current");
+            status = $(this).attr("status");
+            if (status == 0) {
+                window.location.href = '/CardVoucher/Index?UserId=@ViewBag.UserId&AppId=@ViewBag.AppId';
+            }
+            else if(status == 1) {
+                window.location.href = '/CustomerService/SearchOrderInfo?UserId=@ViewBag.UserId&appId=@ViewBag.AppId';
+            }
+        });
+
+        $("#pager").jhpager({
+                dataType: 'html',
+                requestType: 'post',
+                dataSource: '/CustomerService/OrderInfoList',
+                async: true,
+                totalCount: '@ViewBag.Count',
+                rowNum: 20,
+                beforeRequest: function () {
+                    $("#dataDIV").empty();
+                    $(window.parent.document).scrollTop(0);
+                    //ajaxLoading(1, '#content_make');
+                },
+                requestFailure: function () {
+                },
+                requestSuccess: showContent,
+                requestData: function () {
+                    return {
+                        AppId: getQueryString("AppId"),
+                        priceLow: PriceLow,
+                        priceHight: PriceHight,
+                        seacrhContent: SeacrhContent,
+                        SearchPhone: SearchPhone,
+                        dayCount: DayCount,
+                        state: State,
+                        payment: Payment,
+                        pageSize: 20,
+                        userId: getQueryString("userId"),
+                        startTime: StartOrderTime,
+                        endTime: EndOrderTime,
+                        esAppId: EsAppId,
+                        orderSourceId: OrderSourceId,
+                        marketing: searchMarketing
+                    };
+                }
+            });
+        });
+
+        function showContent(event, data) {
+            var rowcounts = $("#rowcounts").val();
+            if (rowcounts == 0) {
+                $("#pager").hide();
+                $('#content_make').hide();
+            }
+            else {
+                //ajaxLoading(1, '#content_make');
+                $("#dataDIV").html(data);
+                //newSetIframeHeight();
+            }
+            //$("#divSellersRemarks .showSellersRemark").dotdotdot();
+        }
+
+    @*function InitGrid() {
+        var data = {
+            "UserId": '@ViewBag.UserId',
+            "Pagesize": 20,
+            "PageNo": 1
+        };
+
+        $("#jqGrid").jqGrid({
+            datatype: "json",
+            postData: data,
+            url: "GetCommodityItemList",
+            mtype: 'POST',
+            rownumbers: true,
+            colNames: ['商品名称', '商品数量', '商品价格', '下单时间', '交易状态', '操作'],
+            colModel: [
+                { sortable: false, name: 'Name', index: 'Name', align: "center" },
+                { sortable: false, name: 'Number', index: 'Number', align: "center" },
+                { sortable: false, name: 'Price', index: 'Price', align: "center" },
+                { sortable: false, name: 'SubTime', index: 'SubTime', align: "center" },
+                { sortable: false, name: 'OrderState', index: 'OrderState', align: "center", formatter: FormatterState },
+                { sortable: false, name: 'OrderId', index: 'OrderId', align: "center", formatter: FormatterOpeart }
+            ],
+            rowNum: 20,
+            pager: 'page',
+            height: 441,
+            autowidth: true
+        });
+    }
+
+    function FormatterState(callvalue, opts, rowdata) {
+        switch (callvalue) {
+            case "0":
+                return "未支付";
+            case "1":
+                return "未发货";
+            case "2":
+                return "已发货";
+            case "3":
+                return "确认收货";
+            case "4":
+                return "商家取消订单";
+            case "5":
+                return "客户取消订单";
+            case "6":
+                return "超时交易关闭";
+            case "7":
+                return "已退款";
+            case "8":
+                return "待发货退款中";
+            case "9":
+                return "已发货退款中";
+            case "10":
+                return "已发货退款中商家同意退款，商家未收到货";
+            case "11":
+                return "付款中";
+            case "12":
+                return "金和处理退款中";
+            case "13":
+                return "出库中";
+            case "14":
+                return "出库中退款中";
+            case "16":
+                return "待审核";
+            case "17":
+                return "待付款待审核";
+            case "18":
+                return "餐饮订单待处理";
+            case "19":
+                return "餐饮订单已处理";
+        }
+
+    }
+
+    function FormatterOpeart(callvalue, opts, rowdata) {
+        return "<a id=\"tzinfor\" href=\"javascript:void(0)\" target=\"_self\" tzinfors=\"/CustomerService/CommodityOrderDetail?commodityOrderId=" + callvalue + "\">查看</a>";
+    }
+
+    $("#tzinfor").live("click", function () {
+        var hre = $(this).attr("tzinfors");
+        ShowOrderDetail();
+        $("#orderdetailurl").attr("src", hre);
+        if (window.parent) { //在iframe页面打开时，纠正top
+
+            $(".ui-jhtablebox-top").css("top", 50 + $(window.parent.document).scrollTop());
+        }
+    });
+
+    function ShowOrderDetail() {
+        var hght = parseInt(window.innerWidth * 0.6);
+        $("#OrderDetail").jhtablebox({
+            title: "订单详情",
+            width: '80%',
+            height: hght,
+            draggable: true,
+            modal: true,
+            resizable: false,
+            beforeClose: function (e) {
+            }
+        });
+    }*@
+    </script>
+
+</head>
+<body>
+    <div class="tabs-box">
+        <div style="background-color:blue;height:30px; font-size:24px; text-align:center; color:chocolate">  客服服务后台 </div>
+        <div class="tabs-top" style="left: 0px;position:absolute; padding-top:5px;">
+            <a href="javascript:;" class="tabzph current" status="-1">我的订单</a>
+            <a href="javascript:;" class="tabzph" status="0">卡券</a>
+            <a href="javascript:;" class="tabzph" status="1">订单查询</a>
+        </div>
+    </div>
+    <div class="GridArea mt10 ml10">
+        <div id="dataDIV">
+            @Html.Partial("~/Views/CustomerService/OrderInfoList.cshtml")
+        </div>
+        <table id="jqGrid"></table>
+        <div id="pager">
+        </div>
+    </div>
+    <div style="display: none;" class="OrderDetailPar">
+        <div id="OrderDetail" style="margin: 0 auto;">
+            <iframe id="orderdetailurl" src="" width="100%;" height="100%" style="margin-bottom: 20px;border: 0px;"></iframe>
+        </div>
+    </div>
+</body>
+</html>

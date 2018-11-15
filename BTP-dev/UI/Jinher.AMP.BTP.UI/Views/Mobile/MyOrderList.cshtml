@@ -1,0 +1,137 @@
+﻿@using System.Web
+@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+    ViewBag.Title = "订单列表";
+}
+@section CssStyles{
+    <link rel="stylesheet" href="/dist/css/common.css">
+    <link rel="stylesheet" href="/dist/css/MyOrderList.css">
+}
+<div id="app" v-cloak :class="{'clock':clocked}">
+    <ul class="nav-wrap">
+        <li v-for="(nav,$index) in navList" class="nav-list" :class="{active: $index == selectNav}" v-on:click="navChangeFun($index)"><a href="javascript:void(0);">{{nav}}</a></li>
+    </ul>
+    <!--扫码购订单-->
+    @*<div v-show="orderState == null" class="header-pic">
+        <img class="pic" src="/Content/Mobile/order-banner.png">
+    </div>*@
+    <div class="content">
+        <!--订单列表-->
+        <div v-for="(list,index) in orderList" class="order-wrap top20">
+            <div class="order-title">
+                <span class="name">{{list.AppName}}</span>
+                <div v-if="list.IsThirdOrder">
+                <span class="state">{{list.DSFStateName=="待支付"?"待付款":list.DSFStateName}}</span>
+                </div>
+                <div v-else><span class="state">{{orderListState[index]}}</span></div>
+            </div>
+            <div class="order-content">
+                <div v-for="goodsInfo in list.ShoppingCartItemSDTO" class="item" v-on:click="goPage('orderDetail',list)">
+                    <div class="pic"><img class="pic" v-bind:src="goodsInfo.Pic"/></div>
+                    <div class="order-info">
+                        <div v-if="list.IsThirdOrder">
+                            <div class="title" v-if="goodsInfo.Name">{{list.AppName=="保险推荐"?"太平洋保险公司":""}} {{goodsInfo.Name | nameFilter}}</div>
+                        </div>
+                        <div v-else>
+                            <div class="title" v-if="goodsInfo.Name">{{goodsInfo.Name | nameFilter}}</div>
+                        </div>
+                        <div class="size" v-if="goodsInfo.Size">{{goodsInfo.Size | sizeFilter}} </div>
+                        @*<div v-if="list.State != -300">
+                        <div class="tags"><span class="tag">7天退换</span></div>
+                        </div>*@
+                        <div class="price-wrap">
+                            <div class="price">￥<span class="num">{{goodsInfo.Price}}</span></div>
+                            <div class="count">x{{goodsInfo.CommodityNumber}}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-total">
+                    <span class="order-total-title">共{{list.ItemAllCount}}件商品</span>
+                    <span class="order-total-price">合计: <span class="price">￥<span class="num">{{list.Price}}</span></span><span class="freight"> (含运费￥{{list.Freight.toFixed(2)}})</span></span>
+                </div>
+                <div v-if="!list.IsThirdOrder">
+                    <div v-if="orderListBtn[index].length" class="order-opera clearfix">
+                        <a v-if="orderListBtn[index].indexOf(2) > -1" class="btn active" href="javascript:void(0);" v-on:click.stop="goPage('orderDetail',list)">申请退款</a>
+                        <a v-if="orderListBtn[index].indexOf(11) > -1" class="btn" href="javascript:void(0);" v-on:click.stop="showConfirmDateFun(list,index)">延长收货</a>
+                        <a v-if="orderListBtn[index].indexOf(1) > -1" class="btn" href="javascript:void(0);" v-on:click.stop="showModalFun(list,index)">取消订单</a>
+                        <a v-if="orderListBtn[index].indexOf(4) > -1" class="pull-right btn active" href="javascript:void(0);"  v-on:click.stop="goPage('orderDetail',list)">确认收货</a>
+                        <a v-if="orderListBtn[index].indexOf(34) > -1" class="btn" href="javascript:void(0);" v-on:click.stop="chakanwuliu(list,index)">查看物流</a>
+                        <a v-if="orderListBtn[index].indexOf(9) > -1" class="btn" href="javascript:void(0);" v-on:click.stop="openDialog(list,index)">删除订单</a>
+                        <a v-if="orderListBtn[index].indexOf(0) > -1" class="btn active" href="javascript:void(0);" v-on:click.stop="goPage('orderDetail',list)">付款</a>
+                        <a v-if="orderListBtn[index].indexOf(41) > -1" class="btn active" href="javascript:void(0);"  v-on:click.stop="showTiXingConfirm(list,index)">提醒发货</a>
+                        <a v-if="orderListBtn[index].indexOf(7) > -1 && isAllReview(list.ShoppingCartItemSDTO)" class="btn active" href="javascript:void(0);" v-on:click.stop="orderComReview(list,index)">评价/追评</a>
+                    </div>
+                </div>
+                <div v-else>
+                    <div v-if="list.DSFStateName=='待支付' && list.AppName =='保险推荐'" class="order-opera clearfix">
+                        <a class="btn active" href="javascript:void(0);" v-on:click.stop="goPage('orderDetail',list)">付款</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-show="tips" class="tips">- 没有更多了 -</div>
+        <div v-show="empty" class="empty-page">
+            <img src="/Content/Mobile/no-order.png">
+            <p>您没有相关订单~</p>
+        </div>
+        <!--删除弹窗-->
+        <div v-show="showConfirm" class="confirm-wrap">
+            <div class="confirm">
+                <div class="confirm-content">
+                    <div class="confirm-message">确定要删除订单吗？</div>
+                </div>
+                <div class="confirm-bottom">
+                    <a href="javascript:vm.cancelConfirm()" class="confirm-btn">取消</a>
+                    <a href="javascript:vm.deletOrder()" class="confirm-btn active">确定</a>
+                </div>
+            </div>
+        </div>
+        <!--提醒发货-->
+        <div v-show="showtixing" class="confirm-wrap">
+            <div class="confirm">
+                <div class="confirm-content">
+                    <div class="confirm-message" id="txtext">提醒发货成功</div>
+                </div>
+                <div class="confirm-bottom">
+                    <a href="javascript:vm.hideTiXingConfirm()" class="confirm-btn active">确定</a>
+                </div>
+            </div>
+        </div>
+        <!--延长收货弹窗-->
+        <div v-show="showConfirmDate" class="confirm-wrap">
+            <div class="confirm">
+                <div class="confirm-content">
+                    <div class="confirm-message">您可以延长3天收货是否确认延长收货？</div>
+                </div>
+                <div class="confirm-bottom">
+                    <a href="javascript:vm.hideConfirmDateFun()" class="confirm-btn">取消</a>
+                    <a href="javascript:vm.submitConfirmDate()" class="confirm-btn active">确定</a>
+                </div>
+            </div>
+        </div>
+        <!--取消订单原因-->
+        <div v-show="showModal" class="logistics-modal">
+            <div class="logistics-modal-content">
+                <div class="modal-hd">
+                    <span class="title">取消订单原因</span>
+                    <img class="close" src="/Content/Mobile/guanbi.png" v-on:click="hideModal()">
+                </div>
+                <div class="modal-bd">
+                    <div class="list" v-for="reason in reasons" v-on:click="changeReason(reason)">{{reason}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section ClientScript
+{
+    <script>var snsURL = '@Jinher.AMP.BTP.Common.CustomConfig.SNSUrl';</script>
+    <script src="/dist/lib/vue.min.js"></script>
+    <script src="/dist/lib/vue-resource.min.js"></script>
+    <script src="/dist/lib/vue-mobileKit.js"></script>
+    <script src="/dist/lib/Common.js"></script>
+    <script src="/dist/lib/mercury.js"></script>
+    <script src="/dist/lib/login.js"></script>
+    <script src="/dist/js/MyOrderList.js"></script>
+    
+}

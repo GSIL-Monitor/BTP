@@ -1,0 +1,334 @@
+﻿@using System.Web
+@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+    Jinher.AMP.BTP.Deploy.CustomDTO.ShareOrderMoneySumDTO resultInfo = ViewBag.ShareInfo;
+    if (resultInfo == null)
+    {
+        resultInfo = new Jinher.AMP.BTP.Deploy.CustomDTO.ShareOrderMoneySumDTO();
+    }
+}
+@helper Currency()
+    {
+    @Jinher.AMP.BTP.UI.Util.MobileCookies.GetCurrency();
+}
+@section TitleHtml
+{
+     <title>@ViewBag.Title</title>
+}
+@section CssStyles{
+   <link href="/Content/Mobile/mobileKit-min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="/Content/style/icons.css" />
+    <link rel="stylesheet" href="/Content/style/skin.css" />
+    <link rel="stylesheet" href="/Content/Mobile/distributionIncome.css" />
+     <style type="text/css">
+        .u-table-content > div
+        {
+            top: 215px;
+        }
+        .hideTip
+        {
+            display: none;
+        }
+        .u-table-header span
+        {
+            text-align: center;
+        }
+    </style>
+}
+@section ClientScript
+{
+    <script src="/Content/Mobile/distributionIncome.js"></script>
+    <script src="/Scripts/CommLib.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var _pageSize1 = 10;
+        var _pageIndex1 = 1;
+        var _pageSize2 = 10;
+        var _pageIndex2 = 1;
+        var addTemplete1 = "";
+        var addTemplete2 = "";
+        var _appId = ''; //经杨确定用appId
+        if (JsVilaDataNull(getQueryString("appId"))) {
+            _appId = getQueryString("appId");
+        }
+        _noResult = "";
+        var _payeeType = "";
+        if (JsVilaDataNull(getQueryString("payeeType"))) {
+            _payeeType = getQueryString("payeeType");
+        } else {
+            _payeeType = 3;
+        }
+        //加载
+        $(function () {
+            _pageSize1 = 10;
+            _pageIndex1 = 1;
+            addTemplete1 = $("#divTableTemplete1>ul").html();
+            addTemplete2 = $("#divTableTemplete2>ul").html();
+
+            $('.grand-total').on('click', function () {
+                $(this).find('.under-line').removeClass('hide');
+                $(this).siblings().find('.under-line').addClass('hide');
+                $('.scroll-load').eq($(this).index()).removeClass('hide').siblings('.scroll-load').addClass('hide');
+            });
+            var scroller1 = $('#scroller1').scrollLoad({
+                loadDownFn: function (me) { //下拉加载数据
+                    //添加数据
+                    pullUpAction1();
+                    me.resetload();
+                },
+                loadUpFn: function (me) { //上拉刷新
+                    me.resetload();
+                }
+            });
+            var scroller2 = $('#scroller2').scrollLoad({
+                loadDownFn: function (me) { //下拉加载数据
+                    //添加数据
+                    pullUpAction2();
+                    me.resetload();
+                },
+                loadUpFn: function (me) { //上拉刷新
+                    me.resetload();
+                }
+            });
+            //通知条
+            $('.query').on('click', function (event) {
+                event.stopPropagation();
+                if ($('.speech').css('display') == "none") {
+                    $('.speech').css('display', 'block');
+                } else {
+                    $('.speech').css('display', 'none');
+                }
+            });
+
+            //加载一级
+            GetData1();
+            //加载二级
+            GetData2();
+        });
+        function GetDateFormat(cellval, state) {
+            try {
+                var date = new Date(parseInt(cellval.replace("/Date(", "").replace(")/", ""), 10));
+                var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+                var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+                var hour = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+                var minu = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+                var miao = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+                if (state == 1) {
+                    return date.getFullYear() + "/" + month + "/" + currentDate;
+                }
+                else if (state == 2) {
+                    return hour + ":" + minu + ":" + miao;
+                }
+                else if (state == 3) {
+                    return date.getFullYear() + "-" + month + "-" + currentDate + " " + hour + ":" + minu + ":" + miao;
+                }
+                else {
+                    return date.getFullYear() + "/" + month + "/" + currentDate + " " + hour + ":" + minu + ":" + miao;
+                }
+            } catch (e) {
+                return "";
+            }
+        }
+        //滚动翻页 （自定义实现此方法）
+        function pullUpAction1() {
+            setTimeout(function () {
+                GetData1();
+            }, 1000);
+        }
+        //滚动翻页 （自定义实现此方法）
+        function pullUpAction2() {
+            setTimeout(function () {
+                GetData2();
+            }, 1000);
+        }
+
+        function requestData(start, count) {
+            toast(start + "ghc" + count);
+        }
+
+        function updateContent(el, data) {
+            toast(el);
+            toast(data);
+        }
+        //获取已入账数据
+        function GetData1() {
+            var subData = {};
+            subData.AppId = _appId;
+            subData.SearchType = 1;  //查询类型：1 佣金累计；2 待收益
+            subData.PageIndex = _pageIndex1;
+            subData.PageSize = _pageSize1;
+            subData.PayeeType = _payeeType;
+            var subDataJson = CommLib.ObjToString(subData);
+
+            getDataAjax2({
+                url: '/Mobile/GetShareOrderMoneyInfo?r=' + Math.random(),
+                type: 'post',
+                dataType: "json",
+                contentType: "application/json",
+                async: false,
+                data: subDataJson,
+                error: function () {
+                },
+                callback: function (msg) {
+                    if (msg == null || msg.Count < 1 || msg.ShareOrderMoneyList == null || msg.ShareOrderMoneyList.length < 1) {
+                        if (_pageIndex1 == 1) {
+                            $("#scroller1>ul").html(_noResult);
+                        }
+                        return;
+                    }
+                    var resultData = msg.ShareOrderMoneyList;
+                    //第一页需要清空之前数据
+                    if (_pageIndex1 == 1) {
+                        $("#scroller1>ul").html("");
+                    }
+
+                    for (var i = 0; i < resultData.length; i++) {
+                        if (!resultData[i]) continue;
+                        resultData[i].StateText = resultData[i].State == 0 ? "已入积分账户" : "待入账";
+                        resultData[i].TypeText = resultData[i].SrcType == 33 ? "分享订单" : "分享商品";
+                        resultData[i].SortTime1 = GetDateFormat(resultData[i].SortTime, 1);
+                        resultData[i].SortTime2 = GetDateFormat(resultData[i].SortTime, 2);
+                        resultData[i].Money = resultData[i].Money.toFixed(2);
+                        var tmpHtml = addTemplete1.format(resultData[i]);
+                        $("#scroller1>ul").append(tmpHtml);
+                    }
+                    _pageIndex1++;
+                }
+            });
+        }
+
+        //获取未入账数据
+        function GetData2() {
+            var subData = {};
+            subData.AppId = _appId;
+            subData.ShareId = null;
+            subData.UseId = null;
+            subData.SearchType = 2;  //查询类型：1 佣金累计；2 待收益
+            subData.PageIndex = _pageIndex2;
+            subData.PageSize = _pageSize2;
+            subData.PayeeType = _payeeType;
+            var subDataJson = CommLib.ObjToString(subData);
+
+            getDataAjax2({
+                url: '/Mobile/GetShareOrderMoneyInfo?r=' + Math.random(),
+                type: 'post',
+                dataType: "json",
+                contentType: "application/json",
+                data: subDataJson,
+                error: function () {
+                },
+                callback: function (msg) {
+                    if (msg == null || msg.Count < 1 || msg.ShareOrderMoneyList == null || msg.ShareOrderMoneyList.length < 1) {
+                        if (_pageIndex2 == 1) {
+                            $("#scroller2 ul").html(_noResult);
+                        }
+                        return;
+                    }
+                    var resultData = msg.ShareOrderMoneyList;
+                    //第一页需要清空之前数据
+                    if (_pageIndex2 == 1) {
+                        $("#scroller2>ul").html("");
+                    }
+
+                    for (var i = 0; i < resultData.length; i++) {
+                        if (!resultData[i]) continue;
+                        resultData[i].StateText = resultData[i].State == 0 ? "已入积分账户" : "待入账";
+                        resultData[i].TypeText = resultData[i].SrcType == 33 ? "分享订单" : "分享商品";
+                        resultData[i].SortTime1 = GetDateFormat(resultData[i].SortTime, 1);
+                        resultData[i].SortTime2 = GetDateFormat(resultData[i].SortTime, 2);
+                        resultData[i].Money = resultData[i].Money.toFixed(2);
+                        var tmpHtml = addTemplete1.format(resultData[i]);
+                        $("#scroller2>ul").append(tmpHtml);
+                    }
+                    _pageIndex2++;
+                }
+            });
+        }
+    </script>
+}
+    <div class="page">
+        <header class="bar bar-nav hide">
+            <a class="fa fa-chevron-left pull-left" href="javascript:void(0);">返回</a>
+            <h1 class="title">xxxxxx</h1>
+        </header>
+        <div class="content">
+            <div class="myDistribution">
+                <div class="u-grand clearfix" style="top: 0">
+                    <a class="grand-total" href="javascript:void(0);">
+                        <div class="clearfix">
+                            <p>
+                                <img src="/Content/Mobile/dis-money.png" alt=""></p>
+                            <p class="grand-money">
+                                <span>佣金累计</span><span>@Currency()@resultInfo.CommissionAmount</span></p>
+                        </div>
+                        <div class="under-line">
+                            <div>
+                            </div>
+                        </div>
+                    </a><a class="grand-total" href="javascript:void(0);">
+                        <div class="clearfix">
+                            <p>
+                                <img src="/Content/Mobile/dis-yuan.png" alt=""></p>
+                            <p class="grand-money">
+                                <span>待收益佣金<span class="query">?</span></span><span>@Currency()@resultInfo.CommmissionUnPay</span></p>
+                            <p class="speech">
+                                待收金额仅供参考，受订单退款影响，以实际到账为准</p>
+                        </div>
+                        <div class="under-line hide">
+                            <div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="income">
+                    <ul class="thead clearfix">
+                        <li class="date pull-left">时间</li>
+                        <li class="money pull-left">金额</li>
+                        <li class="type pull-left">类型</li>
+                        <li class="state pull-left">状态</li>
+                    </ul>
+                    <div id="scroller1" class="scroll-load">
+                        <ul class="income-list">
+                        </ul>
+                    </div>
+                    <div id="scroller2" class="scroll-load hide">
+                        <ul class="income-list">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="divTableTemplete1" style="display: none">
+        <ul class="table-view">
+            <li>
+                <ul class="clearfix">
+                    <li class="date pull-left">
+                        <div>
+                            {SortTime1}</div>
+                        <div>
+                            {SortTime2}</div>
+                    </li>
+                    <li class="money pull-left">{Money}</li>
+                    <li class="type pull-left">{TypeText}</li>
+                    <li class="state pull-left">{StateText}</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <div id="divTableTemplete2" style="display: none">
+        <ul class="table-view">
+            <li>
+                <ul class="clearfix">
+                    <li class="date pull-left">
+                        <div>
+                            {SortTime1}</div>
+                        <div>
+                            {SortTime2}</div>
+                    </li>
+                    <li class="money pull-left">{Money}</li>
+                    <li class="type pull-left">{TypeText}</li>
+                    <li class="state pull-left">{StateText}</li>
+                </ul>
+            </li>
+        </ul>
+    </div>

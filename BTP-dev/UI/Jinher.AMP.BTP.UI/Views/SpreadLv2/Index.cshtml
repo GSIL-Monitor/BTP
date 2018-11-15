@@ -1,0 +1,502 @@
+﻿@{
+    ViewBag.Title = "代理推广码管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Css{
+    <link href="/Content/common.css" rel="stylesheet" type="text/css" />
+    <link href="/Content/default/ui.jqgrid.css" rel="stylesheet" type="text/css" />
+    <link href="/Content/default/jquery.ui.jhtablebox.css" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+        input.inp-txt
+        {
+            height: 18px;
+            line-height: 18px;
+            border: 1px solid #B6C0CD;
+            padding: 4px 5px;
+            vertical-align: middle;
+            border-radius: 3px;
+            box-shadow: inset 1px 1px 2px #DBDBDB;
+        }
+        .toolbar
+        {
+            background: #F2F2F2;
+            margin-bottom: 0;
+            font-size: 14px;
+            height: 40px;
+            line-height: 35px;
+            text-align: left;
+        }
+
+        .input-group{
+            text-align: center; margin: 23px 0;
+        }
+    </style>
+}
+<div class="box">
+    <div class="content">
+        <div class="manag_top  manag_top2" style="margin: 0; padding-right: 0; margin-top: 10px;
+            height: 45px;">
+            <div style="float: left;">
+                <ul>
+                    <li><span>推广主IU账号：</span>
+                        <input type="text" id="Account" class="inp-txt" style="width: 150px; height: 17px;
+                            line-height: 17px;" />
+                    </li>
+                </ul>
+            </div>
+            <div style="float: left;">
+                <a href="javascript:search()" class="btn120">查询</a>
+            </div>
+            <div style="clear: both;">
+            </div>
+        </div>
+        <div class="toolbar">
+            <a class="btn120" href="javascript:openCreateDialog();" style="margin-left: 15px;">新建</a>
+            <a class="btn120" href="javascript:exportData();" style="margin-left: 15px;">导出</a>
+        </div>
+        <div class="manag_bot" style="margin-top: 10px; width: 100%;">
+            <table id="TableGrid">
+            </table>
+            <div id="TablePager">
+            </div>
+        </div>
+    </div>
+</div>
+@*导出Excel*@
+<form id="ExportForm" action="@Url.Action("ExportExcel")" method="post">
+<input type="hidden" name="SpreadType" id="exportSpreadType" />
+<input type="hidden" name="Account" id="exportAccount" />
+<input type="hidden" name="SpreadAppId" id="exportSpreadAppId" />
+</form>
+@*弹出层*@
+<div style="display: none;">
+    @*创建推广码*@
+    <div id="createDialog">
+        <div style="height: 560px;">
+            <div class="item input-group">
+                <span><img src="/images/xin.png" /></span><span class="label">推广主名称：</span>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <input id="addName" type="text" class="inp-txt w200 mr10" />
+            </div>
+            <div class="item input-group">
+                <span><img src="/images/xin.png" /></span><span class="label">IU账号：</span>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <input id="addAccount" type="text" class="inp-txt w200 mr10" />
+            </div>
+            <div class="item input-group">
+                <span><img src="/images/xin.png" /></span><span class="label">总代分佣比例：</span>
+                &nbsp;&nbsp;&nbsp;
+                <input id="addPercent" type="text" class="inp-txt w200 mr10" style="width:100px" />%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </div>
+            <div class="item" style="text-align: center; margin: 23px 0;">
+                <span style="color:gray">推广主类型：</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <select id="addSpreadType" class="inp-txt w200 mr10" style="width: 210px; height: 27px;
+                    line-height: 27px; color:gray" disabled>
+                    <option value="6">二级代理</option>
+                </select>
+            </div>
+            <div class="item input-group">
+                <span style="color:gray">推广组织IW号：</span>&nbsp;&nbsp;&nbsp;&nbsp;              
+                <input id="addIWCode" type="text" class="inp-txt w200 mr10" value="@ViewBag.IWCode" disabled />
+            </div>
+            <div class="item input-group">
+                <span><img src="/images/xin.png" /></span><span>推广APP：</span>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <select id="addSpreadAppId" class="inp-txt w200 mr10" style="width: 210px; height: 27px;
+                    line-height: 27px; color: #8c94a9">
+                    @foreach (var item in ViewBag.Apps)
+                    {
+                        <option value="@item.Id">@item.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="item input-group">
+                <span><img src="/images/xin.png" /></span><span>旺铺商家：</span>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <select id="addHotshopId" class="inp-txt w200 mr10" style="width: 210px; height: 27px;
+                    line-height: 27px; color: #8c94a9">
+                    <option value="">请选择</option>
+                </select>
+            </div>
+            <div class="item input-group">
+                <span>二维码图标：</span> 
+                <input type="file" id="addQrCodeFile" style="display:none">
+                <img id="addQrCodeSelectImg" alt="" class="tp" src="/images/defAdd.png" width="83" height="83">
+                <span>&nbsp;&nbsp;建议图片小于50K</span>
+                <br>
+                <a id="reuploadQrCodeImg" href="javascript:;" style="display:none">重新上传</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <input type="hidden" id="addQrCodeImg" value=""/>
+            </div>
+            <div class="item input-group">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>备注：</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <textarea rows="5" cols="8" id="addSpreadDesc" class="inp-txt w200 mr10" style="border: 1px solid #B8BFCF;
+                    margin-left: 10px; width: 210px; height: 60px;"></textarea>
+            </div>
+        </div>
+        <div style="height: 40px; text-align: center;">
+            <a href="#nogo" onclick="create()" id="btnCreate" class="btn120">生成</a>&nbsp;&nbsp;&nbsp;&nbsp;
+            <a href="#nogo" onclick="closeCreateDialog()" class="btn120">取消</a>
+        </div>
+    </div>
+</div>
+@section ClientScript{
+    <script type="text/javascript" src="/Content/Mobile/allEvent.js"></script>
+    <script type="text/javascript" src="/Scripts/jquery.watermark.js"></script>
+    <script type="text/javascript" src="/Scripts/i18n/jquery.ui-zh.js"></script>
+    <script type="text/javascript" src="/Scripts/Grid/jquery.grid.base.js"></script>
+    <script type="text/javascript" src="/Scripts/TableBox/jquery.ui.jhtablebox.js"></script>
+    <script type="text/javascript" src="/Scripts/jquery.ui.base.js"></script>
+    <script type="text/javascript" src="/Scripts/jquery.nicescroll.min.js"></script>
+    <script type="text/javascript" src="/Scripts/Pager/jquery.ui.jhpager.js"></script>
+    <script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.jhdatetime.js"></script>
+    <script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.datepicker.js"></script>
+    <script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.jhstartandenddate.js"></script>
+    <script type="text/javascript" src="/Scripts/uploadify/jquery.uploadify.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            initDataGrid();
+
+            $("#bindSpreadAppId, #bindQRType").change(function(val){
+                getQrCodeNo(true);
+            });
+            $("#addSpreadAppId").change(function(val){
+                $.get("@Url.Action("GetHotShop")?appId="+$("#addSpreadAppId").val(),function(result){
+                    if(result.isSuccess){
+                        if(result.Data.length==0) {
+                            $("#addHotshopId").html("<option value=\"\">请选择</option>");
+                            alert("该APP下没有热门店铺");
+                            return;
+                        }
+                        var options;
+                        $.each(result.Data, function(k,v){
+                            options+="<option value=\""+v.Id+"\">"+v.Name+"</option>";
+                        });
+                        $("#addHotshopId").html(options);
+                    } else {
+                        alert(result.Message);
+                    }
+                })
+            });
+            $("#addSpreadAppId").change();
+
+            $("#addQrCodeSelectImg,#reuploadQrCodeImg").click(function(){
+                $("#addQrCodeFile").click();                
+            });
+
+            $("#addQrCodeFile").change(function(){
+                if($('#addQrCodeFile')[0].files.length>0){
+                    var data = new FormData();
+                    data.append('upload_file', $('#addQrCodeFile')[0].files[0]);
+                    $.ajax({
+                        url:'/AppImage/DirectUploadWH',
+                        type:'POST',
+                        data:data,
+                        cache: false,
+                        contentType: false,    //不可缺
+                        processData: false,    //不可缺
+                        success:function(result){
+                            $("#addQrCodeSelectImg").attr("src", result);
+                            $("#addQrCodeImg").val(result);
+                            $("#reuploadQrCodeImg").show();   
+                        }
+                    });
+                } else {
+                    //$("#reuploadQrCodeImg").hide();
+                }
+            });
+        });
+
+        function initDataGrid() {
+            $("#TableGrid").jqGrid({
+                url: '@Url.Action("Index")',
+                datatype: "json",
+                mtype: 'POST',
+                colNames: ['推广主姓名', 'IU账号', '推广组织IW号','总代分佣比例','推广主类型', '推广APP', '旺铺商家', '备注', '推广码链接', '二维码', '生成时间', '操作'],
+                colModel: [
+                { name: 'Name', index: 'Name', width: 40, align: "center", sortable: false},
+                { name: 'Account', index: 'Account', width: 60, align: "center", sortable: false },
+                { name: 'IWCode', index: 'IWCode', width: 60, align: "center", sortable: false },
+                { name: 'DividendPercent', index: 'DividendPercent', width: 60, align: "center", sortable: false,
+                    formatter:function(cellvalue, options, rowObject){
+                        return '<div><span>'+cellvalue+'%</span><br><a href="javascript:0;" onclick="updatingDividendPercent(this)">修改</a></div><div style="display:none"><input  type="text" class="inp-txt" style="width:50px" value="'+cellvalue+'"></br><a href="javascript:0;" onclick="javascript:updateDividendPercent(\''+rowObject.Id+'\',this)">保存</a></div>';
+                    }},
+                { name: 'SpreadTypeDesc', index: 'SpreadType', width: 50, align: "center", sortable: false },
+                { name: 'SpreadAppName', index: 'SpreadAppId', width: 50, align: "center", sortable: false },
+                { name: 'HotshopName', index: 'HotshopId', width: 50, align: "center", sortable: false },
+                { name: 'SpreadDesc', index: 'SpreadDesc', width: 80, align: "center", sortable: false },
+                { name: 'SpreadUrl', index: 'SpreadUrl', width: 80, align: "center", sortable: false },
+                { name: 'QrCodeUrl', index: 'QrCodeUrl', width: 40, align: "center", sortable: false,
+                    formatter:function(cellvalue, options, rowObject){
+                        if(cellvalue){
+                            return "<a href=\""+cellvalue+"\" style=\"text-decoration:underline;color:blue\" download=\"qrcode.jpg\">下载二维码</a>";
+                        }
+                        return "";
+                    }
+                },
+                { name: 'SubTime', index: 'SubTime', width: 65, align: "center", sortable: false, formatter: 'date',
+                    formatoptions: {
+                        srcformat: 'Y-m-d H:i',
+                        newformat: 'Y-m-d H:i'
+                    }
+                },
+                { name: 'Process', index: 'Process', width: 60, align: "center", sortable: false, 
+                    formatter: function (callvalue, opts, rowdata){
+                        var html='';
+                        if(rowdata.IsDel){
+                             html += "<a href='javascript:updateState(\""+rowdata.Id+"\","+false+")'>启用</a>";
+                        } else {
+                             html += "<a href='javascript:updateState(\""+rowdata.Id+"\","+true+")'>停用</a>";
+                        }
+                        return html;
+                    }
+                }],
+                rowNum: 20,
+                rownumbers:true,
+                pager: 'TablePager',
+                pagerAlone: true,
+                height: '100%',
+                autowidth: true,
+                multiselect: false,
+                forceFit: true,
+                scroll: false,
+                shrinkToFit: true,
+                jsonReader: {
+                    root: "data",
+                    page: "page",
+                    total: "total",
+                    records: "records",
+                    repeatitems: false
+                }
+            });
+        }
+
+        function getQrCodeNo(showAlert){
+            $.get("@Url.Action("GetQrCodeNo")?appId="+$("#bindSpreadAppId").val()+"&qrType="+$("#bindQRType").val(),function(result){
+                if(result.isSuccess){
+                    if(result.Data.length==0) {
+                        $("#bindQRNo").html("<option value=\"\">请选择</option>");
+                        if(showAlert) alert("该推广渠道下没有可用的二维码");
+                        return;
+                    }
+                    var options='';
+                    $.each(result.Data, function(k,v){
+                        options+="<option value=\""+v+"\">"+v+"</option>";
+                    });
+                    $("#bindQRNo").html(options);
+                } else {
+                    if(showAlert) alert(result.Message);
+                }
+            })
+        }
+
+        function reflushData(){
+            var rowcounts = $("#rowcounts");
+            var rowcounts_number = rowcounts.val() - 1;
+            rowcounts.val(rowcounts_number);
+            if (!rowcounts_number % 1) {
+                $("#pager").jhpager("refresh", $('.ui-jhpager-pager').text().split('/')[0], rowcounts_number);
+            } else {
+                var page = $('.ui-jhpager-pager').text().split('/')[0];
+                if (page == 1) {
+                    page = 1;
+                } else if (page > 1) {
+                    page -= 1;
+                }
+                search(page);
+            }
+        }
+
+        function search(pageNumber) {
+            var page = pageNumber ? pageNumber : 1;
+            var data = initSearchParam(page);
+            if (data) {
+                $('#TableGrid').jqGrid('setGridParam', { url: '@Url.Action("Index")', postData: data, page: page });
+                $('#TableGrid').trigger("reloadGrid");
+            }
+        }
+
+        function initSearchParam(page) {
+            var SpreadType = $("#SpreadType").val();
+            var Account = $("#Account").val();
+            var SpreadAppId = $("#SpreadAppId").val();
+            var data = { "SpreadType": SpreadType, "UserCode": Account, "SpreadAppId": SpreadAppId, PageIndex:page };
+            return data;
+        }
+
+        // 导出数据
+        function exportData() {
+            $("#exportSpreadType").val($("#SpreadType").val());
+            $("#exportAccount").val($("#Account").val());
+            $("#exportSpreadAppId").val($("#SpreadAppId").val());
+            $("#ExportForm").submit();
+        }
+
+        function updateState(id, isDel){
+            $.post('@Url.Action("UpdateState","Spread")',{ Id:id,IsDel: isDel },function(data){
+                if (data.isSuccess) {
+                    if(isDel){             
+                        alert("停用成功");
+                    } else {
+                        alert("启用成功");
+                    }
+                    reflushData();
+                } else {
+                    alert(data.Message);
+                }
+            });
+        }
+
+        // 打开新建窗口 
+        function openCreateDialog() {
+            $("#createDialog").jhtablebox({
+                title: "生成推广码",
+                width: 440,
+                height: 660,
+                modal: true,
+                resizable: false,
+                beforeClose: function (e) {
+                    clear();
+                }
+            });
+        }
+
+        // 关闭新建窗口 
+        function closeCreateDialog() {
+          $("#createDialog").jhtablebox("hide");
+          clear();
+        }
+
+        function clear(){
+            $("#addName").val("");
+            $("#addAccount").val("");
+            $("#addPercent").val("");
+            //$("#addSpreadType").val("");
+            //$("#addSpreadAppId").val("");
+            //$("#addHotshopId").val("");
+            $("#addQrCodeSelectImg").attr("src","/images/defAdd.png");
+            $("#reuploadQrCodeImg").hide();
+            $("#addSpreadDesc").val("");
+        }
+
+        function create(){
+            var statename = $("#btnCreate").html();
+            if (statename == "提交中,请稍候") { return; }         
+
+            var addName = $("#addName").val();
+            if(addName==''){
+                alert("请输入推广主名称");
+                return;
+            }
+            if(addName.length>20){
+                alert("推广主名称最多20个字符");
+                return;
+            }
+            var addAccount = $("#addAccount").val();
+            if(addAccount==''){
+                alert("请输入IU账号");
+                return;
+            }
+
+            var addPercent = $("#addPercent").val();
+            if(addPercent==''){
+                alert("请输入总代佣金比例");
+                return;
+            }
+            addPercent = parseFloat(addPercent);
+            if(isNaN(addPercent)){
+                alert("总代分佣比例只能输入数字");
+                return;
+            }
+            if(addPercent<0||addPercent>100){
+                alert("总代分佣比例仅支持0~100之间");
+                return;
+            }
+            if(!/^\d+(?:\.\d{1,2})?$/.test(addPercent)){
+                alert("总代分佣比例最多2位小数");
+                return;
+            }
+
+            var addSpreadAppId = $("#addSpreadAppId").val();
+            if(addSpreadAppId==''){
+                alert("请选择推广App");
+                return;
+            }
+            var addHotshopId = $("#addHotshopId").val();
+            if(addHotshopId==''){
+                alert("请选择旺铺商家");
+                return;
+            }
+            var addQrCodeImg = $("#addQrCodeImg").val();
+            var addSpreadDesc = $("#addSpreadDesc").val();
+
+            if(addSpreadDesc.length>100){
+                alert("备注最多100字");
+                return;
+            }
+
+            $("#btnCreate").html("提交中,请稍候");
+            $.ajax({
+                url: '@Url.Action("Create")',
+                type: 'post',
+                data: {
+                    Name: addName,
+                    UserCode: addAccount,
+                    DividendPercent:addPercent,
+                    SpreadAppId:addSpreadAppId,
+                    HotshopId:addHotshopId,
+                    QrCodeFileImg:addQrCodeImg,
+                    SpreadDesc:addSpreadDesc
+                },
+                success: function (data) {
+                    if (data.isSuccess) {
+                        reflushData();
+                        closeCreateDialog();
+                        $("#btnCreate").html("确定");
+                    }
+                    else {
+                        alert(data.Message);
+                        $("#btnCreate").html("确定");
+                    }
+                },
+                error: function () {
+                    $("#btnCreate").html("确定");
+                    alert("请求错误");
+                }
+            });
+        }
+
+        function updatingDividendPercent(ele){
+            $(ele).parent().hide();
+            $(ele).parent().next().show().find("input").focus();
+        }
+
+        function updateDividendPercent(id,ele){
+            var percent = $(ele).prev().prev().val();
+            if(percent==''){
+                alert("请输入总代佣金比例");
+                return;
+            }
+            percent = parseFloat(percent);
+            if(isNaN(percent)){
+                alert("请输入数字");
+                return;
+            }
+            if(percent<0||percent>100){
+                alert("仅支持0~100之间");
+                return;
+            }
+            if(!/^\d+(?:\.\d{1,2})?$/.test(percent)){
+                alert("最多2位小数");
+                return;
+            }
+            $.post('@Url.Action("UpdateDividendPercent")',{ Id:id, Percent: percent },function(data){
+                if (data.isSuccess) {
+                    $(ele).parent().hide();
+                    $(ele).parent().prev().show().find("span").text(percent+"%");
+                } else {
+                    alert(data.Message);
+                }
+            });
+        }
+    </script>
+}

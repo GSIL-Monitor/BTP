@@ -1,0 +1,150 @@
+﻿@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+}
+@section TitleHtml
+{
+    <title>拒绝原因</title>
+}
+@section CssStyles{
+    <link rel="stylesheet" href="/Content/style/style.css" />
+    <style type="text/css">
+        .footer_4
+        {
+            border-radius: 4px;
+            background-color: #e0e0e0;
+            text-align: center;
+            color: #505050;
+            font-size: 1em;
+            letter-spacing: 1px;
+            padding: 3% 8%;
+            display: inline-block;
+            margin-left: 30px;
+            border: 0px;
+        }
+        
+        .footer_2
+        {
+            border-radius: 4px;
+            background-color: rgb(255, 0, 84);
+            text-align: center;
+            color: #fff;
+            font-size: 1em;
+            letter-spacing: 1px;
+            padding: 3% 8%;
+            display: inline-block;
+            margin-left: 5px;
+            border: 0;
+        }
+    </style>
+}
+@section ClientScript
+{
+    <script src="/Scripts/md5.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(function () {
+            saveContextDTOByUrl();
+            var limitNum = 140;
+            var pattern = limitNum + '字';
+            $('.word-count').html(pattern);
+            $('#txtContent').on('keydown keyup keypress submit focus blur copy cut paste change input', function (event) {
+
+                var value = $.trim($(this).val());
+                var remain = value.length;
+
+                if (remain > limitNum) {
+                    $(this).val(value.substring(0, limitNum));
+                    pattern = '0字';
+
+                } else {
+                    var result = limitNum - remain;
+                    pattern = result + '字';
+                }
+
+                $('.word-count').html(pattern);
+
+            });
+
+            //保存拒绝原因。
+            $("#btnOk").on("click", function () {
+                submitRefuse();
+            });
+            //取消。
+            $("#btnCancel").on("click", function () {
+                var backUrl = window.document.referrer;
+                if (backUrl == null || backUrl == "") {
+                    backUrl = "/Mobile/RefundInfoSeller?orderid=" + getQueryString('orderId') + "&asoState=" + getQueryString('asoState') + "&StateText=" + escape(getQueryString('StateText'));
+                }
+                window.location.href = backUrl;
+            });
+
+        });
+
+        function submitRefuse() {
+            $("#btnOk").html("正在提交...");
+            $("#btnOk").attr("disabled", "");
+
+            var reg = /^\s*$/;
+            var _content = $.trim($("#txtContent").val());
+            if (_content == "") {
+                toast("请填写拒绝原因！");
+                $("#btnOk").html("确定");
+                $("#btnOk").removeAttr("disabled");
+                return false;
+            }
+            if (reg.test(_content)) {
+                toast("请填写拒绝原因！");
+                $("#btnOk").html("确定");
+                $("#btnOk").removeAttr("disabled");
+                return false;
+            }
+
+            //提交url.
+            getDataAjax2({
+                url: '/Mobile/RefuseRefundOrderAfterSales',
+                type: 'post',
+                data: {
+                    commodityOrderId: getQueryString('orderId'),
+                    state: 0,
+                    message: "",
+                    userId: getUserId(),
+                    refuseReason: _content
+                },
+                callback: function (data) {
+                    $("#ajaxLoadBlind").remove();
+                    if (data.Result == true) {
+                        toast("操作成功！");
+                        window.location.href = "/Mobile/AfterSaleOrderList";
+                    } else {
+                        toast("不好意思，操作失败，请您重试！");
+                    }
+                },
+                beforeSend: function () {
+                    ajaxLoading('22', '');
+                },
+                error: function () {
+                    $("#ajaxLoadBlind").remove();
+                }
+            })
+            $("#btnOk").html("确定");
+            $("#btnOk").removeAttr("disabled");
+        }
+    </script>
+}
+<div class="main">
+    <ul class="groups">
+        <li>
+            <div class="reason-desc" id="RefundContent">
+                <textarea name="" placeholder="请填写退款/退货原因" id="txtContent"></textarea>
+                <div class="word-count">
+                    140字</div>
+            </div>
+        </li>
+        <li>
+            <div style="text-align: right;">
+                <span class="footer_4" id="btnCancel">取消</span>
+                <button class="footer_2" id="btnOk">
+                    提交</button>
+            </div>
+        </li>
+    </ul>
+</div>

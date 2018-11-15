@@ -1,0 +1,241 @@
+*{	margin: 0;
+	padding: 0;
+}
+html{
+	font-size:62.5%;/*10/16*100%*/
+	background-color: #eee;
+	color: #333;
+}  
+.container{
+	width: 100%;
+	max-width: 500px;
+    margin: 0 auto;
+}
+
+.top{
+	background: url("../img/drawable-xhdpi/fanli.png") no-repeat center center;
+	background-size: 100% 100%;
+    height: 0;
+    padding-bottom: 37.5%;/*图片长宽比*/
+	position: relative;
+	line-height: 22px;
+}
+.top_info{
+    margin: 0 5rem;
+    position: absolute;
+    top: 30%;
+    left: -6%;
+}
+
+.fonts{
+	font-size: 2rem;
+	font-weight: bolder;
+	color: #000000;
+}
+
+.fonts_info{
+	font-size: 1.5rem;
+	color: #999;
+}
+.list_bg,.middle{
+	background-color: #fff;
+}
+.middle{
+	padding-top: 30px;
+}
+.middle_info{
+    padding: 0 15px;
+	font-size: 1.5rem;
+    word-wrap: break-word;
+	word-break: break-all;
+}
+.middle_btn_containt{
+	text-align: center;
+    padding: 30px 0;
+}
+
+.btn{
+    text-decoration: none;
+    display: inline-block;
+    border: 1px solid #999;
+    border-radius: 10px;
+    padding: 0.6rem 2rem;
+    margin: 0 0.5rem;
+    font-size: 1.5rem;
+    color: #6b6a6a;
+}
+.active{
+	border: 1px solid #e4393c;
+	color: #e4393c;
+}
+.hr{
+	display: inline-block;
+	height: 1px;
+	border-top:1px solid #dbd6d6;
+	width: 25%; 
+}
+.hr_info{
+	text-align: center;
+	color: #999;
+	font-size: 1.6rem;
+	padding: 15px;
+}
+
+.hr_text{
+    display: inline-block;
+	margin: 0 30px;
+}
+.list_bg{
+	margin: 10px 15px;
+	padding: 10px;
+}
+.list_item{
+	border:1px solid #eee;
+    padding: 8px 0;
+}
+.list_item_left,.list_item_right{
+    display: inline-block;
+}
+.list_item_left{
+	padding: 0 10px;
+	width: 52%;
+	border-right: 1px dotted #d6d6d6;
+    vertical-align: top;
+}
+.list_item_right{
+	width: 37%;
+	text-align: center;
+	position: relative;
+	top: -2px;
+}
+.list_coupon,.list_date,.shop_coupon{
+	color: #999;
+}
+.list_top{
+    margin-bottom: 30px;
+}
+.list_name{
+	font-size: 1.5rem;
+}
+.list_coupon{
+	font-size: 1.3rem;
+}
+.list_date{
+	font-size: 1.1rem;
+}
+.shop_coupon{
+
+}
+.list_yuan,.list_yuan_num{
+	display: inline-block;
+}
+.list_yuan{
+	color: #e4393c;
+	font-size: 1.7rem;
+}
+.list_yuan_num{
+	font-size: 2.8rem;
+}
+
+.list_name_long{
+	display: inline-block;
+    width: 95%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.btn_coupon{
+	padding: 0.3rem 0.8rem;
+}
+
+.gift{
+    text-align: center;
+    width: 90%;
+    margin: 0 auto;
+    position: relative;
+    top: 82px;
+}
+.title1{
+    margin-top: 15px;
+    line-height: 22px;
+}
+.title1,.title2{
+	color: #999;
+	font-size: 1.5rem;
+}
+.goShop_btn{
+    margin: 30px 0;
+}
+.text_overflow{
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: block;
+}
+
+@media screen and (max-width:640px) {
+	.top_info {
+	    margin: 0 5rem;
+	    position: absolute;
+	    top: 30%;
+	    left: -8%;
+	}
+}
+
+@media screen and (max-width:414px){
+	.top_info{
+	    margin: 0 5rem;
+	    position: absolute;
+	    top: 28%;
+	    left: -5%;
+	}
+
+	.fonts{
+		font-size: 1.7rem;
+	}
+
+	.fonts_info{
+		font-size: 1.2rem;
+	}
+}
+
+@media screen and (max-width:375px){
+	.top_info{
+	    margin: 0 5rem;
+	    position: absolute;
+	    top: 28%;
+	    left: -4%;
+	}
+	.gift {
+	    width: 60%;
+	}
+	.gift img{
+		width: 35%;
+	}
+}
+
+@media screen and (max-width:320px){
+	.top_info{
+	    margin: 0 5rem;
+	    position: absolute;
+	    top: 28%;
+	    left: -8%;
+	}
+	.list_item_left {
+	    width: 52%;
+	}
+	.fonts{
+		font-size: 1.7rem;
+	}
+
+	.fonts_info{
+		font-size: 1.2rem;
+	}
+
+	.btn {
+	    font-size: 1.2rem;
+	}
+	.list_date {
+	    font-size: 1rem;
+	}
+}

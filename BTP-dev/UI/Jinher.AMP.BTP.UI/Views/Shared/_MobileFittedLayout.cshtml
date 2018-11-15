@@ -1,0 +1,119 @@
+﻿@using Jinher.AMP.BTP.Common
+@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+}
+@section TitleHtml
+{
+    @RenderSection("LTitleHtml", required: false)
+}
+@section CssStyles{
+    <link href="/Content/Mobile/zphStyle/mobileKit-min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="/Content/Mobile/zphStyle/skin.css" />
+    @RenderSection("CssStyles", required: false)
+    @if (Jinher.AMP.BTP.UI.Util.MobileCookies.IsHetaoLayout())
+    {
+        <style type="text/css">
+            .bar-tab .tab-item.active, .bar-tab .tab-item:active
+            {
+                color: #e4393c;
+            }
+            .bar-tab .tab-item img
+            {
+                width: 25px;
+                height: 25px;
+            }
+            .bar-tab .bottommenu {
+                font-size: 10px !important;
+            }
+        </style>
+    }
+    else
+    {
+        <style type="text/css">
+            .bar-tab .tab-item img
+            {
+                width: 20px;
+                height: 20px;
+            }
+        </style>
+    }
+}
+@RenderBody()
+<nav id="footDiv" class="bar bar-tab" style="display: none; z-index: 999">
+</nav>
+@section ClientScript
+{
+    <script type="text/javascript">
+        $(function () {
+            saveContextDTOByUrl();
+            //校验h5的参数
+            checkMobileParams();
+            setFootmenus();
+        });
+    </script>
+    <script type="text/javascript">
+        function getZphCategoryUrl() {
+            //兼容免费电商，防止出错
+        }
+
+        function getZphIndexUrl() {
+            //兼容免费电商，防止出错
+        }
+
+        //是否显示底部导航
+        //定制应用url都是配置的，h5、应用内都是一样的，但是在应用内是不需要底部导航的
+        //判断包的appid和esappid一样，则不显示底部导航，否则显示
+
+        function isShowFootmenu() {
+            if (isInJhApp() && getEsAppId() == getJhWebviewAppId()) {
+                return false;
+            }
+            return JsVilaDataNull(getQueryString("fromBottom"));
+        }
+
+        function footmenu() {
+            var menuId = getQueryString("fromBottom");
+            $("#footul li a").removeClass("active");
+            $("#footul li img").each(function () {
+                $(this).attr("src", $(this).attr("ctype"));
+            });
+            $("#" + menuId).addClass("active");
+            var img = $("#" + menuId).find("img");
+            img.attr("src", img.attr("dtype"));
+        }
+
+        function setFootmenus() {
+            //页面没有fromBottom参数，底部导航不显示
+            if (!isShowFootmenu())
+                return;
+            var menu = '<a class="tab-item bottommenu" href="{menuUrl}" id="{id}">' +
+                '<div><img sign="icon" src="{icon}" dtype="{skinIcon}" ctype="{icon}" ></img></div>' +
+                '<span class="tab-label">{menuName}</span>' +
+                '</a>';
+            var userId = getQueryString('userId');
+            if (userId == null || userId == undefined) {
+                userId = getUserId();
+            }
+            if (userId == null || userId == undefined) {
+                userId = "00000000-0000-0000-0000-000000000000";
+            }
+            $.ajax({
+                async: true,
+                type: "POST",
+                dataType: "json",
+                data: { "appId": getEsAppId(), "userId": userId },
+                url: "/Mobile/GetAppFittedBottomMenus",
+                success: function (ret) {
+                    if (ret && ret.length > 0) {
+                        for (var i = 0; i < ret.length; i++) { //Title
+                            $("#footDiv").append(menu.replace("{menuUrl}", ret[i].ModuleUrl).replace("{icon}", ret[i].Icon).replace("{menuName}", ret[i].Name).replace("{id}", ret[i].Id).replace("{skinIcon}", ret[i].SkinIcon).replace("{icon}", ret[i].Icon));
+                        }
+                        $("#footDiv").show();
+                        footmenu();
+                    }
+                }
+            });
+        }
+    </script>
+    @RenderSection("ClientScript", required: false)
+}

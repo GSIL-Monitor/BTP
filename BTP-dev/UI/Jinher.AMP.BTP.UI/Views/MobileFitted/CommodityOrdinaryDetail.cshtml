@@ -1,0 +1,641 @@
+﻿<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="x5-orientation" content="portrait">
+    <meta name="full-screen" content="yes">
+    <meta name="x5-fullscreen" content="true">
+    <meta name="browsermode" content="application">
+    <meta name="x5-page-mode" content="app">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="black" name="apple-mobile-web-app-status-bar-style">
+    <meta content="telephone=no" name="format-detection">
+    <title>详情页</title>
+    <link href="../../Scripts/h5New/libs/swiper/swiper.css" rel="stylesheet" type="text/css" />
+    <link href="../../Scripts/h5New/libs/mobileKit/mobileKit-min.css" rel="stylesheet" type="text/css" />
+    <link href="/dist/css/CommodityOrdinaryDetail.css" rel="stylesheet" />
+</head>
+<body>
+    <header id="header" class="header border-bottom">
+        <div class="header-content">
+            <a href="javascript:window.history.back();" class="icon left">
+                <img class="back" src="/Images/yj-angle-left.png">
+            </a>
+            <div class="title">
+                <a class="detail-nav selected" href="javascript: void(0);" data-type="item">商品</a>
+                <a class="detail-nav" href="javascript:void(0);" data-type="eval">评价</a>
+                <a class="detail-nav" href="javascript: void(0);" data-type="detail">详情</a>
+            </div>
+            <a href="#" class="shouye" onclick="OpenBusinessUrl('http://devpip.iuoooo.com/mypager/pages/personalHomePage.html?appId=06b49363-a027-4cd3-b039-73235a78cf70&amp;fromBottom=044e48da-6949-3c65-d02e-9fad5b8c589e','044e48da-6949-3c65-d02e-9fad5b8c589e');"><img src="/Images/yj-shouye.png"></a>
+            <a href="javascript:void(0)" class="share hide">
+                <img src="/Images/yj-share.png">
+                <span class="share-text">有礼</span>
+            </a>
+        </div>
+    </header>
+    <!--底部导航 start-->
+    <nav class="nav-wrap">
+        <div class="nav-left">
+            <a class="nav-item" href="javascript: void(0);">
+                <img class="nav-item-pic" src="/Images/yj-service.png">
+                <span class="nav-item-text">客服</span>
+            </a>
+            <a class="nav-item" href="javascript: void(0);">
+                <img class="nav-item-pic" src="/Images/yi-collection.png">
+                <img class="nav-item-pic select hide" src="/Images/yi-collection-select.png">
+                <span class="nav-item-text">收藏</span>
+            </a>
+            <a class="nav-item" href="javascript: void(0);">
+                <img class="nav-item-pic" src="/Images/yj-cart.png">
+                <span class="nav-item-text">购物车</span>
+                <span id="shoppingCount" class="cart-number hide"></span>
+            </a>
+        </div>
+        <div class="nav-right">
+            <a id="addShop" class="nav-btn yellow" href="javascrpt: void(0)">加入购物车</a>
+            <a id="FastBuy" class="nav-btn" href="javascrpt: void(0)">立即购买</a>
+            <a id="SoonBuy" class="nav-btn hide" href="javascrpt: void(0)">即将开抢</a>
+            <a id="LootAll" class="nav-btn gray hide" href="javascrpt: void(0)">已抢光</a>
+        </div>
+    </nav>
+    <!--底部导航 end-->
+    <!--下架/库存不足 底部提示-->
+    <div class="bottom-tips hide">该商品已下架/该地区库存不足</div>
+
+    <div class="page">
+        <div id="item" class="content">
+            <!--轮播图start-->
+            <section class="swiper-container" id="banner">
+                <div id="swiper-wrapper" class="swiper-wrapper">
+                    
+                </div>
+                <div class="swiper-pagination"></div>
+            </section>
+            <!--轮播图end-->
+            <!--易捷抵现 start-->
+            <section class="activity-wrap">
+                <div class="activity-header hide">
+                    <span class="activity-header-left"></span>
+                    <span class="activity-header-right"></span>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-content-left">
+                        <div class="left-top">
+                            <span class="old-price-text">市场价</span>
+                            <span class="yj-price-text"><span>易捷币抵现</span></span>
+                        </div>
+                        <div class="left-bottom">
+                            <span id="OriginalPrice" class="old-price"></span>
+                            <span class="line1"></span>
+                            <span id="YJBPrice" class="yj-price"></span>
+                            <span class="line2"></span>
+                        </div>
+                    </div>
+                    <div class="activity-content-right">
+                        <div class="price-wrap">
+                            <span class="price-text">到手价</span>
+                            <div class="price">￥<span id="total-price">25</span><span id="HandPrice" class="f22">.01</span></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!--易捷抵现 end-->
+            <!--秒杀 start-->
+            <section class="seckill-info-wrap hide">
+                <div class="seckill-info-left">
+                    <div class="price-wrap">
+                        <span id="SeckillPrice" class="price">@*<i>￥</i>99.<em>00</em>*@</span>
+                        <div class="state">
+                            <span class="state-pic"><img src="/Images/miaosha-icon.png"></span>
+                            <span class="state-text">秒杀</span>
+                        </div>
+                    </div>
+                    <div class="seckill-info-left-bottom">
+                        <del id="OldSeckillPrice" class="old-price">￥1200</del>
+                        <span class="freight"></span>
+                    </div>
+                </div>
+                <div class="seckill-info-right">
+                    <div class="text">距离结束还剩</div>
+                    <div class="countdown"><span id="hour" class="countdown-time">03</span>:<span id="minute" class="countdown-time">03</span>:<span id="second" class="countdown-time">03</span></div>
+                </div>
+            </section>
+            <!--秒杀 end-->
+            <!--商品信息start-->
+            <section class="goods">
+                <div class="goods-title">
+                    <span class="tag"></span>
+                    <span id="title" class="title">宝得适儿童安全座椅 宇宙黑宝得适儿童安全座椅 宇宙黑</span>
+                </div>
+                <div class="goods-price">
+                    <div class="price">
+                        <span class="goods-new-price">@*￥<em class="num">999.9</em>*@</span>
+                        <del class="goods-old-price">@*￥1200*@</del>
+                    </div>
+                    <div class="freight"></div>
+                </div>
+            </section>
+            <!--商品信息end-->
+            <!--促销 start-->
+            <section class="promotion hide" onclick="DETAIL.showModal('#promotion-modal')">
+                <ul id="Viewpromotion" class="promotion-list">
+                    @*
+                    <li class="item">
+                        <span class="item-tag">油卡券</span>
+                        <span class="item-num">14.67元油卡兑换券:</span>
+                        <span class="item-text">购买并支付本商品后 即赠</span>
+                    </li>
+                    <li class="item">
+                        <span class="item-tag">易捷币</span>
+                        <span class="item-num">折现8.92元:</span>
+                        <span class="item-text">使用易捷币即可折现</span>
+                    </li>
+                    <li class="item">
+                        <span class="item-tag">赠品</span>
+                        <span class="item-text" style="margin-right: .32rem;">宝得适儿童安全座椅宇宙黑 赠品标题1 赠品标题2 赠品标题3</span>
+                    </li>*@
+                </ul>
+                <img class="promotion-angle-right" src="/Images/yj-angle-right.png">
+            </section>
+            <!--促销 end-->
+            <!--服务start-->
+            <section class="service" onclick="DETAIL.showModal('#server-modal')">
+                <span class="title">服务</span>
+                <div class="service-list-wrap">
+                    @*<span class="service-list">易捷抢购</span>
+                    <span class="service-list">7天无理由退换货</span>
+                    <span class="service-list">分享好礼</span>*@
+                </div>
+                <img class="service-angle" src="/Images/yj-angle-right.png">
+            </section>
+            <!--服务end-->
+            <section class="select border-bottom">
+                <!--分销 start-->
+                <section class="parameters">
+                    <span class="title">我要分销</span>
+                    <div class="parameters-lists"></div>
+                    <img class="parameters-angle" src="/Images/yj-angle-right.png">
+                </section>
+                <!--分销 end-->
+                <!--领券start-->
+                <section id="Voucher" class="coupon" onclick="DETAIL.showModal('#coupon-modal')">
+                    <span class="title">领券</span>
+                    <div class="coupon-lists">
+                        @*<span class="coupon-list-item">满100元减15</span>
+                        <span class="coupon-list-item">满200元减40</span>
+                        <span class="coupon-list-item">满500元减100</span>
+                        <span class="coupon-list-item">减5元</span>*@
+                    </div>
+                    <img class="coupon-angle" src="/Images/yj-angle-right.png">
+                </section>
+                <!--领券end-->
+                <!--已选 start-->
+                <section class="sku" onclick="DETAIL.showModal('#size-modal')">
+                    <span class="title">已选</span>
+                    <div class="sku-lists">
+                        <span class="sku-list-item">宇宙黑，XL，1件</span>
+                    </div>
+                    <img class="sku-angle" src="/Images/yj-angle-right.png">
+                </section>
+                <!--已选 end-->
+            </section>
+
+            <!--优惠套餐start-->
+            <section class="package-wrap">
+                <a href="javascript:void(0)" class="package-header border-bottom">
+                    <span class="title">优惠套餐</span>
+                    <span class="text">查看更多</span>
+                    <img class="img" src="/Images/yj-angle-right.png">
+                </a>
+                <div class="package-list">
+                    <ul class="lists">
+                        <li class="item">
+                            <img src="http://placehold.it/190x190">
+                        </li>
+                        <li class="item">
+                            <img src="http://placehold.it/190x190">
+                        </li>
+                        <li class="item">
+                            <span class="item-more">...</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="package-bottom">
+                    <div>套餐价: <span class="price">￥<em class="num">66.6</em></span></div>
+                    <div>可省20元</div>
+                </div>
+            </section>
+            <!--优惠套餐end-->
+            <!--无商品评价 start-->
+            @*<section class="detail-evaluate border-bottom hide">
+                <div class="evaluate-header">
+                    <div class="title">暂无评价</div>
+                    <div class="goods-evaluate">
+                        <img src="images/yj-angle-right-red.png">
+                    </div>
+                </div>
+            </section>*@
+            <!--无商品评价 end-->
+            <!--商品评价 start-->
+            <section id="eval" class="detail-evaluate border-bottom">
+                <div id="evalhide" class="evaluate-header">
+                    <div class="title">暂无评价</div>
+                    <div class="goods-evaluate">
+                        <img src="/Images/yj-angle-right-red.png">
+                    </div>
+                </div>
+                <div id="evalshow" class="evaluate-header">
+                    <div class="title">商品评价<span class="count">(68)</span></div>
+                    <div class="goods-evaluate">
+                        <span>98.6%好评</span>
+                        <img src="/Images/yj-angle-right-red.png">
+                    </div>
+                </div>
+                <div id="evaluate" class="evaluate-lists swiper-container">
+                    @*<div class="swiper-wrapper">
+                        <div class="swiper-slide">
+                            <div class="evaluate-text">
+                                <div class="evaluate-text-hd">
+                                    <img class="head" src="http://placehold.it/40x40">
+                                    <span class="name">张三</span>
+                                </div>
+                                <div class="evaluate-text-bd">颜色很漂亮，宝贝很满意。特别喜欢有视频的教程，比自己看方便多了</div>
+                            </div>
+                            <img class="evaluate-pic" src="http://placehold.it/218x218">
+                        </div>
+                        <div class="swiper-slide">
+                            <div class="evaluate-text">
+                                <div class="evaluate-text-hd">
+                                    <img class="head" src="http://placehold.it/40x40">
+                                    <span class="name">张*三</span>
+                                </div>
+                                <div class="evaluate-text-bd">宝贝很满意</div>
+                            </div>
+                            <img class="evaluate-pic" src="http://placehold.it/218x218">
+                        </div>
+                        <div class="swiper-slide">
+                            <div class="evaluate-text">
+                                <div class="evaluate-text-hd">
+                                    <img class="head" src="http://placehold.it/40x40">
+                                    <span class="name">L*</span>
+                                </div>
+                                <div class="evaluate-text-bd">颜色很漂亮，宝贝很满意。特别喜欢有视频的教程，比自己看方便多了</div>
+                            </div>
+                            <img class="evaluate-pic" src="http://placehold.it/218x218">
+                        </div>
+                        <div class="swiper-slide">
+                            <div class="evaluate-text">
+                                <div class="evaluate-text-hd">
+                                    <img class="head" src="http://placehold.it/40x40">
+                                    <span class="name">L*</span>
+                                </div>
+                                <div class="evaluate-text-bd">颜色很漂亮，宝贝很满意。特别喜欢有视频的教程，比自己看方便多了</div>
+                            </div>
+                            <img class="evaluate-pic" src="http://placehold.it/218x218">
+                        </div>
+                        <a href="../易捷北京-查看评价/examineEvaluate.html" class="more-evaluate">更多评价</a>
+                    </div>*@
+                </div>
+            </section>
+            <!--商品评价 end-->
+            <!--店铺 start-->
+            <section id="shop" class="shop-wrap">
+                <img id="store-logo" class="pic" src="http://placehold.it/90x90" onerror="http://placehold.it/90x90">
+                <div class="shop-center">
+                    <div class="shop-name">宝得适</div>
+                    <div class="shop-text hide">本店专业儿童座椅特卖本店专业儿童座椅特卖本店专业儿童座椅特卖</div>
+                </div>
+                <img class="shop-btn" src="/Images/yj-angle-right.png">
+            </section>
+            <!--店铺 ens-->
+            <div id="store-info" class="shop-opera border-bottom">
+                <a id="customer" class="opera-btn" href="javascript:void(0)">联系店家</a>
+                @*<a class="opera-btn" href="javascript:void(0)">直播</a>
+                <a class="opera-btn" href="javascript:void(0)">720云景</a>*@
+            </div>
+
+            <!--更多推荐 start-->
+            <section class="recommend-wrap">
+                <div class="recommend-title"><span class="title">更多推荐</span></div>
+                <div class="recommend-lists">
+                    <div id="recommend" class="swiper-container">
+                        <div id="MoreR" class="swiper-wrapper">
+                            <ul class="swiper-slide">
+                                <li class="recommend-item">
+                                    <img class="item-pic" src="http://placehold.it/210x210">
+                                    <p class="item-title">标题标题标题标题标题标题标题标题标题</p>
+                                    <div class="item-price">￥<span class="price">13.5</span></div>
+                                </li>
+                                <li class="recommend-item">
+                                    <img class="item-pic" src="http://placehold.it/210x210">
+                                    <p class="item-title">标题标题标题标题</p>
+                                    <div class="item-price">￥<span class="price">13.5</span></div>
+                                </li>
+                                <li class="recommend-item">
+                                    <img class="item-pic" src="http://placehold.it/210x210">
+                                    <p class="item-title">标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题</p>
+                                    <div class="item-price">￥<span class="price">13.5</span></div>
+                                </li>
+                                <li class="recommend-item">
+                                    <img class="item-pic" src="http://placehold.it/210x210">
+                                    <p class="item-title">标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题</p>
+                                    <div class="item-price">￥<span class="price">13.5</span></div>
+                                </li>
+                                <li class="recommend-item">
+                                    <img class="item-pic" src="http://placehold.it/210x210">
+                                    <p class="item-title">标题标题标题标题标题标题标题标题标题标题标题标题标题标题</p>
+                                    <div class="item-price">￥<span class="price">13.5</span></div>
+                                </li>
+                                <li class="recommend-item">
+                                    <img class="item-pic" src="http://placehold.it/210x210">
+                                    <p class="item-title">标题标题标题标</p>
+                                    <div class="item-price">￥<span class="price">13.5</span></div>
+                                </li>
+                            </ul>
+                            <ul class="swiper-slide">
+                                <li class="recommend-item">
+                                    <img class="item-pic" src="http://placehold.it/210x210">
+                                    <p class="item-title">标题标题标题标题标题标题标题标题标题</p>
+                                    <div class="item-price">￥<span class="price">13.5</span></div>
+                                </li>
+                                <li class="recommend-item">
+                                    <img class="item-pic" src="http://placehold.it/210x210">
+                                    <p class="item-title">标题标题标题标题</p>
+                                    <div class="item-price">￥<span class="price">13.5</span></div>
+                                </li>
+                                <li class="recommend-item">
+                                    <img class="item-pic" src="http://placehold.it/210x210">
+                                    <p class="item-title">标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题</p>
+                                    <div class="item-price">￥<span class="price">13.5</span></div>
+                                </li>
+                                <li class="recommend-item">
+                                    <img class="item-pic" src="http://placehold.it/210x210">
+                                    <p class="item-title">标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题</p>
+                                    <div class="item-price">￥<span class="price">13.5</span></div>
+                                </li>
+                                <li class="recommend-item">
+                                    <img class="item-pic" src="http://placehold.it/210x210">
+                                    <p class="item-title">标题标题标题标题标题标题标题标题标题标题标题标题标题标题</p>
+                                    <div class="item-price">￥<span class="price">13.5</span></div>
+                                </li>
+                                <li class="recommend-item">
+                                    <img class="item-pic" src="http://placehold.it/210x210">
+                                    <p class="item-title">标题标题标题标</p>
+                                    <div class="item-price">￥<span class="price">13.5</span></div>
+                                </li>
+                            </ul>
+                            <ul class="swiper-slide">
+                                <li class="recommend-item">
+                                    <img class="item-pic" src="http://placehold.it/210x210">
+                                    <p class="item-title">标题标题标题标</p>
+                                    <div class="item-price">￥<span class="price">13.5</span></div>
+                                </li>
+                            </ul>
+                        </div>
+                        <!-- Add Pagination -->
+                        <div id="swiper-pagination" class="swiper-pagination"></div>
+                    </div>
+                </div>
+            </section>
+            <!--更多推荐 end-->
+            <!--商品详情-->
+            <section id="detail" class="detail-wrap">
+                <h2 id="DetailsH" class="detail-header">商品详情</h2>
+                <div id="DetailsD" class="detail-list">
+                    @*<p><span class="detail-context">内容内容内容内容内容内容内容内容内容内容</span></p>
+                    <p><img src="http://placehold.it/300x300"></p>*@
+                </div>
+
+                <h2 id="AftersaleH" class="detail-header">商品售后</h2>
+                <div id="AftersaleD" class="detail-list">
+                    <p>
+                        @*<span class="context">内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容</span>
+                        <span class="context">内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容</span>*@
+                    </p>
+                </div>
+            </section>
+        </div>
+
+        <!--促销使用说明弹窗-->
+        <div id="promotion-modal" class="modal-wrap hide">
+            <div class="modal-wrap-content modal-promotion">
+                <div class="modal-content-header">
+                    <span class="modal-header-title">使用说明</span>
+                    <img class="modal-close" src="/Images/guanbi.png" onclick="DETAIL.hideModal('#promotion-modal')">
+                </div>
+                <div class="modal-bd">
+                    <div class="promotion-info">限制说明：以下内容不能同时享受，只能选择其一</div>
+                    <ul id="Popuppromotion" class="promotion-list">
+                        <!-- @*<li class="item">
+                             <span class="item-tag">油卡券</span>
+                             <span class="item-text">购买并支付本商品后，即赠14.67元油卡兑换券</span>
+                         </li>
+                         <li class="item">
+                             <span class="item-tag">易捷币</span>
+                             <span class="item-text">可使用易捷币抵现8.92元</span>
+                         </li>
+                         <li class="item">
+                             <span class="item-tag" style="margin-right: .44rem;">赠品</span>
+                             <span class="item-text">购买xxx、xxx 参与活动的SKU属性超值赠品 （赠完即止）</span>
+                         </li>*@-->
+                    </ul>
+                </div>
+                <div class="modal-bt">
+                    <div class="modal-btn" onclick="DETAIL.hideModal('#promotion-modal')">确定</div>
+                </div>
+            </div>
+        </div>
+        <!--店铺服务弹窗-->
+        <div id="server-modal" class="modal-wrap hide">
+            <div class="modal-wrap-content modal-server">
+                <div class="modal-content-header">
+                    <span class="modal-header-title">店铺服务</span>
+                    <img class="modal-close" src="/Images/guanbi.png" onclick="DETAIL.hideModal('#server-modal')">
+                </div>
+                <div class="modal-bd">
+                    @*<ul class="server-list">
+                        <li class="item">
+                            <img class="item-pic" src="/images/yj-service-icon.png">
+                            <div class="item-context">
+                                <div class="title">易捷北京</div>
+                                <div class="text"></div>
+                            </div>
+                        </li>
+                        <li class="item">
+                            <img class="item-pic" src="images/yj-service-icon.png">
+                            <div class="item-context">
+                                <div class="title">7天无理由退换货</div>
+                                <div class="text">满足7天无理由退换货申请的前提下，包邮商品需要买家承担退货邮费</div>
+                            </div>
+                        </li>
+                        <li class="item">
+                            <img class="item-pic" src="images/yj-service-icon.png">
+                            <div class="item-context">
+                                <div class="title">分享好礼</div>
+                                <div class="text">好友通过你的分享的分享链接进行购买此商品，你可以获得惊喜好礼</div>
+                            </div>
+                            <img class="item-angle-right" src="images/yj-angle-right.png">
+                        </li>
+                    </ul>*@
+                </div>
+                <div class="modal-bt">
+                    <div class="modal-btn" onclick="DETAIL.hideModal('#server-modal')">确定</div>
+                </div>
+            </div>
+        </div>
+        <!--优惠券弹窗-->
+        <div id="coupon-modal" class="modal-wrap hide">
+            <div class="modal-wrap-content modal-coupon">
+                <div class="modal-content-header">
+                    <span class="modal-header-title">店铺优惠券</span>
+                    <img class="modal-close" src="/Images/guanbi.png" onclick="DETAIL.hideModal('#coupon-modal')">
+                </div>
+                <div class="modal-bd">
+                    <ul class="coupon-list">
+                        @*
+                        <li class="item">
+                            <div class="item-left">
+                                <p class="price">￥<span class="num">5</span></p>
+                                <div class="text">满500元使用（不含邮费）</div>
+                                <div class="date">有效期至：2018-10-22</div>
+                            </div>
+                            <div class="item-right">
+                                <a class="item-btn active" href="javascript: void(0)">领取</a>
+                            </div>
+                        </li>
+                        <li class="item">
+                            <div class="item-left">
+                                <p class="price">￥<span class="num">5</span></p>
+                                <div class="text">满500元使用（不含邮费）</div>
+                                <div class="date">有效期至：2018-10-22</div>
+                            </div>
+                            <div class="item-right">
+                                <a class="item-btn" href="javascript: void(0)">已领取</a>
+                            </div>
+                        </li>*@
+                    </ul>
+                </div>
+                <div class="modal-bt">
+                    <div class="modal-btn" onclick="DETAIL.hideModal('#coupon-modal')">确定</div>
+                </div>
+            </div>
+        </div>
+        <!--属性弹窗-->
+        <div id="size-modal" class="modal-wrap hide">
+            <input type="hidden" id="iFBuy" value="0" />
+            <div class="modal-wrap-content modal-size">
+                <div class="modal-content-header">
+                    <img id="DityPic" class="pic" src="">
+                    <div class="container">
+                        <p id="AttributePrice" class="price">￥@*<span>13</span>*@</p>
+                        <div id="StockText" class="text">库存充足</div>
+                    </div>
+                    <img class="modal-close" src="/Images/guanbi.png" onclick="DETAIL.hideModal('#size-modal')">
+                </div>
+                <div class="modal-bd">
+                    @*<section class="sku-list">
+                        <h2 class="sku-title">颜色</h2>
+                        <div class="sku-content size">
+                            <span class="size-item selected">宇宙黑</span>
+                            <span class="size-item">中国红</span>
+                        </div>
+                    </section>
+                    <section class="sku-list">
+                        <h2 class="sku-title">尺寸</h2>
+                        <div class="sku-content size">
+                            <span class="size-item">L号</span>
+                            <span class="size-item selected">XL号</span>
+                            <span class="size-item disabled">XXL号</span>
+                        </div>
+                    </section>*@
+                    <section class="sku-list">
+                        <h2 class="sku-title">数量</h2>
+                        <div class="sku-content">
+                            <div class="num-wrap">
+                                <span id="modal-wrap-decrease" class="mins disable"></span>
+                                <input id="modal-wrap-count" type="number" class="number" value="1">
+                                <span id="modal-wrap-increase" class="plus"></span>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <div class="modal-bt">
+                    <div id="SkuaddShop" class="modal-btn yellow">加入购物车</div>
+                    <div id="SkuBuy" class="modal-btn">立即购买</div>
+                    <div id="SkuDetermine" class="modal-btn hide">确定</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="mask" class="mask">
+        <div class="ui-loading-block">
+            <div class="ui-loading-cnt">
+                <i class="fa fa-spinner fa-spin fa-2x"></i>
+                <p>正在加载...</p>
+            </div>
+        </div>
+    </div>
+    <script src="/Scripts/CookieContextDTO.js" type="text/javascript"></script>
+    <script src="/Content/Mobile/zepto.min.js"></script>
+    <script src="/Scripts/h5New/libs/mobileKit/mobileKit.min.js"></script>
+    <script src="/Scripts/h5New/libs/swiper/swiper.min.js"></script>
+    <script src="/Content/Mobile/Common.js" type="text/javascript"></script>
+    <script src="/Scripts/h5New/common/login.js"></script>
+    <script src="/Content/Mobile/allEvent.js"></script>
+    <script src="/dist/js/CommodityOrdinaryDetail.js"></script>
+    <script type="text/javascript">
+        var zphUrl = "@ViewBag.ZPHUrl";
+        var SNSUrl = "@Jinher.AMP.BTP.Common.CustomConfig.SNSUrl";
+        var BTPAppresUrl = "@ViewBag.BTPAppresUrl";
+        var webImUrl = "@Html.Raw(Jinher.AMP.BTP.Common.CustomConfig.WebImUrl)";
+        function rMealItems(index) {
+            window.location.href = urlAppendCommonParams("/Mobile/MealItemsDetail?commodityId=" + getQueryString('commodityId') + "&index=" + index + "");
+        }
+        $(function () {
+            if (getQueryString('share') != null) {
+                SetCookie('shareId', getQueryString('share'));
+            }
+            log("yjs003", "yjp003", "yjo002", getQueryString('commodityId'), "商品详情");
+        });
+
+        function Zhiliquanyicang() {
+            $("#Zhiliquan").hide();
+        }
+
+        function GoCommodityDetail(comdtyId, appId) {
+            @*var url = "@Jinher.AMP.WAP.UI.CommonFun.GetCustomerConfigKeyValue("Jinher.AMP.BAC", "Configuration", "BTPDomainURL")Mobile/CommodityDetail"
+                + "?commodityId=" + comdtyId + "&source=share&producttype=webcjzy&linkmall=1&type=tuwen&srctype=34&thiszpho2o=1&isshowsharebenefitbtn=1&appId=" + appId;
+            window.top.location.href = url;*@
+
+            window.top.location.href = urlAppendCommonParams("/Mobile/CommodityDetail"
+                + "?commodityId=" + comdtyId + "&source=share&producttype=webcjzy&linkmall=1&type=tuwen&srctype=34&thiszpho2o=1&isshowsharebenefitbtn=1&appId=" + appId);
+        }
+
+        //打开业务链接地址
+        function OpenBusinessUrl(businessUrl, MenuId) {
+            if (!(businessUrl == "#" || businessUrl == "" || businessUrl == null || businessUrl == undefined)) {
+                var menuObj = $.grep(menuList, function (n, i) {
+                    return n.Id == MenuId;
+                });
+                if (businessUrl.indexOf("source=share") < 0 && businessUrl.indexOf(".iuoooo.com") > 0) {
+                    if (businessUrl.indexOf("=") < 0) {
+                        businessUrl = businessUrl + "?source=share"
+                    }
+                    else {
+                        businessUrl = businessUrl + "&source=share"
+                    }
+                }
+                if ($("#rt").val() == "1") {
+                    this.location.href = businessUrl;
+                }
+                else {
+                    window.open(businessUrl);
+                }
+            }
+        };
+    </script>
+</body>
+</html>

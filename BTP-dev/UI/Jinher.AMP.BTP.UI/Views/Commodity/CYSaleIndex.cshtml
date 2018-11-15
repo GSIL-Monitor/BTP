@@ -1,0 +1,1674 @@
+﻿@{
+    Layout = "~/Views/Shared/_CYLayout.cshtml";
+    ViewBag.Title = "商品列表";
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.CommodityVM> comcalist = ViewBag.CommodityList;
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.CategorySDTO> categorylist = ViewBag.CategoryList;
+
+    bool isCashForScore = ViewBag.IsCashForScore;
+    bool isShowAddCart = ViewBag.IsShowAddCart;
+    string isShowAddCartChked = isShowAddCart ? "checked='checked'" : "";
+    bool isCustomES = ViewBag.isCustomES;
+}
+<head>
+    <style type="text/css">
+        .bgstock
+        {
+            background-color: #fff2f2 !important;
+        }
+    </style>
+    <script src="/Scripts/CommLib.js" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.jhtablebox.css" />
+    <script type="text/javascript" src="/Scripts/TableBox/jquery.ui.jhtablebox.js"></script>
+    <script type="text/javascript" src="/Scripts/jquery.watermark.js"></script>
+    <script type="text/javascript" src="/Scripts/Validator/JValidator.js"></script>
+    <script type="text/javascript">
+        var UnLimit = parseInt("@(int.MaxValue)");
+        var updateItemKey = "";
+        //积分未设置时跳转地址
+        var setScoreUrl = "/Payment/AddPayment" + window.location.search + "&&callBack=" + encodeURIComponent(window.location.href);
+
+        function toUpdateCategory(itemKey) {
+            updateItemKey = itemKey;
+            switchDIV();
+        }
+
+        function SetCookie(name, value) {
+            var Days = 30;
+            var exp = new Date();
+            exp.setTime(exp.getTime() + Days * 24 * 60 * 60 * 1000);
+            document.cookie = name + "=" + escape(value) + ";expires=" + exp.toGMTString();
+            var strsec = 2; //getsec(time);
+
+            exp = new Date();
+            exp.setTime(exp.getTime() + strsec * 1);
+            document.cookie = name + "=" + escape(value) + ";expires=" + exp.toGMTString();
+        }
+
+        function GetCookie(name) {
+
+            var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+
+            if (arr = document.cookie.match(reg))
+                return (arr[2]);
+            else
+                return null;
+        }
+
+        setInterval(ajaxSaveInfo, 1000);
+
+
+        function ajaxSaveInfo() {
+
+            var commodityname = $('#commodityname').val();
+
+            var commoditycategory = $('#commoditycategory').val();
+            var ssalesvolume = $('ssalesvolume').val();
+            var esalesvolume = $('esalesvolume').val();
+            var scommodityprice = $('scommodityprice').val();
+            var ecommodityprice = $('ecommodityprice').val();
+            SetCookie("commodityname", commodityname);
+            SetCookie("commoditycategory", commoditycategory);
+            SetCookie("ssalesvolume", ssalesvolume);
+            SetCookie("esalesvolume", esalesvolume);
+            SetCookie("scommodityprice", scommodityprice);
+            SetCookie("ecommodityprice", ecommodityprice);
+        }
+
+        function toResetSearch() {
+            $("#commodityname").val("");
+            $("#commoditycategory").val("");
+            $("#ssalesvolume").val("");
+            $("#esalesvolume").val("");
+            $("#scommodityprice").val("");
+            $("#ecommodityprice").val("");
+
+            var date = new Date();
+            date.setTime(date.getTime() - 10000);
+            var name = 'Commodity.SearchEntityJson.' + '@ViewBag.AppId';
+            document.cookie = name + '=a;expires=' + date.toGMTString() + ';path=/';
+            searchcategoryNameList = ""; //清除类目名称
+
+            //重置所有选择框。
+            $("#SearchcategoryDiv input[type='checkbox']").prop("checked", false);
+        }
+
+        function toNoOnSale(commodityIds) {
+            $.ajax({
+                url: '/Commodity/OffShelves',
+                type: 'post',
+                data: { CommodityIds: commodityIds },
+                error: function () {
+                    alert("请求错误，请稍后刷新进行操作.");
+                },
+                success: function (msg) {
+                    alert("下架成功！");
+                    window.location.href = "/Commodity/CYSaleIndex?appId=" + getQueryString('appId');
+                }
+            });
+        }
+
+        function toDelete(commodityIds) {
+            var result = confirm("确认删除");
+            if (result == true) {
+                $.ajax({
+                    url: '/Commodity/DeleteCommoditys',
+                    type: 'post',
+                    data: { CommodityIds: commodityIds },
+                    error: function () {
+                        window.location.href = "/Commodity/CYSaleIndex?appId=" + getQueryString('appId');
+                    },
+                    success: function (msg) {
+                        window.location.href = "/Commodity/CYSaleIndex?appId=" + getQueryString('appId');
+                    }
+                });
+            }
+            else {
+                return;
+            }
+        }
+
+        var _searchEntity = {};         //搜索条件实体
+        var _rowCount = 0;              //符合条件的数据的总行数。
+
+        $(document).ready(function () {
+            window.parent.document.referrer_url = window.location.href;
+            //快速修改事件.
+            clickSetElementValue();
+
+            document.ondragstart = function () { return false; }
+
+            function showContent(event, data) {
+                //                $("#dataTable").replaceWith(data);
+                $("#content_makes").html(data);
+                newSetIframeHeight();
+                clickSetElementValue();
+                window.addEvent('domready', function () {
+                    var dragSort = new Sortables('sortables', {
+                        handle: ".sortHandel",
+                        onStart: function (element, clone) {
+                            // element.setStyle('background-color', 'red');
+                        },
+
+                        onSort: function (element, clone) {
+                            element.setStyle('background-color', '#99FF33');
+                        },
+
+                        onComplete: function (element) {
+                            element.setStyle('background-color', '');
+                            var cardIdStr = dragSort.serialize();
+                        }
+                    });
+
+                });
+            }
+
+            $("input[name=itemCheckBox]").bind("click", function () {
+                if ($("input[name=itemCheckBox]").length == $("input[name=itemCheckBox]:checked").length) {
+                    $("#selecetall").attr("checked", 'true')
+                }
+                else {
+                    $("#selecetall").removeAttr("checked");
+                }
+
+            });
+
+            $("#pager").jhpager({
+                requestData: function () { return _searchEntity; },
+                dataType: 'html',
+                requestType: 'post',
+                dataSource: '/Commodity/CYPartialIndex',
+                async: true,
+                totalCount: _rowCount,
+                rowNum: 20,
+                requestSuccess: showContent,
+                beforeRequest: function () {
+                    $("#content_makes").empty();
+                    $(window.parent.document).scrollTop(0);
+                    ajaxLoading(1, '#content_makes');
+                },
+                requestFailure: function () {
+                }
+            });
+
+            //$("#pager").jhpager("requestData","")
+
+            $("#addcommodity").bind("click", function () {
+                window.location.href = "/Commodity/CYAddCommodity?state=0&appId=" + getQueryString('appId');
+            });
+            $("#search").bind("click", function () {
+                CommLib.getUrlParamByName("");
+
+                var commodityName = $("#commodityname").val();
+                if ($.trim($("#commoditycategory").val()) == "") {
+                    searchcateogryIdList = "";
+                }
+                var commodityCategory = searchcateogryIdList; //searchcateogryIdList;
+                var sSalesvolume = $("#ssalesvolume").val();
+                var eSalesvolume = $("#esalesvolume").val();
+                var sPrice = $("#scommodityprice").val();
+                var ePrice = $("#ecommodityprice").val();
+                var res = Valid();
+                if (res == "0") {
+
+                    _searchEntity = { commodityName: commodityName, commodityCategory: commodityCategory, sSalesvolume: sSalesvolume, eSalesvolume: eSalesvolume, sPrice: sPrice, ePrice: ePrice };
+                    _searchEntity.categoryNameList = searchcategoryNameList;
+
+                    //将查询条件保存到cookie中。
+                    var json = CommLib.ObjToString(_searchEntity);
+                    //json = Encoder.encode(json);
+                    $.cookie('Commodity.SearchEntityJson.@ViewBag.AppId', json, { path: '/', expires: 7 });
+
+                    $.ajax({
+                        url: '/Commodity/CYPartialIndex',
+                        type: 'post',
+                        data: _searchEntity,
+                        error: function () {
+                            window.location.href = "/Commodity/CYSaleIndex?appId=" + getQueryString('appId');
+                        },
+                        beforeSend: beforeSends,
+                        complete: function () {
+                            //		                    ajaxLoading(1, '#content_makes');
+                        },
+                        success: function (msg) {
+                            sendSuccess(msg);
+                            var rowCount = $("#rowcounts").val();
+                            if (rowCount == 0 || rowCount == "0") {
+                                alert("当前没有查到相匹配的数据！");
+                            }
+                            $("#pager").jhpager("refresh", 1, rowCount);
+                            clickSetElementValue();
+
+                            window.addEvent('domready', function () {
+                                var dragSort = new Sortables('sortables', {
+                                    handle: ".sortHandel",
+                                    onStart: function (element, clone) {
+                                        // element.setStyle('background-color', 'red');
+                                    },
+
+                                    onSort: function (element, clone) {
+                                        element.setStyle('background-color', '#99FF33');
+                                    },
+
+                                    onComplete: function (element) {
+                                        element.setStyle('background-color', '');
+                                        var cardIdStr = dragSort.serialize();
+
+                                    }
+
+                                });
+
+                            });
+                        }
+                    });
+                } else {
+                    alert(res);
+                }
+            });
+
+            function Valid() {
+                var RegNum = /^\d*$/;
+                var RegPrice = /^\d+(?:\.\d{0,2})?$/;
+                var sSalesvolume = $("#ssalesvolume").val();
+                var eSalesvolume = $("#esalesvolume").val();
+                var sPrice = $("#scommodityprice").val();
+                var ePrice = $("#ecommodityprice").val();
+                if (sSalesvolume != "" && !RegNum.test(sSalesvolume)) {
+                    return "总销量请输入正确数值";
+                }
+                if (eSalesvolume != "" && !RegNum.test(eSalesvolume)) {
+                    return "总销量请输入正确数值";
+                }
+                if (esalesvolume != "" && ssalesvolume != "") {
+                    if (parseInt(eSalesvolume) < parseInt(sSalesvolume)) {
+                        return "总销量区间填写有误！";
+                    }
+                }
+                if (sPrice != "" && !RegPrice.test(sPrice)) {
+                    return "价格填写有误，保留2位小数！";
+                }
+                if (ePrice != "" && !RegPrice.test(ePrice)) {
+                    return "价格填写有误，保留2位小数！";
+                }
+                if (sPrice != "" && ePrice != "") {
+                    if (parseFloat(ePrice) < parseFloat(sPrice)) {
+                        return "价格区间填写有误！";
+                    }
+                }
+
+                return "0";
+            }
+
+            $("#setSaleAreas").click(function () {
+                if ($("input[name='itemCheckBox']:checked").length == 0) {
+                    alert("请至少选择一个");
+                    return false;
+                }
+
+                $("#divSetSaleAreasDialog").jhtablebox({
+                    height: 530,
+                    width: 632,
+                    resizable: false,
+                    title: "选择区域",
+                    position: [300, 125],
+                    modal: true,
+                    closedByHide: true
+                });
+                $("#divSetSaleAreasDialog").parent().css({ "position": "fixed", "top": 125, "left": 300 });
+            });
+
+            $("#delete").click(function () {
+                if ($("input[name='itemCheckBox']:checked").length == 0) {
+                    alert("请至少选择一个");
+                    return false;
+                }
+                var str = document.getElementsByName("itemCheckBox");
+                var objarray = str.length;
+                var chestr = "";
+                for (i = 0; i < objarray; i++) {
+                    if (str[i].checked == true) {
+                        chestr += str[i].value + ",";
+                    }
+                }
+                toDelete(chestr);
+            });
+
+            //下架提示
+            $("#onsales").click(function () {
+                if ($("input[name='itemCheckBox']:checked").length == 0) {
+                    alert("请至少选择一个");
+                    return false;
+                }
+                else {
+                    if (confirm('您确认下架吗？')) {
+                        var str = document.getElementsByName("itemCheckBox");
+                        var objarray = str.length;
+                        var chestr = "";
+                        for (i = 0; i < objarray; i++) {
+                            if (str[i].checked == true) {
+                                chestr += str[i].value + ",";
+                            }
+                        }
+                        toNoOnSale(chestr);
+                    }
+                    else {
+                        return false;
+                    }
+                }
+            });
+
+            //保存排序
+            $("#savesort").live("click", function () {
+                var sz = "";
+                $(".wysort").each(function () {
+                    var comid = $(this).attr("data-items-id");
+                    sz = sz + ',' + comid;
+                });
+                if (sz.length > 0) {
+                    sz = sz.substring(1, sz.length);
+                    $.ajax({
+                        url: '/Commodity/SaveCommoditySort',
+                        type: 'post',
+                        data: { comIds: sz },
+                        success: function () {
+
+                            location.reload();
+                        },
+                        error: function () {
+                            alert("请稍候再试");
+                        }
+                    });
+                }
+
+            });
+            //置顶
+            $("#zdid").live("click", function () {
+                var id = $(this).attr("comId");
+                var page = $.trim($(".ui-jhpager-pager").html());
+                if (page.split("/")[0] == 1) {
+                    if ($(this).parent().parent().parent().index() == 0) {
+                        alert("此商品已经置顶！")
+                        return false;
+                    }
+                };
+                $.ajax({
+                    url: '/Commodity/SetCommodityFirst',
+                    type: 'post',
+                    data: { comId: id },
+                    success: function () {
+
+                        location.reload();
+                    },
+                    error: function () {
+                        alert("请稍候再试");
+                    }
+                });
+            });
+
+
+            $('#tcategoryUl').on('click', 'input', function () {
+                var self = $(this);
+                var input = self.parents('ul').prevAll().find('input');
+                if (input.length) {
+                    if (self.prop('checked')) {
+                        input.prop('checked', true);
+                        if (!isChecked(input)) {
+                            self.prop('checked', false);
+                        }
+                    } else {
+                        //				input.prop('checked', false);
+                        self.parent().nextAll('ul').find('input').prop('checked', false);
+                    }
+                } else {
+                    self.parent().nextAll('ul').find('input').prop('checked', false);
+                }
+
+                function isChecked(obj) {
+                    if ($('#tcategoryUl').find('input:checked').length > 5) {
+                        alert('不能超过5个');
+                        obj.prop('checked', false);
+                        return false;
+                    } else {
+                    }
+                    return true;
+                }
+
+                toCheckSelected();
+
+            });
+
+
+            $("#SearchtcategoryUl input[type='checkbox']").change(function () {
+                toSearchCheckSelected(this);
+            });
+
+            $("#commoditycategory").focus(function () {
+                if ("@ViewBag.IsShowCategoryTree".toLowerCase() == "false") {
+                    return;
+                }
+                var top = $('#commoditycategory').offset().top;
+                var left = $('#commoditycategory').offset().left;
+                var height = $('#commoditycategory').height();
+                $("#SearchcategoryDiv").css({ "top": top + height, "left": left }).show();
+            });
+
+            //默认滚动到页面的顶部。
+            $(window.top).scrollTop(0);
+            reconverSearch();
+
+        });
+
+        //将cookie中保存的查询条件恢复到页面上。
+        function reconverSearch() {
+            //读取查询条件，为搜索区域的框赋值。
+            var sj = $.cookie('Commodity.SearchEntityJson.@ViewBag.AppId');
+            if ($.trim(sj).length == 0) {
+                return;
+            }
+            sj = decodeURIComponent(sj);
+            _searchEntity = $.parseJSON(sj);
+
+            $("#commodityname").val(_searchEntity.commodityName);
+            $("#commoditycategory").val(_searchEntity.categoryNameList);
+            $("#ssalesvolume").val(_searchEntity.sSalesvolume);
+            $("#esalesvolume").val(_searchEntity.eSalesvolume);
+            $("#scommodityprice").val(_searchEntity.sPrice);
+            $("#ecommodityprice").val(_searchEntity.ePrice);
+
+            if ($.trim(_searchEntity.commodityCategory).length > 0) {
+                //选中类目框。
+                $("#SearchcategoryDiv input[type='checkbox']").each(function (i, el) {
+                    if (_searchEntity.commodityCategory.isExistInSplit($(this).val(), ",")) {
+                        $(this).attr("checked", true);
+                    }
+                });
+            }
+        }
+
+        function CloseSearchCate(obj) {
+            $("#SearchcategoryDiv").hide();
+        }
+
+        var oldPrice = ""
+
+        function toUpatePrice(obj, commId) {
+            oldPrice = $(obj).parent().parent().find("span:eq(0)").text();
+            oldPrice = oldPrice.replace(/[￥]/g, "").replace(/[$]/g, "");
+
+            if ($.trim($(obj).text()) == "修改") {
+                $(obj).parent().parent().find("span:eq(0)").hide();
+                $(obj).parent().parent().find("input").show();
+                $(obj).text("确定");
+
+            }
+            else {
+                var oldoprice = $(obj)
+                var price = $(obj).parent().parent().find("input").val();
+
+                //判断价格是否合法，保留2为小数
+                var Reg = /^\d+(?:\.\d{0,2})?$/;
+                if (Reg.test(price)) {
+                    $.ajax({
+                        url: '/Commodity/UpdatePrice',
+                        type: 'post',
+                        data: { Commodityid: commId, Price: price, OldPrice: oldPrice },
+                        success: function () {
+                            $(obj).parent().parent().find("input").hide();
+                            $(obj).parent().parent().find("span:eq(0)").text($(obj).parent().parent().find("input").val()).show();
+                            $(obj).text("修改");
+                        },
+                        error: function () {
+                            alert("请稍候再试");
+                        }
+                    });
+                } else {
+                    alert("请输入合法的价格，最多保留2位小数！");
+                }
+            }
+        }
+
+        function toUpdateName(obj, commId) {
+            if ($.trim($(obj).text()) == "修改") {
+                $(obj).parent().parent().find("p:eq(0)").hide();
+                $(obj).parent().parent().find("p:eq(1)").show();
+                $(obj).text("确定");
+            }
+            else {
+                var name = $.trim($(obj).parent().parent().find("input").val());
+                if (name == "") {
+                    alert("商品名称不能为空！");
+                } else if (name != "" && name.length <= 30) {
+                    $.ajax({
+                        url: '/Commodity/UpdateName',
+                        type: 'post',
+                        data: { CommodityId: commId, Commodityname: name },
+                        success: function () {
+                            $(obj).parent().parent().find("p:eq(1)").hide();
+                            $(obj).parent().parent().find("p:eq(0)").text($(obj).parent().parent().find("input").val()).show();
+                            $(obj).text("修改");
+                        },
+                        error: function () {
+                            alert("请稍候再试");
+                        }
+                    });
+                } else {
+                    alert("超出30个字，请输入30字以内！");
+                }
+            }
+        }
+
+
+        function toUpdateStock(obj, commid) {
+
+            if ($.trim($(obj).text()) == "修改") {
+                $(obj).parent().parent().find("span:eq(0)").hide();
+                $(obj).parent().parent().find("input").show();
+                $(obj).text("确定");
+            }
+            else {
+                var stock = $(obj).parent().parent().find("input").val();
+
+                if (stock == "不限") {
+                    stock = "@(int.MaxValue)";
+                }
+
+                //大于0的正整数
+                var Reg = /^(0|[1-9]\d*)$/;
+                if (Reg.test(stock)) {
+                    $.ajax({
+                        url: '/Commodity/UpdateStock',
+                        type: 'post',
+                        data: { CommodityId: commid, Commoditystock: stock },
+                        success: function () {
+                            $(obj).parent().parent().find("input").hide();
+                            $(obj).parent().parent().find("span:eq(0)").text($(obj).parent().parent().find("input").val()).show();
+                            $(obj).text("修改");
+
+                        },
+                        error: function () {
+                            alert("请稍候再试");
+                        }
+                    });
+                } else {
+                    alert("请输入大于0的正整数！");
+                }
+            }
+        }
+
+        function closeCategoryDiv() {
+            $("#categoryDiv").hide();
+        }
+        var cateogryIdList = "";
+        var categoryNameList = "";
+        var commodityid = "";
+        var selectObject;
+        function toUpdateCategory(e, obj, commid) {
+            var categoryListString = $(obj).parent().parent().find("input[name='categoryIdHidden']").val();
+            $("#categoryDiv").css("top", +e.clientY + $("html").scrollTop() + "px").css("left", e.clientX + "px").show();
+            commodityid = commid;
+            $("#tcategoryUl input:checkbox").each(function () {
+                if (categoryListString.search($(this).val()) >= 0) {
+                    $(this).attr("checked", true);
+                }
+                else {
+                    $(this).attr("checked", false);
+                }
+            });
+            selectObject = obj;
+        }
+
+        function toCheckSelected(obj) {
+            cateogryIdList = "";
+            categoryNameList = "";
+            var i = 0;
+            //            $("#tcategoryUl input:checkbox:checked").each(function () {
+            //                i = i + 1;
+            //            });
+            //            if (i > 5) {
+            //                $(obj).attr("checked", false);
+            //                alert("最多只能选择5个分类.");
+            //                return;
+            //            }
+            $("#tcategoryUl input:checkbox:checked").each(function () {
+                cateogryIdList = cateogryIdList + "," + $(this).val();
+                categoryNameList = categoryNameList + "," + $(this).next().text();
+            });
+            if (cateogryIdList.length > 0) {
+                cateogryIdList = cateogryIdList.substring(1, cateogryIdList.length);
+                categoryNameList = categoryNameList.substring(1, categoryNameList.length);
+            }
+
+        }
+        var searchcateogryIdList = "";
+        var searchcategoryNameList = "";
+        function toSearchCheckSelected(obj) {
+            searchcateogryIdList = "";
+            searchcategoryNameList = "";
+            $("#SearchtcategoryUl input:checkbox:checked").each(function () {
+                searchcateogryIdList = searchcateogryIdList + "," + $(this).val();
+                searchcategoryNameList = searchcategoryNameList + "," + $(this).next().text();
+            });
+            if (searchcateogryIdList.length > 0) {
+                searchcateogryIdList = searchcateogryIdList.substring(1, searchcateogryIdList.length);
+                searchcategoryNameList = searchcategoryNameList.substring(1, searchcategoryNameList.length);
+            }
+            $("#commoditycategory").val(searchcategoryNameList);
+        }
+
+        function UpdateCategory() {
+            //toCheckSelected();
+            var selectLi = $(selectObject).parent().parent();
+            var selectUL = $(selectLi).parent().find("ul:eq(0)");
+
+            $.ajax({
+                url: '/Commodity/UpdateCommodityCategory',
+                type: 'post',
+                data: { CommodityId: commodityid, CateogryIdList: cateogryIdList },
+                success: function (data) {
+                    if (data.Result) {
+                        $(selectUL).html("");
+                        $("#categoryDiv").hide();
+                        $("#tcategoryUl input:checkbox:checked").each(function () {
+                            $(selectUL).html($(selectUL).html() + "<li>" + $(this).next().text() + "</li>");
+                        });
+                        $(selectLi).find("input[name='categoryIdHidden']").val(cateogryIdList);
+                        $(selectObject).text("修改");
+                    }
+                    alert(data.Messages);
+                    // $(selectUL).append(selectLi);
+                },
+                error: function () {
+                    alert("请稍后再试");
+                }
+            })
+
+        }      
+    </script>
+    <style type="text/css">
+        .item
+        {
+            line-height: 28px;
+            margin-bottom: 10px;
+            min-height: 28px;
+            padding-left: 10px;
+        }
+        
+        .lable
+        {
+            display: block;
+            float: left;
+            width: 125px;
+            line-height: 28px;
+            padding-right: 5px;
+            margin-left: -130px;
+            _display: inline;
+            text-align: right;
+        }
+        input.inp-txt
+        {
+            height: 18px;
+            line-height: 18px;
+            border: 1px solid #B6C0CD;
+            padding: 4px 5px;
+            vertical-align: middle;
+            border-radius: 3px;
+            box-shadow: inset 1px 1px 2px #DBDBDB;
+        }
+        .btn120
+        {
+            display: inline-block;
+            width: 120px;
+            height: 28px;
+            line-height: 28px;
+            background: url(../Content/default/images/btn120.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+        }
+        .btn90
+        {
+            display: inline-block;
+            width: 90px;
+            height: 28px;
+            line-height: 28px;
+            background: url(/Content/default/images/btn90.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+            position: absolute;
+            right: 25px;
+            margin-top: 60px;
+            
+        }
+         .btn90S
+        {
+            display: inline-block;
+            width: 90px;
+            height: 28px;
+            line-height: 28px;
+            background: url(../Content/default/images/btn90.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+            position: absolute;
+            right: 130px;
+            margin-top: 60px;
+        }
+        .floa2 h1,
+		.bbtn h1{
+			font-size: 14px;
+			color: #8c94a9;
+			padding-bottom: 5px;
+			border-bottom: 1px solid #DDDDDD;	
+		}
+		.close{
+			margin-top: 10px;
+			float: right;
+			display: inline-block;
+			*zoom:1;
+			*display: inline;
+			width: 7px;
+			height: 7px;
+			color:transparent;
+			background: url(/Images/shut.png) center no-repeat;
+		}
+		
+		
+		.floa2 ul {
+			padding: 0px 0 10px 10px;
+		}
+		
+		.floa2 ul li{
+			margin-top: 5px;
+			color:#8c94a9;
+		}
+		.addfloa2{
+			display: none; 
+			z-index: 3;
+			padding: 5px 10px;
+			height:auto;
+			border:1px solid #B8BFCF;
+			
+			-webkit-border-radius: 3px;
+			-moz-border-radius: 3px;
+			border-radius: 3px;
+		}
+		
+		/*erci*/
+		.btn60
+        {
+            display: inline-block;
+            width: 60px;
+            height: 28px;
+            line-height: 28px;
+            background: url(../Content/default/images/btn60.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+        }
+        
+        /*三级分销 */
+         #setCommodityDistributionDialog
+         {
+             color:#8C94A9;
+             font-size:14px;
+             line-height:20px;
+         }
+        #setCommodityDistributionDialog input
+        {
+             color:#8C94A9;
+            border:1px solid #ccc;
+        }
+    </style>
+
+    <script type="text/javascript">
+        function Fixed100(callvalue) {
+            if (!callvalue) {
+                return ""
+            }
+            var tmp = (parseFloat(callvalue) * 100).toFixed(2);
+            var result = tmp.replace(/(((?!0*$)\d)*)0*$/g, "$1");
+            result = result.replace(/\.$/, "");
+            return result;
+        }
+        function decimalInput(item) {
+            var reg = /^0$|^(0|[1-9][0-9]?)(\.\d{1,2}){0,1}$|^100$/;
+            return reg.test(item);
+        }
+    </script>
+    
+   <script type="text/javascript">
+       //加载完成时，若没有设置积分，则弹出提示并跳到积分设置页
+       var setScoreUrl = "/Payment/AddPayment" + window.location.search + "&&callBack=" + encodeURIComponent(window.location.href);
+       var isCashForScore = '@isCashForScore'.toLowerCase();
+       function closeScoreSetting() {
+           $("#ScoreSettingDiv").CloseDiv();
+       }
+       $(function () {
+           if (isCashForScore == 'false') {
+               $("#ScoreSetting").attr("href", setScoreUrl);
+           } else {
+               // $("#ScoreSettingDiv").OpenDiv();
+               //                if ($("#ScoreSetting").attr("display") != "none") {
+               //                    closeScoreSetting();  
+               //                }
+           }
+       });
+    </script>
+
+</head>
+<script src="../../Scripts/mootools-core-1.4-full.js" type="text/javascript"></script>
+<script src="../../Scripts/mootools-more-1.4-full.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+    jQuery(function () {
+        jQuery("span[id='pstock']").each(function () {
+            var count = jQuery(this).html()
+            if (count <= 1) {
+                //                    alert($(this).parent().parent().html());
+                jQuery(this).parent().parent().addClass("bgstock");
+            }
+        });
+
+        $("input[name=itemCheckBox]").bind("click", function () {
+            if ($("input[name=itemCheckBox]").length == $("input[name=itemCheckBox]:checked").length) {
+                $("#selecetall").attr("checked", 'true')
+            }
+            else {
+                $("#selecetall").removeAttr("checked");
+            }
+
+        });
+
+        //手机端商品列表显示加入购物车图标
+        $("#chkShowAddCart").on("click", function () {
+            var chked = $(this).attr("checked");
+            var isShowAddCart = chked == "checked" ? true : false;
+
+            $.ajax({
+                url: '/Commodity/UpdateAppExt',
+                type: 'post',
+                data: { appId: '@ViewBag.AppId', isShowAddCart: isShowAddCart },
+                success: function (data) {
+
+                },
+                error: function () {
+                    alert("服务器异常，请稍后再试!");
+                }
+            })
+        });
+    })
+
+    window.addEvent('domready', function () {
+        var dragSort = new Sortables('sortables', {
+            handle: ".sortHandel",
+            onStart: function (element, clone) {
+                // element.setStyle('background-color', 'red');
+            },
+
+            onSort: function (element, clone) {
+                element.setStyle('background-color', '#99FF33');
+            },
+
+            onComplete: function (element) {
+                element.setStyle('background-color', '');
+                var cardIdStr = dragSort.serialize();
+            }
+        });
+    });
+
+    function ConfirmAppDistrictOption(arg) {
+        if (arg.length > 0) {
+            var saleAreas = "";
+            var saleAreasText = "";
+            for (var i = 0; i < arg.length - 1; i++) {
+                saleAreas += arg[i].AreaCode + ",";
+            }
+            saleAreas += arg[arg.length - 1].AreaCode;
+            //alert(saleAreas);
+            $("#SaleAreas").val(saleAreas);
+        }
+        else {
+            $("#SaleAreas").val("");
+        }
+        toSetSaleAreas();
+    }
+    function CancelAppDistrictOption() {
+        closeDivSetSaleAreasDialog();
+    }
+    function GetAppDistrictOption() {
+        var arg = $("#SaleAreas").val();
+        var code = arg.split(',');
+        var a = new Array();
+        for (var i = 0; i < code.length; i++) {
+            a[i] = {};
+            a[i].AreaCode = code[i];
+        }
+        return a;
+    }
+
+    function closeDivSetSaleAreasDialog() {
+        $("#divSetSaleAreasDialog").jhtablebox("hide");
+    }
+
+    function toSetSaleAreas() {
+        if ($("input[name='itemCheckBox']:checked").length == 0) {
+            alert("请至少选择一个");
+            return false;
+        }
+        var str = document.getElementsByName("itemCheckBox");
+        var objarray = str.length;
+        //商品ID
+        var chestr = "";
+        for (i = 0; i < objarray; i++) {
+            if (str[i].checked == true) {
+                chestr += str[i].value + ",";
+            }
+        }
+        //商品销售区域 
+        var saleAreas = $("#SaleAreas").val();
+
+        $.ajax({
+            url: '/Commodity/UpdateCommodityListSaleAreas',
+            type: 'post',
+            data: { ids: chestr, saleAreas: saleAreas },
+            success: function (data) {
+                closeDivSetSaleAreasDialog();
+                if (!data.Success) {
+                    alert(data.Messages);
+                }
+                for (i = 0; i < objarray; i++) {
+                    str[i].checked = false;
+                }
+                alert("设置成功！");
+            },
+            error: function () {
+                alert("请稍后再试");
+            }
+        })
+    }
+</script>
+ <!-- 三级分销 每个商品-->
+<script type="text/javascript">
+
+    $(function () {
+        //积分跳转地址
+        $("#ScoreSetting").attr("href", setScoreUrl);
+
+        //验证输入
+        $("#L1Percent,#L2Percent,#L3Percent").live("blur", function () {
+            var result = $(this).val();
+            if (result == "") {
+
+            }
+            else if (result == 0) {
+                //可以为0
+            }
+            else if (!decimalInput(result)) {
+                alert("输入格式不正确！应当输入0到100之间，包括0和100的数值，最多可2位小数", "25px");
+                $(this).val("");
+                $(this).focus();
+                return;
+            }
+        });
+
+        $(".SetAsDistribution a").live("click", function () {
+            var dealItem = $(this);
+            var id = $(this).attr("comId");
+            var idList = []
+            idList.push(id);
+            var subData = {};
+            subData.commodityIdList = idList;
+            subData.isDistribute = true;
+            var subDataJson = CommLib.ObjToString(subData);
+            $.ajax({
+                url: '/Commodity/SetCommodityDistribution',
+                type: 'post',
+                async: true,
+                dataType: "json",
+                contentType: "application/json",
+                data: subDataJson,
+                success: function (data) {
+                    if (data.ResultCode != 0) {
+                        alert(data.Message);
+                        return;
+                    }
+                    alert("设置成功！");
+                    //数据设置
+                    var a = dealItem.parents(".SetDistributeList").children(".UpdateDistribution").children("a");
+                    a.attr("L1Percent", ""); a.attr("L2Percent", ""); a.attr("L3Percent", "");
+                    //显隐设置
+                    dealItem.parents(".SetDistributeList").children(".SetAsDistribution").hide();
+                    dealItem.parents(".SetDistributeList").children(".AddDistribution").show();
+                    dealItem.parents(".SetDistributeList").children(".UpdateDistribution").hide();
+                    dealItem.parents(".SetDistributeList").children(".CancelDistribution").show();
+                },
+                error: function () {
+                    alert("请稍后再试");
+                }
+            })
+        });
+        $(".AddDistribution a").live("click", function () {
+            //积分校验
+            if ('@isCashForScore'.toLowerCase() == "false") {
+                $("#ScoreSettingDiv").OpenDiv();
+                return false;
+            }
+
+            clearDistibute();
+            var id = $(this).attr("comId");
+            $("#CommodityDistributionID").val(id);
+            $("#setCommodityDistributionDialog").jhtablebox({
+                height: 280,
+                width: 500,
+                resizable: false,
+                title: "设置佣金",
+                modal: true,
+                position: [300, 125],
+                buttons: {},
+                close: function () {
+                    //$("#contentFrame").attr("src", "");
+                }
+            });
+            $("#setCommodityDistributionDialog").parent().css({ "position": "fixed", "top": 125, "left": 300 });
+
+        });
+        $(".UpdateDistribution a").live("click", function () {
+            clearDistibute();
+            var id = $(this).attr("comId");
+            var L1Percent = Fixed100($(this).attr("L1Percent"));
+            var L2Percent = Fixed100($(this).attr("L2Percent"));
+            var L3Percent = Fixed100($(this).attr("L3Percent"));
+
+            $("#CommodityDistributionID").val(id);
+            $("#L1Percent").val(L1Percent);
+            $("#L2Percent").val(L2Percent);
+            $("#L3Percent").val(L3Percent);
+
+            $("#setCommodityDistributionDialog").jhtablebox({
+                height: 280,
+                width: 500,
+                resizable: false,
+                title: "修改佣金",
+                modal: true,
+                position: [300, 125],
+                buttons: {},
+                close: function () {
+                    //$("#contentFrame").attr("src", "");
+                }
+            });
+            $("#setCommodityDistributionDialog").parent().css({ "position": "fixed", "top": 125, "left": 300 });
+        });
+        $(".CancelDistribution a").live("click", function () {
+            var dealItem = $(this);
+            var id = $(this).attr("comId");
+            var idList = []
+            idList.push(id);
+            var subData = {};
+            subData.commodityIdList = idList;
+            subData.isDistribute = false;
+            var subDataJson = CommLib.ObjToString(subData);
+            $.ajax({
+                url: '/Commodity/SetCommodityDistribution',
+                type: 'post',
+                async: true,
+                dataType: "json",
+                contentType: "application/json",
+                data: subDataJson,
+                success: function (data) {
+                    if (data.ResultCode != 0) {
+                        alert(data.Message);
+                        return;
+                    }
+                    alert("操作成功！");
+                    //location.reload();
+
+                    //数据设置
+                    var a = dealItem.parents(".SetDistributeList").children(".UpdateDistribution").children("a");
+                    a.attr("L1Percent", ""); a.attr("L2Percent", ""); a.attr("L3Percent", "");
+                    //显隐设置
+                    dealItem.parents(".SetDistributeList").children(".SetAsDistribution").show();
+                    dealItem.parents(".SetDistributeList").children(".SetAsDistribution").show();
+                    dealItem.parents(".SetDistributeList").children(".AddDistribution").hide();
+                    dealItem.parents(".SetDistributeList").children(".UpdateDistribution").hide();
+                    dealItem.parents(".SetDistributeList").children(".CancelDistribution").hide();
+                },
+                error: function () {
+                    alert("请稍后再试");
+                }
+            })
+        });
+    });
+  
+</script>
+
+ <!-- 三级分销 多个商品-->
+<script type="text/javascript">
+    $(function () {
+        $("#setDistributeList").click(function () {
+            if ($("input[name='itemCheckBox']:checked").length == 0) {
+                alert("请至少选择一个");
+                return false;
+            }
+            var str = document.getElementsByName("itemCheckBox");
+            var objarray = str.length;
+            var idList = []
+            for (i = 0; i < objarray; i++) {
+                if (str[i].checked == true) {
+                    idList.push(str[i].value);
+                }
+            }
+            var subData = {};
+            subData.commodityIdList = idList;
+            subData.isDistribute = true;
+            var subDataJson = CommLib.ObjToString(subData);
+            $.ajax({
+                url: '/Commodity/SetCommodityDistribution',
+                type: 'post',
+                async: true,
+                dataType: "json",
+                contentType: "application/json",
+                data: subDataJson,
+                success: function (data) {
+                    if (data.ResultCode != 0) {
+                        alert(data.Message);
+                        return;
+                    }
+                    alert("操作成功！");
+                    //location.reload();
+                    for (var i = 0; i < idList.length; i++) {
+                        if (idList[i] != "") {
+                            var tr = $("#dataTable tbody").children("tr[data-items-id='" + idList[i] + "']");
+                            //数据设置
+                            var first = tr.find(".SetDistributeList").children(".SetAsDistribution");
+                            if (first.css("display") == "block") {
+                                //显隐设置
+                                tr.find(".SetDistributeList").children(".SetAsDistribution").hide();
+                                tr.find(".SetDistributeList").children(".AddDistribution").show();
+                                tr.find(".SetDistributeList").children(".UpdateDistribution").hide();
+                                tr.find(".SetDistributeList").children(".CancelDistribution").show();
+                            }
+                        }
+                    }
+                    $("input[name='itemCheckBox']").removeAttr("checked");
+                    $("#selecetall").removeAttr("checked");
+                },
+                error: function () {
+                    alert("请稍后再试");
+                }
+            })
+        });
+        $("#setDistributesAccountList").click(function () {
+
+            //积分校验
+            if ('@isCashForScore'.toLowerCase() == "false") {
+                $("#ScoreSettingDiv").OpenDiv();
+                return false;
+            }
+
+            if ($("input[name='itemCheckBox']:checked").length == 0) {
+                alert("请至少选择一个");
+                return false;
+            }
+            var str = document.getElementsByName("itemCheckBox");
+            var objarray = str.length;
+            var chestr = "";
+            for (i = 0; i < objarray; i++) {
+                if (str[i].checked == true) {
+                    chestr += str[i].value + ",";
+                }
+            }
+            $("#CommodityDistributionID").val(chestr);
+
+            $("#setCommodityDistributionDialog").jhtablebox({
+                height: 280,
+                width: 500,
+                resizable: false,
+                title: "设置佣金",
+                modal: true,
+                position: [300, 125],
+                buttons: {},
+                close: function () {
+                    //$("#contentFrame").attr("src", "");
+                }
+            });
+            $("#setCommodityDistributionDialog").parent().css({ "position": "fixed", "top": 125, "left": 300 });
+        });
+        $("#cancelDistributeList").click(function () {
+            if ($("input[name='itemCheckBox']:checked").length == 0) {
+                alert("请至少选择一个");
+                return false;
+            }
+            var str = document.getElementsByName("itemCheckBox");
+            var objarray = str.length;
+            var idList = []
+            for (i = 0; i < objarray; i++) {
+                if (str[i].checked == true) {
+                    idList.push(str[i].value);
+                }
+            }
+            var subData = {};
+            subData.commodityIdList = idList;
+            subData.isDistribute = false;
+            var subDataJson = CommLib.ObjToString(subData);
+            $.ajax({
+                url: '/Commodity/SetCommodityDistribution',
+                type: 'post',
+                async: true,
+                dataType: "json",
+                contentType: "application/json",
+                data: subDataJson,
+                success: function (data) {
+                    if (data.ResultCode != 0) {
+                        alert(data.Message);
+                        return;
+                    }
+                    alert("操作成功！");
+                    for (var i = 0; i < idList.length; i++) {
+                        if (idList[i] != "") {
+
+                            var tr = $("#dataTable tbody").children("tr[data-items-id='" + idList[i] + "']");
+
+                            //数据设置
+                            var a = tr.find(".SetDistributeList").children(".UpdateDistribution").find("a");
+                            a.attr("L1Percent", "");
+                            a.attr("L2Percent", "");
+                            a.attr("L3Percent", "");
+                            //显隐设置
+                            tr.find(".SetDistributeList").children(".SetAsDistribution").show();
+                            tr.find(".SetDistributeList").children(".AddDistribution").hide();
+                            tr.find(".SetDistributeList").children(".UpdateDistribution").hide();
+                            tr.find(".SetDistributeList").children(".CancelDistribution").hide();
+                        }
+                    }
+                    $("input[name='itemCheckBox']").removeAttr("checked");
+                    $("#selecetall").removeAttr("checked");
+                },
+                error: function () {
+                    alert("请稍后再试");
+                }
+            })
+        });
+    });
+</script>
+<script type="text/javascript">
+
+    function clearDistibute() {
+        $("#CommodityDistributionID").val("");
+        $("#L1Percent").val("");
+        $("#L2Percent").val("");
+        $("#L3Percent").val("");
+    }
+    function CancelSetCommodityDistribution(obj) {
+        $("#setCommodityDistributionDialog").jhtablebox("close");
+    }
+    function AddCommodityDistribution(obj) {
+        var data = [];
+        var id = $("#CommodityDistributionID").val();
+        var ids = id.split(",");
+        if (ids.length < 1) {
+            return;
+        }
+
+        if (!decimalInput($("#L1Percent").val())) {
+            alert("输入格式不正确！应当输入0到100之间，不包括0的数值，最多可2位小数", "25px");
+            $("#L1Percent").val("");
+            $("#L1Percent").focus();
+            return;
+        }
+        if (!decimalInput($("#L2Percent").val())) {
+            alert("输入格式不正确！应当输入0到100之间，不包括0的数值，最多可2位小数", "25px");
+            $("#L2Percent").val("");
+            $("#L2Percent").focus();
+            return;
+        }
+        if (!decimalInput($("#L3Percent").val())) {
+            alert("输入格式不正确！应当输入0到100之间，不包括0的数值，最多可2位小数", "25px");
+            $("#L3Percent").val("");
+            $("#L3Percent").focus();
+            return;
+        }
+
+        var L1Percent = parseFloat($("#L1Percent").val());
+        var L2Percent = parseFloat($("#L2Percent").val());
+        var L3Percent = parseFloat($("#L3Percent").val());
+        if ((L1Percent + L2Percent + L3Percent).toFixed(2) > 100) {
+            alert("佣金之和大于100%，请重新设置");
+            return;
+        }
+
+        for (var i = 0; i < ids.length; i++) {
+            if (ids[i] != "") {
+                var model = {}
+                model.Id = ids[i];
+                model.SubTime = null;
+                model.SubId = null;
+                model.ModifiedOn = null;
+                model.L1Percent = "" + L1Percent / 100;
+                model.L2Percent = "" + L2Percent / 100;
+                model.L3Percent = "" + L3Percent / 100;
+                data.push(model);
+            }
+        }
+        var subDataJson = CommLib.ObjToString(data);
+
+        $.ajax({
+            url: '/Commodity/SetDistributionAccount',
+            type: 'post',
+            data: subDataJson,
+            async: true,
+            dataType: "json",
+            contentType: "application/json",
+            success: function (data) {
+                if (data.ResultCode != 0) {
+                    alert(data.Message);
+                    return;
+                }
+                alert("操作成功！");
+                clearDistibute();
+                //location.reload();
+
+                for (var i = 0; i < ids.length; i++) {
+                    if (ids[i] != "") {
+                        var tr = $("#dataTable tbody").children("tr[data-items-id='" + ids[i] + "']");
+                        //数据设置
+                        var first = tr.find(".SetDistributeList").children(".SetAsDistribution");
+                        if (first.css("display") == "none") {
+                            //数据设置
+                            var a = tr.find(".SetDistributeList").children(".UpdateDistribution").find("a");
+                            a.attr("L1Percent", "" + (L1Percent / 100).toFixed(4));
+                            a.attr("L2Percent", "" + (L2Percent / 100).toFixed(4));
+                            a.attr("L3Percent", "" + (L3Percent / 100).toFixed(4));
+                            //显隐设置
+                            tr.find(".SetDistributeList").children(".SetAsDistribution").hide();
+                            tr.find(".SetDistributeList").children(".AddDistribution").hide();
+                            tr.find(".SetDistributeList").children(".UpdateDistribution").show();
+                            tr.find(".SetDistributeList").children(".CancelDistribution").show();
+                        }
+                    }
+                }
+                $("input[name='itemCheckBox']").removeAttr("checked");
+                $("#selecetall").removeAttr("checked");
+            },
+            error: function () {
+                alert("请稍后再试");
+            }
+        });
+        $("#setCommodityDistributionDialog").jhtablebox("close");
+    }
+</script> 
+<script type="text/javascript">
+    try {
+        document.domain = "iuoooo.com";
+    }
+    catch (err) {
+    }
+</script>
+<div class="box" style="padding: 10px 0 10px 0px;">
+    <div class="content">
+        <div style="margin-top: 10px; height: 45px;">
+            <span>商品名称：</span>
+            <input type="text" id="commodityname" class="inp-txt" style="width: 70px;" />
+            <span style="margin-left: 10px;">商品类目：</span>
+            <input type="text" id="commoditycategory" class="inp-txt" style="width: 70px;" readonly="readonly" />
+            <span style="margin-left: 10px;">总销量：</span>
+            <input type="text" id="ssalesvolume" class="inp-txt" style="width: 30px;" />
+            <strong style="font-weight: normal;">-</strong>
+            <input type="text" id="esalesvolume" class="inp-txt" style="width: 30px;" />
+            <span style="margin-left: 10px;">现价：</span>
+            <input type="text" id="scommodityprice" class="inp-txt" style="width: 30px;" />
+            <strong style="font-weight: normal;">-</strong>
+            <input type="text" id="ecommodityprice" class="inp-txt" style="width: 30px;" />
+            <a class="btn60" id="search" href="javascript:;" style="/*margin-left: 10px; */">查询</a>
+            <!--a href="javascript:;" class="reset btn60" onclick="toResetSearch()" id="reset" style="margin-left: 5px;">
+                重置</a-->
+        </div>
+        <div style="background: #F2F2F2; margin-bottom: 0; font-size: 14px; 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     line-height: 35px; text-align: right;">
+             @if (!isCustomES)
+                {
+            <span style="float: left; margin-left: 13px;">
+                <input id="chkShowAddCart" type="checkbox" @isShowAddCartChked />
+               
+                <label for="chkShowAddCart">
+                    手机端商品列表显示加入购物车图标</label>
+               
+                
+            </span> }<span style="clear: both;"></span><span style="margin-right: 24px; color: red;">
+                                                         直接拖动商品即可排序</span> <a class="btn120" href="javascript:;" id="savesort" style="margin-right: 24px;">
+                                                                               保存排序</a> <a class="btn120" href="javascript:;" id="addcommodity" style="margin-right: 24px;">
+                                                                                            添加商品</a> <!--a class="btn120" href="javascript:;" id="setSaleAreas" style="margin-right: 20px;">
+                                                                                                         设置销售区域</a-->
+                         
+            @if ((ViewBag.IsOrg == null) || (ViewBag.IsOrg != null && ViewBag.BTPDelSaleCom != null && ViewBag.IsOrg && ViewBag.BTPDelSaleCom))
+            {
+                <a class="btn120" href="javascript:;" id="delete" style="margin-right: 20px;">删除</a> 
+            }
+            @if ((ViewBag.IsOrg == null) || (ViewBag.IsOrg != null && ViewBag.BTPOffShelfCom != null && ViewBag.IsOrg && ViewBag.BTPOffShelfCom))
+            {
+                <a class="btn120" href="javascript:;" id="onsales" style="margin-right: 10px;">下架</a>
+            }
+            
+            <div>
+                @if ((ViewBag.IsOrg != null && ViewBag.BTPDistributeCom != null && ViewBag.IsOrg && ViewBag.BTPDistributeCom))
+                {
+                    <a class="btn120" href="javascript:;" id="setDistributeList" style="margin-right: 20px;">
+                        设为分销商品</a>
+                }
+                @if ((ViewBag.IsOrg != null && ViewBag.BTPDistributeDivi != null && ViewBag.IsOrg && ViewBag.BTPDistributeDivi))
+                {
+                    if (ViewBag.BTPDistributeCom != null && ViewBag.BTPDistributeCom)
+                    {
+                        <a class="btn120" href="javascript:;" id="setDistributesAccountList" style="margin-right: 20px;">
+                            设置佣金</a>
+                    }
+                    else
+                    {
+                        <a class="btn120" href="javascript:;" id="setDistributesAccountList" style="margin-right: 10px;">
+                            设置佣金</a>
+                    }
+                }
+                @if ((ViewBag.IsOrg != null && ViewBag.BTPDistributeCom != null && ViewBag.IsOrg && ViewBag.BTPDistributeCom))
+                {
+                    <a class="btn120" href="javascript:;" id="cancelDistributeList" style="margin-right: 10px;">
+                        取消分销</a>
+                }
+                           
+                          
+            </div>  
+        </div>
+        <div class="manag_bot manag_bot1" style="width: 100%; margin-top: 10px;">
+            <div id="divListParent">
+                <div id="content_makes">
+                    @Html.Action("CYPartialIndex", "Commodity")
+                </div>
+            </div>
+            <div id="pager">
+            </div>
+        </div>
+    </div>
+    <div class="floa2 addfloa2" id="categoryDiv" style="display: none; left: 800px; top: 50px;">
+        <!-- gyy-->
+        <h1>
+            <a href="javascript:;" class="close" onclick="closeCategoryDiv()"></a><span>选择类目信息</span>
+        </h1>
+        <div style="overflow-y: auto; height: 190px; margin-top: 6px;">
+            <ul class="first" id="tcategoryUl">
+               @foreach (var cate in categorylist)
+               {
+                    <li class="firs">
+                        <label>
+                          @if (cate.SecondCategory == null || cate.SecondCategory.Count == 0)
+                          {
+                                <input name="cateogryClassLevel1" type="checkbox" value="@cate.Id"/>
+                          }<span>@cate.Name</span>
+                        </label>
+                        <ul class="second">
+                            @if (cate.SecondCategory == null) { cate.SecondCategory = new List<Jinher.AMP.BTP.Deploy.CustomDTO.SCategorySDTO>(); }
+                            @foreach (var scate in cate.SecondCategory)
+                            {
+                                <li class="firs firs1">
+                                    <label>
+                                     @if (scate.ThirdCategory == null || scate.ThirdCategory.Count == 0)
+                                     {
+                                        <input name="cateogryClassLevel2" type="checkbox" value="@scate.Id"/>
+                                     }<span>@scate.Name</span>
+                                    </label>
+                                    <ul class="third">
+                                        @if (scate.ThirdCategory == null) { scate.ThirdCategory = new List<Jinher.AMP.BTP.Deploy.CustomDTO.TCategorySDTO>(); }
+                                        @foreach (var tcate in scate.ThirdCategory)
+                                        {
+                                            <li>
+                                                <label>
+                                                    <input name="cateogryClassLevel3" type="checkbox"
+								       value="@tcate.Id"/><span>@tcate.Name</span>
+                                                </label>
+                                            </li>
+                                        }
+                                    </ul>
+                                </li>
+                            }
+                        </ul>
+                    </li>
+               }
+            </ul>
+        </div>
+        <div class="bbtn" style="text-align: center;">
+            <h1>
+            </h1>
+            <a href="javascript:;" id="searchcate" onclick="UpdateCategory()" class="btn120"
+                style="margin-top: 6px;">确定</a>
+        </div>
+    </div>
+    <div class="floa2 addfloa2" id="SearchcategoryDiv" style="display: none; left: 800px;
+        top: 50px;">
+        <!-- gyy-->
+        <h1>
+            <a href="javascript:;" class="close" onclick="CloseSearchCate(this)"></a><span>选择类目信息</span>
+        </h1>
+        <div style="overflow-y: auto; height: 190px; margin-top: 6px;">
+            <ul class="first" id="SearchtcategoryUl">
+                @foreach (var cate in categorylist)
+                {
+                    <li class="firs">
+                        <label>
+                          @if (cate.SecondCategory == null || cate.SecondCategory.Count == 0)
+                          {
+                                <input name="cateogryClassLevel1" type="checkbox" value="@cate.Id"/>
+                          }<span>@cate.Name</span>
+                        </label>
+                        <ul class="second">
+                            @if (cate.SecondCategory == null) { cate.SecondCategory = new List<Jinher.AMP.BTP.Deploy.CustomDTO.SCategorySDTO>(); }
+                            @foreach (var scate in cate.SecondCategory)
+                            {
+                                <li class="firs firs1">
+                                    <label>
+                                     @if (scate.ThirdCategory == null || scate.ThirdCategory.Count == 0)
+                                     {
+                                        <input name="cateogryClassLevel2" type="checkbox" value="@scate.Id"/>
+                                     }<span>@scate.Name</span>
+                                    </label>
+                                    <ul class="third">
+                                        @if (scate.ThirdCategory == null) { scate.ThirdCategory = new List<Jinher.AMP.BTP.Deploy.CustomDTO.TCategorySDTO>(); }
+                                        @foreach (var tcate in scate.ThirdCategory)
+                                        {
+                                            <li>
+                                                <label>
+                                                    <input name="cateogryClassLevel3" type="checkbox" value="@tcate.Id"/><span>@tcate.Name</span>
+                                                </label>
+                                            </li>
+                                        }
+                                    </ul>
+                                </li>
+                            }
+                        </ul>
+                    </li>
+                }
+            </ul>
+        </div>
+        <div class="bbtn" style="text-align: center;">
+            <h1>
+            </h1>
+            <a href="javascript:;" id="searchcate1" onclick="CloseSearchCate(this)" class="btn120"
+                style="margin-top: 6px;">确定</a>
+        </div>
+    </div>
+</div>
+<div id="divSetSaleAreasDialog" style="display: none;">
+    <div>
+        <input type="hidden" id="SaleAreas" />
+        <iframe style="width:100%;height:600px; scroll:auto; border:0;" src="@ViewBag.ProvinceCityUrl">
+        </iframe>
+    </div>
+</div>
+<div id="setCommodityDistributionDialog" style="display:none;">
+    <div>
+        <input type="hidden" id="CommodityDistributionID" comid="CommodityDistributionId" />
+        <table border="0" cellspacing="5" cellpadding="0"  style=" margin-left:20px">
+            <tr>
+                <td>
+                    直属上级佣金比例：
+                </td>
+                <td>
+                    <input type="text" id="L1Percent" style="width:80px;text-align:right;" />%
+                </td>
+            </tr>
+            <tr>
+                <td>
+                </td>
+                <td>
+                    分销商推荐买家购买后能拿到的佣金比例
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    二级上级佣金比例：
+                </td>
+                <td>
+                    <input type="text" id="L2Percent" style="width:80px; text-align:right;" />%
+                </td>
+            </tr>
+            <tr>
+                <td>
+                </td>
+                <td>
+                    分销商的上级分销商能拿到的佣金比例
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    三级上级佣金比例：
+                </td>
+                <td>
+                    <input type="text" id="L3Percent" style="width:80px;text-align:right;" />%
+                </td>
+            </tr>
+            <tr>
+                <td>
+                </td>
+                <td>
+                    分销商上级的上级分销商能拿到的佣金比例
+                </td>
+            </tr>
+        </table>
+        <div class="bbtn" style="text-align: center; margin-top:20px;">
+            <a href="javascript:;" id="searchcate1" onclick="CancelSetCommodityDistribution(this)"
+               class="btn120" style="margin-top: 6px;">取消</a> <a href="javascript:;" id="searchcate1"
+                                                                 onclick="AddCommodityDistribution(this)" class="btn120" style="margin-top: 6px;">
+                                                                  确定</a>
+        </div>
+    </div>
+</div>
+<div id="ScoreSettingDiv" style="display: none;">
+    <div style="margin-bottom: 10px;">
+        <div style="font-size: 14px; line-height: 20px; margin:2px 12px; margin-top: 20px; margin-bottom: 0 ">佣金会以积分的形式计入分销商的积分账户，故请先进行积分兑换汇率设置，再设置佣金比例</div>
+        <div class="bbtn" style="text-align: center; margin-top:20px;">
+            <a href="javascript:;" id="ScoreSetting"
+               class="btn120" style="margin-top: 6px;">
+                确定</a>
+        </div>
+    </div>
+</div>

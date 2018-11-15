@@ -1,0 +1,180 @@
+﻿@{
+Layout = "~/Views/Shared/_CYMobileLayout.cshtml";
+}
+@section TitleHtml
+{
+<title>西部马华</title>
+}
+@section CssFile{
+    <link rel="stylesheet" href="../../content/style/mobileKit-min.css"/>
+    <link rel="stylesheet" href="../../content/style/swiper.css">
+    <link rel="stylesheet" href="../../content/style/cymain.css"/>
+}
+
+<div id="shop">
+    <div class="page">
+        <h1 class="title process-header">西部马华</h1>
+        <header class="header">
+            @{Html.RenderPartial("../CYMobile/SelectStore");}
+        </header>
+        <!--底部-->
+        <nav class="bar bar-tab">
+            <a href="#" class="tab-item footer-left">
+			<span class="footer-carplus" v-on:touchstart="onShoppingCart()">
+				<i class="cart"></i>
+				<span id="num" class="num" v-if="cart.proTypeCount">{{cart.count}}</span>
+			</span>
+                <span class="money">￥<span id="spanTotalPrice">{{formatPrice(cart.amount)}}</span></span>
+                <span class="fee">配送费{{cart.realDeliveryFee}}元,满{{formatPrice(cart.freeDeliveryCondition)}}免配送费</span>
+            </a>
+            <a href="#" class="tab-item footer-right default" v-if="cart.lessDeliveryCondition>0">还差{{formatPrice(cart.lessDeliveryCondition)}}元起送</a>
+            <a href="#" class="tab-item footer-right" v-else v-on:touchstart="payment()" onclick="jumpToOrder();return false;">去结算</a>
+        </nav>
+        <!--content-->
+        <div class="content clearfix">
+			<!--<div class="suction-tip">{{suctionTip}}</div>-->
+            <nav id="wrapper" class="wrapper">
+                <ul class="goods-name"><!--current-->
+                    <li class="name-text" v-for="(category,index) in categorys" v-bind:class="{current:current==index}" 
+					v-on:touchstart="scrollSorts(category.id,index,category.categoryName)">
+                        {{category.categoryName}}
+                    </li>
+                </ul>
+            </nav>
+            <div id="sorts" class="contain">
+                <div class="scroll"  v-for="category in categorys">
+                    <div class="systitle">{{category.categoryName}}</div>
+                    <div class="list" v-for="(p,index) in category.pros">
+                        <div class="item-img">
+                            <img class="pic" :src="p.pic">
+                            <span v-if="app.stock==0" class="info">已售完</span>
+                        </div>
+                        <div class="list-contain">
+                            <span class="list-title">{{p.name}}</span>
+                            <div class="money">
+                                <span class="list-price">￥{{p.price}}</span>
+                                <del v-if="!p.displayPrice">{{p.displayPrice? '￥'+p.displayPrice:''}}</del>
+                                <span class="count-info" v-if="!p.isEnough">数量不足</span></div>
+                            <div class="spinner clearfix">
+                                <a class="btn" v-if="p.hasDiscount">限时快抢</a>
+
+                                <span class="spinner-wrap clerafix" v-if="p.hasSubpro">
+                                    <span v-if="app.shopIsWorking" class="spec current"
+                                          v-on:touchstart="showSubpros(p.kPro)">选规格</span>
+                                    <span v-else class="specGray current">选规格</span>
+                                    <i class="cart" v-if="p.count">{{p.count}}</i>
+                                </span>
+                                <span class="spinner-wrap clerafix" v-else-if="!app.shopIsWorking">
+                                    <a href="javascript:void(0);" class="dis-plus" v-show="p.canIncrease"></a>
+                                </span>
+                                <span class="spinner-wrap clerafix" v-else>
+                                    <a href="javascript:void(0);" class="minus"
+                                       v-on:touchstart="buy(p.kPro,false)" v-if="p.canDecrease"></a>
+                                    <input type="number" min="0" max="999" maxlength="3" readonly
+                                           v-model="p.count" v-if="p.canDecrease">
+                                    <a href="javascript:void(0);" class="plus"
+                                       v-on:touchstart="buy(p.kPro,true)" v-if="p.canIncrease"></a>
+                                    <a href="javascript:void(0);" class="dis-plus" v-else></a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--model-->
+    <div class="layer" v-if="specState">
+        <div style="display:none" class="layer-content" v-if="currentPro.hasSubpro">
+            <div class="layer-ct-body">
+                <a class="close" v-on:touchstart="closeSpec()"></a>
+
+                <div class="layer-title">
+                    <img :src="currentPro.pic" alt="">
+
+                    <div class="title-text">
+                        <div class="title">{{currentPro.name}}</div>
+                        <div class="price">￥{{currentPro.focusSubpro ? currentPro.focusSubpro.price : currentPro.price}}</div>
+                    </div>
+                </div>
+
+                <!--<div class="message">
+                    <span>月销售26份</span>
+                    <span>好评4</span>
+                </div>-->
+                <div class="btns item" v-for="attr in currentPro.attrs">
+                    <span>{{attr.name}}：</span>
+                    <div class="list" v-for="val in attr.vals">
+                        <a class="btn abled" :class="{current:val.isChecked}"
+                        v-on:touchstart="attrClick(currentPro.kPro,val.kAttrVal)">{{val.txt}}</a><!--abled disabled-->
+                    </div>
+                </div>
+            </div>
+            <div class="layer-ct-footer" v-if="currentPro.focusSubpro">
+                <div class="btns" v-if="currentPro.focusSubpro.isBought">
+                    <div class="list span_1 clearfix" v-if="currentPro.focusSubpro.isBought">
+                        <a class="minus"
+                           v-on:touchstart="buy(currentPro.kPro,false)" v-show='currentPro.focusSubpro.canDecrease'></a>
+                        <input type="tel" class="count span_number" readonly
+                        v-model="currentPro.focusSubpro.count">
+                        <a class="plus"
+                            v-on:touchstart="buy(currentPro.kPro,true)" v-if='currentPro.focusSubpro.canIncrease'></a>
+                        <a class="dis-plus"
+                           v-on:touchstart="buy(currentPro.kPro,true)" v-else></a>
+                    </div>
+                </div>
+                <div class="btn" v-else v-on:touchstart="buy(currentPro.kPro,true)">加入购物车</div>
+            </div>
+        </div>
+    </div>
+    <div class="shopping-cart" v-if="shoppingCartState">
+        <div class="mask" v-on:touchstart="closeShoppingCart()"></div>
+        <div class="shopping-cart-info">
+            <div class="title"><span>购物车</span>
+
+                <div class="clear-cart pull-right">
+                    <img src="../../content/style/images/qingkonggouwuche@2x.png" alt=""/>
+                    <span>清空购物车</span>
+                </div>
+            </div>
+            <ul class="cart-list">
+                <li v-for="(cartpro,index) in cartpros" :class="{specification:cartpro.isSubpro}">
+                    <div class="name pull-left">
+                        <div>{{cartpro.name}}</div>
+                        <div class="specification-info">{{cartpro.isSubpro? cartpro.attrTxtsUnion:''}}</div>
+                    </div>
+                    <div class="price pull-left"><span class="real-price">￥{{cartpro.price}}</span><span class="out">已售完</span></div>
+                    <div class="cart-operation pull-left">
+                        <div class="count clearfix" v-if="!app.shopIsWorking">
+                            <a href="javascript:void(0);" class="dis-plus"></a>
+                        </div>
+                        <div class="count clearfix" v-else>
+                            <a href="javascript:void(0);" class="minus"
+                            v-on:touchstart="buy(cartpro.kPro,false,cartpro.kSubpro)" v-show="cartpro.canDecrease"></a>
+                            <input type="number" min="0" max="999" maxlength="3" readonly
+                                   v-if="cartpro.canDecrease" v-model="cartpro.count">
+                            <a href="javascript:void(0);" class="plus"
+                            v-on:touchstart="buy(cartpro.kPro,true,cartpro.kSubpro)" v-if="cartpro.canIncrease"></a>
+                            <a href="javascript:void(0);" class="dis-plus" v-else></a>
+
+                            <div class="tip" v-if="!cartpro.isEnough" >数量不足</div>
+                        </div>
+                        <div class="delete">删除</div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+@section ScriptFile
+{
+    <script src="/content/js/mobile_libs/swiper.jquery.js" type="text/javascript"></script>
+    <script type="text/javascript" data-main="/Content/js/vm_cy/Cymain" src="/Content/js/mobile_libs/require.js"></script>
+    <script type="text/javascript">
+        function jumpToOrder() {
+            console.log("跳转至：" + window.newUrl);
+            window.location.href = window.newUrl;
+        }
+	</script>
+}

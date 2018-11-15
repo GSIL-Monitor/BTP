@@ -1,0 +1,573 @@
+﻿@{
+    ViewBag.Title = "发布促销活动";
+    Layout = "~/Views/Shared/_Vue2Layout.cshtml";
+}
+@section Css {
+<style>
+    .el-row {
+        margin-bottom: 20px;
+    }
+    .el-row:last-child {
+        margin-bottom: 0;
+    }
+  </style>
+}
+
+<div class="content">
+    <div id="listWithFiltersPage">
+        <div class="content-inner">
+            <!-- filters start -->
+            <div class="filters">
+                <el-form :inline="true" :model="searchForm" :rules="searchFormRules" ref="searchForm">
+                    <el-row :gutter="20">
+                        <el-col :span="12">
+                            <el-form-item label="活动名称：" prop="Name">
+                                <el-input v-model="searchForm.Name" style="width:350px;"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="活动时间："prop="Time">
+                                <el-date-picker v-model="searchForm.Time" type="datetimerange" unlink-panels range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" :picker-options="pickerOptions" format="yyyy-MM-dd HH:mm"></el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row :gutter="20">
+                        <el-col :span="24">
+                            <el-form-item label="商品单次最少购买数量：" prop="Limit">
+                                <el-input-number type="number" v-model="searchForm.Limit" :min="0"></el-input-number>
+                                <span class="text-smaller" style="color:grey">0或空表示不限；</span>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <div class="operations">
+                <el-button size="small" type="primary" @@click="handleMainCommoditySearch">选择主商品</el-button>  
+                <el-button size="small" type="warning" @@click="handleDeleteMainMultiple">删除</el-button>  
+                <span class="text-smaller" style="color:grey">&nbsp;&nbsp;注：商品新增的SKU不参与该促销</span>
+            </div>
+            <el-table :data="tableDataMain" class="scrollbar" max-height="450" element-loading-text="拼命加载中" v-loading="loading" stripe @@selection-change="handleSelectionChangeMain">
+                <el-table-column type="index" lable="序号" width="60"></el-table-column>
+                <el-table-column type="selection" width="55"></el-table-column>         
+                <el-table-column prop="Code" label="商品编码" min-width="100"></el-table-column>
+                <el-table-column prop="Name" label="商品名称" min-width="120"></el-table-column>
+                <el-table-column prop="SKUName" label="商品属性" min-width="100"></el-table-column>
+                <el-table-column prop="SKUCode" label="SKU编码" min-width="100"></el-table-column>
+                <el-table-column prop="Price" label="商品价格" min-width="80"></el-table-column>
+                <el-table-column prop="Limit" label="购买数量" min-width="100">
+                    <template scope="scope">
+                        {{searchForm.Limit > 0 ? searchForm.Limit : 1}}
+                    </template>
+                </el-table-column>
+                <el-table-column label="操作" width="195" align="center">
+                    <template scope="scope">
+                        <el-button type="danger" plain size="mini" @@click="handleDeleteMain(scope.$index, scope.row)">删除</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <!-- <div class="pagination-wrapper" v-show="!loading">
+                <el-pagination layout="total, sizes, prev, pager, next, jumper" @@size-change="handleSizeChange" @@current-change="handleCurrentChange" :total="total" :current-page="page" :page-sizes="[10, 20, 50, 100]" :page-size="pageSize" >
+                </el-pagination>
+            </div> -->
+
+            <br />
+
+            <div class="operations">
+                <el-button size="small" type="primary" @@click="handleGiftCommoditySearch">选择赠品</el-button>  
+                <el-button size="small" type="warning" @@click="handleDeleteGiftMultiple">删除</el-button>  
+                <span class="text-smaller" style="color:grey">&nbsp;&nbsp;注：购买每个主商品都会赠送以下所有赠品，赠品最多5个，赠送数量1~9；</span>
+            </div>
+            <el-table :data="tableDataGift" class="scrollbar" max-height="450" element-loading-text="拼命加载中" v-loading="loading" stripe @@selection-change="handleSelectionChangeGift">
+                <el-table-column type="index" lable="序号" width="60"></el-table-column>
+                <el-table-column type="selection" width="55"></el-table-column>         
+                <el-table-column prop="Code" label="商品编码" min-width="100"></el-table-column>
+                <el-table-column prop="Name" label="商品名称" min-width="120"></el-table-column>
+                <el-table-column prop="SKUName" label="商品属性" min-width="100"></el-table-column>
+                <el-table-column prop="SKUCode" label="SKU编码" min-width="100"></el-table-column>
+                <el-table-column prop="Price" label="商品价格" min-width="80"></el-table-column>
+                <el-table-column prop="Limit" label="赠送数量" min-width="100">
+                    <template scope="scope">
+                        <el-input-number size="mini" v-model="scope.row.Limit" controls-position="right" :min="1" :max="9" style="width:80px;"></el-input-number>
+                    </template>
+                </el-table-column>
+                <el-table-column label="操作" width="195" align="center">
+                    <template scope="scope">
+                        <el-button type="danger" plain size="mini" @@click="handleDeleteGift(scope.$index, scope.row)">删除</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            
+            <div class="operations" style="text-align: center">
+                <el-button type="success" @@click="handleCreating" :loading="createSubimtLoading">发 布</el-button>
+                <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <el-button @@click="handleBack">取 消</el-button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Partial1 {
+<div id="choiceCommodity">
+{{searchForm.Categorys}}
+<el-dialog title="选择商品" :visible.sync="dialogVisible" width="80%">
+    <div id="listWithFiltersPage">
+        <div class="content-inner">
+            <!-- filters start -->
+            <div class="filters">
+                <el-form :inline="true" :model="searchForm" :rules="searchFormRules">
+                    <el-form-item label="商品名称：" prop="Name">
+                        <el-input v-model="searchForm.Name"></el-input>
+                    </el-form-item>
+                       <el-form-item label="毛利率%：" prop="MinInterestRate">
+                        <el-input v-model="searchForm.MinInterestRate"></el-input>
+                    </el-form-item>
+                       <el-form-item label="最大毛利率%：" prop="MaxInterestRate">
+                        <el-input v-model="searchForm.MaxInterestRate"></el-input>
+                    </el-form-item>
+                       <el-form-item label="最小价格：" prop="MinPrice">
+                        <el-input v-model="searchForm.MinPrice"></el-input>
+                    </el-form-item>
+                       <el-form-item label="最大价格：" prop="MaxPrice">
+                        <el-input v-model="searchForm.MaxPrice"></el-input>
+                    </el-form-item>
+
+
+                       <el-form-item label="产品分类：" prop="Categorys">
+                <el-select v-model="searchForm.Categorys" multiple filterable placeholder="请选择">
+                    <el-option v-for="item in appOptions" :key="item.Id" :label="item.Name" :value="item.Id">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            
+
+
+                    <el-form-item>
+                        <el-button type="success" @@click="handleSearch()">查询</el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
+            <el-table ref="multipleTable" :data="tableData" class="scrollbar" max-height="860" element-loading-text="拼命加载中" v-loading="loading" stripe @@selection-change="handleSelectionChange">
+                <el-table-column type="index" lable="序号" width="60"></el-table-column>
+                <!-- <el-table-column prop="Name" label="App名称" min-width="120"></el-table-column> -->
+                <el-table-column prop="Pic" label="商品图片" min-width="100">
+                    <template slot-scope="scope">
+                        <img :src="scope.row.Pic" height="40" width="40"/>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="Name" label="商品名称" min-width="100"></el-table-column>
+                <el-table-column prop="Price" label="商品价格(元)" min-width="100"></el-table-column>
+                <el-table-column prop="Stock" label="库存" min-width="100"></el-table-column>
+                <el-table-column type="selection" width="55"></el-table-column>               
+            </el-table>
+            <div class="pagination-wrapper" v-show="!loading">
+                <el-pagination layout="total, sizes, prev, pager, next, jumper" @@size-change="handleSizeChange" @@current-change="handleCurrentChange" :total="total" :current-page="page" :page-sizes="[5, 10, 20, 50, 100]" :page-size="pageSize" >
+                </el-pagination>
+            </div>
+        </div>
+    </div>
+    <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @@click="handleConfirm">确 定</el-button>
+        <el-button @@click="dialogVisible = false">取 消</el-button>
+    </span>
+</el-dialog>
+</div>
+}
+
+@section Script {    
+<script>
+Array.prototype.remove = function(args){
+    var indices = [];
+    for(var i = 0; i < args.length; i++){
+        var arg = args[i];
+        var index = this.indexOf(arg);
+        while(index > -1){
+            indices.push(index);
+            index = this.indexOf(arg, index + 1);
+        }
+    }
+    indices.sort();
+    for(var i = 0; i < indices.length; i++){
+        var index = indices[i] - i;
+        this.splice(index, 1);
+    }    
+}
+
+var defaultVue = new Vue({
+    el: '#app',
+    data: {
+        searchForm: {
+            Name: '',
+            Time: [moment(), moment().add(7, 'days').hours(23).minutes(59).seconds(59)],
+            Limit: ''
+        },
+        searchFormRules: {
+            Name: [{
+                    required: true,
+                    message: '请输入活动名称',
+                    trigger: 'blur'
+                },
+                {
+                    max: 30,
+                    message: '最多输入30个字符',
+                    trigger: 'blur'
+                }
+            ],
+            Time: [{
+                required: true,
+                message: '请输入活动时间',
+                trigger: 'blur'
+            }]
+        },
+        loading: false,
+        tableDataMain: [],
+        tableDataGift: [],
+        total: 0,
+        page: 1,
+        pageSize: 20,
+        createSubimtLoading:false,
+        multipleSelectionMain: [],
+        multipleSelectionGift: [],
+        pickerOptions:{
+            start: '08:30',
+            step: '00:15',
+            end: '18:30'
+        }
+    },
+    methods: {
+        handleSearch: function () {
+            this.$refs['searchForm'].validate(function (valid) {
+                if (valid) {
+                    handleCurrentChange(1);
+                }
+            });
+        },
+        handleSizeChange: function (val) {
+            this.pageSize = val;
+            this.handleCurrentChange(1);
+        },
+        handleCurrentChange: function (page) {
+            this.page = page || this.page;
+           
+            this.fetchData();
+        },
+        fetchData: function () {
+            this.loading = true;
+            var postData = {
+                PageSize: this.pageSize,
+                PageIndex: this.page,
+                CommodityName: this.searchForm.CommodityName,
+                Status: this.searchForm.Status
+            };
+            if (this.searchForm.Time[0]) postData["BeginDate"] = this.searchForm.Time[0];
+            if (this.searchForm.Time[1]) postData["EndDate"] = this.searchForm.Time[1];
+            this.$http.post('@Url.Action("GetData")', postData).
+            then(function (res) {
+                defaultVue.loading = false;
+                if (res.body.isSuccess) {
+                    defaultVue.tableDataMain = res.body.Data.List;
+                    defaultVue.total = res.body.Data.Count;
+                } else {
+                    defaultVue.$message.error(res.body.Message);
+                }
+            });
+        },
+        handleCreating:function() {
+            this.$refs["searchForm"].validate((valid) => {
+                if (valid) {
+                    if(this.tableDataMain.length==0) {
+                        this.$message.warning('请至少设置一个主商品。');
+                        return;
+                    }
+                    if(this.tableDataGift.length == 0 ) {
+                        this.$message.warning('请至少设置一个赠品。');
+                        return;
+                    }
+                    if(this.tableDataGift.length > 5 ) {
+                        this.$message.warning('赠品最多设置五个。');
+                        return;
+                    }
+                    
+                    this.createSubimtLoading = true;
+                    var postData = {
+                        Name: this.searchForm.Name,
+                        BeginTime: this.searchForm.Time[0],
+                        EndTime: this.searchForm.Time[1],
+                        Limit: this.searchForm.Limit,
+                        Commodities: [],
+                        Gifts: []
+                    };
+                    this.tableDataMain.forEach(function(c){
+                        postData.Commodities.push({
+                            CommodityId:c.CommodityId,
+                            Code:c.Code,
+                            Name:c.Name,
+                            Price:c.Price,
+                            SKUId:c.SKUId,
+                            SKUName:c.SKUName,
+                            SKUCode:c.SKUCode,
+                            Limit: defaultVue.searchForm.Limit
+                        });
+                    });
+                    this.tableDataGift.forEach(function(c){
+                        postData.Gifts.push({
+                            CommodityId:c.CommodityId,
+                            Code:c.Code,
+                            Name:c.Name,
+                            Price:c.Price,
+                            SKUId:c.SKUId,
+                            SKUName:c.SKUName,
+                            SKUCode:c.SKUCode,
+                            Limit: c.Limit
+                        });
+                    });
+                    this.$http.post('@Url.Action("Create")', postData)
+                        .then(function (res) {
+                            defaultVue.createSubimtLoading = false;
+                            if (res.body.isSuccess) {
+                                defaultVue.$message.success('活动发布成功');
+                                defaultVue.handleBack();
+                            } else {
+                                defaultVue.$message.error(res.body.Message);
+                            }
+                        });
+                } else {
+                    return false;
+                }
+            });
+        },
+        handleBack:function(){
+            history.back();
+        },
+        handleSelectionChangeMain: function(val){
+            this.multipleSelectionMain = val;
+        },        
+        handleSelectionChangeGift: function(val,a,b){
+            this.multipleSelectionGift = val;
+        },
+        handleDeleteMain: function (index, row) {
+            this.$confirm('您确认要删除选中的商品吗？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                modalAppendToBody: false
+            }).then(() => {
+                defaultVue.tableDataMain.splice(index, 1);
+            }).catch(() => {
+
+            });
+        },
+        handleDeleteMainMultiple: function () {
+            if(this.multipleSelectionMain.length == 0){
+                this.$message.warning('请选择要删除的商品。');
+                return;
+            }
+            this.$confirm('您确认要删除选中的商品吗？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                modalAppendToBody: false
+            }).then(() => {
+                this.tableDataMain.remove(this.multipleSelectionMain);
+            }).catch(() => {});
+        },
+        handleDeleteGift: function (index, row) {
+            this.$confirm('您确认要删除选中的商品吗？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                modalAppendToBody: false
+            }).then(() => {
+                defaultVue.tableDataGift.splice(index, 1);
+            }).catch(() => {
+
+            });
+        },
+        handleDeleteGiftMultiple: function () {
+            if(this.multipleSelectionGift.length == 0){
+                this.$message.warning('请选择要删除的商品。');
+                return;
+            }
+            this.$confirm('您确认要删除选中的商品吗？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                modalAppendToBody: false
+            }).then(() => {
+                this.tableDataGift.remove(this.multipleSelectionGift);
+            }).catch(() => {});
+
+        },
+        handleMainCommoditySearch: function () {
+            commodityVue.show(0);
+        },
+        handlerAddMainCommodity: function (selComs) {
+            selComs.forEach(function(c){
+                if (c.SKU && c.SKU.length > 0) {
+                    c.SKU.forEach(function (s) {
+                        if (defaultVue.tableDataMain.findIndex(_ => _.CommodityId == c.Id && _.SKUId == s.Id) === -1) {
+                            let temp = {
+                                CommodityId: c.Id,
+                                Code: c.Code,
+                                Name: c.Name,
+                                Price: s.Price,
+                                SKUId: s.Id,
+                                SKUCode: s.Code,
+                                SKUName: s.Name,
+                                Limit: defaultVue.searchForm.Limit?defaultVue.searchForm.Limit:1
+                            };
+                            defaultVue.tableDataMain.push(temp);
+                        }
+                    });
+                } else {
+                    if (defaultVue.tableDataMain.findIndex(_ => _.CommodityId == c.Id) === -1) {
+                        let temp = {
+                            CommodityId: c.Id,
+                            Code: c.Code,
+                            Name: c.Name,
+                            Price: c.Price,
+                            Limit: defaultVue.searchForm.Limit?defaultVue.searchForm.Limit:1
+                        };
+                        defaultVue.tableDataMain.push(temp);
+                    }
+                }
+            });
+        },
+        handleGiftCommoditySearch: function () {
+            commodityVue.show();
+        },
+        handlerAddGiftCommodity: function (selComs) {
+            selComs.forEach(function(c){
+                if (c.SKU && c.SKU.length > 0) {
+                    c.SKU.forEach(function (s) {
+                        if (defaultVue.tableDataGift.findIndex(_ => _.CommodityId == c.Id && _.SKUId == s.Id) === -1) {
+                            let temp = {
+                                CommodityId: c.Id,
+                                Code: c.Code,
+                                Name: c.Name,
+                                Price: s.Price,
+                                SKUId: s.Id,
+                                SKUCode: s.Code,
+                                SKUName: s.Name,
+                                CommoditySKU: s.Name,
+                                Limit: 1
+                            };
+                            defaultVue.tableDataGift.push(temp);
+                        }
+                    });
+                } else {
+                    if (defaultVue.tableDataGift.findIndex(_ => _.CommodityId == c.Id) === -1) {
+                        let temp = {
+                            CommodityId: c.Id,
+                            Code: c.Code,
+                            Name: c.Name,
+                            Price: c.Price,
+                            Limit: 1
+                        };
+                        defaultVue.tableDataGift.push(temp);
+                    }
+                }
+            });
+        }
+    },
+    mounted: function () {
+        // this.fetchData();
+    },
+    updated: function () {
+
+    }
+});
+
+
+var commodityVue = new Vue({
+    el: '#choiceCommodity',
+    data: {
+        searchForm: {
+            Name: '',
+            Categorys:'',
+            MinInterestRate:'',
+            MaxInterestRate:'',
+            MinPrice:'',
+            MaxPrice:''
+        },
+        appOptions:@Html.Raw(ViewBag.Apps),
+        searchFormRules: {},
+        loading: true,
+        tableData: [],
+        total: 0,
+        page: 1,
+        pageSize: 5,
+        currentRow: {},
+        multipleSelection: [],
+        dialogVisible: false,
+        type: 0
+    },
+    methods: {
+        handleSearch: function () {
+            this.handleCurrentChange(1);
+        },
+        handleSizeChange: function (val) {
+            this.pageSize = val;
+            this.handleCurrentChange(1);
+        },
+        handleCurrentChange: function (page) {
+            this.page = page || this.page;
+            this.fetchData();
+        },
+        fetchData: function () {
+
+            this.loading = true;
+            var postData = {
+                PageSize: this.pageSize,
+                PageIndex: this.page,
+                Name: this.searchForm.Name.replace(/^(\s|\xA0)+|(\s|\xA0)+$/g, ''),
+                Categorys: this.searchForm.Categorys,
+                MinInterestRate: this.searchForm.MinInterestRate,
+                MaxInterestRate: this.searchForm.MaxInterestRate,
+                MinPrice: this.searchForm.MinPrice,
+                MaxPrice: this.searchForm.MaxPrice
+            };
+            this.$http.post('@Url.Action("GetCommodities")', postData).
+            then(function (res) {
+                commodityVue.loading = false;
+                if (res.body.isSuccess) {
+                    commodityVue.tableData = res.body.Data.List;
+                    commodityVue.total = res.body.Data.Count;
+                } else {
+                    commodityVue.$message.error(res.body.Message);
+                }
+            });
+        },
+        handleSelectionChange: function (val) {
+            this.multipleSelection = val;
+        },
+        handleConfirm: function () {
+            if (this.type == 0) {
+                this.confirmMain();
+            } else {
+                this.confirmGift();
+            }
+            this.dialogVisible = false;
+            this.$refs.multipleTable.clearSelection();
+        },
+        // 添加所选商品到主商品中
+        confirmMain: function () {
+            defaultVue.handlerAddMainCommodity(this.multipleSelection);
+        },
+        // 添加所选商品到赠品中
+        confirmGift: function () {
+            defaultVue.handlerAddGiftCommodity(this.multipleSelection);
+        },
+        show: function (type) {
+            this.type = type;
+            this.searchForm.Name = '';
+            this.handleSearch();
+            this.dialogVisible = true;
+            this.multipleSelection = [];
+        }
+    },
+    mounted: function () {
+        // this.fetchData();
+    }
+});
+</script>
+}

@@ -1,0 +1,206 @@
+﻿@{
+    ViewBag.Title = "赠品促销活动";
+    Layout = "~/Views/Shared/_Vue2Layout.cshtml";
+}
+<div class="content">
+    <div id="listWithFiltersPage">
+        <div class="content-inner">
+            <!-- filters start -->
+            <div class="filters">
+                <el-form :inline="true" :model="searchForm" :rules="searchFormRules" ref="searchForm">
+                    <el-form-item label="促销时间：">
+                        <el-date-picker v-model="searchForm.Time" type="daterange" unlink-panels range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
+                    </el-form-item>
+                    <el-form-item label="促销商品：" prop="CommodityName">
+                        <el-input v-model="searchForm.CommodityName"></el-input>
+                    </el-form-item>
+                    <el-form-item label="活动状态：" prop="Status">
+                        <el-select v-model="searchForm.Status">
+                            <el-option label="全部" value=""></el-option>
+                            <el-option v-for="item in activeStatusOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="success" @@click="handleSearch()">查询</el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
+            <div class="operations">
+                <el-button size="small" type="primary" @@click="handleCreating">发布促销活动</el-button>  
+            </div>
+            <el-table :data="tableData" class="scrollbar" max-height="860" element-loading-text="拼命加载中" v-loading="loading" stripe>
+                <el-table-column type="index" lable="序号" width="60"></el-table-column>
+                <el-table-column prop="Name" label="促销活动名称" min-width="120"></el-table-column>
+                <el-table-column prop="Code" label="活动时间" min-width="100" :formatter="dateFormat"></el-table-column>
+                <el-table-column prop="Type" label="活动状态" min-width="100" :formatter="statusFormat">
+                </el-table-column>
+                <el-table-column label="操作" width="195" align="left">
+                    <template scope="scope">
+                        <template v-if="scope.row.Status == 0">
+                            <el-button type="primary" plain size="mini" @@click="handleUpdating(scope.row)">编辑</el-button>
+                            <el-button type="danger" plain size="mini" @@click="handleDelete(scope.row)">删除</el-button>
+                        </template>
+                        <template v-else-if="scope.row.Status == 1">
+                            <el-button type="info" plain size="mini" @@click="handleDetails(scope.row)">查看</el-button>
+                            <el-button type="warning" plain size="mini" @@click="handleEndActivity(scope.row)">结束活动</el-button>
+                        </template>
+                        <template v-else>
+                            <el-button type="info" plain size="mini" @@click="handleDetails(scope.row)">查看</el-button>
+                            <el-button type="danger" plain size="mini" @@click="handleDelete(scope.row)">删除</el-button>
+                        </template>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <div class="pagination-wrapper" v-show="!loading">
+                <el-pagination layout="total, sizes, prev, pager, next, jumper" @@size-change="handleSizeChange" @@current-change="handleCurrentChange" :total="total" :current-page="page" :page-sizes="[10, 20, 50, 100]" :page-size="pageSize" >
+                </el-pagination>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Script{
+<script>
+var defaultVue = new Vue({
+    el: '#app',
+    data: {
+        searchForm: {
+            CommodityName: '',
+            Status: '',
+            Time: ''
+        },
+        searchFormRules: {
+          CommodityName: [
+            { max: 30, message: '最多输入30个字符', trigger: 'blur' }
+          ]
+        },   
+        loading: true,
+        tableData: [],
+        total: 0,
+        page: 1,
+        pageSize: 20,
+        currentRow: {},
+        activeStatusOptions: [{
+            value: '0',
+            label: '未开始'
+        }, {
+            value: '1',
+            label: '活动中'
+        }, {
+            value: '2',
+            label: '已结束'
+        }]
+    },
+    methods: {
+        handleSearch: function () {
+            this.$refs['searchForm'].validate(function (valid) {
+                if (valid) {
+                    defaultVue.handleCurrentChange(1);
+                }
+            });
+        },
+        handleSizeChange: function (val) {
+            this.pageSize = val;
+            this.handleCurrentChange(1);
+        },
+        handleCurrentChange: function (page) {
+            this.page = page || this.page;
+            this.fetchData();
+        },
+        fetchData: function () {
+            this.loading = true;
+            var postData = {
+                PageSize: this.pageSize,
+                PageIndex: this.page,
+                CommodityName: this.searchForm.CommodityName,
+                Status: this.searchForm.Status
+            };
+            if(this.searchForm.Time) {
+                if(this.searchForm.Time[0]) postData["BeginDate"] = this.searchForm.Time[0];
+                if(this.searchForm.Time[1]) postData["EndDate"] = this.searchForm.Time[1];
+            }
+            this.$http.post('@Url.Action("GetData")', postData).
+            then(function (res) {
+                defaultVue.loading = false;
+                if (res.body.isSuccess) {
+                    defaultVue.tableData = res.body.Data.List;
+                    defaultVue.total = res.body.Data.Count;
+                } else {
+                    defaultVue.$message.error(res.body.Message);
+                }
+            });
+        },
+        handleCreating: function() {
+            window.location.href = "@Url.Action("Create")?appid=@ViewBag.AppId";
+        },
+        handleDetails: function(row){
+            window.location.href = "@Url.Action("Details")?appid=@ViewBag.AppId&id="+row.Id;
+        },
+        handleUpdating: function(row){
+            window.location.href = "@Url.Action("Update")?appid=@ViewBag.AppId&id="+row.Id;
+        },
+        handleDelete: function(row) {
+            this.$confirm('您确认要删除选中活动吗？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                modalAppendToBody: false
+            }).then(() => {
+                    this.$http.post('@Url.Action("Delete")', {
+                        Id: row.Id
+                    }).
+                    then(function (res) {
+                        if (res.body.isSuccess) {
+                            defaultVue.fetchData();
+                            defaultVue.$message.success('删除成功');
+                        } else {
+                            defaultVue.$message.error(res.body.Message);
+                        }
+                    });
+            }).catch(() => {
+
+            });        
+        },
+        handleEndActivity: function(row) {
+            this.$confirm('您确认要结束选中的活动吗？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                modalAppendToBody: false
+            }).then(() => {
+                    this.$http.post('@Url.Action("EndActivity")', {
+                        Id: row.Id
+                    }).
+                    then(function (res) {
+                        if (res.body.isSuccess) {
+                            row.Status = 2;
+                            defaultVue.$message.success('结束成功');
+                        } else {
+                            defaultVue.$message.error(res.body.Message);
+                        }
+                    });
+            }).catch(() => {
+
+            });        
+        },
+        statusFormat: function (row, column) {            
+            switch(row.Status) {
+                case 0: return "未开始";
+                case 1: return "活动中";
+                case 2: return "已结束";
+                default: return "错误";
+            }
+        },
+        dateFormat: function (row, column) {
+            return moment(row.BeginTime).format("YYYY-MM-DD HH:mm") + ' ~ ' + moment(row.EndTime).format("YYYY-MM-DD HH:mm");
+        }
+    },
+    mounted: function () {
+        this.fetchData();
+    },
+    updated: function(){
+    }
+})
+</script>
+}

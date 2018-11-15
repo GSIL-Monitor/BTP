@@ -1,0 +1,135 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<head>
+    <script src="/Scripts/CommLib.js" type="text/javascript"></script>
+    <script type="text/javascript" src="/Scripts/jquery.watermark.js"></script>
+    <script src="/Scripts/pic/jquery.imgbox.pack.js" type="text/javascript"></script>
+    <script src="/Scripts/TableBox/jquery.ui.jhtablebox.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.datepicker.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhdatetime.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhstartandenddate.js" type="text/javascript"></script>
+    <script src="/Scripts/Validator/JValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/jquery.dotdotdot.min.js" type="text/javascript"></script>
+    <script src="/Scripts/ToolTip/jquery.ui.jhtooltip.js" type="text/javascript"></script>
+</head>
+<div class="box">
+    <div class="content">
+        <div class="right right1">
+            <div class="spfb_t">
+                <div class="spfb_t_l" style="width: 800px">
+                    <ul>
+                        <li>
+                            <h2>
+                                创建带参二维码</h2>
+                        </li>
+                        <li style=""><span>公众号：</span>
+                            <input type="text" value="" id="txtWeChatPublicCode" /></li>
+                        @*<li style=""><span>公众号AppId：</span>                           
+                            <input type="text" value="" id="txtWeChatAppId" /></li>*@ @*<li style=""><span>公众号Secret：</span>                           
+                            <input type="text" value="" id="txtWeChatSecret" /></li>*@
+                        <li style=""><span>二维码类型：</span>
+                            <select id="txtQRType">
+                                <option value="0">门店</option>
+                                <option value="1">桌号</option>
+                                <option value="2">店员</option>
+                                <option value="3">推广主</option>
+                            </select></li>
+                    </ul>
+                </div>
+                <div style="clear: both;">
+                </div>
+            </div>
+            <div class="butt" style="text-align: center; width: 98%; margin: 20px;">
+                <a href="javascript:;" class="btn120" id="btnSubmit" onclick="SaveData()">保存</a>
+                <a id="btnCancel" href="javascript:;" class="btn120" onclick="closeWindow()" style="margin-left: 20px;">
+                    取消</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="content">
+    <div class="right right1">
+        <div class="spfb_t">
+            <div class="spfb_t_l" style="width: 800px">
+                <ul>
+                    <li>
+                        <h2>
+                            获取二维码</h2>
+                    </li>
+                    <li style=""><span>公众号：</span>
+                        <input type="text" value="" id="txtWeChatTicket" /></li>
+                </ul>
+            </div>
+            <div class="butt" style="text-align: center; width: 98%; margin: 20px;">
+                <a href="javascript:;" class="btn120" id="btnGetWeChatQRCode" onclick="GetWeChatQRCode()">
+                    提交</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="divHidden" style="display: none;">
+    <input type="hidden" id="hidWeChatQRCodeId" value="" />
+</div>
+<script type="text/javascript">
+    //提交发布
+    function SaveData() {
+        if (ValidateRule() != false) {
+            initSubmitParam();
+        }
+    }
+    //传入后台参数
+    function initSubmitParam() {
+        var sendData = {
+            //            "cdto.id": $("#hidWeChatQRCodeId").val(),
+            "cdto.weChatPublicCode": $("#txtWeChatPublicCode").val(),
+            //            "cdto.weChatAppId": $("#txtWeChatAppId").val(),
+            //            "cdto.weChatSecret": $("#txtWeChatSecret").val(),
+            "cdto.qrType": $("#txtQRType").val(),
+            "cdto.isDel": false
+        };
+        $.ajax({
+            async: true,
+            type: "POST",
+            dataType: "json",
+            url: "/WeChatQRCode/WeChatQRCodeManage/CreateWeChatQrCodeByCustomAppId",
+            data: sendData,
+            success: function (data) {
+                if (data.ret.isSuccess) {
+                    alert("发布成功！");
+                    $("#txtWeChatTicket").val(data.ticket);
+                }
+                else {
+                    alert(data.ret.Message);
+                }
+            },
+            error: function (err) {
+                alert("发布失败.");
+            }
+        });
+    }
+    //发布时检查输入
+    function ValidateRule() {
+        if ($("#txtWeChatPublicCode").val() == "") {
+            alert("请填写公众号！");
+            return false;
+        }
+        //        if ($("#txtWeChatAppId").val() == "") {
+        //            alert("请填写公众号AppId");
+        //            return false;
+        //        }
+        //        if ($("#txtWeChatSecret").val() == "") {
+        //            alert("请填写公众号Secret！");
+        //            return false;
+        //        }
+        return true;
+    }
+
+    function GetWeChatQRCode() {
+        if ($("#txtWeChatTicket").val() === "") {
+            alert("请填写票据！");
+            return false;
+        }
+        window.open("https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=" + $("#txtWeChatTicket").val());
+    }    
+</script>

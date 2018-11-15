@@ -1,0 +1,63 @@
+﻿@{
+    Layout = null;
+    List<Jinher.AMP.BTP.Deploy.StoreDTO> storeDTOList = ViewBag.StoreList;
+    int rows = ViewBag.Count;
+    int lastIndex = ViewBag.lastIndex;
+}
+
+ 
+<input type="hidden" id="rowcounts" value="@rows"/>
+<table id="dataTable" border="0" cellspacing="0" cellpadding="0" class="m_talbe m_talbe2">
+    <tr class="t_tr1">
+        <td class="one" style="width: 43px;">
+            序号
+        </td>
+        <td class="two">
+            门店名称
+        </td>
+        <td class="three">
+            门店地址
+        </td>
+        <td class="four" width="200px">
+            联系电话
+        </td>
+        <td class="five">
+            门店图片
+        </td>
+        <td class="eight">
+            操作
+        </td>
+    </tr>
+    @{
+        if (storeDTOList != null)
+        {
+            int index = 1;
+            foreach (Jinher.AMP.BTP.Deploy.StoreDTO tempModel in storeDTOList)
+            { 
+                               
+        <tr class="t_tr2">
+            <td class="one" style="width: 43px;">
+               @(lastIndex + index)
+            </td>
+            <td class="two">
+                @tempModel.Name
+            </td>
+            <td class="three">
+               @tempModel.Address
+            </td>
+            <td class="four">
+                @tempModel.Phone
+            </td>
+            <td class="five" style="padding: 10px 0;">
+                <img src="@tempModel.picture" alt=""  width="140" height="140" draggable="false" />
+            </td>
+            <td class="eight">
+                <span><a href="/Store/UpdateStore?storeId=@tempModel.Id">编辑</a></span> <span><a href="javascript:void(0)" class="del" id="@tempModel.Id">
+                    删除</a></span>
+            </td>
+        </tr>
+                                                                                                                                     index++;
+            }
+        }
+    }
+</table>

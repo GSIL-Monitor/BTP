@@ -1,0 +1,265 @@
+﻿@{
+    ViewBag.Title = "评价详情";
+    Jinher.AMP.BTP.Deploy.CustomDTO.CommodityReplyVM reply = ViewBag.ReviewList;
+}
+<head>
+    <title>评价详情页</title>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            $('#closeBox').click(function () {
+                $('.ui-dialog-titlebar-button').trigger('click')
+            });
+
+            $("#box4").bind("click", function () {
+                if (confirm('您确认关闭吗？')) {
+                    $("#reply").hide();
+                }
+                else {
+
+
+                    return;
+
+                }
+
+
+
+
+
+            });
+
+            $(".re").bind("click", function () {
+                $("#reply").show();
+            });
+
+            function showContent(event, data) {
+                $("#dataTable").replaceWith(data);
+            }
+
+            $("#pager").jhpager({
+                dataType: 'html',
+                requestType: 'post',
+                dataSource: '/Review/CommodityReview',
+                async: true,
+                totalCount: '@ViewBag.Count',
+                rowNum: 10,
+                requestSuccess: showContent
+            });
+        })
+
+
+        function Message() {
+            alert("已回复，等待买家回复");
+        }
+
+        function toReplay(id) {
+            reviewID = id;
+            var bodyWidth = document.documentElement.clientWidth; //宽
+            var left = bodyWidth / 2 - 700 / 2;
+            var top;
+            top = $(window.parent).scrollTop() + 110;
+            $("#reply").jhtablebox({
+                title: '快速回复',
+                height: 220,
+                width: 700,
+                resizable: false,
+                modal: true,
+                position: [left, top],
+                buttons: {},
+                close: function () {
+                }
+            });
+        }
+        function Bsubmit(obj) {
+            if (!window.senMessage) {
+                var content = $("#Content").val();
+                if (content.length < 1) {
+                    alert("回复内容不能为空！");
+                    return;
+                }
+                if (content.length > 140) {
+                    alert("回复不能超过140个字符");
+                    return;
+                } else {
+                    window.senMessage = $.ajax({
+                        url: '/Review/RespondComment',
+                        type: 'post',
+                        data: { reviewID: reviewID, content: encodeURI(content) },
+                        success: function (data) {
+                            if (data.Result == true) {
+                                alert(data.Messages);
+                                window.location.href = "/Review/Index";
+                            } else {
+                                alert(data.Messages);
+                                window.senMessage = null;
+                            }
+                        },
+                        error: function () {
+                            alert("请稍后再试！");
+                            window.addStore = null;
+                        }
+                    });
+                }
+            }
+        }
+
+        function closeWindow() {
+            //window.close();
+            window.location.href = "/Review/Index";
+        }
+    </script>
+    <style type="text/css">
+        .manag_bot .m_talbe tr.t_tr2 td.eight a:hover
+        {
+            color: #80BDE3;
+        }
+        .btn120
+        {
+            display: inline-block;
+            width: 120px;
+            height: 28px;
+            line-height: 28px;
+            background: url(../../Content/default/images/btn120.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+        }
+    </style>
+</head>
+<div class="box" style="padding: 0; width: 100%;">
+    <div class="content">
+        <div>
+            <div class="manag_top  manag_top2" style="margin-top: 20px; margin-left: 60px;">
+                <div class="manag_top2_left" style="margin-left: 0; margin-left: 0;">
+                    <img src="@reply.CommodityPicture" alt="" width="85" height="85" /></div>
+                <div class="manag_top2_right">
+                    <span>@reply.CommodityName</span><br />
+                </div>
+                <div style="margin-top: 50px; margin-right: 120px; float: right;">
+                    <a href="#" class="btn120" onclick="closeWindow()" style="margin-left: 20px;">返回</a></div>
+            </div>
+            <div class="manag_bot" style="width: auto; padding: 0 60px;">
+                <table id="dataTable" border="0" cellspacing="0" cellpadding="0" class="m_talbe m_talbe5"
+                    style="width: 100%; margin-left: 0">
+                    <tr class="t_tr1">
+                        <td class="one">
+                            序号
+                        </td>
+                        <td class="two">
+                            评价内容
+                        </td>
+                        <td class="three">
+                            评价人昵称
+                        </td>
+                        <td class="four">
+                            评价时间
+                        </td>
+                        <td class="eight">
+                            操作
+                        </td>
+                    </tr>
+                    @{ int index = 1;}
+                    @if (reply.ReviewList.Count > 0 && reply.ReviewList != null)
+                    {
+
+                        foreach (var item in reply.ReviewList)
+                        {
+                        <tr class="t_tr2">
+                            <td class="one">@index
+                            </td>
+                            <td class="two" style="text-align: left; padding: 0 10px; word-break: break-all;">
+                                @* <span class="one" style="text-align:left;padding:0 10px;color:#8C94A9">@item.Details</span><br />
+                                    @foreach (var replys in item.ReplyList)
+                                    {
+                                        <span>@replys.ReplyerUserName ：@replys.ReplyerDetails</span> 
+                                    }*@ <font style="color: #3F5164">
+                                        @{
+                                       string reName = string.Empty;
+                                       if (item.ReviewUserName == "" || item.ReviewUserName == null || item.ReviewUserName == "null")
+                                       {
+                                           reName = "匿名用户:";
+                                       }
+                                       else
+                                       {
+                                           reName = item.ReviewUserName + ":";
+                                       }                                   
+                                        }
+                                        @reName @item.Details </font>
+                                @if (item.ReplyList.Count > 0 || item.ReplyList != null)
+                                {
+                                    int i = 1;
+                                    foreach (var re in item.ReplyList)
+                                    {
+                                        string uName = string.Empty;
+                                        if (re.ReplyerUserName == "" || re.ReplyerUserName == null || re.ReplyerUserName == "null")
+                                        {
+                                            uName = "匿名用户:";
+                                        }
+                                        else
+                                        {
+                                            uName = re.ReplyerUserName + ":";
+                                        }
+                                        if (i % 2 != 0)
+                                        {
+                                        <p class="se2" style="margin: 10px 0 10px 0;">
+                                        @uName @re.ReplyerDetails</p>
+                                            
+                                        }
+                                        else
+                                        {
+                                        <p class="se2" style="margin: 10px 0 10px 0;">
+                                        <font style="color: #3F5164">@uName @re.ReplyerDetails</font></p>
+                                            
+                                        }
+                                        i++;
+                                    }
+                                }
+                            </td>
+                            <td class="three">
+                                @{
+                                string reuName = string.Empty;
+                                if (item.ReviewUserName == "" || item.ReviewUserName == null || item.ReviewUserName == "null")
+                                {
+                                    reuName = "无";
+                                }
+                                else
+                                {
+                                    reuName = item.ReviewUserName;
+                                }
+                                   
+                                }
+                                @reuName
+                            </td>
+                            <td class="four">@item.SubTime
+                            </td>
+                            @if (item.IsReply == false)
+                            {
+                                <td class="eight">
+                                    <span><a href="javascript:void(0)" onclick="toReplay('@item.ReviewId')" class="re">回复</a></span>
+                                </td>}
+                            else
+                            {
+                                <td class="eight">
+                                    <span><a href="javascript:void(0)" onclick="Message()">回复</a></span>
+                                </td>
+                            }
+                        </tr> 
+                            index++;
+                        }
+                    }
+                </table>
+                <div id="pager">
+                </div>
+            </div>
+            <div class="reply" id="reply" style="display: none">
+                <textarea id="Content"></textarea>
+                <button id="btnSubmit" onclick="Bsubmit(this)">
+                    发送</button>
+                <button id="closeBox">
+                    取消</button>
+            </div>
+        </div>
+    </div>
+</div>

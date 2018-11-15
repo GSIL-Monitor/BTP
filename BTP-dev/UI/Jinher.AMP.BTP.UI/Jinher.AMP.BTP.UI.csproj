@@ -1,0 +1,3074 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{51F21956-14AE-4ABE-AED0-326A1DED55F0}</ProjectGuid>
+    <ProjectTypeGuids>{E53F8FEA-EAE0-44A6-8774-FFD645390401};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Jinher.AMP.BTP.UI</RootNamespace>
+    <AssemblyName>Jinher.AMP.BTP.UI</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+    <UseIISExpress>false</UseIISExpress>
+    <MvcProjectUpgradeChecked>true</MvcProjectUpgradeChecked>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>4.0</OldToolsVersion>
+    <Use64BitIISExpress />
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>Bin\Jinher.AMP.BTP.UI.XML</DocumentationFile>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Jinher.AMP.ADM.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.ADM.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.ADM.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.ADM.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.App.Deploy, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.App.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.App.IBP, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.App.IBP.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.App.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.App.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.BAC.Deploy, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.BAC.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.BAC.IBP, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.BAC.IBP.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.BTP.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.BTP.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.CBC.Deploy, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.CBC.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.CBC.IBP">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.CBC.IBP.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.CBC.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.CBC.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.Coupon.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.Coupon.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.Coupon.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.Coupon.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.DSS.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.DSS.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.DSS.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.DSS.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.EBC.Common">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Implement\Jinher.AMP.EBC.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.EBC.Deploy, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.EBC.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.EBC.IBP">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.EBC.IBP.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.EBC.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.EBC.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.FSP.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.FSP.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.FSP.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.FSP.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.LBP.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.LBP.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.PIP.ISV, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.PIP.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.Portal.Common">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Implement\Jinher.AMP.Portal.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.Promotion.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.Promotion.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.SNS.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.SNS.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.SNS.IBP">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.SNS.IBP.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.SNS.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.SNS.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.Store.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.Store.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.Store.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.Store.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.WCP.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.WCP.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.WCP.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.WCP.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.YJB.Deploy, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.YJB.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.YJB.ISV, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.YJB.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.ZPH.Deploy">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.ZPH.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.ZPH.ISV">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.ZPH.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.AppManage.BE">
+      <HintPath>..\..\..\..\..\Lib\JAP\Implement\Jinher.JAP.AppManage.BE.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.AppManage.Deploy">
+      <HintPath>..\..\..\..\..\Lib\JAP\Interface\Jinher.JAP.AppManage.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.BaseApp.FileServer.Deploy">
+      <HintPath>..\..\..\..\..\Lib\JAP\Interface\Jinher.JAP.BaseApp.FileServer.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.BaseApp.FileServer.ISV">
+      <HintPath>..\..\..\..\..\Lib\JAP\Interface\Jinher.JAP.BaseApp.FileServer.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.BaseApp.Portal">
+      <HintPath>..\..\..\..\..\Lib\JAP\Implement\Jinher.JAP.BaseApp.Portal.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.BaseApp.Portal.Interface, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\JAP\Interface\Jinher.JAP.BaseApp.Portal.Interface.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.BaseApp.Tools.Deploy">
+      <HintPath>..\..\..\..\..\Lib\JAP\Interface\Jinher.JAP.BaseApp.Tools.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.BaseApp.Tools.ISV">
+      <HintPath>..\..\..\..\..\Lib\JAP\Interface\Jinher.JAP.BaseApp.Tools.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.BF.BE, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1829ca90344a0036, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\JAP\Implement\Jinher.JAP.BF.BE.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.BF.BP">
+      <HintPath>..\..\..\..\..\Lib\JAP\Implement\Jinher.JAP.BF.BP.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.BF.SV">
+      <HintPath>..\..\..\..\..\Lib\JAP\Implement\Jinher.JAP.BF.SV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.Cache.CacheWrapper, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cf9e7442103fe422, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\JAP\Implement\Jinher.JAP.Cache.CacheWrapper.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.MVC.GlobalFiter">
+      <HintPath>..\..\..\..\..\Lib\JAP\Implement\Jinher.JAP.MVC.GlobalFiter.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.PL">
+      <HintPath>..\..\..\..\..\Lib\JAP\Implement\Jinher.JAP.PL.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.RM.Deploy">
+      <HintPath>..\..\..\..\..\Lib\JAP\Interface\Jinher.JAP.RM.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.ShortUrl.ISV">
+      <HintPath>..\..\..\..\..\Lib\JAP\Interface\Jinher.JAP.ShortUrl.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.SSOCenter.BE">
+      <HintPath>..\..\..\..\..\Lib\JAP\Implement\Jinher.JAP.SSOCenter.BE.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.SSOCenter.Deploy">
+      <HintPath>..\..\..\..\..\Lib\JAP\Interface\Jinher.JAP.SSOCenter.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Microsoft.Web.Administration, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\TP\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI">
+      <HintPath>..\..\..\..\..\Lib\TP\NPOI.dll</HintPath>
+    </Reference>
+    <Reference Include="RouteDebug">
+      <HintPath>..\..\..\..\..\Lib\TP\RouteDebug.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Helpers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\Lib\TP\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.ServiceModel.DomainServices.Hosting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\Lib\TP\System.ServiceModel.DomainServices.Hosting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ServiceModel.DomainServices.Server, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\Lib\TP\System.ServiceModel.DomainServices.Server.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mobile" />
+    <Reference Include="Jinher.JAP.BF.BE.Deploy">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\JAP\Interface\Jinher.JAP.BF.BE.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.BF.ISV">
+      <HintPath>..\..\..\..\..\Lib\JAP\Interface\Jinher.JAP.BF.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.BF.IBP">
+      <HintPath>..\..\..\..\..\Lib\JAP\Interface\Jinher.JAP.BF.IBP.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.Common">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\JAP\Implement\Jinher.JAP.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.Metadata">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\JAP\Implement\Jinher.JAP.Metadata.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.MVC">
+      <HintPath>..\..\..\..\..\Lib\bin\Jinher.JAP.MVC.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.MVC.UIJquery">
+      <HintPath>..\..\..\..\..\Lib\bin\Jinher.JAP.MVC.UIJquery.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="alipay\AlipayConfig.cs" />
+    <Compile Include="alipay\AlipayCore.cs" />
+    <Compile Include="alipay\AlipayNotify.cs" />
+    <Compile Include="alipay\RSA.cs" />
+    <Compile Include="Areas\WeChatQRCode\Controllers\WeChatQRCodeManageController.cs" />
+    <Compile Include="Areas\WeChatQRCode\WeChatQRCodeAreaRegistration.cs" />
+    <Compile Include="Commons\CategoryHelper.cs" />
+    <Compile Include="Commons\QRCodeHelper.cs" />
+    <Compile Include="Commons\ValidateCode.cs" />
+    <Compile Include="Commons\ZshwlBP.cs" />
+    <Compile Include="Controllers\AppCommissionController.cs" />
+    <Compile Include="Controllers\AppImageController.cs" />
+    <Compile Include="Controllers\AppManageController.cs" />
+    <Compile Include="Controllers\AppTradeInfoController.cs" />
+    <Compile Include="Controllers\BrandController.cs" />
+    <Compile Include="Controllers\CardVoucherController.cs" />
+    <Compile Include="Controllers\CarInsuranceController.cs" />
+    <Compile Include="Controllers\CategoryController.cs" />
+    <Compile Include="Controllers\ChannelController.cs" />
+    <Compile Include="Controllers\CommodityAttributeController.cs" />
+    <Compile Include="Controllers\CommoditySpreadDividendController.cs" />
+    <Compile Include="Controllers\CommodityController.cs" />
+    <Compile Include="Controllers\CommodityController_CY.cs" />
+    <Compile Include="Controllers\CommodityDetailController.cs" />
+    <Compile Include="Controllers\CommodityManageController.cs" />
+    <Compile Include="Controllers\CommodityOrderController.cs" />
+    <Compile Include="Controllers\CommodityOrderController_CY.cs" />
+    <Compile Include="Controllers\CommodityOrderController_CYManage.cs" />
+    <Compile Include="Controllers\CommoditySelectController.cs" />
+    <Compile Include="Controllers\CrowdController.cs" />
+    <Compile Include="Controllers\CrowdfundingController.cs" />
+    <Compile Include="Controllers\CustomerServiceController.cs" />
+    <Compile Include="Controllers\CustomMenuController.cs" />
+    <Compile Include="Controllers\DistributionApplyAuditorController.cs" />
+    <Compile Include="Controllers\ExpressController.cs" />
+    <Compile Include="Controllers\ExpressOrderTemplateController.cs" />
+    <Compile Include="Controllers\FreightController.cs" />
+    <Compile Include="Controllers\ImageUploadController.cs" />
+    <Compile Include="Controllers\ImgBatchUploadController.cs" />
+    <Compile Include="Controllers\ExpressRouteController.cs" />
+    <Compile Include="Controllers\InnerCategoryController.cs" />
+    <Compile Include="Controllers\InsuranceCompanyController.cs" />
+    <Compile Include="Controllers\InvoiceController.cs" />
+    <Compile Include="Controllers\JDEclpController.cs" />
+    <Compile Include="Controllers\JdCommodityController.cs" />
+    <Compile Include="Controllers\JdlogsController.cs" />
+    <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\MallApplyController.cs" />
+    <Compile Include="Controllers\MobileController.cs" />
+    <Compile Include="Controllers\MobileController_Union.cs" />
+    <Compile Include="Controllers\OpenApiController.cs" />
+    <Compile Include="Controllers\OrderExceptionController.cs" />
+    <Compile Include="Controllers\OrderPrintController.cs" />
+    <Compile Include="Controllers\PaymentController.cs" />
+    <Compile Include="Controllers\PaymentNotifyController.cs" />
+    <Compile Include="Controllers\PromotionController.cs" />
+    <Compile Include="Controllers\RefundCompareController.cs" />
+    <Compile Include="Controllers\RefundCouponController.cs" />
+    <Compile Include="Controllers\SelectCommodityController.cs" />
+    <Compile Include="Controllers\SelfTakeStationController.cs" />
+    <Compile Include="Controllers\SetMobileController.cs" />
+    <Compile Include="Controllers\SettleAccountsController.cs" />
+    <Compile Include="Controllers\SettlementManageController.cs" />
+    <Compile Include="Controllers\SettlingAccountController.cs" />
+    <Compile Include="Controllers\ShareRedEnvelopeController.cs" />
+    <Compile Include="Controllers\ReviewController.cs" />
+    <Compile Include="Controllers\SecondAttributeController.cs" />
+    <Compile Include="Controllers\ShareController.cs" />
+    <Compile Include="Controllers\EsShopCommissionController.cs" />
+    <Compile Include="Controllers\SpreadController.cs" />
+    <Compile Include="Controllers\StoreController.cs" />
+    <Compile Include="Controllers\StoreController_CY.cs" />
+    <Compile Include="Controllers\SupplierController.cs" />
+    <Compile Include="Controllers\TestController.cs" />
+    <Compile Include="Controllers\DistributeController.cs" />
+    <Compile Include="Controllers\DiyGroupController.cs" />
+    <Compile Include="Controllers\StorefrontController.cs" />
+    <Compile Include="Controllers\MobileController_CY.cs" />
+    <Compile Include="Controllers\DistributeController_mobile.cs" />
+    <Compile Include="Controllers\SpreadLv2Controller.cs" />
+    <Compile Include="Controllers\PresentPromotionController.cs" />
+    <Compile Include="Controllers\CommodityChangedController.cs" />
+    <Compile Include="Controllers\AuditCommodityController.cs" />
+    <Compile Include="Controllers\JDAuditCommodityController.cs" />
+    <Compile Include="Controllers\ThirdNotifyController.cs" />
+    <Compile Include="Controllers\UnlockController.cs" />
+    <Compile Include="Controllers\YJEmployeeController.cs" />
+    <Compile Include="Controllers\JobController.cs" />
+    <Compile Include="Controllers\AutoSettingPriceController.cs" />
+    <Content Include="Content\css\MyDiyGroupNew.css" />
+    <Content Include="Content\h5New\MyDiyGroup.js" />
+    <Content Include="Content\images\fzerrorlog.png" />
+    <Content Include="Content\images\no-presell.png" />
+    <Content Include="Content\images\pintuanchenggong.png" />
+    <Content Include="Content\images\pintuanshibai.png" />
+    <Content Include="Content\images\pt-success.png" />
+    <Content Include="Content\lbt\shutter.css" />
+    <Content Include="Content\lbt\shutter.js" />
+    <Content Include="Content\lbt\storeList.css" />
+    <Content Include="Content\lbt\storeList.js" />
+    <Content Include="Content\lbt\velocity.js" />
+    <Content Include="Content\Mobile\allEvent.min.js" />
+    <Content Include="Content\Mobile\bridge.js" />
+    <Content Include="Content\Mobile\guanbi-bai.png" />
+    <Content Include="Content\Mobile\icon-close.png" />
+    <Content Include="Content\Mobile\icon_add.png" />
+    <Content Include="Content\Mobile\wuliu1.png" />
+    <Content Include="Content\Mobile\wuliu2.png" />
+    <Content Include="dist\css\commoditydetaildiygroup.css" />
+    <Content Include="dist\css\JdOrderServiceTrackInfo.css" />
+    <Content Include="dist\css\CommodityOrdinaryDetail.css" />
+    <Content Include="dist\css\MyOrderList.css" />
+    <Content Include="dist\css\refundList.css" />
+    <Content Include="dist\css\RefundOrder.css" />
+    <Content Include="dist\css\RefundType.css" />
+    <Content Include="dist\css\tradeSuccessfully.css" />
+    <Content Include="dist\js\commoditydetaildiygroup.js" />
+    <Content Include="Content\Mobile\daifahuo.png" />
+    <Content Include="Content\Mobile\daifukuan.png" />
+    <Content Include="Content\Mobile\jiaoyiguanbi.png" />
+    <Content Include="Content\Mobile\jiaoyiwancheng.png" />
+    <Content Include="Content\Mobile\mail_plus.png" />
+    <Content Include="Content\Mobile\no-order.png" />
+    <Content Include="Content\Mobile\order-banner.png" />
+    <Content Include="Content\Mobile\weixinzhifu.png" />
+    <Content Include="Content\Mobile\yifahuo.png" />
+    <Content Include="Content\Mobile\yinlianzhifu.png" />
+    <Content Include="Content\Mobile\yj-angle-right.png" />
+    <Content Include="Content\Mobile\yj-cart-angle-right.png" />
+    <Content Include="Content\Mobile\yj-cart-empty.png" />
+    <Content Include="Content\Mobile\yj-user.png" />
+    <Content Include="Content\Mobile\zhifubaozhifu.png" />
+    <Content Include="Content\Mobile\zphStyle\MyOrderDetail.css" />
+    <Content Include="Content\MultiSelect\jquery.multiselect.css" />
+    <Content Include="Content\MultiSelect\jquery.ui.all.css" />
+    <Content Include="Content\MultiSelect\prettify.css" />
+    <Content Include="Content\MultiSelect\style.css" />
+    <Content Include="dist\js\CommodityOrdinaryDetail.js" />
+    <Compile Include="Filters\ArgumentExceptionDealAttribute.cs" />
+    <Compile Include="Filters\CheckAppIdAttribute.cs" />
+    <Compile Include="Filters\CheckUserIdAttribute.cs" />
+    <Compile Include="Filters\DealUInfoInShareAttribute.cs" />
+    <Compile Include="Filters\WeixinOAuthOpenIdAttribute.cs" />
+    <Compile Include="Filters\CheckParamTypeAttribute.cs" />
+    <Compile Include="Filters\DealMobileUrlAttribute.cs" />
+    <Compile Include="Handler\FileUploadHelper.cs" />
+    <Compile Include="Handler\ImgBatchUploadHandler.ashx.cs">
+      <DependentUpon>ImgBatchUploadHandler.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Handler\ImgHandler.ashx.cs">
+      <DependentUpon>ImgHandler.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Handler\PhoneUploadHandler.ashx.cs">
+      <DependentUpon>PhoneUploadHandler.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Helper.cs" />
+    <Compile Include="ImagePaint.ashx.cs">
+      <DependentUpon>ImagePaint.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="ModelLogic\DistributionIdentityLogic.cs" />
+    <Compile Include="Models\APPManageVM.cs" />
+    <Compile Include="Models\AppMangerModel.cs" />
+    <Compile Include="Models\AppModel.cs" />
+    <Compile Include="Models\BrandModel.cs" />
+    <Compile Include="Models\CommodityModel.cs" />
+    <Compile Include="Models\CommodityVMUI.cs" />
+    <Compile Include="Models\CouponNewDTOExtend.cs" />
+    <Compile Include="Models\CrowdfundingVM.cs" />
+    <Compile Include="Models\DeliveryAddressModel.cs" />
+    <Compile Include="Models\GoldPayDTO.cs" />
+    <Compile Include="Models\ImageInfo.cs" />
+    <Compile Include="Models\JsapiTicketResult.cs" />
+    <Compile Include="Models\OpenModel.cs" />
+    <Compile Include="Models\OptimalCouponParam.cs" />
+    <Compile Include="Models\OrderDetailVM.cs" />
+    <Compile Include="Models\OrderExceptionVM.cs" />
+    <Compile Include="Models\OrderInfo.cs" />
+    <Compile Include="Models\Model.cs" />
+    <Compile Include="Models\OrderTradeInfo.cs" />
+    <Compile Include="Models\PayModel.cs" />
+    <Compile Include="Models\PaySourceVM.cs" />
+    <Compile Include="Models\SelfTakeStationVM.cs" />
+    <Compile Include="Models\StoreVM.cs" />
+    <Compile Include="Models\UserModel.cs" />
+    <Compile Include="Models\CommonCookies.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="WAPAlipay\AlipayConfig.cs" />
+    <Compile Include="WAPAlipay\AlipayFunction.cs" />
+    <Compile Include="WAPAlipay\AlipayService.cs" />
+    <Compile Include="WAPAlipay\AlipaySubmit.cs" />
+    <Compile Include="WAPAlipay\MD5.cs" />
+    <Compile Include="WAPAlipay\RSA.cs" />
+    <Content Include="Configuration\CustomConfig\Jinher.AMP.BTP\ProvinceCity.xml" />
+    <Content Include="Content\css\swiper.css" />
+    <Content Include="Content\default\jquery.ui.datepicker.css" />
+    <Content Include="Content\h5New\detail.css" />
+    <Content Include="Content\ExpressTemplate\images\bg.jpg" />
+    <Content Include="Content\ExpressTemplate\images\bg2.jpg" />
+    <Content Include="Content\ExpressTemplate\images\loader.gif" />
+    <Content Include="Content\ExpressTemplate\index.html" />
+    <Content Include="Content\ExpressTemplate\js\index.js" />
+    <Content Include="Content\ExpressTemplate\libs\components.js" />
+    <Content Include="Content\ExpressTemplate\libs\vue-resource.js" />
+    <Content Include="Content\ExpressTemplate\libs\vue-resource.min.js" />
+    <Content Include="Content\ExpressTemplate\libs\vue.min.js" />
+    <Content Include="Content\ExpressTemplate\styles\index.css" />
+    <Content Include="Content\Express\images\bg.jpg" />
+    <Content Include="Content\Express\images\bg2.jpg" />
+    <Content Include="Content\Express\images\loader.gif" />
+    <Content Include="Content\Express\index.html" />
+    <Content Include="Content\Express\js\index.js" />
+    <Content Include="Content\Express\libs\components.js" />
+    <Content Include="Content\Express\libs\vue-resource.js" />
+    <Content Include="Content\Express\libs\vue-resource.min.js" />
+    <Content Include="Content\Express\libs\vue.min.js" />
+    <Content Include="Content\Express\styles\index.css" />
+    <Content Include="Content\images\ApplyCom.png" />
+    <Content Include="Content\images\AuidtCom.png" />
+    <Content Include="Content\images\AutoSettingPrice.png" />
+    <Content Include="Content\images\JdComAuto.png" />
+    <Content Include="Content\images\JDEditCostPrice.png" />
+    <Content Include="Content\images\JDEditPrice.png" />
+    <Content Include="Content\images\jderrorlog.png" />
+    <Content Include="Content\images\JDNoGoods.png" />
+    <Content Include="Content\images\preloader.gif" />
+    <Content Include="Content\images\record_empty.png" />
+    <Content Include="Content\images\yjb-bg.png" />
+    <Content Include="Content\images\yxerrorlog.png" />
+    <Content Include="Content\images\zhiliquan%402x.png" />
+    <Content Include="Content\jqGrid\grid.locale-cn.js" />
+    <Content Include="Content\jqGrid\jquery.jqGrid.min.js" />
+    <Content Include="Content\jqGrid\ui.jqgrid.css" />
+    <Content Include="Content\jquery\jquery-1.12.4.min.js" />
+    <Content Include="Content\js\mobile_libs\vue-mobileKit.js" />
+    <Content Include="Content\js\mobile_cy\storeList.js" />
+    <Content Include="Content\js\mobile_cy\storeList.js" />
+    <Content Include="Content\Mobile\1.jpg" />
+    <Content Include="Content\Mobile\1.png" />
+    <Content Include="Content\Mobile\2.jpg" />
+    <Content Include="Content\Mobile\2.png" />
+    <Content Include="Content\Mobile\3.jpg" />
+    <Content Include="Content\Mobile\activity-end-seal.png" />
+    <Content Include="Content\Mobile\activity-end.png" />
+    <Content Include="Content\Mobile\activityRule.css" />
+    <Content Include="Content\Mobile\add-icon-no.png" />
+    <Content Include="Content\Mobile\add-rel-tt.png" />
+    <Content Include="Content\Mobile\add-sr1.png" />
+    <Content Include="Content\Mobile\add.png" />
+    <Content Include="Content\Mobile\add2cart.png" />
+    <Content Include="Content\Mobile\addressManage.css" />
+    <Content Include="Content\Mobile\addressManage.js" />
+    <Content Include="Content\Mobile\address_checked.png" />
+    <Content Include="Content\Mobile\address_default.png" />
+    <Content Include="Content\Mobile\add_advice1.jpg" />
+    <Content Include="Content\Mobile\add_close.png" />
+    <Content Include="Content\Mobile\add_gouwuche.png" />
+    <Content Include="Content\Mobile\add_hover.png" />
+    <Content Include="Content\Mobile\add_i_shoucang.png" />
+    <Content Include="Content\Mobile\add_zph.png" />
+    <Content Include="Content\Mobile\aliwangwang.png" />
+    <Content Include="Content\Mobile\allEvent.js" />
+    <Content Include="Content\Mobile\allEvent_20161214.js" />
+    <Content Include="Content\Mobile\angle-down.png" />
+    <Content Include="Content\Mobile\angle-left.png" />
+    <Content Include="Content\Mobile\angle-right.png" />
+    <Content Include="Content\Mobile\angle-right2.png" />
+    <Content Include="Content\Mobile\app.css" />
+    <Content Include="Content\Mobile\back.png" />
+    <Content Include="Content\Mobile\back1.png" />
+    <Content Include="Content\Mobile\become-group-fail-seal.png" />
+    <Content Include="Content\Mobile\become-group-success-seal.png" />
+    <Content Include="Content\Mobile\become-group-success.png" />
+    <Content Include="Content\Mobile\becomeGroup.css" />
+    <Content Include="Content\Mobile\behaviorRecord.js" />
+    <Content Include="Content\Mobile\bg_1.png" />
+    <Content Include="Content\Mobile\bg_2.png" />
+    <Content Include="Content\Mobile\bg_3.png" />
+    <Content Include="Content\Mobile\bg_r_1.png" />
+    <Content Include="Content\Mobile\bianji.png" />
+    <Content Include="Content\Mobile\biaoqian.png" />
+    <Content Include="Content\Mobile\btn_btn_normal9.png" />
+    <Content Include="Content\Mobile\btn_btn_pressed.9.png" />
+    <Content Include="Content\Mobile\b_1.png" />
+    <Content Include="Content\Mobile\b_2.png" />
+    <Content Include="Content\Mobile\b_3.png" />
+    <Content Include="Content\Mobile\b_4.png" />
+    <Content Include="Content\Mobile\b_5.png" />
+    <Content Include="Content\Mobile\b_6.png" />
+    <Content Include="Content\Mobile\card-bt-active.png" />
+    <Content Include="Content\Mobile\card-bt.png" />
+    <Content Include="Content\Mobile\cart.png" />
+    <Content Include="Content\Mobile\check-box-active.png" />
+    <Content Include="Content\Mobile\check-box.png" />
+    <Content Include="Content\Mobile\checkbox-active.png" />
+    <Content Include="Content\Mobile\checkbox.png" />
+    <Content Include="Content\Mobile\clipboard.min.js" />
+    <Content Include="Content\Mobile\close.png" />
+    <Content Include="Content\Mobile\collected.png" />
+    <Content Include="Content\Mobile\collection.png" />
+    <Content Include="Content\Mobile\commodityDetail.js" />
+    <Content Include="Content\Mobile\commodity_default.png" />
+    <Content Include="Content\Mobile\Common.js" />
+    <Content Include="Content\Mobile\com_default.png" />
+    <Content Include="Content\Mobile\contactCustomer.png" />
+    <Content Include="Content\Mobile\contactOwner.png" />
+    <Content Include="Content\Mobile\css.css" />
+    <Content Include="Content\Mobile\delete.png" />
+    <Content Include="Content\Mobile\detail_v1_3.png" />
+    <Content Include="Content\Mobile\dianhua.png" />
+    <Content Include="Content\Mobile\directBuy.js" />
+    <Content Include="Content\Mobile\dis-money.png" />
+    <Content Include="Content\Mobile\dis-yuan.png" />
+    <Content Include="Content\Mobile\distribute\distribution_apply.css" />
+    <Content Include="Content\Mobile\distribute\distribution_edit.css" />
+    <Content Include="Content\Mobile\distribute\distribution_index.css" />
+    <Content Include="Content\Mobile\distribute\distribution_message.css" />
+    <Content Include="Content\Mobile\distribute\distribution_mine.css" />
+    <Content Include="Content\Mobile\distribute\distribution_own.css" />
+    <Content Include="Content\Mobile\distribution.css" />
+    <Content Include="Content\Mobile\distributionIncome.css" />
+    <Content Include="Content\Mobile\distributionIncome.js" />
+    <Content Include="Content\Mobile\distribution_edit.js" />
+    <Content Include="Content\Mobile\duihao.png" />
+    <Content Include="Content\Mobile\editor.png" />
+    <Content Include="Content\Mobile\editorAddress.css" />
+    <Content Include="Content\Mobile\editorAddress.js" />
+    <Content Include="Content\Mobile\expired.png" />
+    <Content Include="Content\Mobile\fanhuidingbu.png" />
+    <Content Include="Content\Mobile\fastclick.min.js" />
+    <Content Include="Content\Mobile\fire-icon.png" />
+    <Content Include="Content\Mobile\fly.js" />
+    <Content Include="Content\Mobile\footer.png" />
+    <Content Include="Content\Mobile\footmenu\ico_sale_.png" />
+    <Content Include="Content\Mobile\footmenu\indent.png" />
+    <Content Include="Content\Mobile\footmenu\indent_.png" />
+    <Content Include="Content\Mobile\footmenu\myHome.png" />
+    <Content Include="Content\Mobile\footmenu\myHome_01.png" />
+    <Content Include="Content\Mobile\footmenu\promotion.png" />
+    <Content Include="Content\Mobile\footmenu\promotion_.png" />
+    <Content Include="Content\Mobile\footmenu\search1.png" />
+    <Content Include="Content\Mobile\footmenu\search1_.png" />
+    <Content Include="Content\Mobile\footmenu\searchZPH.png" />
+    <Content Include="Content\Mobile\footmenu\searchZPH_01.png" />
+    <Content Include="Content\Mobile\footmenu\shoppoingcart_normal.png" />
+    <Content Include="Content\Mobile\footmenu\shoppoingcart_pressed.png" />
+    <Content Include="Content\Mobile\footmenu\stroll.png" />
+    <Content Include="Content\Mobile\footmenu\stroll_pressed.png" />
+    <Content Include="Content\Mobile\free_down.png" />
+    <Content Include="Content\Mobile\getElementData.js" />
+    <Content Include="Content\Mobile\goodsListSelect.css" />
+    <Content Include="Content\Mobile\goTop.png" />
+    <Content Include="Content\Mobile\group.png" />
+    <Content Include="Content\Mobile\guanbi.png" />
+    <Content Include="Content\Mobile\head-icon.png" />
+    <Content Include="Content\Mobile\header.png" />
+    <Content Include="Content\Mobile\home.png" />
+    <Content Include="Content\Mobile\home2.png" />
+    <Content Include="Content\Mobile\homeIcon.png" />
+    <Content Include="Content\Mobile\homeIconed.png" />
+    <Content Include="Content\Mobile\huiyuanzhekou.png" />
+    <Content Include="Content\Mobile\ico.png" />
+    <Content Include="Content\Mobile\iconfont-zhuxiao-64-white.png" />
+    <Content Include="Content\Mobile\indent_.png" />
+    <Content Include="Content\Mobile\iscroll-infinite.js" />
+    <Content Include="Content\Mobile\iscroll-probe.js" />
+    <Content Include="Content\Mobile\iscroll.js" />
+    <Content Include="Content\Mobile\jhWebview.js" />
+    <Content Include="Content\Mobile\jinduanguang.png" />
+    <Content Include="Content\Mobile\jrtgjtgs.jpg" />
+    <Content Include="Content\Mobile\jrtgjtgs.png" />
+    <Content Include="Content\Mobile\JScript1.js" />
+    <Content Include="Content\Mobile\JScript2.js" />
+    <Content Include="Content\Mobile\kucunbuzu.png" />
+    <Content Include="Content\Mobile\kucunbuzu1.png" />
+    <Content Include="Content\Mobile\lianxishangjia.png" />
+    <Content Include="Content\Mobile\line1.png" />
+    <Content Include="Content\Mobile\line2.png" />
+    <Content Include="Content\Mobile\link.png" />
+    <Content Include="Content\Mobile\login.js" />
+    <Content Include="Content\Mobile\mggScrollImg.js" />
+    <Content Include="Content\Mobile\mggScrollImg1.txt" />
+    <Content Include="Content\Mobile\mobileKit-min.css" />
+    <Content Include="Content\Mobile\mobileKit.min.js" />
+    <Content Include="Content\Mobile\mobiscroll.min.css" />
+    <Content Include="Content\Mobile\mobiscroll.min.js" />
+    <Content Include="Content\Mobile\mobiscroll.select.min.js" />
+    <Content Include="Content\Mobile\multiAttributeSelector.js" />
+    <Content Include="Content\Mobile\myDistribution.css" />
+    <Content Include="Content\Mobile\myDistribution.js" />
+    <Content Include="Content\Mobile\myLocation.js" />
+    <Content Include="Content\Mobile\no-become-group.png" />
+    <Content Include="Content\Mobile\nodata.png" />
+    <Content Include="Content\Mobile\normalize.css" />
+    <Content Include="Content\Mobile\no_aliwangwang.png" />
+    <Content Include="Content\Mobile\OrderListstyle\font-awesome.css" />
+    <Content Include="Content\Mobile\OrderListstyle\font\fontawesome-webfont.svg" />
+    <Content Include="Content\Mobile\OrderListstyle\function.css" />
+    <Content Include="Content\Mobile\OrderListstyle\general.css" />
+    <Content Include="Content\Mobile\OrderListstyle\images\headerBg.png" />
+    <Content Include="Content\Mobile\OrderListstyle\images\saw.png" />
+    <Content Include="Content\Mobile\OrderListstyle\myHome.css" />
+    <Content Include="Content\Mobile\OrderListstyle\normalize.css" />
+    <Content Include="Content\Mobile\OrderListstyle\shoppingCart.css" />
+    <Content Include="Content\Mobile\OrderListstyle\skin.css" />
+    <Content Include="Content\Mobile\OrderListstyle\zOrder.css" />
+    <Content Include="Content\Mobile\paizhao.png" />
+    <Content Include="Content\Mobile\pengyouquan.png" />
+    <Content Include="Content\Mobile\phone.png" />
+    <Content Include="Content\Mobile\pic_1.png" />
+    <Content Include="Content\Mobile\posting.css" />
+    <Content Include="Content\Mobile\promotion.png" />
+    <Content Include="Content\Mobile\promotion_.png" />
+    <Content Include="Content\Mobile\provinceCity.js" />
+    <Content Include="Content\Mobile\qiandai.png" />
+    <Content Include="Content\Mobile\quxiao.png" />
+    <Content Include="Content\Mobile\redredenvelope\bg_red.png" />
+    <Content Include="Content\Mobile\redredenvelope\coin.png" />
+    <Content Include="Content\Mobile\redredenvelope\crowdtixing.png" />
+    <Content Include="Content\Mobile\redredenvelope\face.png" />
+    <Content Include="Content\Mobile\redredenvelope\fail.png" />
+    <Content Include="Content\Mobile\redredenvelope\indent_.png" />
+    <Content Include="Content\Mobile\redredenvelope\orgredwei.png" />
+    <Content Include="Content\Mobile\redredenvelope\reded.png" />
+    <Content Include="Content\Mobile\redredenvelope\redguo.png" />
+    <Content Include="Content\Mobile\redredenvelope\redwei.png" />
+    <Content Include="Content\Mobile\redredenvelope\redyi.png" />
+    <Content Include="Content\Mobile\redredenvelope\shoppoingcart_pressed.png" />
+    <Content Include="Content\Mobile\redredenvelope\smallcrowd.png" />
+    <Content Include="Content\Mobile\redredenvelope\stroll_pressed.png" />
+    <Content Include="Content\Mobile\refresh.png" />
+    <Content Include="Content\Mobile\rule-img-1.png" />
+    <Content Include="Content\Mobile\rule-img-2.png" />
+    <Content Include="Content\Mobile\rule-img-3.png" />
+    <Content Include="Content\Mobile\rule-img-4.png" />
+    <Content Include="Content\Mobile\rule-img-5.png" />
+    <Content Include="Content\Mobile\rule-img-6.png" />
+    <Content Include="Content\Mobile\rule-img-7.png" />
+    <Content Include="Content\Mobile\scroll.js" />
+    <Content Include="Content\Mobile\service.png" />
+    <Content Include="Content\Mobile\setAllEvent.js" />
+    <Content Include="Content\Mobile\shanchu.png" />
+    <Content Include="Content\Mobile\shangchuan.png" />
+    <Content Include="Content\Mobile\share-angle.png" />
+    <Content Include="Content\Mobile\shop.png" />
+    <Content Include="Content\Mobile\shoppoingcart_pressed.png" />
+    <Content Include="Content\Mobile\sold-out.png" />
+    <Content Include="Content\Mobile\sort_price_asc.png" />
+    <Content Include="Content\Mobile\sort_price_desc.png" />
+    <Content Include="Content\Mobile\sousuo.png" />
+    <Content Include="Content\Mobile\stay-become-group.png" />
+    <Content Include="Content\Mobile\storeDefault.png" />
+    <Content Include="Content\Mobile\stroll_pressed.png" />
+    <Content Include="Content\Mobile\style\app.css" />
+    <Content Include="Content\Mobile\style\base.css" />
+    <Content Include="Content\Mobile\style\icons.css" />
+    <Content Include="Content\Mobile\style\img\loading.gif" />
+    <Content Include="Content\Mobile\style\mobileKit-min.css" />
+    <Content Include="Content\Mobile\style\mycart.css" />
+    <Content Include="Content\Mobile\style\normalize.css" />
+    <Content Include="Content\Mobile\style\place.css" />
+    <Content Include="Content\Mobile\sub.png" />
+    <Content Include="Content\Mobile\sub_hover.png" />
+    <Content Include="Content\Mobile\tangguoqijiandian.png" />
+    <Content Include="Content\Mobile\thinkChange.css" />
+    <Content Include="Content\Mobile\to2vertical.png" />
+    <Content Include="Content\Mobile\tolist.png" />
+    <Content Include="Content\Mobile\touch.min.js" />
+    <Content Include="Content\Mobile\touchScroll.js" />
+    <Content Include="Content\Mobile\tuoyuan.png" />
+    <Content Include="Content\Mobile\u-add-relpro.png" />
+    <Content Include="Content\Mobile\used.png" />
+    <Content Include="Content\Mobile\wangyin.png" />
+    <Content Include="Content\Mobile\wenhao.png" />
+    <Content Include="Content\Mobile\wuhuo.png" />
+    <Content Include="Content\Mobile\xiaoqiche.png" />
+    <Content Include="Content\Mobile\xiazai.png" />
+    <Content Include="Content\Mobile\xsprice.png" />
+    <Content Include="Content\Mobile\xxprice.png" />
+    <Content Include="Content\Mobile\yilingqu.png" />
+    <Content Include="Content\Mobile\yonghuhong.png" />
+    <Content Include="Content\Mobile\zepto.kslider.js" />
+    <Content Include="Content\Mobile\zepto.min.js" />
+    <Content Include="Content\Mobile\zepto.picLazyLoad.js" />
+    <Content Include="Content\Mobile\zeptodialog\car-popup.css" />
+    <Content Include="Content\Mobile\zeptodialog\car-popup.js" />
+    <Content Include="Content\Mobile\zeptodialog\css\reset.css" />
+    <Content Include="Content\Mobile\zeptodialog\css\widget\button\button.css" />
+    <Content Include="Content\Mobile\zeptodialog\css\widget\button\button.default.css" />
+    <Content Include="Content\Mobile\zeptodialog\css\widget\dialog\dialog.css" />
+    <Content Include="Content\Mobile\zeptodialog\css\widget\dialog\dialog.default.css" />
+    <Content Include="Content\Mobile\zeptodialog\css\widget\dialog\dialog_demo.css" />
+    <Content Include="Content\Mobile\zeptodialog\dialog.css" />
+    <Content Include="Content\Mobile\zeptodialog\js\widget\button.js" />
+    <Content Include="Content\Mobile\zeptodialog\js\widget\dialog.js" />
+    <Content Include="Content\Mobile\zeptodialog\js\zepto.extend.js" />
+    <Content Include="Content\Mobile\zeptodialog\js\zepto.highlight.js" />
+    <Content Include="Content\Mobile\zeptodialog\js\zepto.js" />
+    <Content Include="Content\Mobile\zeptodialog\js\zepto.tanchu.js" />
+    <Content Include="Content\Mobile\zeptodialog\js\zepto.ui.js" />
+    <Content Include="Content\Mobile\zeptodialog\zepto.js" />
+    <Content Include="Content\Mobile\zeptodialog\zepto.tanchu.js" />
+    <Content Include="Content\Mobile\zphStyle\after-sale-management.css" />
+    <Content Include="Content\Mobile\zphStyle\applicationDownloadBanner.css" />
+    <Content Include="Content\Mobile\zphStyle\becomeGroup.css" />
+    <Content Include="Content\Mobile\zphStyle\CateringCommodityList.css" />
+    <Content Include="Content\Mobile\zphStyle\checkLogistics.css" />
+    <Content Include="Content\Mobile\zphStyle\checkRoute.css" />
+    <Content Include="Content\Mobile\zphStyle\clickDownload.css" />
+    <Content Include="Content\Mobile\zphStyle\error.css" />
+    <Content Include="Content\Mobile\zphStyle\favorite.css" />
+    <Content Include="Content\Mobile\zphStyle\font-awesome.css" />
+    <Content Include="Content\Mobile\zphStyle\fonts\fontawesome-webfont.svg" />
+    <Content Include="Content\Mobile\zphStyle\font\fontawesome-webfont.svg" />
+    <Content Include="Content\Mobile\zphStyle\font\jinher.svg" />
+    <Content Include="Content\Mobile\zphStyle\function.css" />
+    <Content Include="Content\Mobile\zphStyle\general.css" />
+    <Content Include="Content\Mobile\zphStyle\goodsInfo.css" />
+    <Content Include="Content\Mobile\zphStyle\goodsinfo2.css" />
+    <Content Include="Content\Mobile\zphStyle\goodsLists.css" />
+    <Content Include="Content\Mobile\zphStyle\goodsListSelect.css" />
+    <Content Include="Content\Mobile\zphStyle\goodsListSelectVertical.css" />
+    <Content Include="Content\Mobile\zphStyle\icons.css" />
+    <Content Include="Content\Mobile\zphStyle\images\activity-end-seal.png" />
+    <Content Include="Content\Mobile\zphStyle\images\activity-end.png" />
+    <Content Include="Content\Mobile\zphStyle\images\angle-right2.png" />
+    <Content Include="Content\Mobile\zphStyle\images\arrow.png" />
+    <Content Include="Content\Mobile\zphStyle\images\assetsbtn.png" />
+    <Content Include="Content\Mobile\zphStyle\images\banner-phone.png" />
+    <Content Include="Content\Mobile\zphStyle\images\banner_bg.png" />
+    <Content Include="Content\Mobile\zphStyle\images\banner_logo.png" />
+    <Content Include="Content\Mobile\zphStyle\images\become-group-fail-seal.png" />
+    <Content Include="Content\Mobile\zphStyle\images\become-group-success-seal.png" />
+    <Content Include="Content\Mobile\zphStyle\images\become-group-success.png" />
+    <Content Include="Content\Mobile\zphStyle\images\bg.png" />
+    <Content Include="Content\Mobile\zphStyle\images\cash.png" />
+    <Content Include="Content\Mobile\zphStyle\images\cash2.png" />
+    <Content Include="Content\Mobile\zphStyle\images\cash3.png" />
+    <Content Include="Content\Mobile\zphStyle\images\checkbox-active.png" />
+    <Content Include="Content\Mobile\zphStyle\images\commission.png" />
+    <Content Include="Content\Mobile\zphStyle\images\coupon.jpg" />
+    <Content Include="Content\Mobile\zphStyle\images\couponSide.png" />
+    <Content Include="Content\Mobile\zphStyle\images\couponSide2.png" />
+    <Content Include="Content\Mobile\zphStyle\images\cross.png" />
+    <Content Include="Content\Mobile\zphStyle\images\fire-icon.png" />
+    <Content Include="Content\Mobile\zphStyle\images\group.png" />
+    <Content Include="Content\Mobile\zphStyle\images\head-icon.png" />
+    <Content Include="Content\Mobile\zphStyle\images\headerBg.png" />
+    <Content Include="Content\Mobile\zphStyle\images\home.png" />
+    <Content Include="Content\Mobile\zphStyle\images\icon-addr.png" />
+    <Content Include="Content\Mobile\zphStyle\images\icon-crowdfunding.png" />
+    <Content Include="Content\Mobile\zphStyle\images\icon-gift.png" />
+    <Content Include="Content\Mobile\zphStyle\images\icon-gold.png" />
+    <Content Include="Content\Mobile\zphStyle\images\icon-like.png" />
+    <Content Include="Content\Mobile\zphStyle\images\icon-msg.png" />
+    <Content Include="Content\Mobile\zphStyle\images\icon-order.png" />
+    <Content Include="Content\Mobile\zphStyle\images\icon-reserve.png" />
+    <Content Include="Content\Mobile\zphStyle\images\icon-shop.png" />
+    <Content Include="Content\Mobile\zphStyle\images\icon-yh.png" />
+    <Content Include="Content\Mobile\zphStyle\images\line.png" />
+    <Content Include="Content\Mobile\zphStyle\images\link.png" />
+    <Content Include="Content\Mobile\zphStyle\images\mail_plus.png" />
+    <Content Include="Content\Mobile\zphStyle\images\menu-beauty.png" />
+    <Content Include="Content\Mobile\zphStyle\images\menu-close.png" />
+    <Content Include="Content\Mobile\zphStyle\images\menu-drink.png" />
+    <Content Include="Content\Mobile\zphStyle\images\menu-eat.png" />
+    <Content Include="Content\Mobile\zphStyle\images\menu-gift.png" />
+    <Content Include="Content\Mobile\zphStyle\images\menu-kid.png" />
+    <Content Include="Content\Mobile\zphStyle\images\menu-play.png" />
+    <Content Include="Content\Mobile\zphStyle\images\menu-use.png" />
+    <Content Include="Content\Mobile\zphStyle\images\no-become-group.png" />
+    <Content Include="Content\Mobile\zphStyle\images\normalPrice.png" />
+    <Content Include="Content\Mobile\zphStyle\images\orderPrice.png" />
+    <Content Include="Content\Mobile\zphStyle\images\point.png" />
+    <Content Include="Content\Mobile\zphStyle\images\position.png" />
+    <Content Include="Content\Mobile\zphStyle\images\presellPrice.png" />
+    <Content Include="Content\Mobile\zphStyle\images\quickResponseCode.png" />
+    <Content Include="Content\Mobile\zphStyle\images\red%402x.png" />
+    <Content Include="Content\Mobile\zphStyle\images\red.png" />
+    <Content Include="Content\Mobile\zphStyle\images\rule-img-1.png" />
+    <Content Include="Content\Mobile\zphStyle\images\rule-img-2.png" />
+    <Content Include="Content\Mobile\zphStyle\images\rule-img-3.png" />
+    <Content Include="Content\Mobile\zphStyle\images\rule-img-4.png" />
+    <Content Include="Content\Mobile\zphStyle\images\rule-img-5.png" />
+    <Content Include="Content\Mobile\zphStyle\images\rule-img-6.png" />
+    <Content Include="Content\Mobile\zphStyle\images\rule-img-7.png" />
+    <Content Include="Content\Mobile\zphStyle\images\saw.png" />
+    <Content Include="Content\Mobile\zphStyle\images\secKillPrice.png" />
+    <Content Include="Content\Mobile\zphStyle\images\selftake.png" />
+    <Content Include="Content\Mobile\zphStyle\images\shape.png" />
+    <Content Include="Content\Mobile\zphStyle\images\side.png" />
+    <Content Include="Content\Mobile\zphStyle\images\side2.png" />
+    <Content Include="Content\Mobile\zphStyle\images\stay-become-group.png" />
+    <Content Include="Content\Mobile\zphStyle\images\to2vertical.png" />
+    <Content Include="Content\Mobile\zphStyle\images\tolist.png" />
+    <Content Include="Content\Mobile\zphStyle\images\tuoyuan.png" />
+    <Content Include="Content\Mobile\zphStyle\images\u-module-adv1.jpg" />
+    <Content Include="Content\Mobile\zphStyle\images\u-module-adv2.jpg" />
+    <Content Include="Content\Mobile\zphStyle\images\vertical.png" />
+    <Content Include="Content\Mobile\zphStyle\images\vipPrice.png" />
+    <Content Include="Content\Mobile\zphStyle\images\voucher-bg.png" />
+    <Content Include="Content\Mobile\zphStyle\images\voucher-chose.png" />
+    <Content Include="Content\Mobile\zphStyle\images\voucher-disable.png" />
+    <Content Include="Content\Mobile\zphStyle\images\voucher-gain.png" />
+    <Content Include="Content\Mobile\zphStyle\images\voucher-j.png" />
+    <Content Include="Content\Mobile\zphStyle\InvoiceInfo.css" />
+    <Content Include="Content\Mobile\zphStyle\InvoiceInfoList.css" />
+    <Content Include="Content\Mobile\zphStyle\invoiceMessage.css" />
+    <Content Include="Content\Mobile\zphStyle\mobileKit-min.css" />
+    <Content Include="Content\Mobile\zphStyle\mobileKit.css" />
+    <Content Include="Content\Mobile\zphStyle\modal.css" />
+    <Content Include="Content\Mobile\zphStyle\MyCoupon.css" />
+    <Content Include="Content\Mobile\zphStyle\myGroup.css" />
+    <Content Include="Content\Mobile\zphStyle\myHome.css" />
+    <Content Include="Content\Mobile\zphStyle\myOrder.css" />
+    <Content Include="Content\Mobile\zphStyle\normalize.css" />
+    <Content Include="Content\Mobile\zphStyle\panicBuying.css" />
+    <Content Include="Content\Mobile\zphStyle\panicBuyingInfo.css" />
+    <Content Include="Content\Mobile\zphStyle\pickUpAddress.css" />
+    <Content Include="Content\Mobile\zphStyle\place.css" />
+    <Content Include="Content\Mobile\zphStyle\placeOrder.css" />
+    <Content Include="Content\Mobile\zphStyle\pop.css" />
+    <Content Include="Content\Mobile\zphStyle\presaleDetail.css" />
+    <Content Include="Content\Mobile\zphStyle\presaleList.css" />
+    <Content Include="Content\Mobile\zphStyle\register.css" />
+    <Content Include="Content\Mobile\zphStyle\scancodeDownload.css" />
+    <Content Include="Content\Mobile\zphStyle\shoppingCart.css" />
+    <Content Include="Content\Mobile\zphStyle\skin.css" />
+    <Content Include="Content\Mobile\zphStyle\skinBlack.css" />
+    <Content Include="Content\Mobile\zphStyle\skinBlue.css" />
+    <Content Include="Content\Mobile\zphStyle\skinGreen.css" />
+    <Content Include="Content\Mobile\zphStyle\skinRed.css" />
+    <Content Include="Content\Mobile\zphStyle\storesList.css" />
+    <Content Include="Content\Mobile\zphStyle\swiper.css" />
+    <Content Include="Content\Mobile\zphStyle\zOrder.css" />
+    <Content Include="Content\Mobile\zuobiao.png" />
+    <Content Include="Content\Mobile\_clipboard.swf" />
+    <Content Include="Content\MyYJB\MyYJBDetail.css" />
+    <Content Include="dist\css\MyOrderDetail.css" />
+    <Content Include="dist\css\package.css" />
+    <Content Include="dist\js\categoryList.js" />
+    <Content Include="dist\js\commodityList.js" />
+    <Content Include="dist\js\createOrder.js" />
+    <Content Include="dist\js\generalActivity.js" />
+    <Content Include="dist\js\JdOrderServiceTrackInfo.js" />
+    <Content Include="dist\js\MyCoupon.js" />
+    <Content Include="dist\js\MyOrderDetail.js" />
+    <Content Include="dist\js\MyOrderList.js" />
+    <Content Include="dist\js\package.js" />
+    <Content Include="dist\js\RefundJdOrder.js" />
+    <Content Include="dist\js\refundList.js" />
+    <Content Include="dist\js\RefundOrder.js" />
+    <Content Include="dist\js\RefundSNOrder.js" />
+    <Content Include="dist\js\RefundType.js" />
+    <Content Include="dist\js\ShoppingCartList.js" />
+    <Content Include="dist\js\tradeSuccessfully.js" />
+    <Content Include="dist\lib\AreaFirst.js" />
+    <Content Include="dist\lib\AreaSecond.js" />
+    <Content Include="dist\lib\AreaThree.js" />
+    <Content Include="dist\lib\Areatopthree-sample.js" />
+    <Content Include="dist\lib\Areatopthree.js" />
+    <Content Include="dist\lib\Areaall.js" />
+    <Content Include="Images\CarInstanceBusiness.png" />
+    <Content Include="Images\CarInstanceStrong.png" />
+    <Content Include="Images\guanbi.png" />
+    <Content Include="Images\haoyou-icon.png" />
+    <Content Include="Images\kaiqiangxiadan-icon.png" />
+    <Content Include="Images\kevin.png" />
+    <Content Include="Images\pintuan-icon.png" />
+    <Content Include="Images\qianggou-icon.png" />
+    <Content Include="Images\uploadify-cancel.png" />
+    <Content Include="Images\yj-angle-left.png" />
+    <Content Include="Images\yj-angle-right-red.png" />
+    <Content Include="Images\yj-angle-right.png" />
+    <Content Include="Images\yj-service-icon.png" />
+    <Content Include="Images\yj-share.png" />
+    <Content Include="Images\yj-shouye.png" />
+    <Content Include="Images\yugouwancheng-icon.png" />
+    <Content Include="Scripts\Asy.js" />
+    <Content Include="Scripts\element-ui\2.0\lib\index.js" />
+    <Content Include="Scripts\element-ui\2.0\lib\theme-chalk\index.css" />
+    <Content Include="Scripts\h5New\common\behaviorRecord.js" />
+    <Content Include="Scripts\h5New\common\Common.js" />
+    <Content Include="Scripts\h5New\common\login.js" />
+    <Content Include="Scripts\h5New\detail.js" />
+    <Content Include="Scripts\h5New\libs\fonts\fontawesome-webfont.svg" />
+    <Content Include="Scripts\h5New\libs\mobileKit\mobileKit-min.css" />
+    <Content Include="Scripts\h5New\libs\mobileKit\mobileKit.min.js" />
+    <Content Include="Scripts\h5New\libs\mobiscroll\mobiscroll.min.css" />
+    <Content Include="Scripts\h5New\libs\mobiscroll\mobiscroll.min.js" />
+    <Content Include="Scripts\h5New\libs\mobiscroll\mobiscroll.select.min.js" />
+    <Content Include="Scripts\h5New\libs\swiper\swiper.css" />
+    <Content Include="Scripts\h5New\libs\swiper\swiper.min.js" />
+    <Content Include="Scripts\h5New\libs\zepto.min.js" />
+    <Content Include="Scripts\h5New\wxshare.js" />
+    <Content Include="Scripts\InvoiceInfoList.js" />
+    <Content Include="Scripts\japaginator\bootstrap.min.css" />
+    <Content Include="Scripts\japaginator\jqPaginator.js" />
+    <Content Include="Scripts\japaginator\jquery-1.9.1.min.js" />
+    <Content Include="Scripts\mobileKit.min.js" />
+    <Content Include="Scripts\moment-duration-format.min.js" />
+    <Content Include="Content\style\css\index.css" />
+    <Content Include="Content\style\css\mobileKit-min.css" />
+    <Content Include="Content\style\images\angle-left.png" />
+    <Content Include="Content\style\images\recharge_yjb.png" />
+    <Content Include="Content\style\images\record_empty.png" />
+    <Content Include="dist\css\addDeliveryAddress.css" />
+    <Content Include="dist\css\common.css" />
+    <Content Include="dist\js\addDeliveryAddress.js" />
+    <Content Include="dist\lib\Area.js" />
+    <Content Include="dist\lib\base64.js" />
+    <Content Include="dist\lib\behaviorRecord.js" />
+    <Content Include="dist\lib\Common.js" />
+    <Content Include="dist\lib\CookieContextDTO.js" />
+    <Content Include="dist\lib\login.js" />
+    <Content Include="dist\lib\md5.js" />
+    <Content Include="dist\lib\mercury.js" />
+    <Content Include="dist\lib\vue-mobileKit.js" />
+    <Content Include="dist\lib\vue-resource.min.js" />
+    <Content Include="dist\lib\vue.min.js" />
+    <Content Include="Scripts\bigautocomplete\jquery.bigautocomplete.css" />
+    <Content Include="Scripts\clipboard.min.js" />
+    <Content Include="Scripts\element-ui\lib\index.js" />
+    <Content Include="Scripts\element-ui\lib\theme-default\index.css" />
+    <Compile Include="Scripts\ueditor\net\Config.cs" />
+    <Compile Include="Scripts\ueditor\net\Uploader.cs" />
+    <Compile Include="Scripts\ueditor_mini\net\Uploader.cs" />
+    <Compile Include="Util\OrgFeature.cs" />
+    <Compile Include="Util\WebUtil.cs" />
+    <Compile Include="Util\WeixinFunction.cs" />
+    <Compile Include="Util\WeixinOAuth2.cs" />
+    <Compile Include="Util\MobileCookies.cs" />
+    <Compile Include="Util\MobileLoginCookie.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="bianji\bianji\asp\file_manager_json.asp" />
+    <Content Include="bianji\bianji\asp\JSON_2.0.4.asp" />
+    <Content Include="bianji\bianji\asp\UpLoad_Class.asp" />
+    <Content Include="bianji\bianji\asp\upload_json.asp" />
+    <Content Include="bianji\bianji\kindeditor-min.js" />
+    <Content Include="bianji\bianji\kindeditor.js" />
+    <Content Include="bianji\bianji\lang\ar.js" />
+    <Content Include="bianji\bianji\lang\en.js" />
+    <Content Include="bianji\bianji\lang\zh_CN.js" />
+    <Content Include="bianji\bianji\lang\zh_TW.js" />
+    <Content Include="bianji\bianji\license.txt" />
+    <Content Include="bianji\bianji\plugins\anchor\anchor.js" />
+    <Content Include="bianji\bianji\plugins\baidumap\baidumap.js" />
+    <Content Include="bianji\bianji\plugins\baidumap\map.html" />
+    <Content Include="bianji\bianji\plugins\clearhtml\clearhtml.js" />
+    <Content Include="bianji\bianji\plugins\code\code.js" />
+    <Content Include="bianji\bianji\plugins\code\prettify.css" />
+    <Content Include="bianji\bianji\plugins\code\prettify.js" />
+    <Content Include="bianji\bianji\plugins\emoticons\emoticons.js" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\0.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\1.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\10.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\100.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\101.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\102.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\103.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\104.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\105.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\106.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\107.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\108.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\109.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\11.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\110.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\111.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\112.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\113.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\114.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\115.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\116.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\117.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\118.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\119.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\12.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\120.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\121.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\122.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\123.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\124.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\125.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\126.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\127.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\128.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\129.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\13.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\130.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\131.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\132.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\133.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\134.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\14.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\15.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\16.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\17.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\18.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\19.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\2.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\20.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\21.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\22.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\23.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\24.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\25.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\26.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\27.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\28.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\29.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\3.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\30.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\31.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\32.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\33.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\34.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\35.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\36.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\37.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\38.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\39.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\4.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\40.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\41.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\42.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\43.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\44.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\45.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\46.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\47.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\48.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\49.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\5.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\50.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\51.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\52.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\53.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\54.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\55.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\56.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\57.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\58.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\59.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\6.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\60.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\61.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\62.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\63.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\64.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\65.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\66.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\67.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\68.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\69.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\7.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\70.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\71.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\72.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\73.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\74.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\75.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\76.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\77.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\78.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\79.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\8.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\80.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\81.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\82.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\83.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\84.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\85.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\86.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\87.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\88.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\89.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\9.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\90.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\91.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\92.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\93.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\94.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\95.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\96.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\97.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\98.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\99.gif" />
+    <Content Include="bianji\bianji\plugins\emoticons\images\static.gif" />
+    <Content Include="bianji\bianji\plugins\filemanager\filemanager.js" />
+    <Content Include="bianji\bianji\plugins\filemanager\images\file-16.gif" />
+    <Content Include="bianji\bianji\plugins\filemanager\images\file-64.gif" />
+    <Content Include="bianji\bianji\plugins\filemanager\images\folder-16.gif" />
+    <Content Include="bianji\bianji\plugins\filemanager\images\folder-64.gif" />
+    <Content Include="bianji\bianji\plugins\filemanager\images\go-up.gif" />
+    <Content Include="bianji\bianji\plugins\flash\flash.js" />
+    <Content Include="bianji\bianji\plugins\image\image.js" />
+    <Content Include="bianji\bianji\plugins\image\images\align_left.gif" />
+    <Content Include="bianji\bianji\plugins\image\images\align_right.gif" />
+    <Content Include="bianji\bianji\plugins\image\images\align_top.gif" />
+    <Content Include="bianji\bianji\plugins\image\images\refresh.png" />
+    <Content Include="bianji\bianji\plugins\insertfile\insertfile.js" />
+    <Content Include="bianji\bianji\plugins\lineheight\lineheight.js" />
+    <Content Include="bianji\bianji\plugins\link\link.js" />
+    <Content Include="bianji\bianji\plugins\map\map.html" />
+    <Content Include="bianji\bianji\plugins\map\map.js" />
+    <Content Include="bianji\bianji\plugins\media\media.js" />
+    <Content Include="bianji\bianji\plugins\multiimage\images\image.png" />
+    <Content Include="bianji\bianji\plugins\multiimage\images\select-files-en.png" />
+    <Content Include="bianji\bianji\plugins\multiimage\images\select-files-zh_CN.png" />
+    <Content Include="bianji\bianji\plugins\multiimage\images\swfupload.swf" />
+    <Content Include="bianji\bianji\plugins\multiimage\multiimage.js" />
+    <Content Include="bianji\bianji\plugins\pagebreak\pagebreak.js" />
+    <Content Include="bianji\bianji\plugins\plainpaste\plainpaste.js" />
+    <Content Include="bianji\bianji\plugins\preview\preview.js" />
+    <Content Include="bianji\bianji\plugins\quickformat\quickformat.js" />
+    <Content Include="bianji\bianji\plugins\table\table.js" />
+    <Content Include="bianji\bianji\plugins\template\html\1.html" />
+    <Content Include="bianji\bianji\plugins\template\html\2.html" />
+    <Content Include="bianji\bianji\plugins\template\html\3.html" />
+    <Content Include="bianji\bianji\plugins\template\template.js" />
+    <Content Include="bianji\bianji\plugins\wordpaste\wordpaste.js" />
+    <Content Include="bianji\bianji\themes\common\anchor.gif" />
+    <Content Include="bianji\bianji\themes\common\blank.gif" />
+    <Content Include="bianji\bianji\themes\common\flash.gif" />
+    <Content Include="bianji\bianji\themes\common\loading.gif" />
+    <Content Include="bianji\bianji\themes\common\media.gif" />
+    <Content Include="bianji\bianji\themes\common\rm.gif" />
+    <Content Include="bianji\bianji\themes\default\background.png" />
+    <Content Include="bianji\bianji\themes\default\default.css" />
+    <Content Include="bianji\bianji\themes\default\default.png" />
+    <Content Include="bianji\bianji\themes\qq\editor.gif" />
+    <Content Include="bianji\bianji\themes\qq\qq.css" />
+    <Content Include="bianji\bianji\themes\simple\simple.css" />
+    <Content Include="Configuration\CustomConfig\Jinher.AMP.BTP\JdProvinceCity.xml" />
+    <Content Include="Content\app.css" />
+    <Content Include="Content\base\images\bar-bg.png" />
+    <Content Include="Content\base\images\bar-line.png" />
+    <Content Include="Content\base\images\dock_middle_left.png" />
+    <Content Include="Content\base\images\enterpriseportal.png" />
+    <Content Include="Content\base\images\head_portrait.png" />
+    <Content Include="Content\base\images\icon_line.png" />
+    <Content Include="Content\base\images\ico_16.png" />
+    <Content Include="Content\base\images\ico_24.png" />
+    <Content Include="Content\base\images\ico_32.png" />
+    <Content Include="Content\base\images\main_frame.png" />
+    <Content Include="Content\base\images\menuIcon_active.png" />
+    <Content Include="Content\base\images\menuIcon_hover.png" />
+    <Content Include="Content\base\images\menuIcon_normal.png" />
+    <Content Include="Content\base\images\news_remind_black_point.png" />
+    <Content Include="Content\base\images\setting.png" />
+    <Content Include="Content\base\images\se_text_bg.png" />
+    <Content Include="Content\base\images\table_app.png" />
+    <Content Include="Content\base\images\toolbar_bg.png" />
+    <Content Include="Content\base\images\tooltip-blue.png" />
+    <Content Include="Content\Business\BusinessAllEvent.js" />
+    <Content Include="Content\Business\CYBusinessAllEvent.js" />
+    <Content Include="Content\Business\json2.js" />
+    <Content Include="Content\Business\SearchElementData.js" />
+    <Content Include="Content\common.css" />
+    <Content Include="Content\css\common.css" />
+    <Content Include="Content\images\Settlement.png" />
+    <Content Include="Content\images\wx-back.png" />
+    <Content Include="Content\images\佣金设置.png" />
+    <Content Include="Content\images\入驻申请.png" />
+    <Content Include="Content\images\商家管理.png" />
+    <Content Include="Content\images\结算周期设置.png" />
+    <Content Include="Content\images\结算管理.png" />
+    <Content Include="Content\css\mobileKit-min.css" />
+    <Content Include="Content\css\myorder.css" />
+    <Content Include="Content\css\orderDetail.css" />
+    <Content Include="Content\css\printorder.css" />
+    <Content Include="Content\css\refundorder.css" />
+    <Content Include="Content\css\style.css" />
+    <Content Include="Content\default\common.css" />
+    <Content Include="Content\default\images\add.png" />
+    <Content Include="Content\default\images\app.png" />
+    <Content Include="Content\default\images\appbutton_mouseover_bg.png" />
+    <Content Include="Content\default\images\attendance_calendar.png" />
+    <Content Include="Content\default\images\bar-bg.png" />
+    <Content Include="Content\default\images\btn120.png" />
+    <Content Include="Content\default\images\btn122.png" />
+    <Content Include="Content\default\images\btn60.png" />
+    <Content Include="Content\default\images\btn_up.png" />
+    <Content Include="Content\default\images\btn_up_img.png" />
+    <Content Include="Content\default\images\button.png" />
+    <Content Include="Content\default\images\calendar.gif" />
+    <Content Include="Content\default\images\check_radio.png" />
+    <Content Include="Content\default\images\defaultmenu.png" />
+    <Content Include="Content\default\images\dialog.png" />
+    <Content Include="Content\default\images\expande.png" />
+    <Content Include="Content\default\images\grid-bg-h40.png" />
+    <Content Include="Content\default\images\grid-bg.png" />
+    <Content Include="Content\default\images\grid-blue-split.gif" />
+    <Content Include="Content\default\images\icons_bg.png" />
+    <Content Include="Content\default\images\ico_close2.png" />
+    <Content Include="Content\default\images\imageupload.png" />
+    <Content Include="Content\default\images\input_bg.png" />
+    <Content Include="Content\default\images\jhdropdownlist.png" />
+    <Content Include="Content\default\images\jhmenu_expand_v.png" />
+    <Content Include="Content\default\images\jhmenu_hover.png" />
+    <Content Include="Content\default\images\jhmenu_hover_.png" />
+    <Content Include="Content\default\images\login_bg.png" />
+    <Content Include="Content\default\images\login_btn.png" />
+    <Content Include="Content\default\images\login_btn_active.png" />
+    <Content Include="Content\default\images\login_btn_hover.png" />
+    <Content Include="Content\default\images\logo.png" />
+    <Content Include="Content\default\images\main_frame.png" />
+    <Content Include="Content\default\images\normaltable.png" />
+    <Content Include="Content\default\images\nor_calendar.png" />
+    <Content Include="Content\default\images\point-bg.png" />
+    <Content Include="Content\default\images\tablebox.png" />
+    <Content Include="Content\default\images\toolbar-split.gif" />
+    <Content Include="Content\default\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\default\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\default\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\default\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\default\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\default\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Content\default\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\default\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\default\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\default\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\default\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\default\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\default\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\default\images\windowbutton.png" />
+    <Content Include="Content\default\images\btn90.png" />
+    <Content Include="Content\default\jquery.ui.all.css" />
+    <Content Include="Content\default\jquery.ui.jhtablebox.css" />
+    <Content Include="Content\default\ui.jqgrid.css" />
+    <Content Include="Content\default\upload.css" />
+    <Content Include="Content\expressimage\DBL.jpg" />
+    <Content Include="Content\expressimage\FAST.jpg" />
+    <Content Include="Content\expressimage\HHTT.jpg" />
+    <Content Include="Content\expressimage\SF.jpg" />
+    <Content Include="Content\expressimage\YZPY.jpg" />
+    <Content Include="Content\images\add.png" />
+    <Content Include="Content\images\addAttr001.png" />
+    <Content Include="Content\images\ajax-loader.gif" />
+    <Content Include="Content\images\Android.png" />
+    <Content Include="Content\images\AndroidNo.png" />
+    <Content Include="Content\images\angle-left.png" />
+    <Content Include="Content\images\app.png" />
+    <Content Include="Content\images\appbutton_mouseover_bg.png" />
+    <Content Include="Content\images\app_step.png" />
+    <Content Include="Content\images\attendance_calendar.png" />
+    <Content Include="Content\images\bar-bg.png" />
+    <Content Include="Content\images\bg_r_1.png" />
+    <Content Include="Content\images\bianji.png" />
+    <Content Include="Content\images\btn120.png" />
+    <Content Include="Content\images\btn122.png" />
+    <Content Include="Content\images\btn60.png" />
+    <Content Include="Content\images\btn80.png" />
+    <Content Include="Content\images\btn_app130.png" />
+    <Content Include="Content\images\btn_appcreat.png" />
+    <Content Include="Content\images\btn_big.png" />
+    <Content Include="Content\images\btn_up.png" />
+    <Content Include="Content\images\btn_up_img.png" />
+    <Content Include="Content\images\button.png" />
+    <Content Include="Content\images\calendar.gif" />
+    <Content Include="Content\images\check_radio.png" />
+    <Content Include="Content\images\defaultmenu.png" />
+    <Content Include="Content\images\default_avatar.png" />
+    <Content Include="Content\images\default_orglogo.jpg" />
+    <Content Include="Content\images\delete.png" />
+    <Content Include="Content\images\dialog.png" />
+    <Content Include="Content\images\eA.png" />
+    <Content Include="Content\images\eN.png" />
+    <Content Include="Content\images\expande.png" />
+    <Content Include="Content\images\gouwuche.png" />
+    <Content Include="Content\images\img1.jpg" />
+    <Content Include="Content\images\noPrint.png" />
+    <Content Include="Content\images\presentManage\add.png" />
+    <Content Include="Content\images\presentManage\bg.png" />
+    <Content Include="Content\images\presentManage\delete.png" />
+    <Content Include="Content\images\presentManage\eddit.png" />
+    <Content Include="Content\images\presentManage\shangyi.png" />
+    <Content Include="Content\images\presentManage\xiayi.fw.png" />
+    <Content Include="Content\images\refresh.png" />
+    <Content Include="Content\images\selftake.png" />
+    <Content Include="Content\images\shangchuan.png" />
+    <Content Include="Content\images\sousuo.png" />
+    <Content Include="Content\images\touxiang.png" />
+    <Content Include="Content\images\xiazai.png" />
+    <Content Include="Content\images\yonghuhong.png" />
+    <Content Include="Content\images\zph_LOGO-72.png" />
+    <Content Include="Content\images\btn90.png" />
+    <Content Include="Content\js\logic_cy\APP.js" />
+    <Content Include="Content\js\logic_cy\Commons.js" />
+    <Content Include="Content\js\logic_cy\CookieContextDTO.js" />
+    <Content Include="Content\js\logic_cy\CymainLogic.js" />
+    <Content Include="Content\js\logic_cy\PRICE.js" />
+    <Content Include="Content\js\logic_cy\PRO.js" />
+    <Content Include="Content\js\mobile_cy\choosestoreuser.js" />
+    <Content Include="Content\js\mobile_cy\minmobilelayout.js" />
+    <Content Include="Content\js\mobile_cy\myorder.js" />
+    <Content Include="Content\js\mobile_libs\iscroll-probe.js" />
+    <Content Include="Content\js\mobile_libs\jquery-1.7.1.min.js" />
+    <Content Include="Content\js\mobile_libs\mobileKit.min.js" />
+    <Content Include="Content\js\mobile_libs\require.js" />
+    <Content Include="Content\js\mobile_libs\swiper.jquery.js" />
+    <Content Include="Content\js\mobile_libs\swiper.min.js" />
+    <Content Include="Content\js\mobile_libs\vue-resource.min.js" />
+    <Content Include="Content\js\mobile_libs\vue.js" />
+    <Content Include="Content\js\mobile_libs\zepto.js" />
+    <Content Include="Content\js\mobile_libs\zepto.min.js" />
+    <Content Include="Content\js\mobile_cy\choosestore.js" />
+    <Content Include="Content\js\mobile_cy\index.js" />
+    <Content Include="Content\js\mobile_cy\orderdetail.js" />
+    <Content Include="Content\js\mobile_cy\takeorder.js" />
+    <Content Include="Content\js\dotghc.js" />
+    <Content Include="Content\js\icheck.js" />
+    <Content Include="Content\js\icheck.min.js" />
+    <Content Include="Content\js\ispinner.js" />
+    <Content Include="Content\js\mobileKit.min.js" />
+    <Content Include="Content\js\mobiscroll.js" />
+    <Content Include="Content\js\mobiscroll.treelist.js" />
+    <Content Include="Content\js\printorder.js" />
+    <Content Include="Content\js\ratchet.js" />
+    <Content Include="Content\js\ratchet.min.js" />
+    <Content Include="Content\js\scroll.js" />
+    <Content Include="Content\js\template.js" />
+    <Content Include="Content\js\toggle.js" />
+    <Content Include="Content\js\vm_cy\AppVm.js" />
+    <Content Include="Content\js\vm_cy\Cymain.js" />
+    <Content Include="Content\js\vm_cy\ProVm.js" />
+    <Content Include="Content\images\forPhone.png" />
+    <Content Include="Content\images\grid-bg-h40.png" />
+    <Content Include="Content\images\grid-bg.png" />
+    <Content Include="Content\images\grid-blue-split.gif" />
+    <Content Include="Content\images\ico_close2.png" />
+    <Content Include="Content\images\ico_date.png" />
+    <Content Include="Content\images\img.jpg" />
+    <Content Include="Content\images\iPhone.png" />
+    <Content Include="Content\images\iPhoneNo.png" />
+    <Content Include="Content\images\login_btn.png" />
+    <Content Include="Content\images\login_btn_active.png" />
+    <Content Include="Content\images\login_btn_hover.png" />
+    <Content Include="Content\images\main_frame.png" />
+    <Content Include="Content\images\normaltable.png" />
+    <Content Include="Content\images\nor_calendar.png" />
+    <Content Include="Content\images\point-bg.png" />
+    <Content Include="Content\images\RemoveApp.jpg" />
+    <Content Include="Content\images\sl-3-1.png" />
+    <Content Include="Content\images\sl-3.png" />
+    <Content Include="Content\images\system_message.jpg" />
+    <Content Include="Content\images\tablebox.png" />
+    <Content Include="Content\images\toolbar-split.gif" />
+    <Content Include="Content\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Content\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\images\update.png" />
+    <Content Include="Content\images\validatebox_warning.png" />
+    <Content Include="Content\images\windowbutton.png" />
+    <Content Include="Content\images\x1.gif" />
+    <Content Include="Content\images\x2.gif" />
+    <Content Include="Content\images\x3.gif" />
+    <Content Include="Content\ImgCropper\Drag.js" />
+    <Content Include="Content\ImgCropper\ImgCropper.js" />
+    <Content Include="Content\ImgCropper\Resize.js" />
+    <Content Include="Content\mp3\comeorder.mp3" />
+    <Content Include="Content\PaySuccess\css\coupon - 副本.css" />
+    <Content Include="Content\PaySuccess\css\coupon.css" />
+    <Content Include="Content\PaySuccess\img\drawable-xhdpi\fanli.png" />
+    <Content Include="Content\PaySuccess\img\drawable-xhdpi\libao.png" />
+    <Content Include="Content\PaySuccess\img\drawable-xhdpi\wufanli.png" />
+    <Content Include="Content\PaySuccess\img\drawable-xxhdpi\fanli.png" />
+    <Content Include="Content\PaySuccess\img\drawable-xxhdpi\libao.png" />
+    <Content Include="Content\PaySuccess\img\drawable-xxhdpi\wufanli.png" />
+    <Content Include="Content\PaySuccess\img\drawable-xxxhdpi\fanli.png" />
+    <Content Include="Content\PaySuccess\img\drawable-xxxhdpi\libao.png" />
+    <Content Include="Content\PaySuccess\img\drawable-xxxhdpi\wufanli.png" />
+    <Content Include="Content\ShareOrder\css\share.css" />
+    <Content Include="Content\ShareOrder\img\drawable-xhdpi\banner.png" />
+    <Content Include="Content\ShareOrder\img\drawable-xhdpi\jiantou.png" />
+    <Content Include="Content\ShareOrder\img\drawable-xhdpi\touxiang.png" />
+    <Content Include="Content\ShareOrder\img\drawable-xxhdpi\banner.png" />
+    <Content Include="Content\ShareOrder\img\drawable-xxhdpi\jiantou.png" />
+    <Content Include="Content\ShareOrder\img\drawable-xxhdpi\touxiang.png" />
+    <Content Include="Content\ShareOrder\img\drawable-xxxhdpi\banner.png" />
+    <Content Include="Content\ShareOrder\img\drawable-xxxhdpi\jiantou.png" />
+    <Content Include="Content\ShareOrder\img\drawable-xxxhdpi\touxiang.png" />
+    <Content Include="Content\style\fonts\fontawesome-webfont.svg" />
+    <Content Include="Content\style\images\1.jpg" />
+    <Content Include="Content\style\images\2.jpg" />
+    <Content Include="Content\style\images\3.jpg" />
+    <Content Include="Content\style\images\4.jpg" />
+    <Content Include="Content\style\images\5.jpg" />
+    <Content Include="Content\style\images\6.jpg" />
+    <Content Include="Content\style\images\7.jpg" />
+    <Content Include="Content\style\images\8.jpg" />
+    <Content Include="Content\style\images\beijingtu.png" />
+    <Content Include="Content\style\images\dingdan.png" />
+    <Content Include="Content\style\images\jiazaishibai.png" />
+    <Content Include="Content\style\images\meiyoudingdan.png" />
+    <Content Include="Content\style\images\qingkonggouwuche%402x.png" />
+    <Content Include="Content\style\images\xbmh.jpg" />
+    <Content Include="Content\style\cymain.css" />
+    <Content Include="Content\style\mobile_cy\choosestore.css" />
+    <Content Include="Content\style\mobile_cy\index.css" />
+    <Content Include="Content\style\mobile_cy\mobileKit-min.css" />
+    <Content Include="Content\style\mobile_cy\myorder.css" />
+    <Content Include="Content\style\mobile_cy\orderdetail.css" />
+    <Content Include="Content\style\mobile_cy\swiper.css" />
+    <Content Include="Content\style\mobile_cy\takeorder.css" />
+    <Content Include="Content\style\demo.html" />
+    <Content Include="Content\style\fonts\icomoon.svg" />
+    <Content Include="Content\style\fonts\ratchicons.svg" />
+    <Content Include="Content\style\iCheck.css" />
+    <Content Include="Content\style\icon.css" />
+    <Content Include="Content\style\icons.css" />
+    <Content Include="Content\style\images\dianhua.png" />
+    <Content Include="Content\style\images\dingwei.png" />
+    <Content Include="Content\style\images\dizhilan.png" />
+    <Content Include="Content\style\images\dizhixuanze.png" />
+    <Content Include="Content\style\images\fanhui.png" />
+    <Content Include="Content\style\images\guanbi.png" />
+    <Content Include="Content\style\images\icon-close.png" />
+    <Content Include="Content\style\images\icon-list.png" />
+    <Content Include="Content\style\images\icon-no.png" />
+    <Content Include="Content\style\images\icon-ok.png" />
+    <Content Include="Content\style\images\icon-redio-checked.png" />
+    <Content Include="Content\style\images\icon-redio.png" />
+    <Content Include="Content\style\images\jia-weixuan.png" />
+    <Content Include="Content\style\images\jia.png" />
+    <Content Include="Content\style\images\jian.png" />
+    <Content Include="Content\style\images\jieshao.png" />
+    <Content Include="Content\style\images\lianxishangjia.png" />
+    <Content Include="Content\style\images\mail_plus.png" />
+    <Content Include="Content\style\images\red%402x.png" />
+    <Content Include="Content\style\images\red.png" />
+    <Content Include="Content\style\images\shangjia.png" />
+    <Content Include="Content\style\images\waimaixiang.png" />
+    <Content Include="Content\style\images\wazi.jpg" />
+    <Content Include="Content\style\images\weizhi.png" />
+    <Content Include="Content\style\images\wuweizhi.png" />
+    <Content Include="Content\style\images\xiala.png" />
+    <Content Include="Content\style\images\xuanze.png" />
+    <Content Include="Content\style\images\youhuijuan.png" />
+    <Content Include="Content\style\inviteSome.css" />
+    <Content Include="Content\style\iSpinner.css" />
+    <Content Include="Content\style\font-min.css" />
+    <Content Include="Content\style\mobileKit-min.css" />
+    <Content Include="Content\style\mobiscroll.css" />
+    <Content Include="Content\style\ratchet.css" />
+    <Content Include="Content\style\ratchet.min.css" />
+    <Content Include="Content\style\skin.css" />
+    <Content Include="Content\style\style.css" />
+    <Content Include="Content\style\swiper.css" />
+    <Content Include="Content\style\toggle.css" />
+    <Content Include="Global.asax" />
+    <Content Include="Images\1.png" />
+    <Content Include="Images\2.png" />
+    <Content Include="Images\3.png" />
+    <Content Include="Images\4.png" />
+    <Content Include="Images\add3.png" />
+    <Content Include="Images\adddot.png" />
+    <Content Include="Images\add_pic.png" />
+    <Content Include="Images\bg_li.png" />
+    <Content Include="Images\biao.jpg" />
+    <Content Include="Images\biao2.jpg" />
+    <Content Include="Images\btn_delete.fw.png" />
+    <Content Include="Images\button_bg.jpg" />
+    <Content Include="Images\check_pic.png" />
+    <Content Include="Images\class.png" />
+    <Content Include="Images\close.jpg" />
+    <Content Include="Images\close.png" />
+    <Content Include="Images\comment_pic.jpg" />
+    <Content Include="Images\comment_pic5.png" />
+    <Content Include="Images\contactCustomer.png" />
+    <Content Include="Images\defAdd.png" />
+    <Content Include="Images\down_row.png" />
+    <Content Include="Images\finished.png" />
+    <Content Include="Images\float_bg.png" />
+    <Content Include="Images\footer_bg.jpg" />
+    <Content Include="Images\footer_bg.png" />
+    <Content Include="Images\goback.png" />
+    <Content Include="Images\img.jpg" />
+    <Content Include="Images\jia.png" />
+    <Content Include="Images\jian.png" />
+    <Content Include="Images\jtou.jpg" />
+    <Content Include="Images\left.gif" />
+    <Content Include="Images\leftt.jpg" />
+    <Content Include="Images\lgo.jpg" />
+    <Content Include="Images\line.jpg" />
+    <Content Include="Images\mail.jpg" />
+    <Content Include="Images\m_prev.png" />
+    <Content Include="Images\m_next.png" />
+    <Content Include="Images\nav_1.jpg" />
+    <Content Include="Images\nav_10.jpg" />
+    <Content Include="Images\nav_11.jpg" />
+    <Content Include="Images\nav_12.jpg" />
+    <Content Include="Images\nav_13.jpg" />
+    <Content Include="Images\nav_14.jpg" />
+    <Content Include="Images\nav_15.jpg" />
+    <Content Include="Images\nav_16.jpg" />
+    <Content Include="Images\nav_17.jpg" />
+    <Content Include="Images\nav_18.jpg" />
+    <Content Include="Images\nav_19.jpg" />
+    <Content Include="Images\nav_2.jpg" />
+    <Content Include="Images\nav_3.jpg" />
+    <Content Include="Images\nav_4.jpg" />
+    <Content Include="Images\nav_5.jpg" />
+    <Content Include="Images\nav_6.jpg" />
+    <Content Include="Images\nav_7.jpg" />
+    <Content Include="Images\nav_8.jpg" />
+    <Content Include="Images\nav_9.jpg" />
+    <Content Include="Images\photo.jpg" />
+    <Content Include="Images\pingpu.jpg" />
+    <Content Include="Images\pp.jpg" />
+    <Content Include="Images\promote.jpg" />
+    <Content Include="Images\QQ截图20150106113154.jpg" />
+    <Content Include="Images\QQ截图20150106150119.jpg" />
+    <Content Include="Images\reply_btnbg.png" />
+    <Content Include="Images\right.gif" />
+    <Content Include="Images\rightt.jpg" />
+    <Content Include="Images\row.jpg" />
+    <Content Include="Images\selftake.png" />
+    <Content Include="Images\Settlement.png" />
+    <Content Include="Images\shipin.jpg" />
+    <Content Include="Images\shouji.jpg" />
+    <Content Include="Images\shouji1.jpg" />
+    <Content Include="Images\shouru1.jpg" />
+    <Content Include="Images\shouru2.jpg" />
+    <Content Include="Images\shouru3.jpg" />
+    <Content Include="Images\shouru4.jpg" />
+    <Content Include="Images\shouru5.jpg" />
+    <Content Include="Images\shut.png" />
+    <Content Include="Images\shut1.png" />
+    <Content Include="Images\shut2.png" />
+    <Content Include="Images\shut_bg.png" />
+    <Content Include="Images\table_bg.jpg" />
+    <Content Include="Images\td_bg.png" />
+    <Content Include="Images\tele.png" />
+    <Content Include="Images\telephone.jpg" />
+    <Content Include="Images\tele_right.png" />
+    <Content Include="Images\tele_top.png" />
+    <Content Include="Images\time.jpg" />
+    <Content Include="Images\top_bg.jpg" />
+    <Content Include="Images\upload1.png" />
+    <Content Include="Images\upload2.png" />
+    <Content Include="Images\up_row.png" />
+    <Content Include="Images\validatebox_warning.png" />
+    <Content Include="Images\white.png" />
+    <Content Include="Images\x1.gif" />
+    <Content Include="Images\x2.gif" />
+    <Content Include="Images\x3.gif" />
+    <Content Include="Images\xiajt.jpg" />
+    <Content Include="Images\xiaoshou.jpg" />
+    <Content Include="Images\xin.jpg" />
+    <Content Include="Images\xin.png" />
+    <Content Include="Images\xxprice.png" />
+    <Content Include="Images\zhj.jpg" />
+    <Content Include="Images\zhong.gif" />
+    <Content Include="Images\chuxiao_r1_c1.png" />
+    <Content Include="Images\chuxhiao_r3_c1.png" />
+    <Content Include="Content\images\ztflag.png" />
+    <Content Include="Payment\helper1.html" />
+    <Content Include="Payment\helper2.html" />
+    <Content Include="Payment\helper3.html" />
+    <Content Include="Scripts\ajaxfileupload.js" />
+    <Content Include="Scripts\asyncData\demoData.js" />
+    <Content Include="Scripts\asyncData\demoData1.js" />
+    <Content Include="Scripts\asyncData\demoData2.js" />
+    <Content Include="Scripts\asyncData\fun1.txt" />
+    <Content Include="Scripts\asyncData\fun2.txt" />
+    <Content Include="Scripts\asyncData\node.txt" />
+    <Content Include="Scripts\base64.js" />
+    <Content Include="Scripts\BR.js" />
+    <Content Include="Scripts\browser-polyfill.min.js" />
+    <Content Include="Scripts\CommLib.js" />
+    <Content Include="Scripts\CookieContextDTO.js" />
+    <Content Include="Scripts\DatePicker\jquery.ui.datepicker.js" />
+    <Content Include="Scripts\DatePicker\jquery.ui.jhdatetime.js" />
+    <Content Include="Scripts\DatePicker\jquery.ui.jhstartandenddate.js" />
+    <Content Include="Scripts\DatePicker\Timepicker\i18n\jquery-ui-timepicker-addon-i18n.js" />
+    <Content Include="Scripts\DatePicker\Timepicker\i18n\jquery-ui-timepicker-addon-i18n.min.js" />
+    <Content Include="Scripts\DatePicker\Timepicker\i18n\jquery-ui-timepicker-zh-CN.js" />
+    <Content Include="Scripts\DatePicker\Timepicker\jquery-ui-sliderAccess.js" />
+    <Content Include="Scripts\DatePicker\Timepicker\jquery-ui-timepicker-addon.js" />
+    <Content Include="Scripts\DatePicker\Timepicker\jquery-ui-timepicker-addon.min.js" />
+    <Content Include="Scripts\demoStyle\demo.css" />
+    <Content Include="Scripts\demoStyle\img\addNode.png" />
+    <Content Include="Scripts\demoStyle\img\books.png" />
+    <Content Include="Scripts\demoStyle\img\btn1.png" />
+    <Content Include="Scripts\demoStyle\img\btn2.png" />
+    <Content Include="Scripts\demoStyle\img\btn3.png" />
+    <Content Include="Scripts\demoStyle\img\btn4.png" />
+    <Content Include="Scripts\demoStyle\img\checkNode.png" />
+    <Content Include="Scripts\demoStyle\img\collapseNode.png" />
+    <Content Include="Scripts\demoStyle\img\down.png" />
+    <Content Include="Scripts\demoStyle\img\download.png" />
+    <Content Include="Scripts\demoStyle\img\expandNode.png" />
+    <Content Include="Scripts\demoStyle\img\hardware.gif" />
+    <Content Include="Scripts\demoStyle\img\home.gif" />
+    <Content Include="Scripts\demoStyle\img\left.png" />
+    <Content Include="Scripts\demoStyle\img\moveNode.png" />
+    <Content Include="Scripts\demoStyle\img\moveNodeR.png" />
+    <Content Include="Scripts\demoStyle\img\people.gif" />
+    <Content Include="Scripts\demoStyle\img\phone.gif" />
+    <Content Include="Scripts\demoStyle\img\refresh.png" />
+    <Content Include="Scripts\demoStyle\img\removeNode.png" />
+    <Content Include="Scripts\demoStyle\img\right.png" />
+    <Content Include="Scripts\demoStyle\img\safari.png" />
+    <Content Include="Scripts\demoStyle\img\searchNode.png" />
+    <Content Include="Scripts\demoStyle\img\skin.png" />
+    <Content Include="Scripts\demoStyle\img\star.png" />
+    <Content Include="Scripts\demoStyle\img\unCheckNode.png" />
+    <Content Include="Scripts\demoStyle\img\up.png" />
+    <Content Include="Scripts\demoStyle\img\zTreeDemo_background.png" />
+    <Content Include="Scripts\ExpressRoute.js" />
+    <Content Include="Scripts\FunctionJS.js" />
+    <Content Include="Scripts\Grid\jquery.grid.base.js" />
+    <Content Include="Scripts\Grid\jquery.grid.extend.js" />
+    <Content Include="Scripts\i18n\grid.locale-bg.js" />
+    <Content Include="Scripts\i18n\grid.locale-bg1251.js" />
+    <Content Include="Scripts\i18n\grid.locale-cat.js" />
+    <Content Include="Scripts\i18n\grid.locale-cn.js" />
+    <Content Include="Scripts\i18n\grid.locale-cs.js" />
+    <Content Include="Scripts\i18n\grid.locale-de.js" />
+    <Content Include="Scripts\i18n\grid.locale-dk.js" />
+    <Content Include="Scripts\i18n\grid.locale-el.js" />
+    <Content Include="Scripts\i18n\grid.locale-en.js" />
+    <Content Include="Scripts\i18n\grid.locale-fa.js" />
+    <Content Include="Scripts\i18n\grid.locale-fi.js" />
+    <Content Include="Scripts\i18n\grid.locale-fr.js" />
+    <Content Include="Scripts\i18n\grid.locale-he.js" />
+    <Content Include="Scripts\i18n\grid.locale-is.js" />
+    <Content Include="Scripts\i18n\grid.locale-it.js" />
+    <Content Include="Scripts\i18n\grid.locale-jp.js" />
+    <Content Include="Scripts\i18n\grid.locale-nl.js" />
+    <Content Include="Scripts\i18n\grid.locale-no.js" />
+    <Content Include="Scripts\i18n\grid.locale-pl.js" />
+    <Content Include="Scripts\i18n\grid.locale-pt-br.js" />
+    <Content Include="Scripts\i18n\grid.locale-pt.js" />
+    <Content Include="Scripts\i18n\grid.locale-ro.js" />
+    <Content Include="Scripts\i18n\grid.locale-ru.js" />
+    <Content Include="Scripts\i18n\grid.locale-sp.js" />
+    <Content Include="Scripts\i18n\grid.locale-sv.js" />
+    <Content Include="Scripts\i18n\grid.locale-tr.js" />
+    <Content Include="Scripts\i18n\grid.locale-ua.js" />
+    <Content Include="Scripts\i18n\grid.locale-zh.js" />
+    <Content Include="Scripts\i18n\jquery-ui-i18n.js" />
+    <Content Include="Scripts\i18n\jquery.ui-zh.js" />
+    <Content Include="Scripts\i18n\jquery.ui.datepicker-zh.js" />
+    <Content Include="Scripts\i18n\jquery.ui.jhpager-zh.js" />
+    <Content Include="Scripts\i18n\jquery.ui.tree-zh.js" />
+    <Content Include="Scripts\jatools\jatoolsPrinter.js" />
+    <Content Include="Scripts\jh-jssdk-dev.js" />
+    <Content Include="Scripts\jquery-1.7.2.min.js" />
+    <Content Include="Scripts\jquery-3.2.1.min.js" />
+    <Content Include="Scripts\bigautocomplete\jquery.bigautocomplete.js" />
+    <Content Include="Scripts\jquery.cookie.js" />
+    <Content Include="Scripts\jquery.dotdotdot.min.js" />
+    <Content Include="Scripts\jquery.extend.js" />
+    <Content Include="Scripts\jquery.form.js" />
+    <Content Include="Scripts\jquery.imgareaselect.pack.js" />
+    <Content Include="Scripts\jquery.js" />
+    <Content Include="Scripts\jquery.md5.js" />
+    <Content Include="Scripts\jquery.nicescroll.js" />
+    <Content Include="Scripts\jquery.nicescroll.min.js" />
+    <Content Include="Scripts\jquery.ui.base.js" />
+    <Content Include="Scripts\jquery.watermark.js" />
+    <Content Include="Scripts\Jquerymobile\1.4.5\images\ajax-loader.gif" />
+    <Content Include="Scripts\Jquerymobile\1.4.5\jquery.min.js" />
+    <Content Include="Scripts\Jquerymobile\1.4.5\jquery.mobile-1.4.5.css" />
+    <Content Include="Scripts\Jquerymobile\1.4.5\jquery.mobile-1.4.5.js" />
+    <Content Include="Scripts\Jquerymobile\1.4.5\jquery.mobile-1.4.5.min.css" />
+    <Content Include="Scripts\Jquerymobile\1.4.5\jquery.mobile-1.4.5.min.js" />
+    <Content Include="Scripts\Jquerymobile\blocksit\bg.gif" />
+    <Content Include="Scripts\Jquerymobile\blocksit\blocksit.js" />
+    <Content Include="Scripts\Jquerymobile\blocksit\blocksit.min.js" />
+    <Content Include="Scripts\Jquerymobile\blocksit\style.css" />
+    <Content Include="Scripts\Jquerymobile\css\images\ajax-loader.gif" />
+    <Content Include="Scripts\Jquerymobile\css\jquery.mobile-1.4.2.min.css" />
+    <Content Include="Scripts\Jquerymobile\css\jquery.mobile.icons-1.4.2.min.css" />
+    <Content Include="Scripts\Jquerymobile\iscroll\iscroll.js" />
+    <Content Include="Scripts\Jquerymobile\iscroll\pull-icon%402x.png" />
+    <Content Include="Scripts\Jquerymobile\iscroll\scrollbar.css" />
+    <Content Include="Scripts\Jquerymobile\iscroll\scrollbar.png" />
+    <Content Include="Scripts\Jquerymobile\jquery.js" />
+    <Content Include="Scripts\Jquerymobile\jquery.mobile-1.4.2.js" />
+    <Content Include="Scripts\Jquerymobile\jquery.mobile-1.4.2.min.js" />
+    <Content Include="Scripts\Jquerymobile\lazyload\grey.gif" />
+    <Content Include="Scripts\Jquerymobile\lazyload\jquery.js" />
+    <Content Include="Scripts\Jquerymobile\lazyload\jquery.lazyload.js" />
+    <Content Include="Scripts\Jquerymobile\ref.jpg" />
+    <Content Include="Scripts\JSTools.js" />
+    <Content Include="Scripts\js\demoTools.js" />
+    <Content Include="Scripts\js\jquery-1.4.2.js" />
+    <Content Include="Scripts\js\jquery-1.8.0.min.js" />
+    <Content Include="Scripts\js\jquery.ztree-2.6.js" />
+    <Content Include="Scripts\js\jquery.ztree-2.6.min.js" />
+    <Content Include="Scripts\md5.js" />
+    <Content Include="Content\js\mobileKit.js" />
+    <Content Include="Scripts\moment.min.js" />
+    <Content Include="Scripts\mootools-core-1.4-full.js" />
+    <Content Include="Scripts\mootools-more-1.4-full.js" />
+    <Content Include="Scripts\MultiSelect\ba.hashchange.js" />
+    <Content Include="Scripts\MultiSelect\jquery-3.2.1.min.js" />
+    <Content Include="Scripts\MultiSelect\jquery.multiselect.filter.js" />
+    <Content Include="Scripts\MultiSelect\jquery.multiselect.filter.min.js" />
+    <Content Include="Scripts\MultiSelect\jquery.multiselect.js" />
+    <Content Include="Scripts\MultiSelect\jquery.ui.core.js" />
+    <Content Include="Scripts\MultiSelect\jquery.ui.widget.js" />
+    <Content Include="Scripts\MultiSelect\prettify.js" />
+    <Content Include="Scripts\myorder.js" />
+    <Content Include="Scripts\MyYJB\MyYJBDetail.js" />
+    <Content Include="Scripts\Pager\jquery.ui.jhpager.js" />
+    <Content Include="Scripts\pdf.js" />
+    <Content Include="Scripts\pdf.worker.js" />
+    <Content Include="Scripts\pdf\bootstrap-3.3.7\css\bootstrap-theme.css" />
+    <Content Include="Scripts\pdf\bootstrap-3.3.7\css\bootstrap-theme.min.css" />
+    <Content Include="Scripts\pdf\bootstrap-3.3.7\css\bootstrap.css" />
+    <Content Include="Scripts\pdf\bootstrap-3.3.7\css\bootstrap.min.css" />
+    <Content Include="Scripts\pdf\bootstrap-3.3.7\css\fileinput.css" />
+    <Content Include="Scripts\pdf\bootstrap-3.3.7\css\fileinput.min.css" />
+    <Content Include="Scripts\pdf\bootstrap-3.3.7\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Scripts\pdf\bootstrap-3.3.7\js\bootstrap.js" />
+    <Content Include="Scripts\pdf\bootstrap-3.3.7\js\bootstrap.min.js" />
+    <Content Include="Scripts\pdf\bootstrap-3.3.7\js\npm.js" />
+    <Content Include="Scripts\pdf\js\chili-1.7.pack.js" />
+    <Content Include="Scripts\pdf\js\jq.css" />
+    <Content Include="Scripts\pdf\js\jquery.media.js" />
+    <Content Include="Scripts\pdf\js\jquery.metadata.js" />
+    <Content Include="Scripts\pdf\js\jquery.min.js" />
+    <Content Include="Scripts\pdf\js\urchin.js" />
+    <Content Include="Scripts\pic\jquery.imgbox.pack.js" />
+    <Content Include="Scripts\pcProvinceCity.js" />
+    <Content Include="Scripts\print\CLodopfuncs - bak.js" />
+    <Content Include="Scripts\print\CLodopfuncs.js" />
+    <Content Include="Scripts\print\printdataload.js" />
+    <Content Include="Scripts\print\printexpressorder.js" />
+    <Content Include="Scripts\print\printinvoice.js" />
+    <Content Include="Scripts\print\printshare.js" />
+    <Content Include="Scripts\Slider\jquery.ui.slider.js" />
+    <Content Include="Scripts\TableBox\jquery.ui.jhtablebox.extend.js" />
+    <Content Include="Scripts\TableBox\jquery.ui.jhtablebox.js" />
+    <Content Include="Scripts\template.js" />
+    <Content Include="Scripts\ToolTip\jquery.ui.jhtooltip.js" />
+    <Content Include="Scripts\tree\asyncData1\demoData.js" />
+    <Content Include="Scripts\tree\asyncData1\fun1.txt" />
+    <Content Include="Scripts\tree\asyncData1\fun2.txt" />
+    <Content Include="Scripts\tree\asyncData1\node.txt" />
+    <Content Include="Scripts\tree\demoStyle\demo.css" />
+    <Content Include="Scripts\tree\demoStyle\img\addNode.png" />
+    <Content Include="Scripts\tree\demoStyle\img\books.png" />
+    <Content Include="Scripts\tree\demoStyle\img\btn1.png" />
+    <Content Include="Scripts\tree\demoStyle\img\btn2.png" />
+    <Content Include="Scripts\tree\demoStyle\img\btn3.png" />
+    <Content Include="Scripts\tree\demoStyle\img\btn4.png" />
+    <Content Include="Scripts\tree\demoStyle\img\checkNode.png" />
+    <Content Include="Scripts\tree\demoStyle\img\collapseNode.png" />
+    <Content Include="Scripts\tree\demoStyle\img\down.png" />
+    <Content Include="Scripts\tree\demoStyle\img\download.png" />
+    <Content Include="Scripts\tree\demoStyle\img\expandNode.png" />
+    <Content Include="Scripts\tree\demoStyle\img\hardware.gif" />
+    <Content Include="Scripts\tree\demoStyle\img\home.gif" />
+    <Content Include="Scripts\tree\demoStyle\img\left.png" />
+    <Content Include="Scripts\tree\demoStyle\img\moveNode.png" />
+    <Content Include="Scripts\tree\demoStyle\img\moveNodeR.png" />
+    <Content Include="Scripts\tree\demoStyle\img\people.gif" />
+    <Content Include="Scripts\tree\demoStyle\img\phone.gif" />
+    <Content Include="Scripts\tree\demoStyle\img\refresh.png" />
+    <Content Include="Scripts\tree\demoStyle\img\removeNode.png" />
+    <Content Include="Scripts\tree\demoStyle\img\right.png" />
+    <Content Include="Scripts\tree\demoStyle\img\safari.png" />
+    <Content Include="Scripts\tree\demoStyle\img\searchNode.png" />
+    <Content Include="Scripts\tree\demoStyle\img\skin.png" />
+    <Content Include="Scripts\tree\demoStyle\img\star.png" />
+    <Content Include="Scripts\tree\demoStyle\img\unCheckNode.png" />
+    <Content Include="Scripts\tree\demoStyle\img\up.png" />
+    <Content Include="Scripts\tree\demoStyle\img\zTreeDemo_background.png" />
+    <Content Include="Scripts\tree\demoTools.js" />
+    <Content Include="Scripts\tree\jquery-1.4.2.js" />
+    <Content Include="Scripts\tree\jquery.ztree-2.6.js" />
+    <Content Include="Scripts\tree\jquery.ztree-2.6.min.js" />
+    <Content Include="Scripts\tree\zTreeStyle\img\checkbox.png" />
+    <Content Include="Scripts\tree\zTreeStyle\img\edit.png" />
+    <Content Include="Scripts\tree\zTreeStyle\img\flag\10.png" />
+    <Content Include="Scripts\tree\zTreeStyle\img\flag\1_close.png" />
+    <Content Include="Scripts\tree\zTreeStyle\img\flag\1_open.png" />
+    <Content Include="Scripts\tree\zTreeStyle\img\flag\2.png" />
+    <Content Include="Scripts\tree\zTreeStyle\img\flag\3.png" />
+    <Content Include="Scripts\tree\zTreeStyle\img\flag\4.png" />
+    <Content Include="Scripts\tree\zTreeStyle\img\flag\5.png" />
+    <Content Include="Scripts\tree\zTreeStyle\img\flag\6.png" />
+    <Content Include="Scripts\tree\zTreeStyle\img\flag\7.png" />
+    <Content Include="Scripts\tree\zTreeStyle\img\flag\8.png" />
+    <Content Include="Scripts\tree\zTreeStyle\img\flag\9.png" />
+    <Content Include="Scripts\tree\zTreeStyle\img\folder_Close.gif" />
+    <Content Include="Scripts\tree\zTreeStyle\img\folder_Open.gif" />
+    <Content Include="Scripts\tree\zTreeStyle\img\line_bottom.gif" />
+    <Content Include="Scripts\tree\zTreeStyle\img\line_center.gif" />
+    <Content Include="Scripts\tree\zTreeStyle\img\line_conn.gif" />
+    <Content Include="Scripts\tree\zTreeStyle\img\line_top.gif" />
+    <Content Include="Scripts\tree\zTreeStyle\img\loading.gif" />
+    <Content Include="Scripts\tree\zTreeStyle\img\minus_bottom.gif" />
+    <Content Include="Scripts\tree\zTreeStyle\img\minus_center.gif" />
+    <Content Include="Scripts\tree\zTreeStyle\img\minus_noLine.gif" />
+    <Content Include="Scripts\tree\zTreeStyle\img\minus_root.gif" />
+    <Content Include="Scripts\tree\zTreeStyle\img\minus_top.gif" />
+    <Content Include="Scripts\tree\zTreeStyle\img\moveArrow.png" />
+    <Content Include="Scripts\tree\zTreeStyle\img\page.gif" />
+    <Content Include="Scripts\tree\zTreeStyle\img\plus_bottom.gif" />
+    <Content Include="Scripts\tree\zTreeStyle\img\plus_center.gif" />
+    <Content Include="Scripts\tree\zTreeStyle\img\plus_noLine.gif" />
+    <Content Include="Scripts\tree\zTreeStyle\img\plus_root.gif" />
+    <Content Include="Scripts\tree\zTreeStyle\img\plus_top.gif" />
+    <Content Include="Scripts\tree\zTreeStyle\img\radio.png" />
+    <Content Include="Scripts\tree\zTreeStyle\img\remove.png" />
+    <Content Include="Scripts\tree\zTreeStyle\img\sim\10.png" />
+    <Content Include="Scripts\tree\zTreeStyle\img\sim\1_close.png" />
+    <Content Include="Scripts\tree\zTreeStyle\img\sim\1_open.png" />
+    <Content Include="Scripts\tree\zTreeStyle\img\sim\2.png" />
+    <Content Include="Scripts\tree\zTreeStyle\img\sim\3.png" />
+    <Content Include="Scripts\tree\zTreeStyle\img\sim\4.png" />
+    <Content Include="Scripts\tree\zTreeStyle\img\sim\5.png" />
+    <Content Include="Scripts\tree\zTreeStyle\img\sim\6.png" />
+    <Content Include="Scripts\tree\zTreeStyle\img\sim\7.png" />
+    <Content Include="Scripts\tree\zTreeStyle\img\sim\8.png" />
+    <Content Include="Scripts\tree\zTreeStyle\img\sim\9.png" />
+    <Content Include="Scripts\tree\zTreeStyle\zTreeIcons.css" />
+    <Content Include="Scripts\tree\zTreeStyle\zTreeStyle.css" />
+    <Content Include="Scripts\ueditor\dialogs\anchor\anchor.html" />
+    <Content Include="Scripts\ueditor\dialogs\attachment\attachment.css" />
+    <Content Include="Scripts\ueditor\dialogs\attachment\attachment.html" />
+    <Content Include="Scripts\ueditor\dialogs\attachment\callbacks.js" />
+    <Content Include="Scripts\ueditor\dialogs\attachment\fileTypeImages\icon_chm.gif" />
+    <Content Include="Scripts\ueditor\dialogs\attachment\fileTypeImages\icon_default.png" />
+    <Content Include="Scripts\ueditor\dialogs\attachment\fileTypeImages\icon_doc.gif" />
+    <Content Include="Scripts\ueditor\dialogs\attachment\fileTypeImages\icon_exe.gif" />
+    <Content Include="Scripts\ueditor\dialogs\attachment\fileTypeImages\icon_mp3.gif" />
+    <Content Include="Scripts\ueditor\dialogs\attachment\fileTypeImages\icon_mv.gif" />
+    <Content Include="Scripts\ueditor\dialogs\attachment\fileTypeImages\icon_pdf.gif" />
+    <Content Include="Scripts\ueditor\dialogs\attachment\fileTypeImages\icon_ppt.gif" />
+    <Content Include="Scripts\ueditor\dialogs\attachment\fileTypeImages\icon_psd.gif" />
+    <Content Include="Scripts\ueditor\dialogs\attachment\fileTypeImages\icon_rar.gif" />
+    <Content Include="Scripts\ueditor\dialogs\attachment\fileTypeImages\icon_txt.gif" />
+    <Content Include="Scripts\ueditor\dialogs\attachment\fileTypeImages\icon_xls.gif" />
+    <Content Include="Scripts\ueditor\dialogs\attachment\fileTypeMaps.js" />
+    <Content Include="Scripts\ueditor\dialogs\background\background.css" />
+    <Content Include="Scripts\ueditor\dialogs\background\background.html" />
+    <Content Include="Scripts\ueditor\dialogs\background\background.js" />
+    <Content Include="Scripts\ueditor\dialogs\charts\chart.config.js" />
+    <Content Include="Scripts\ueditor\dialogs\charts\charts.css" />
+    <Content Include="Scripts\ueditor\dialogs\charts\charts.html" />
+    <Content Include="Scripts\ueditor\dialogs\charts\charts.js" />
+    <Content Include="Scripts\ueditor\dialogs\charts\images\charts0.png" />
+    <Content Include="Scripts\ueditor\dialogs\charts\images\charts1.png" />
+    <Content Include="Scripts\ueditor\dialogs\charts\images\charts2.png" />
+    <Content Include="Scripts\ueditor\dialogs\charts\images\charts3.png" />
+    <Content Include="Scripts\ueditor\dialogs\charts\images\charts4.png" />
+    <Content Include="Scripts\ueditor\dialogs\charts\images\charts5.png" />
+    <Content Include="Scripts\ueditor\dialogs\emotion\emotion.css" />
+    <Content Include="Scripts\ueditor\dialogs\emotion\emotion.html" />
+    <Content Include="Scripts\ueditor\dialogs\emotion\emotion.js" />
+    <Content Include="Scripts\ueditor\dialogs\emotion\images\0.gif" />
+    <Content Include="Scripts\ueditor\dialogs\emotion\images\bface.gif" />
+    <Content Include="Scripts\ueditor\dialogs\emotion\images\cface.gif" />
+    <Content Include="Scripts\ueditor\dialogs\emotion\images\fface.gif" />
+    <Content Include="Scripts\ueditor\dialogs\emotion\images\jxface2.gif" />
+    <Content Include="Scripts\ueditor\dialogs\emotion\images\neweditor-tab-bg.png" />
+    <Content Include="Scripts\ueditor\dialogs\emotion\images\tface.gif" />
+    <Content Include="Scripts\ueditor\dialogs\emotion\images\wface.gif" />
+    <Content Include="Scripts\ueditor\dialogs\emotion\images\yface.gif" />
+    <Content Include="Scripts\ueditor\dialogs\gmap\gmap.html" />
+    <Content Include="Scripts\ueditor\dialogs\help\help.css" />
+    <Content Include="Scripts\ueditor\dialogs\help\help.html" />
+    <Content Include="Scripts\ueditor\dialogs\help\help.js" />
+    <Content Include="Scripts\ueditor\dialogs\image\image.css" />
+    <Content Include="Scripts\ueditor\dialogs\image\image.html" />
+    <Content Include="Scripts\ueditor\dialogs\image\image.js" />
+    <Content Include="Scripts\ueditor\dialogs\image\images\center_focus.jpg" />
+    <Content Include="Scripts\ueditor\dialogs\image\images\left_focus.jpg" />
+    <Content Include="Scripts\ueditor\dialogs\image\images\none_focus.jpg" />
+    <Content Include="Scripts\ueditor\dialogs\image\images\right_focus.jpg" />
+    <Content Include="Scripts\ueditor\dialogs\image\imageUploader.swf" />
+    <Content Include="Scripts\ueditor\dialogs\insertframe\insertframe.html" />
+    <Content Include="Scripts\ueditor\dialogs\internal.js" />
+    <Content Include="Scripts\ueditor\dialogs\link\link.html" />
+    <Content Include="Scripts\ueditor\dialogs\map\map.html" />
+    <Content Include="Scripts\ueditor\dialogs\map\show.html" />
+    <Content Include="Scripts\ueditor\dialogs\music\music.css" />
+    <Content Include="Scripts\ueditor\dialogs\music\music.html" />
+    <Content Include="Scripts\ueditor\dialogs\music\music.js" />
+    <Content Include="Scripts\ueditor\dialogs\preview\preview.html" />
+    <Content Include="Scripts\ueditor\dialogs\scrawl\images\addimg.png" />
+    <Content Include="Scripts\ueditor\dialogs\scrawl\images\brush.png" />
+    <Content Include="Scripts\ueditor\dialogs\scrawl\images\delimg.png" />
+    <Content Include="Scripts\ueditor\dialogs\scrawl\images\delimgH.png" />
+    <Content Include="Scripts\ueditor\dialogs\scrawl\images\empty.png" />
+    <Content Include="Scripts\ueditor\dialogs\scrawl\images\emptyH.png" />
+    <Content Include="Scripts\ueditor\dialogs\scrawl\images\eraser.png" />
+    <Content Include="Scripts\ueditor\dialogs\scrawl\images\redo.png" />
+    <Content Include="Scripts\ueditor\dialogs\scrawl\images\redoH.png" />
+    <Content Include="Scripts\ueditor\dialogs\scrawl\images\scale.png" />
+    <Content Include="Scripts\ueditor\dialogs\scrawl\images\scaleH.png" />
+    <Content Include="Scripts\ueditor\dialogs\scrawl\images\size.png" />
+    <Content Include="Scripts\ueditor\dialogs\scrawl\images\undo.png" />
+    <Content Include="Scripts\ueditor\dialogs\scrawl\images\undoH.png" />
+    <Content Include="Scripts\ueditor\dialogs\scrawl\scrawl.css" />
+    <Content Include="Scripts\ueditor\dialogs\scrawl\scrawl.html" />
+    <Content Include="Scripts\ueditor\dialogs\scrawl\scrawl.js" />
+    <Content Include="Scripts\ueditor\dialogs\searchreplace\searchreplace.html" />
+    <Content Include="Scripts\ueditor\dialogs\searchreplace\searchreplace.js" />
+    <Content Include="Scripts\ueditor\dialogs\snapscreen\snapscreen.html" />
+    <Content Include="Scripts\ueditor\dialogs\spechars\spechars.html" />
+    <Content Include="Scripts\ueditor\dialogs\spechars\spechars.js" />
+    <Content Include="Scripts\ueditor\dialogs\table\dragicon.png" />
+    <Content Include="Scripts\ueditor\dialogs\table\edittable.css" />
+    <Content Include="Scripts\ueditor\dialogs\table\edittable.html" />
+    <Content Include="Scripts\ueditor\dialogs\table\edittable.js" />
+    <Content Include="Scripts\ueditor\dialogs\table\edittd.html" />
+    <Content Include="Scripts\ueditor\dialogs\table\edittip.html" />
+    <Content Include="Scripts\ueditor\dialogs\tangram.js" />
+    <Content Include="Scripts\ueditor\dialogs\template\config.js" />
+    <Content Include="Scripts\ueditor\dialogs\template\images\bg.gif" />
+    <Content Include="Scripts\ueditor\dialogs\template\images\pre0.png" />
+    <Content Include="Scripts\ueditor\dialogs\template\images\pre1.png" />
+    <Content Include="Scripts\ueditor\dialogs\template\images\pre2.png" />
+    <Content Include="Scripts\ueditor\dialogs\template\images\pre3.png" />
+    <Content Include="Scripts\ueditor\dialogs\template\images\pre4.png" />
+    <Content Include="Scripts\ueditor\dialogs\template\template.css" />
+    <Content Include="Scripts\ueditor\dialogs\template\template.html" />
+    <Content Include="Scripts\ueditor\dialogs\template\template.js" />
+    <Content Include="Scripts\ueditor\dialogs\video\callbacks.js" />
+    <Content Include="Scripts\ueditor\dialogs\video\images\center_focus.jpg" />
+    <Content Include="Scripts\ueditor\dialogs\video\images\left_focus.jpg" />
+    <Content Include="Scripts\ueditor\dialogs\video\images\none_focus.jpg" />
+    <Content Include="Scripts\ueditor\dialogs\video\images\right_focus.jpg" />
+    <Content Include="Scripts\ueditor\dialogs\video\video.css" />
+    <Content Include="Scripts\ueditor\dialogs\video\video.html" />
+    <Content Include="Scripts\ueditor\dialogs\video\video.js" />
+    <Content Include="Scripts\ueditor\dialogs\webapp\webapp.html" />
+    <Content Include="Scripts\ueditor\dialogs\wordimage\fClipboard_ueditor.swf" />
+    <Content Include="Scripts\ueditor\dialogs\wordimage\imageUploader.swf" />
+    <Content Include="Scripts\ueditor\dialogs\wordimage\wordimage.html" />
+    <Content Include="Scripts\ueditor\dialogs\wordimage\wordimage.js" />
+    <Content Include="Scripts\ueditor\index.html" />
+    <Content Include="Scripts\ueditor\lang\en\en.js" />
+    <Content Include="Scripts\ueditor\lang\en\images\addimage.png" />
+    <Content Include="Scripts\ueditor\lang\en\images\alldeletebtnhoverskin.png" />
+    <Content Include="Scripts\ueditor\lang\en\images\alldeletebtnupskin.png" />
+    <Content Include="Scripts\ueditor\lang\en\images\background.png" />
+    <Content Include="Scripts\ueditor\lang\en\images\button.png" />
+    <Content Include="Scripts\ueditor\lang\en\images\copy.png" />
+    <Content Include="Scripts\ueditor\lang\en\images\deletedisable.png" />
+    <Content Include="Scripts\ueditor\lang\en\images\deleteenable.png" />
+    <Content Include="Scripts\ueditor\lang\en\images\imglabel.png" />
+    <Content Include="Scripts\ueditor\lang\en\images\listbackground.png" />
+    <Content Include="Scripts\ueditor\lang\en\images\localimage.png" />
+    <Content Include="Scripts\ueditor\lang\en\images\music.png" />
+    <Content Include="Scripts\ueditor\lang\en\images\rotateleftdisable.png" />
+    <Content Include="Scripts\ueditor\lang\en\images\rotateleftenable.png" />
+    <Content Include="Scripts\ueditor\lang\en\images\rotaterightdisable.png" />
+    <Content Include="Scripts\ueditor\lang\en\images\rotaterightenable.png" />
+    <Content Include="Scripts\ueditor\lang\en\images\upload.png" />
+    <Content Include="Scripts\ueditor\lang\zh-cn\images\copy.png" />
+    <Content Include="Scripts\ueditor\lang\zh-cn\images\imglabel.png" />
+    <Content Include="Scripts\ueditor\lang\zh-cn\images\localimage.png" />
+    <Content Include="Scripts\ueditor\lang\zh-cn\images\music.png" />
+    <Content Include="Scripts\ueditor\lang\zh-cn\images\upload.png" />
+    <Content Include="Scripts\ueditor\lang\zh-cn\zh-cn.js" />
+    <Content Include="Scripts\ueditor\themes\default\css\ueditor.css" />
+    <Content Include="Scripts\ueditor\themes\default\css\ueditor.min.css" />
+    <Content Include="Scripts\ueditor\themes\default\dialogbase.css" />
+    <Content Include="Scripts\ueditor\themes\default\images\anchor.gif" />
+    <Content Include="Scripts\ueditor\themes\default\images\arrow.png" />
+    <Content Include="Scripts\ueditor\themes\default\images\arrow_down.png" />
+    <Content Include="Scripts\ueditor\themes\default\images\arrow_up.png" />
+    <Content Include="Scripts\ueditor\themes\default\images\button-bg.gif" />
+    <Content Include="Scripts\ueditor\themes\default\images\cancelbutton.gif" />
+    <Content Include="Scripts\ueditor\themes\default\images\charts.png" />
+    <Content Include="Scripts\ueditor\themes\default\images\cursor_h.gif" />
+    <Content Include="Scripts\ueditor\themes\default\images\cursor_h.png" />
+    <Content Include="Scripts\ueditor\themes\default\images\cursor_v.gif" />
+    <Content Include="Scripts\ueditor\themes\default\images\cursor_v.png" />
+    <Content Include="Scripts\ueditor\themes\default\images\dialog-title-bg.png" />
+    <Content Include="Scripts\ueditor\themes\default\images\filescan.png" />
+    <Content Include="Scripts\ueditor\themes\default\images\highlighted.gif" />
+    <Content Include="Scripts\ueditor\themes\default\images\icons-all.gif" />
+    <Content Include="Scripts\ueditor\themes\default\images\icons.gif" />
+    <Content Include="Scripts\ueditor\themes\default\images\icons.png" />
+    <Content Include="Scripts\ueditor\themes\default\images\lock.gif" />
+    <Content Include="Scripts\ueditor\themes\default\images\neweditor-tab-bg.png" />
+    <Content Include="Scripts\ueditor\themes\default\images\pagebreak.gif" />
+    <Content Include="Scripts\ueditor\themes\default\images\scale.png" />
+    <Content Include="Scripts\ueditor\themes\default\images\sortable.png" />
+    <Content Include="Scripts\ueditor\themes\default\images\spacer.gif" />
+    <Content Include="Scripts\ueditor\themes\default\images\sparator_v.png" />
+    <Content Include="Scripts\ueditor\themes\default\images\table-cell-align.png" />
+    <Content Include="Scripts\ueditor\themes\default\images\tangram-colorpicker.png" />
+    <Content Include="Scripts\ueditor\themes\default\images\toolbar_bg.png" />
+    <Content Include="Scripts\ueditor\themes\default\images\unhighlighted.gif" />
+    <Content Include="Scripts\ueditor\themes\default\images\upload.png" />
+    <Content Include="Scripts\ueditor\themes\default\images\videologo.gif" />
+    <Content Include="Scripts\ueditor\themes\default\images\word.gif" />
+    <Content Include="Scripts\ueditor\themes\default\images\wordpaste.png" />
+    <Content Include="Scripts\ueditor\themes\iframe.css" />
+    <Content Include="Scripts\ueditor\third-party\codemirror\codemirror.css" />
+    <Content Include="Scripts\ueditor\third-party\codemirror\codemirror.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\adapters\mootools-adapter.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\adapters\mootools-adapter.src.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\adapters\prototype-adapter.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\adapters\prototype-adapter.src.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\adapters\standalone-framework.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\adapters\standalone-framework.src.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\highcharts-more.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\highcharts-more.src.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\highcharts.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\highcharts.src.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\modules\annotations.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\modules\annotations.src.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\modules\canvas-tools.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\modules\canvas-tools.src.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\modules\data.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\modules\data.src.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\modules\drilldown.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\modules\drilldown.src.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\modules\exporting.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\modules\exporting.src.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\modules\funnel.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\modules\funnel.src.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\modules\heatmap.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\modules\heatmap.src.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\modules\map.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\modules\map.src.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\modules\no-data-to-display.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\modules\no-data-to-display.src.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\themes\dark-blue.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\themes\dark-green.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\themes\gray.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\themes\grid.js" />
+    <Content Include="Scripts\ueditor\third-party\highcharts\themes\skies.js" />
+    <Content Include="Scripts\ueditor\third-party\jquery-1.10.2.min.js" />
+    <Content Include="Scripts\ueditor\third-party\snapscreen\UEditorSnapscreen.exe" />
+    <Content Include="Scripts\ueditor\third-party\swfupload\fileprogress.js" />
+    <Content Include="Scripts\ueditor\third-party\swfupload\swfupload.cookies.js" />
+    <Content Include="Scripts\ueditor\third-party\swfupload\swfupload.js" />
+    <Content Include="Scripts\ueditor\third-party\swfupload\swfupload.proxy.js" />
+    <Content Include="Scripts\ueditor\third-party\swfupload\swfupload.queue.js" />
+    <Content Include="Scripts\ueditor\third-party\swfupload\swfupload.speed.js" />
+    <Content Include="Scripts\ueditor\third-party\swfupload\swfupload.swf" />
+    <Content Include="Scripts\ueditor\third-party\swfupload\swfupload_fp9.swf" />
+    <Content Include="Scripts\ueditor\third-party\SyntaxHighlighter\shCore.js" />
+    <Content Include="Scripts\ueditor\third-party\SyntaxHighlighter\shCoreDefault.css" />
+    <Content Include="Scripts\ueditor\third-party\video-js\font\vjs.svg" />
+    <Content Include="Scripts\ueditor\third-party\video-js\video-js.css" />
+    <Content Include="Scripts\ueditor\third-party\video-js\video-js.min.css" />
+    <Content Include="Scripts\ueditor\third-party\video-js\video-js.swf" />
+    <Content Include="Scripts\ueditor\third-party\video-js\video.dev.js" />
+    <Content Include="Scripts\ueditor\third-party\video-js\video.js" />
+    <Content Include="Scripts\ueditor\ueditor.all.js" />
+    <Content Include="Scripts\ueditor\ueditor.all.min.js" />
+    <Content Include="Scripts\ueditor\ueditor.config.js" />
+    <Content Include="Scripts\ueditor\ueditor.parse.js" />
+    <Content Include="Scripts\ueditor\ueditor.parse.min.js" />
+    <Content Include="Scripts\ueditor_mini\dialogs\emotion\emotion.css" />
+    <Content Include="Scripts\ueditor_mini\dialogs\emotion\emotion.js" />
+    <Content Include="Scripts\ueditor_mini\dialogs\emotion\images\0.gif" />
+    <Content Include="Scripts\ueditor_mini\dialogs\emotion\images\bface.gif" />
+    <Content Include="Scripts\ueditor_mini\dialogs\emotion\images\cface.gif" />
+    <Content Include="Scripts\ueditor_mini\dialogs\emotion\images\fface.gif" />
+    <Content Include="Scripts\ueditor_mini\dialogs\emotion\images\jxface2.gif" />
+    <Content Include="Scripts\ueditor_mini\dialogs\emotion\images\neweditor-tab-bg.png" />
+    <Content Include="Scripts\ueditor_mini\dialogs\emotion\images\tface.gif" />
+    <Content Include="Scripts\ueditor_mini\dialogs\emotion\images\wface.gif" />
+    <Content Include="Scripts\ueditor_mini\dialogs\emotion\images\yface.gif" />
+    <Content Include="Scripts\ueditor_mini\dialogs\image\image.css" />
+    <Content Include="Scripts\ueditor_mini\dialogs\image\image.js" />
+    <Content Include="Scripts\ueditor_mini\dialogs\image\images\close.png" />
+    <Content Include="Scripts\ueditor_mini\dialogs\image\images\upload1.png" />
+    <Content Include="Scripts\ueditor_mini\dialogs\image\images\upload2.png" />
+    <Content Include="Scripts\ueditor_mini\dialogs\link\link.js" />
+    <Content Include="Scripts\ueditor_mini\dialogs\map\map.js" />
+    <Content Include="Scripts\ueditor_mini\dialogs\video\images\center_focus.jpg" />
+    <Content Include="Scripts\ueditor_mini\dialogs\video\images\left_focus.jpg" />
+    <Content Include="Scripts\ueditor_mini\dialogs\video\images\none_focus.jpg" />
+    <Content Include="Scripts\ueditor_mini\dialogs\video\images\right_focus.jpg" />
+    <Content Include="Scripts\ueditor_mini\dialogs\video\video.css" />
+    <Content Include="Scripts\ueditor_mini\dialogs\video\video.js" />
+    <Content Include="Scripts\ueditor_mini\lang\en\en.js" />
+    <Content Include="Scripts\ueditor_mini\lang\en\images\addimage.png" />
+    <Content Include="Scripts\ueditor_mini\lang\en\images\alldeletebtnhoverskin.png" />
+    <Content Include="Scripts\ueditor_mini\lang\en\images\alldeletebtnupskin.png" />
+    <Content Include="Scripts\ueditor_mini\lang\en\images\background.png" />
+    <Content Include="Scripts\ueditor_mini\lang\en\images\button.png" />
+    <Content Include="Scripts\ueditor_mini\lang\en\images\copy.png" />
+    <Content Include="Scripts\ueditor_mini\lang\en\images\deletedisable.png" />
+    <Content Include="Scripts\ueditor_mini\lang\en\images\deleteenable.png" />
+    <Content Include="Scripts\ueditor_mini\lang\en\images\imglabel.png" />
+    <Content Include="Scripts\ueditor_mini\lang\en\images\listbackground.png" />
+    <Content Include="Scripts\ueditor_mini\lang\en\images\localimage.png" />
+    <Content Include="Scripts\ueditor_mini\lang\en\images\music.png" />
+    <Content Include="Scripts\ueditor_mini\lang\en\images\rotateleftdisable.png" />
+    <Content Include="Scripts\ueditor_mini\lang\en\images\rotateleftenable.png" />
+    <Content Include="Scripts\ueditor_mini\lang\en\images\rotaterightdisable.png" />
+    <Content Include="Scripts\ueditor_mini\lang\en\images\rotaterightenable.png" />
+    <Content Include="Scripts\ueditor_mini\lang\en\images\upload.png" />
+    <Content Include="Scripts\ueditor_mini\lang\zh-cn\images\copy.png" />
+    <Content Include="Scripts\ueditor_mini\lang\zh-cn\images\imglabel.png" />
+    <Content Include="Scripts\ueditor_mini\lang\zh-cn\images\localimage.png" />
+    <Content Include="Scripts\ueditor_mini\lang\zh-cn\images\music.png" />
+    <Content Include="Scripts\ueditor_mini\lang\zh-cn\images\upload.png" />
+    <Content Include="Scripts\ueditor_mini\lang\zh-cn\zh-cn.js" />
+    <Content Include="Scripts\ueditor_mini\themes\default\css\umeditor.css" />
+    <Content Include="Scripts\ueditor_mini\themes\default\css\umeditor.min.css" />
+    <Content Include="Scripts\ueditor_mini\themes\default\images\caret.png" />
+    <Content Include="Scripts\ueditor_mini\themes\default\images\close.png" />
+    <Content Include="Scripts\ueditor_mini\themes\default\images\icons.gif" />
+    <Content Include="Scripts\ueditor_mini\themes\default\images\icons.png" />
+    <Content Include="Scripts\ueditor_mini\themes\default\images\ok.gif" />
+    <Content Include="Scripts\ueditor_mini\themes\default\images\pop-bg.png" />
+    <Content Include="Scripts\ueditor_mini\themes\default\images\spacer.gif" />
+    <Content Include="Scripts\ueditor_mini\themes\default\images\videologo.gif" />
+    <Content Include="Scripts\ueditor_mini\umeditor.config.js" />
+    <Content Include="Scripts\ueditor_mini\umeditor.js" />
+    <Content Include="Scripts\ueditor_mini\umeditor.min.js" />
+    <Content Include="Scripts\ueditor_mini\_examples\jquery.js" />
+    <Content Include="Scripts\ueditor_mini\_examples\simpleDemo.html" />
+    <Content Include="Scripts\umeditor\dialogs\emotion\emotion.css" />
+    <Content Include="Scripts\umeditor\dialogs\emotion\emotion.js" />
+    <Content Include="Scripts\umeditor\dialogs\emotion\images\0.gif" />
+    <Content Include="Scripts\umeditor\dialogs\emotion\images\bface.gif" />
+    <Content Include="Scripts\umeditor\dialogs\emotion\images\cface.gif" />
+    <Content Include="Scripts\umeditor\dialogs\emotion\images\fface.gif" />
+    <Content Include="Scripts\umeditor\dialogs\emotion\images\jxface2.gif" />
+    <Content Include="Scripts\umeditor\dialogs\emotion\images\neweditor-tab-bg.png" />
+    <Content Include="Scripts\umeditor\dialogs\emotion\images\tface.gif" />
+    <Content Include="Scripts\umeditor\dialogs\emotion\images\wface.gif" />
+    <Content Include="Scripts\umeditor\dialogs\emotion\images\yface.gif" />
+    <Content Include="Scripts\umeditor\dialogs\formula\formula.css" />
+    <Content Include="Scripts\umeditor\dialogs\formula\formula.html" />
+    <Content Include="Scripts\umeditor\dialogs\formula\formula.js" />
+    <Content Include="Scripts\umeditor\dialogs\formula\images\formula.png" />
+    <Content Include="Scripts\umeditor\dialogs\image\image.css" />
+    <Content Include="Scripts\umeditor\dialogs\image\image.js" />
+    <Content Include="Scripts\umeditor\dialogs\image\images\close.png" />
+    <Content Include="Scripts\umeditor\dialogs\image\images\upload1.png" />
+    <Content Include="Scripts\umeditor\dialogs\image\images\upload2.png" />
+    <Content Include="Scripts\umeditor\dialogs\link\link.js" />
+    <Content Include="Scripts\umeditor\dialogs\map\map.html" />
+    <Content Include="Scripts\umeditor\dialogs\map\map.js" />
+    <Content Include="Scripts\umeditor\dialogs\video\images\center_focus.jpg" />
+    <Content Include="Scripts\umeditor\dialogs\video\images\left_focus.jpg" />
+    <Content Include="Scripts\umeditor\dialogs\video\images\none_focus.jpg" />
+    <Content Include="Scripts\umeditor\dialogs\video\images\right_focus.jpg" />
+    <Content Include="Scripts\umeditor\dialogs\video\video.css" />
+    <Content Include="Scripts\umeditor\dialogs\video\video.js" />
+    <Content Include="Scripts\umeditor\index.html" />
+    <Content Include="Scripts\umeditor\lang\en\en.js" />
+    <Content Include="Scripts\umeditor\lang\en\images\addimage.png" />
+    <Content Include="Scripts\umeditor\lang\en\images\alldeletebtnhoverskin.png" />
+    <Content Include="Scripts\umeditor\lang\en\images\alldeletebtnupskin.png" />
+    <Content Include="Scripts\umeditor\lang\en\images\background.png" />
+    <Content Include="Scripts\umeditor\lang\en\images\button.png" />
+    <Content Include="Scripts\umeditor\lang\en\images\copy.png" />
+    <Content Include="Scripts\umeditor\lang\en\images\deletedisable.png" />
+    <Content Include="Scripts\umeditor\lang\en\images\deleteenable.png" />
+    <Content Include="Scripts\umeditor\lang\en\images\imglabel.png" />
+    <Content Include="Scripts\umeditor\lang\en\images\listbackground.png" />
+    <Content Include="Scripts\umeditor\lang\en\images\localimage.png" />
+    <Content Include="Scripts\umeditor\lang\en\images\music.png" />
+    <Content Include="Scripts\umeditor\lang\en\images\rotateleftdisable.png" />
+    <Content Include="Scripts\umeditor\lang\en\images\rotateleftenable.png" />
+    <Content Include="Scripts\umeditor\lang\en\images\rotaterightdisable.png" />
+    <Content Include="Scripts\umeditor\lang\en\images\rotaterightenable.png" />
+    <Content Include="Scripts\umeditor\lang\en\images\upload.png" />
+    <Content Include="Scripts\umeditor\lang\zh-cn\images\copy.png" />
+    <Content Include="Scripts\umeditor\lang\zh-cn\images\imglabel.png" />
+    <Content Include="Scripts\umeditor\lang\zh-cn\images\localimage.png" />
+    <Content Include="Scripts\umeditor\lang\zh-cn\images\music.png" />
+    <Content Include="Scripts\umeditor\lang\zh-cn\images\upload.png" />
+    <Content Include="Scripts\umeditor\lang\zh-cn\zh-cn.js" />
+    <Content Include="Scripts\umeditor\themes\default\css\umeditor.css" />
+    <Content Include="Scripts\umeditor\themes\default\css\umeditor.min.css" />
+    <Content Include="Scripts\umeditor\themes\default\images\caret.png" />
+    <Content Include="Scripts\umeditor\themes\default\images\close.png" />
+    <Content Include="Scripts\umeditor\themes\default\images\icons.gif" />
+    <Content Include="Scripts\umeditor\themes\default\images\icons.png" />
+    <Content Include="Scripts\umeditor\themes\default\images\ok.gif" />
+    <Content Include="Scripts\umeditor\themes\default\images\pop-bg.png" />
+    <Content Include="Scripts\umeditor\themes\default\images\spacer.gif" />
+    <Content Include="Scripts\umeditor\themes\default\images\videologo.gif" />
+    <Content Include="Scripts\umeditor\third-party\jquery.min.js" />
+    <Content Include="Scripts\umeditor\third-party\mathquill\font\stixgeneral-bundle\STIXFontLicense2010.txt" />
+    <Content Include="Scripts\umeditor\third-party\mathquill\font\stixgeneral-bundle\stixgeneral-webfont.svg" />
+    <Content Include="Scripts\umeditor\third-party\mathquill\font\stixgeneral-bundle\stixgeneralbol-webfont.svg" />
+    <Content Include="Scripts\umeditor\third-party\mathquill\font\stixgeneral-bundle\stixgeneralbolita-webfont.svg" />
+    <Content Include="Scripts\umeditor\third-party\mathquill\font\stixgeneral-bundle\stixgeneralitalic-webfont.svg" />
+    <Content Include="Scripts\umeditor\third-party\mathquill\font\Symbola.svg" />
+    <Content Include="Scripts\umeditor\third-party\mathquill\mathquill.css" />
+    <Content Include="Scripts\umeditor\third-party\mathquill\mathquill.js" />
+    <Content Include="Scripts\umeditor\third-party\mathquill\mathquill.min.js" />
+    <Content Include="Scripts\umeditor\umeditor.config.js" />
+    <Content Include="Scripts\umeditor\umeditor.js" />
+    <Content Include="Scripts\umeditor\umeditor.min.js" />
+    <Content Include="Scripts\uploadify\jquery.uploadify.min.js" />
+    <Content Include="Scripts\uploadify\uploadify.css" />
+    <Content Include="Scripts\uploadify\uploadify.swf" />
+    <Content Include="Scripts\Validator\JValidator.js" />
+    <Content Include="Scripts\Validator\Style.css" />
+    <Content Include="Scripts\vue-resource.js" />
+    <Content Include="Scripts\vue-resource.min.js" />
+    <Content Include="Scripts\vue.js" />
+    <Content Include="Scripts\vue.min.js" />
+    <Content Include="Scripts\zepto.min.js" />
+    <Content Include="Scripts\zTreeStyle\img\checkbox.png" />
+    <Content Include="Scripts\zTreeStyle\img\edit.png" />
+    <Content Include="Scripts\zTreeStyle\img\flag\10.png" />
+    <Content Include="Scripts\zTreeStyle\img\flag\1_close.png" />
+    <Content Include="Scripts\zTreeStyle\img\flag\1_open.png" />
+    <Content Include="Scripts\zTreeStyle\img\flag\2.png" />
+    <Content Include="Scripts\zTreeStyle\img\flag\3.png" />
+    <Content Include="Scripts\zTreeStyle\img\flag\4.png" />
+    <Content Include="Scripts\zTreeStyle\img\flag\5.png" />
+    <Content Include="Scripts\zTreeStyle\img\flag\6.png" />
+    <Content Include="Scripts\zTreeStyle\img\flag\7.png" />
+    <Content Include="Scripts\zTreeStyle\img\flag\8.png" />
+    <Content Include="Scripts\zTreeStyle\img\flag\9.png" />
+    <Content Include="Scripts\zTreeStyle\img\folder_Close.gif" />
+    <Content Include="Scripts\zTreeStyle\img\folder_Open.gif" />
+    <Content Include="Scripts\zTreeStyle\img\line_bottom.gif" />
+    <Content Include="Scripts\zTreeStyle\img\line_center.gif" />
+    <Content Include="Scripts\zTreeStyle\img\line_conn.gif" />
+    <Content Include="Scripts\zTreeStyle\img\line_top.gif" />
+    <Content Include="Scripts\zTreeStyle\img\loading.gif" />
+    <Content Include="Scripts\zTreeStyle\img\minus_bottom.gif" />
+    <Content Include="Scripts\zTreeStyle\img\minus_center.gif" />
+    <Content Include="Scripts\zTreeStyle\img\minus_noLine.gif" />
+    <Content Include="Scripts\zTreeStyle\img\minus_root.gif" />
+    <Content Include="Scripts\zTreeStyle\img\minus_top.gif" />
+    <Content Include="Scripts\zTreeStyle\img\moveArrow.png" />
+    <Content Include="Scripts\zTreeStyle\img\page.gif" />
+    <Content Include="Scripts\zTreeStyle\img\plus_bottom.gif" />
+    <Content Include="Scripts\zTreeStyle\img\plus_center.gif" />
+    <Content Include="Scripts\zTreeStyle\img\plus_noLine.gif" />
+    <Content Include="Scripts\zTreeStyle\img\plus_root.gif" />
+    <Content Include="Scripts\zTreeStyle\img\plus_top.gif" />
+    <Content Include="Scripts\zTreeStyle\img\radio.png" />
+    <Content Include="Scripts\zTreeStyle\img\remove.png" />
+    <Content Include="Scripts\zTreeStyle\img\sim\10.png" />
+    <Content Include="Scripts\zTreeStyle\img\sim\1_close.png" />
+    <Content Include="Scripts\zTreeStyle\img\sim\1_open.png" />
+    <Content Include="Scripts\zTreeStyle\img\sim\2.png" />
+    <Content Include="Scripts\zTreeStyle\img\sim\3.png" />
+    <Content Include="Scripts\zTreeStyle\img\sim\4.png" />
+    <Content Include="Scripts\zTreeStyle\img\sim\5.png" />
+    <Content Include="Scripts\zTreeStyle\img\sim\6.png" />
+    <Content Include="Scripts\zTreeStyle\img\sim\7.png" />
+    <Content Include="Scripts\zTreeStyle\img\sim\8.png" />
+    <Content Include="Scripts\zTreeStyle\img\sim\9.png" />
+    <Content Include="Scripts\zTreeStyle\zTreeIcons.css" />
+    <Content Include="Scripts\zTreeStyle\zTreeStyle.css" />
+    <Content Include="Scripts\first-js.js" />
+    <Content Include="Scripts\distance.js" />
+    <Content Include="Scripts\app.js" />
+    <Content Include="Views\AppCommission\SellerIndex.cshtml" />
+    <Content Include="Views\CYMobile\selectstore.html" />
+    <Content Include="Views\Distribute\MyDistributeMoneyDetail.cshtml" />
+    <Content Include="Views\Jdlogs\Empty.cshtml">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Views\Mobile\CommissionMoney.cshtml" />
+    <Content Include="Views\MobileFitted\CommodityDetail.cshtml" />
+    <Content Include="Configuration\CacheConfiguration\Configuration.config" />
+    <Content Include="Areas\WeChatQRCode\Views\Web.config" />
+    <Content Include="Areas\WeChatQRCode\Views\WeChatQRCodeManage\Index.cshtml" />
+    <Content Include="Areas\WeChatQRCode\Views\WeChatQRCodeManage\AddWeChatMenu.cshtml" />
+    <Content Include="Areas\WeChatQRCode\Views\WeChatQRCodeManage\SpreadManagerIndex.cshtml" />
+    <Content Include="Areas\WeChatQRCode\Views\WeChatQRCodeManage\Manager.cshtml" />
+    <Content Include="Configuration\CustomConfig\Jinher.AMP.BTP\Configuration-live.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <None Include="Content\ExcelTemplate\员工信息采集.xlsx" />
+    <Content Include="Content\ExcelTemplate\商品列表模板.xlsx" />
+    <None Include="Content\ExcelTemplate\商品表模板.xlsx" />
+    <None Include="Content\fonts\fontawesome-webfont.eot" />
+    <None Include="Content\fonts\fontawesome-webfont.svg" />
+    <None Include="Content\fonts\fontawesome-webfont.ttf" />
+    <None Include="Content\fonts\fontawesome-webfont.woff" />
+    <None Include="Content\fonts\fontawesome-webfont.woff2" />
+    <None Include="Content\fonts\FontAwesome.otf" />
+    <Content Include="Views\DiyGroup\DiyGroupManage.cshtml" />
+    <Content Include="Views\MobileFitted\CommodityDetailDiyGroup.cshtml" />
+    <Content Include="Views\Mobile\DiyGroupDetail.cshtml" />
+    <Content Include="Views\DiyGroup\PartialIndex.cshtml" />
+    <Content Include="Views\Mobile\DiyGroupActivityRule.cshtml" />
+    <Content Include="Views\DiyGroup\MyDiyGroup.cshtml" />
+    <Content Include="Views\MobileFitted\MultiAttributeSelector.cshtml" />
+    <Content Include="Views\MobileFitted\MasTest.cshtml" />
+    <Content Include="Views\Invoice\InvoiceManage.cshtml" />
+    <Content Include="Views\Invoice\VatInvoiceProofDetail.cshtml" />
+    <Content Include="Views\Invoice\PartialInvoiceList.cshtml" />
+    <Content Include="Views\Invoice\VatInvoiceProofDetailShow.cshtml" />
+    <Content Include="Views\Mobile\InvoiceInfo.cshtml" />
+    <Content Include="Views\MobileFitted\ShoppongCartList.cshtml" />
+    <Content Include="Views\MobileFitted\CommodityList.cshtml" />
+    <Content Include="Views\Channel\Index.cshtml" />
+    <Content Include="Views\Channel\ChannelDefaultDividend.cshtml" />
+    <Content Include="Views\MobileFitted\CateringCommodityList.cshtml" />
+    <Content Include="Views\CYMobile\CommodityList.cshtml" />
+    <Content Include="Views\Commodity\CYStoreIndex.cshtml" />
+    <Content Include="Views\Commodity\CYPartialStoreIndex.cshtml" />
+    <Content Include="Views\Commodity\CYAddCommodity.cshtml" />
+    <Content Include="Views\Commodity\CYUpdateCommodity.cshtml" />
+    <Content Include="Views\Commodity\CYSaleIndex.cshtml" />
+    <Content Include="Views\CYMobile\Store.cshtml" />
+    <Content Include="Views\CommodityOrder\BPrintOrders.cshtml" />
+    <Content Include="Views\CYMobile\CreateOrder.cshtml" />
+    <Content Include="Views\Commodity\CYPartialIndex.cshtml" />
+    <Content Include="Views\CommodityOrder\CYPartialIndex.cshtml" />
+    <Content Include="Views\CYMobile\SelectStore.cshtml" />
+    <Content Include="Views\CYMobile\CommodityListTest.cshtml" />
+    <Content Include="Views\CYMobile\Coupon.cshtml" />
+    <Content Include="Views\CYMobile\MyOrderList.cshtml" />
+    <Content Include="Views\CYMobile\MyOrderDetail.cshtml" />
+    <Content Include="Views\CommodityOrder\CYOrderPrint.cshtml" />
+    <Content Include="Views\CYMobile\MyOrderDetailShow.cshtml" />
+    <Content Include="Views\Commodity\CommodityScore.cshtml" />
+    <Content Include="Views\Commodity\CommodityScoreEdit.cshtml" />
+    <Content Include="Views\Distribute\Distribution.cshtml" />
+    <Content Include="Views\CommodityOrder\CYOrderManage.cshtml" />
+    <Content Include="Views\CommodityOrder\CYOrderManagePartialIndex.cshtml" />
+    <Content Include="Views\CommodityOrder\CYOrderDetails.cshtml" />
+    <Content Include="Views\CYMobile\MulPhone.cshtml" />
+    <Content Include="Views\CYMobile\CyMain.cshtml" />
+    <None Include="Content\Mobile\Common.js.bak" />
+    <None Include="Content\Mobile\jhWebview.rar" />
+    <None Include="Content\Mobile\OrderListstyle\font\fontawesome-webfont.eot" />
+    <None Include="Content\Mobile\OrderListstyle\font\fontawesome-webfont.ttf" />
+    <None Include="Content\Mobile\OrderListstyle\font\fontawesome-webfont.woff" />
+    <None Include="Content\Mobile\OrderListstyle\font\FontAwesome.otf" />
+    <None Include="Content\Mobile\OrderListstyle\images\saw.psd" />
+    <None Include="Content\Mobile\zphStyle\fonts\fontawesome-webfont.eot" />
+    <None Include="Content\Mobile\zphStyle\fonts\fontawesome-webfont.ttf" />
+    <None Include="Content\Mobile\zphStyle\fonts\fontawesome-webfont.woff" />
+    <None Include="Content\Mobile\zphStyle\fonts\fontawesome-webfont.woff2" />
+    <None Include="Content\Mobile\zphStyle\fonts\FontAwesome.otf" />
+    <None Include="Content\Mobile\zphStyle\font\fontawesome-webfont.eot" />
+    <None Include="Content\Mobile\zphStyle\font\fontawesome-webfont.ttf" />
+    <None Include="Content\Mobile\zphStyle\font\fontawesome-webfont.woff" />
+    <None Include="Content\Mobile\zphStyle\font\fontawesome-webfont.woff2" />
+    <None Include="Content\Mobile\zphStyle\font\FontAwesome.otf" />
+    <None Include="Content\Mobile\zphStyle\font\jinher.eot" />
+    <None Include="Content\Mobile\zphStyle\font\jinher.ttf" />
+    <None Include="Content\Mobile\zphStyle\font\jinher.woff" />
+    <None Include="Content\Mobile\zphStyle\images\myHomeIcon.psd" />
+    <None Include="Content\Mobile\zphStyle\images\saw.psd" />
+    <None Include="Content\Mobile\zphStyle\mobileKit.css.map" />
+    <None Include="Content\style\fonts\fontawesome-webfont.eot" />
+    <None Include="Content\style\fonts\fontawesome-webfont.ttf" />
+    <None Include="Content\style\fonts\fontawesome-webfont.woff" />
+    <None Include="Content\style\fonts\fontawesome-webfont.woff2" />
+    <None Include="Content\style\fonts\FontAwesome.otf" />
+    <Content Include="Views\CommodityOrder\DownPrintControl.cshtml" />
+    <Content Include="Views\CommoditySpreadDividend\Index.cshtml" />
+    <Content Include="Views\CommoditySpreadDividend\Edit.cshtml" />
+    <Content Include="Views\CommoditySpreadDividend\SelectCommodity.cshtml" />
+    <Content Include="Views\AppCommission\Index.cshtml" />
+    <Content Include="Views\CommodityOrder\EsAppIndex.cshtml" />
+    <Content Include="Views\CommodityOrder\PartialEsAppIndex.cshtml" />
+    <None Include="dist\lib\AreaJson.json" />
+    <None Include="packages.config" />
+    <Content Include="dist\lib\Express100.json" />
+    <None Include="Scripts\element-ui\2.0\lib\theme-chalk\fonts\element-icons.ttf" />
+    <None Include="Scripts\element-ui\2.0\lib\theme-chalk\fonts\element-icons.woff" />
+    <None Include="Scripts\element-ui\lib\theme-default\fonts\element-icons.ttf" />
+    <None Include="Scripts\element-ui\lib\theme-default\fonts\element-icons.woff" />
+    <Content Include="Views\Commodity\SelSingleTaxRateCode.cshtml" />
+    <None Include="Scripts\h5New\libs\fonts\fontawesome-webfont.eot" />
+    <None Include="Scripts\h5New\libs\fonts\fontawesome-webfont.ttf" />
+    <None Include="Scripts\h5New\libs\fonts\fontawesome-webfont.woff" />
+    <None Include="Scripts\h5New\libs\fonts\fontawesome-webfont.woff2" />
+    <None Include="Scripts\h5New\libs\fonts\FontAwesome.otf" />
+    <None Include="Scripts\pdf\bootstrap-3.3.7\css\bootstrap-theme.css.map" />
+    <None Include="Scripts\pdf\bootstrap-3.3.7\css\bootstrap-theme.min.css.map" />
+    <None Include="Scripts\pdf\bootstrap-3.3.7\css\bootstrap.css.map" />
+    <None Include="Scripts\pdf\bootstrap-3.3.7\css\bootstrap.min.css.map" />
+    <None Include="Scripts\pdf\bootstrap-3.3.7\fonts\glyphicons-halflings-regular.eot" />
+    <None Include="Scripts\pdf\bootstrap-3.3.7\fonts\glyphicons-halflings-regular.ttf" />
+    <None Include="Scripts\pdf\bootstrap-3.3.7\fonts\glyphicons-halflings-regular.woff" />
+    <None Include="Scripts\pdf\bootstrap-3.3.7\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="Views\CommodityOrder\OrderTradeList.cshtml" />
+    <None Include="Views\AuditCommodity\ApplyCommodity.cshtml" />
+    <None Include="Views\AuditCommodity\AuditCommodity.cshtml" />
+    <None Include="Views\AuditCommodity\GetApplyComDetail.cshtml" />
+    <None Include="Views\AuditCommodity\GetAuditComDetail.cshtml" />
+    <None Include="Views\AuditCommodity\Index.cshtml" />
+    <None Include="Views\AuditCommodity\UpdateAuditCom.cshtml" />
+    <Content Include="Views\Category\BrandWall.cshtml" />
+    <Content Include="Views\Category\FileUpload.cshtml" />
+    <Content Include="Views\Category\ThematicActivities.cshtml" />
+    <Content Include="Views\Brand\AddBrand.cshtml" />
+    <Content Include="Views\Brand\Index.cshtml" />
+    <Content Include="Views\Brand\UpdateBrand.cshtml" />
+    <Content Include="Views\CardVoucher\Index.cshtml" />
+    <Content Include="Views\CarInsurance\Index.cshtml" />
+    <Content Include="Views\CarInsurance\CarInsuranceReport.cshtml" />
+    <Content Include="Views\CarInsurance\RebateDetail.cshtml" />
+    <None Include="Views\CommodityChanged\GoodsDetailReport.cshtml" />
+    <Content Include="Views\CommodityOrder\TotalIndex.cshtml" />
+    <Content Include="Views\CommodityOrder\TotalPartialIndex.cshtml" />
+    <Content Include="Views\Commodity\ShowReturnCommodityTemplate.cshtml" />
+    <Content Include="Views\JDEclp\JDStockjournalList.cshtml" />
+    <Content Include="Views\JDEclp\JDEclpOrderJournalList.cshtml" />
+    <Content Include="Views\JDEclp\JDEclpOrderRefundAfterSalesJournalList.cshtml" />
+    <Content Include="Views\Commodity\SelectCommodityList.cshtml" />
+    <Content Include="Views\CommodityOrder\EsAppJczfIndex.cshtml" />
+    <Content Include="Views\CommodityOrder\PartialJczfEsAppIndex.cshtml" />
+    <Content Include="Views\CustomerService\MyOrderInfo.cshtml" />
+    <Content Include="Views\CustomerService\SearchOrderInfo.cshtml" />
+    <Content Include="Views\CustomerService\OrderInfoList.cshtml" />
+    <Content Include="Views\CustomerService\CommodityOrderDetail.cshtml" />
+    <Content Include="Views\CommodityDetail\Detail.cshtml" />
+    <None Include="Views\CYMobile\data.json" />
+    <None Include="Views\CYMobile\data2.json" />
+    <Content Include="Views\CYMobile\CyCreateOrder.cshtml" />
+    <Content Include="Views\MobileFitted\PaySuccess.cshtml" />
+    <Content Include="Views\MobileFitted\CanUseCouponTemplateList.cshtml" />
+    <Content Include="Views\MobileFitted\ShareOrder.cshtml" />
+    <Content Include="Views\Distribute\Rule.cshtml" />
+    <Content Include="Views\Distribute\DistributionRule.cshtml" />
+    <Content Include="Views\DistributionApplyAuditor\IdentityInfo.cshtml" />
+    <Content Include="Views\DistributionApplyAuditor\Index.cshtml" />
+    <Content Include="Views\Distribute\AddDistributionIdentity.cshtml" />
+    <Content Include="Views\DistributionApplyAuditor\PartialIndex.cshtml" />
+    <Content Include="Views\Distribute\ShowRuleDescription.cshtml" />
+    <Content Include="Views\Distribute\MicroshopIndex.cshtml" />
+    <Content Include="Views\Distribute\EditMicroshopName.cshtml" />
+    <Content Include="Views\Distribute\DistributionAppList.cshtml" />
+    <Content Include="Views\MallApply\Index.cshtml" />
+    <Content Include="Views\MallApply\MallApply.cshtml" />
+    <Content Include="Views\EsShopCommission\Index.cshtml" />
+    <Content Include="Views\Mobile\Invoice.cshtml" />
+    <Content Include="Views\Mobile\DownInvoice.cshtml" />
+    <Content Include="Views\InnerCategory\EsNetIndex.cshtml" />
+    <Content Include="Views\Login\Jdlogs\Empty.cshtml" />
+    <Content Include="Views\Login\Jdlogs\Index.cshtml" />
+    <Content Include="Views\Mobile\JdOrderServiceTrackInfo.cshtml" />
+    <Content Include="Views\Invoice\VatInvoiceProofDetailShowII.cshtml" />
+    <Content Include="Views\ExpressRoute\SubExpressNos.cshtml" />
+    <Content Include="Views\InsuranceCompany\Index.cshtml" />
+    <None Include="Views\JDAuditCommodity\Index.cshtml" />
+    <None Include="Views\JDAuditCommodity\JDAuditOffSaleIndex.cshtml" />
+    <None Include="Views\JDAuditCommodity\JDEditCostPriceIndex.cshtml" />
+    <None Include="Views\JDAuditCommodity\JDEditPriceIndex.cshtml" />
+    <None Include="Views\JdCommodity\Index.cshtml" />
+    <Content Include="Views\Jdlogs\Index.cshtml" />
+    <Content Include="Views\Mobile\InvoiceInfoList.cshtml" />
+    <Content Include="Views\Shared\Partial_UnfinishedDiyGrouplist.cshtml" />
+    <Content Include="Views\Jdlogs\JdIndex.cshtml" />
+    <Content Include="Views\Jdlogs\YxIndex.cshtml" />
+    <Content Include="Views\Mobile\CustomerServiceOrder.cshtml" />
+    <Content Include="Views\Mobile\CommodityListCoupon.cshtml" />
+    <Content Include="Views\MobileFitted\CommodityOrdinaryDetail.cshtml" />
+    <Content Include="Views\Jdlogs\FzIndex.cshtml" />
+    <Content Include="Views\Jdlogs\SnIndex.cshtml" />
+    <Content Include="Views\Mobile\Insurance.cshtml" />
+    <None Include="Views\Mobile\JhRentAgreement.cshtml" />
+    <Content Include="Views\Mobile\MyYJBDetails.cshtml" />
+    <Content Include="Views\Mobile\MyYJBEmptyDetails.cshtml" />
+    <Content Include="Views\ShareRedEnvelope\shareDesc.html" />
+    <Content Include="Views\Test\CacheManager.cshtml">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Scripts\ztreejs\jquery-1.4.4.min.js" />
+    <Content Include="Scripts\ztreejs\jquery.ztree.all-3.5.js" />
+    <Content Include="Scripts\ztreejs\jquery.ztree.all-3.5.min.js" />
+    <Content Include="Scripts\ztreejs\jquery.ztree.core-3.5.js" />
+    <Content Include="Scripts\ztreejs\jquery.ztree.core-3.5.min.js" />
+    <Content Include="Scripts\ztreejs\jquery.ztree.excheck-3.5.js" />
+    <Content Include="Scripts\ztreejs\jquery.ztree.excheck-3.5.min.js" />
+    <Content Include="Scripts\ztreejs\jquery.ztree.exedit-3.5.js" />
+    <Content Include="Scripts\ztreejs\jquery.ztree.exedit-3.5.min.js" />
+    <Content Include="Scripts\ztreejs\jquery.ztree.exedit.js" />
+    <Content Include="Scripts\ztreejs\jquery.ztree.exhide-3.5.js" />
+    <Content Include="Scripts\ztreejs\jquery.ztree.exhide-3.5.min.js" />
+    <Content Include="Scripts\ztreejs\zTreeStyle\img\diy\1_close.png" />
+    <Content Include="Scripts\ztreejs\zTreeStyle\img\diy\1_open.png" />
+    <Content Include="Scripts\ztreejs\zTreeStyle\img\diy\2.png" />
+    <Content Include="Scripts\ztreejs\zTreeStyle\img\diy\3.png" />
+    <Content Include="Scripts\ztreejs\zTreeStyle\img\diy\4.png" />
+    <Content Include="Scripts\ztreejs\zTreeStyle\img\diy\5.png" />
+    <Content Include="Scripts\ztreejs\zTreeStyle\img\diy\6.png" />
+    <Content Include="Scripts\ztreejs\zTreeStyle\img\diy\7.png" />
+    <Content Include="Scripts\ztreejs\zTreeStyle\img\diy\8.png" />
+    <Content Include="Scripts\ztreejs\zTreeStyle\img\diy\9.png" />
+    <Content Include="Scripts\ztreejs\zTreeStyle\img\line_conn.gif" />
+    <Content Include="Scripts\ztreejs\zTreeStyle\img\loading.gif" />
+    <Content Include="Scripts\ztreejs\zTreeStyle\img\zTreeStandard.gif" />
+    <Content Include="Scripts\ztreejs\zTreeStyle\img\zTreeStandard.png" />
+    <Content Include="Scripts\ztreejs\zTreeStyle\zTreeStyle.css" />
+    <Content Include="ztreejs\jquery-1.4.4.min.js" />
+    <Content Include="ztreejs\jquery.ztree.all-3.5.js" />
+    <Content Include="ztreejs\jquery.ztree.all-3.5.min.js" />
+    <Content Include="ztreejs\jquery.ztree.core-3.5.js" />
+    <Content Include="ztreejs\jquery.ztree.core-3.5.min.js" />
+    <Content Include="ztreejs\jquery.ztree.excheck-3.5.js" />
+    <Content Include="ztreejs\jquery.ztree.excheck-3.5.min.js" />
+    <Content Include="ztreejs\jquery.ztree.exedit-3.5.js" />
+    <Content Include="ztreejs\jquery.ztree.exedit-3.5.min.js" />
+    <Content Include="ztreejs\jquery.ztree.exedit.js" />
+    <Content Include="ztreejs\jquery.ztree.exhide-3.5.js" />
+    <Content Include="ztreejs\jquery.ztree.exhide-3.5.min.js" />
+    <Content Include="ztreejs\zTreeStyle\img\diy\1_close.png" />
+    <Content Include="ztreejs\zTreeStyle\img\diy\1_open.png" />
+    <Content Include="ztreejs\zTreeStyle\img\diy\2.png" />
+    <Content Include="ztreejs\zTreeStyle\img\diy\3.png" />
+    <Content Include="ztreejs\zTreeStyle\img\diy\4.png" />
+    <Content Include="ztreejs\zTreeStyle\img\diy\5.png" />
+    <Content Include="ztreejs\zTreeStyle\img\diy\6.png" />
+    <Content Include="ztreejs\zTreeStyle\img\diy\7.png" />
+    <Content Include="ztreejs\zTreeStyle\img\diy\8.png" />
+    <Content Include="ztreejs\zTreeStyle\img\diy\9.png" />
+    <Content Include="ztreejs\zTreeStyle\img\line_conn.gif" />
+    <Content Include="ztreejs\zTreeStyle\img\loading.gif" />
+    <Content Include="ztreejs\zTreeStyle\img\zTreeStandard.gif" />
+    <Content Include="ztreejs\zTreeStyle\img\zTreeStandard.png" />
+    <Content Include="ztreejs\zTreeStyle\zTreeStyle.css" />
+    <Content Include="Views\Mobile\JhRentSemAgreement.cshtml" />
+    <Content Include="Views\MobileFitted\MyOrderDetail.cshtml" />
+    <Content Include="Views\Shared\_MobileBaseLayout.cshtml" />
+    <Content Include="Views\Shared\_MobileFittedLayout.cshtml" />
+    <Content Include="Views\Mobile\MobileError.cshtml" />
+    <Content Include="Views\SelfTakeStation\SelfTakeList.cshtml" />
+    <Content Include="Views\SelfTakeStation\AppIndex.cshtml" />
+    <Content Include="Views\SelfTakeStation\AppError.cshtml" />
+    <Content Include="Views\SelfTakeStation\PartialIndex.cshtml" />
+    <Content Include="Views\Shared\_CYLayout.cshtml" />
+    <Content Include="Views\Shared\_CYMobileLayout.cshtml" />
+    <Content Include="Views\Store\CYIndex.cshtml" />
+    <Content Include="Views\Store\CYPartialIndex.cshtml" />
+    <Content Include="Views\Store\CYAddStore.cshtml" />
+    <Content Include="Views\Store\CYUpdateStore.cshtml" />
+    <Content Include="Views\Store\StoreSetting.cshtml" />
+    <Content Include="Views\Store\StoreSettingUI.cshtml" />
+    <Content Include="Views\Shared\_CYMinMobileLayout.cshtml" />
+    <Content Include="Views\Test\ComRevirew.cshtml" />
+    <Content Include="Views\OrderPrint\PrintExpressOrder.cshtml" />
+    <Content Include="Views\OrderPrint\PrintInvoice.cshtml" />
+    <Content Include="Views\Spread\SpreadCategory.cshtml" />
+    <Content Include="Views\Spread\Manager.cshtml" />
+    <Content Include="Views\SpreadLv2\Index.cshtml" />
+    <Content Include="Views\Shared\_VueLayout.cshtml" />
+    <Content Include="Views\SettleAccounts\MallIndex.cshtml" />
+    <Content Include="Views\SettleAccounts\ThirdPartDetails.cshtml" />
+    <Content Include="Views\SettleAccounts\MallHistory.cshtml" />
+    <Content Include="Views\SettleAccounts\Period.cshtml" />
+    <Content Include="Views\SettlementManage\SettlementManageUser.cshtml" />
+    <Content Include="Views\SettlementManage\SettlementManageShop.cshtml" />
+    <Content Include="Views\SettleAccounts\SellerIndex.cshtml" />
+    <Content Include="Views\SettleAccounts\SellerHistory.cshtml" />
+    <Content Include="Views\Mobile\PayUrl.cshtml" />
+    <Content Include="Views\SettleAccounts\ExportTemplate.cshtml" />
+    <Content Include="Views\SettleAccounts\Details.cshtml" />
+    <Content Include="Views\InnerCategory\Index.cshtml" />
+    <Content Include="Views\InnerCategory\PartialIndex.cshtml" />
+    <Content Include="Views\Supplier\Index.cshtml" />
+    <Content Include="Views\Shared\_Vue2Layout.cshtml" />
+    <Content Include="Views\Mobile\MealItemsDetail.cshtml" />
+    <Content Include="Views\PresentPromotion\Index.cshtml" />
+    <Content Include="Views\PresentPromotion\Create.cshtml" />
+    <Content Include="Views\PresentPromotion\Update.cshtml" />
+    <Content Include="Views\PresentPromotion\Details.cshtml" />
+    <Content Include="Views\Mobile\MyJDOrderDetail.cshtml" />
+    <Content Include="Views\Mobile\RefundJdOrder.cshtml" />
+    <Content Include="Views\Mobile\ReEchrfundOrder.cshtml" />
+    <Content Include="Views\SelectCommodity\FreightTemplateJoinCommodity.cshtml" />
+    <Content Include="Views\Mobile\SnFactoryDelivery.cshtml" />
+    <Content Include="Views\Mobile\RefundSNOrder.cshtml" />
+    <Content Include="Views\Mobile\RefundList.cshtml" />
+    <Content Include="Views\Mobile\TradesSuccessfully.cshtml" />
+    <Content Include="Views\Mobile\RefundOrder2.cshtml" />
+    <Content Include="Views\Mobile\RefundType2.cshtml" />
+    <Content Include="Views\RefundCoupon\Index.cshtml" />
+    <Content Include="Views\Mobile\RefundJdOrder2.cshtml" />
+    <Content Include="Views\Unlock\Index.cshtml" />
+    <Content Include="Views\RefundCompare\Index.cshtml" />
+    <Content Include="Views\RefundCompare\Test.cshtml" />
+    <Content Include="Views\Shared\_MobileSimplifyLayout.cshtml" />
+    <None Include="Views\YJEmployee\Create.cshtml" />
+    <None Include="Views\YJEmployee\Index.cshtml" />
+    <None Include="Views\YJEmployee\Update.cshtml" />
+    <Content Include="Views\AutoSettingPrice\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Areas\WeChatQRCode\Models\" />
+    <Folder Include="Areas\WeChatQRCode\Views\Shared\" />
+    <Folder Include="bianji\bianji\attached\image\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Configuration\AOPConfiguration\HandlerConfiguration\Jinher.JAP.AOP.Handlers.AOPHandlerBehavior.xml" />
+    <Content Include="Configuration\AOPConfiguration\HandlerConfiguration\Jinher.JAP.AOP.Handlers.AOPHandlerException.xml" />
+    <Content Include="Configuration\AOPConfiguration\HandlerConfiguration\Jinher.JAP.AOP.Handlers.AOPHandlerLog.xml" />
+    <Content Include="Configuration\AOPConfiguration\HandlerConfiguration\Jinher.JAP.AOP.Handlers.AOPHandlerTrans.xml" />
+    <Content Include="Configuration\Applications\Applications.xml" />
+    <Content Include="Configuration\Applications\Feature.xml" />
+    <Content Include="Configuration\Applications\Menu.xml" />
+    <Content Include="Configuration\ExceptionConfiguration\ExceptionHandlerConfig\ExceptionHandlersConfig.xml" />
+    <Content Include="Configuration\ExceptionConfiguration\Jinher.JAP.Common.Exception.ComExpDefine.xml" />
+    <Content Include="Configuration\LogConfiguration\LogEntityConfig.xml" />
+    <Content Include="Configuration\LogConfiguration\StackConfig.xml" />
+    <Content Include="Configuration\PreloadJobConfig.xml" />
+    <Content Include="Configuration\SEConfiguration\Jinher.JAP.SE.IndexPathConfig.xml" />
+    <Content Include="Configuration\SEConfiguration\Jinher.JAP.SE.IndexSourceConfig.xml" />
+    <Content Include="Configuration\Service\Data\ServiceList.xml" />
+    <Content Include="Configuration\IOC.Agent.config" />
+    <Content Include="Configuration\IOC.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Configuration\log4net.config" />
+    <Content Include="Configuration\Service\Data\Service.config" />
+    <Content Include="Configuration\WebRegistration.config">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Configuration\CustomConfig\Jinher.AMP.BTP\Configuration.config">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Configuration\CacheConfiguration\Cache.config">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Scripts\ueditor_mini\net\getContent.ashx" />
+    <Content Include="Scripts\ueditor_mini\net\imageUp.ashx" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Implement\Jinher.AMP.BTP.BE\Jinher.AMP.BTP.BE.csproj">
+      <Project>{EDF3387C-EF7F-4A8A-BA24-AD7F919E7882}</Project>
+      <Name>Jinher.AMP.BTP.BE</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Implement\Jinher.AMP.BTP.Common\Jinher.AMP.BTP.Common.csproj">
+      <Project>{4d40b31e-3239-4671-8017-9cda7e98c227}</Project>
+      <Name>Jinher.AMP.BTP.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Implement\Jinher.AMP.BTP.TPS\Jinher.AMP.BTP.TPS.csproj">
+      <Project>{20EACC61-173D-4D4D-A6BB-EA7F5C631AD7}</Project>
+      <Name>Jinher.AMP.BTP.TPS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Implement\Jinher.AMP.BTP.TPS\Jinher.AMP.BTP.TPS.csproj">
+      <Project>{20eacc61-173d-4d4d-a6bb-ea7f5c631ad7}</Project>
+      <Name>Jinher.AMP.BTP.TPS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Interface\Jinher.AMP.BTP.Deploy\Jinher.AMP.BTP.Deploy.csproj">
+      <Project>{77DC4033-3DB5-4A90-B490-A6180CC64E44}</Project>
+      <Name>Jinher.AMP.BTP.Deploy</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Interface\Jinher.AMP.BTP.Deploy\Jinher.AMP.BTP.Deploy.csproj">
+      <Project>{77dc4033-3db5-4a90-b490-a6180cc64e44}</Project>
+      <Name>Jinher.AMP.BTP.Deploy</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Interface\Jinher.AMP.BTP.IBP\Jinher.AMP.BTP.IBP.csproj">
+      <Project>{AE8ED766-27DA-4992-8F96-ADF20AEF932E}</Project>
+      <Name>Jinher.AMP.BTP.IBP</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Model\Jinher.AMP.BTP.EDMX\Jinher.AMP.BTP.EDMX.csproj">
+      <Project>{8636DFFC-CDE2-4F52-9C86-1BDF55493283}</Project>
+      <Name>Jinher.AMP.BTP.EDMX</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Promotion\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Login\Test.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Commodity\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Store\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Handler\ImgHandler.ashx" />
+    <Content Include="ImagePaint.ashx" />
+    <Content Include="Handler\PhoneUploadHandler.ashx" />
+    <None Include="Content\style\fonts\icomoon.eot" />
+    <None Include="Content\style\fonts\icomoon.ttf" />
+    <None Include="Content\style\fonts\icomoon.woff" />
+    <None Include="Content\style\fonts\ratchicons.eot" />
+    <None Include="Content\style\fonts\ratchicons.ttf" />
+    <None Include="Content\style\fonts\ratchicons.woff" />
+    <None Include="Content\style\images\red%402x.psd" />
+    <None Include="Content\style\images\red.psd" />
+    <Content Include="Handler\ImgBatchUploadHandler.ashx" />
+    <Content Include="Views\Store\AddStore.cshtml" />
+    <Content Include="Views\Commodity\UpdateCommodity.cshtml" />
+    <Content Include="Views\Store\UpdateStore.cshtml" />
+    <Content Include="Views\Promotion\AddPromotion.cshtml" />
+    <Content Include="Views\Review\Index.cshtml" />
+    <Content Include="Views\Store\PartialIndex.cshtml" />
+    <Content Include="Views\Store\PartialProvince.cshtml" />
+    <Content Include="Views\Store\PartialCity.cshtml" />
+    <Content Include="Views\Promotion\UpdatePromotion.cshtml" />
+    <Content Include="Views\CommodityOrder\Index.cshtml" />
+    <Content Include="Views\Review\CommodityReview.cshtml" />
+    <Content Include="Views\Commodity\AddCommodity.cshtml" />
+    <Content Include="Views\Promotion\CommodityList.cshtml" />
+    <Content Include="Views\Commodity\PartialIndex.cshtml" />
+    <Content Include="Views\CommodityOrder\CommodityOrderDetail.cshtml" />
+    <Content Include="Views\SecondAttribute\SizeIndex.cshtml" />
+    <Content Include="Views\Category\Index.cshtml" />
+    <Content Include="Views\SecondAttribute\ColorIndex.cshtml" />
+    <Content Include="Views\Commodity\test.cshtml" />
+    <None Include="Scripts\asyncData\node.jsp" />
+    <None Include="Scripts\asyncData\node.php" />
+    <None Include="Scripts\asyncData\nodeForBigData.jsp" />
+    <None Include="Scripts\asyncData\nodeForBigData.php" />
+    <None Include="Scripts\asyncData\nodeForHugeData.jsp" />
+    <None Include="Scripts\asyncData\nodeForHugeData.php" />
+    <None Include="Scripts\Jquerymobile\1.4.5\jquery.mobile-1.4.5.min.map" />
+    <None Include="Scripts\tree\asyncData1\node.jsp" />
+    <None Include="Scripts\tree\asyncData1\node.php" />
+    <None Include="Scripts\tree\asyncData1\nodeForBigData.jsp" />
+    <None Include="Scripts\tree\asyncData1\nodeForBigData.php" />
+    <None Include="Scripts\tree\asyncData1\nodeForHugeData.jsp" />
+    <None Include="Scripts\tree\asyncData1\nodeForHugeData.php" />
+    <Content Include="Views\Payment\AddPayment.cshtml" />
+    <Content Include="Views\Share\Commodity.cshtml" />
+    <Content Include="Views\Share\Order.cshtml" />
+    <Content Include="Views\Commodity\StoreIndex.cshtml" />
+    <Content Include="Views\Commodity\PartialStoreIndex.cshtml" />
+    <Content Include="Views\Share\index.cshtml" />
+    <Content Include="Views\Review\PartialIndex.cshtml" />
+    <Content Include="Views\CommodityOrder\PartialIndex.cshtml" />
+    <Content Include="Views\Promotion\PartialIndex.cshtml" />
+    <Content Include="Views\Promotion\PartialCommodity.cshtml" />
+    <Content Include="Views\Promotion\PromotionCommodityDetail.cshtml" />
+    <Content Include="Views\Category\PartialIndex.cshtml" />
+    <Content Include="Scripts\ueditor\net\fileUp.ashx" />
+    <Content Include="Scripts\ueditor\net\getContent.ashx" />
+    <Content Include="Scripts\ueditor\net\getMovie.ashx" />
+    <Content Include="Scripts\ueditor\net\getRemoteImage.ashx" />
+    <Content Include="Scripts\ueditor\net\imageManager.ashx" />
+    <Content Include="Scripts\ueditor\net\imageUp.ashx" />
+    <Content Include="Scripts\ueditor\net\scrawlUp.ashx" />
+    <Content Include="Scripts\ueditor\net\Web.config" />
+    <None Include="Scripts\ueditor\third-party\video-js\font\vjs.eot" />
+    <None Include="Scripts\ueditor\third-party\video-js\font\vjs.ttf" />
+    <None Include="Scripts\ueditor\third-party\video-js\font\vjs.woff" />
+    <Content Include="Views\Share\MobileView.cshtml" />
+    <Content Include="Views\Share\PcView.cshtml" />
+    <Content Include="Views\CommodityDetail\Index.cshtml">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Views\Share\OrderMobileView.cshtml" />
+    <Content Include="Views\Share\OrderPcView.cshtml" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Web.config" />
+    <Content Include="Views\AppImage\Index.cshtml" />
+    <None Include="Scripts\umeditor\third-party\mathquill\font\stixgeneral-bundle\stixgeneral-webfont.eot" />
+    <None Include="Scripts\umeditor\third-party\mathquill\font\stixgeneral-bundle\stixgeneral-webfont.ttf" />
+    <None Include="Scripts\umeditor\third-party\mathquill\font\stixgeneral-bundle\stixgeneral-webfont.woff" />
+    <None Include="Scripts\umeditor\third-party\mathquill\font\stixgeneral-bundle\stixgeneralbol-webfont.eot" />
+    <None Include="Scripts\umeditor\third-party\mathquill\font\stixgeneral-bundle\stixgeneralbol-webfont.ttf" />
+    <None Include="Scripts\umeditor\third-party\mathquill\font\stixgeneral-bundle\stixgeneralbol-webfont.woff" />
+    <None Include="Scripts\umeditor\third-party\mathquill\font\stixgeneral-bundle\stixgeneralbolita-webfont.eot" />
+    <None Include="Scripts\umeditor\third-party\mathquill\font\stixgeneral-bundle\stixgeneralbolita-webfont.ttf" />
+    <None Include="Scripts\umeditor\third-party\mathquill\font\stixgeneral-bundle\stixgeneralbolita-webfont.woff" />
+    <None Include="Scripts\umeditor\third-party\mathquill\font\stixgeneral-bundle\stixgeneralitalic-webfont.eot" />
+    <None Include="Scripts\umeditor\third-party\mathquill\font\stixgeneral-bundle\stixgeneralitalic-webfont.ttf" />
+    <None Include="Scripts\umeditor\third-party\mathquill\font\stixgeneral-bundle\stixgeneralitalic-webfont.woff" />
+    <None Include="Scripts\umeditor\third-party\mathquill\font\Symbola.eot" />
+    <None Include="Scripts\umeditor\third-party\mathquill\font\Symbola.otf" />
+    <None Include="Scripts\umeditor\third-party\mathquill\font\Symbola.ttf" />
+    <None Include="Scripts\umeditor\third-party\mathquill\font\Symbola.woff" />
+    <Content Include="Views\Mobile\CommodityList.cshtml" />
+    <Content Include="Views\Mobile\CommodityDetail.cshtml" />
+    <Content Include="Views\Mobile\CreateOrder.cshtml" />
+    <Content Include="Views\Mobile\Payment.cshtml" />
+    <Content Include="Views\Mobile\CommoditySearch.cshtml" />
+    <Content Include="Views\Mobile\CommodityView.cshtml" />
+    <Content Include="Views\Mobile\CommodityInfo.cshtml" />
+    <Content Include="Views\Mobile\Callback.cshtml" />
+    <Content Include="Views\Mobile\CommodityDetailFirst.cshtml" />
+    <Content Include="Views\Mobile\PaymentHYL.cshtml" />
+    <Content Include="Views\Mobile\MyOrderList.cshtml" />
+    <Content Include="Views\Mobile\MyOrderDetail.cshtml" />
+    <Content Include="Views\Shared\_MobileLayout.cshtml" />
+    <Content Include="Views\Mobile\ShoppongCartList.cshtml" />
+    <Content Include="Views\CommoditySelect\Index.cshtml" />
+    <Content Include="Views\CommoditySelect\TestCommoditySelect.cshtml" />
+    <Content Include="Views\Mobile\PromotionList.cshtml" />
+    <Content Include="Views\Mobile\AddDeliveryAddress.cshtml" />
+    <Content Include="Views\Mobile\DeliveryAddressList.cshtml" />
+    <Content Include="Views\Mobile\LoginCenter.cshtml" />
+    <Content Include="Views\Freight\Index.cshtml" />
+    <Content Include="Views\Freight\AddFreight.cshtml" />
+    <Content Include="Views\Freight\UpdateFreight.cshtml" />
+    <Content Include="Views\Freight\PartialIndex.cshtml" />
+    <Content Include="Views\SecondAttribute\AttributeIndex.cshtml" />
+    <Content Include="Views\Commodity\SalesManage.cshtml" />
+    <Content Include="Views\Commodity\SalesManagePartialIndex.cshtml" />
+    <Content Include="Views\Commodity\showGetCategories.cshtml" />
+    <Content Include="Views\Commodity\RelationCommodityList.cshtml" />
+    <Content Include="Views\Commodity\RelationPartialCommodity.cshtml" />
+    <Content Include="Views\ShareRedEnvelope\ShareRedEnvelopesList.cshtml" />
+    <Content Include="Views\ShareRedEnvelope\WalletError.cshtml" />
+    <Content Include="Views\ShareRedEnvelope\ShareRedEnvelopesDetail.cshtml" />
+    <Content Include="Views\ShareRedEnvelope\RuleDescription.cshtml" />
+    <Content Include="Views\ShareRedEnvelope\ShowRuleDescription.cshtml" />
+    <Content Include="Views\Commodity\AppManageIndex.cshtml" />
+    <Content Include="Views\Mobile\ShareMyOrderDetail.cshtml" />
+    <Content Include="Views\Mobile\CrowdfundingSlogan.cshtml" />
+    <Content Include="Views\Mobile\CrowdfundingDesc.cshtml" />
+    <Content Include="Views\Mobile\Crowdfunding.cshtml" />
+    <Content Include="Views\Mobile\CrowdfundingDividend.cshtml" />
+    <Content Include="Views\Mobile\CrowdfundingHolding.cshtml" />
+    <Content Include="Views\Crowdfunding\AddCrowdfunding.cshtml" />
+    <Content Include="Views\ShareRedEnvelope\CrowdRedEnvelopesList.cshtml" />
+    <Content Include="Views\Shared\_btpLayout.cshtml" />
+    <Content Include="Views\Crowdfunding\Index.cshtml" />
+    <Content Include="Views\Crowdfunding\GetCrowdfundingById.cshtml" />
+    <Content Include="Views\Test\Index.cshtml" />
+    <Content Include="Views\Crowdfunding\PartialIndex.cshtml" />
+    <Content Include="Views\ShareRedEnvelope\ShowEditeRuleDescription.cshtml" />
+    <Content Include="Views\AppTradeInfo\Index.cshtml" />
+    <Content Include="Views\ShareRedEnvelope\ShareList.cshtml" />
+    <Content Include="Views\AppManage\AppManage.cshtml" />
+    <Content Include="Views\CommodityManage\CommodityManage.cshtml" />
+    <Content Include="Views\SetMobile\CommodityList.cshtml" />
+    <Content Include="Views\Shared\_IndexLayout.cshtml" />
+    <Content Include="Views\Shared\_OrderLayout.cshtml" />
+    <Content Include="Views\Mobile\RefundOrder.cshtml" />
+    <Content Include="Views\Mobile\OrderCancelReason.cshtml" />
+    <Content Include="Views\SetMobile\CommodityView.cshtml" />
+    <Content Include="Views\SetMobile\Index.cshtml" />
+    <Content Include="Views\Mobile\RefundInfo.cshtml" />
+    <Content Include="Views\Mobile\RefundType.cshtml" />
+    <Content Include="Views\Mobile\RefundTypeInfo.cshtml" />
+    <Content Include="Views\Mobile\OrderReview.cshtml" />
+    <Content Include="Views\Mobile\DealLoginPartial.cshtml" />
+    <Content Include="Views\Mobile\MyHome.cshtml" />
+    <Content Include="Views\Test\ViewPage1.cshtml" />
+    <Content Include="Views\SettlingAccount\Index.cshtml" />
+    <Content Include="Views\SettlingAccount\PartialIndex.cshtml" />
+    <Content Include="Views\SettlingAccount\showGetCategories.cshtml" />
+    <Content Include="Views\SettlingAccount\UpdateSettlingAccount.cshtml" />
+    <Content Include="Views\OrderException\Index.cshtml" />
+    <Content Include="Views\SettlingAccount\SettingAccountHistoryRecord.cshtml" />
+    <Content Include="Views\SettlingAccount\SettingAccountHistoryPartialIndex.cshtml" />
+    <Content Include="Views\CommodityOrder\SeachOrdersPay.cshtml" />
+    <Content Include="Views\Test\ResetContext.cshtml" />
+    <Content Include="Views\SelfTakeStation\Index.cshtml" />
+    <Content Include="Views\Mobile\SelfTakeStationList.cshtml" />
+    <Content Include="Views\SelfTakeStation\Error.cshtml" />
+    <Content Include="Views\Mobile\MyLocation.cshtml" />
+    <Content Include="Views\Mobile\SelfTakeOrderList.cshtml" />
+    <Content Include="Views\Mobile\SelfTakeOrderCommodityList.cshtml" />
+    <Content Include="Views\Test\Login.cshtml" />
+    <Content Include="Views\ImgBatchUpload\Index.cshtml" />
+    <Content Include="Views\Mobile\SelfTakeOrderDetail.cshtml" />
+    <Content Include="Views\SelfTakeStation\ECIndex.cshtml" />
+    <Content Include="Views\SelfTakeStation\ECError.cshtml" />
+    <Content Include="Views\Mobile\AfterSaleOrderList.cshtml" />
+    <Content Include="Views\Mobile\RefundInfoSeller.cshtml" />
+    <Content Include="Views\Mobile\RefuseRefundReasonSeller.cshtml" />
+    <Content Include="Views\Test\TestTmp.cshtml" />
+    <Content Include="Views\Spread\Index.cshtml" />
+    <Content Include="Views\Spread\AppDetail.cshtml" />
+    <Content Include="Views\ExpressRoute\Index.cshtml" />
+    <Content Include="Views\CommodityManage\TLevelCommodityManage.cshtml" />
+    <Content Include="Views\SelectCommodity\Index.cshtml" />
+    <Content Include="Views\SelectCommodity\SelSingleComdty.cshtml" />
+    <Content Include="Views\Category\EsNetIndex.cshtml" />
+    <Content Include="Views\Commodity\CommodityDividend.cshtml" />
+    <Content Include="Views\Commodity\DividendComSelect.cshtml" />
+    <Content Include="Views\Commodity\CommodityDividendSavePage.cshtml" />
+    <Content Include="Views\Test\KuaiDi100Html2Json.cshtml" />
+    <Content Include="Views\CommodityOrder\OrderFullInfo.cshtml" />
+    <Content Include="Views\Distribute\AppDetail.cshtml" />
+    <Content Include="Views\Distribute\Index.cshtml" />
+    <Content Include="Views\Distribute\Manage.cshtml" />
+    <Content Include="Views\CommodityOrder\DistributeOrders.cshtml" />
+    <Content Include="Views\Commodity\CommodityDefaultDividend.cshtml" />
+    <Content Include="Views\Distribute\DistributeOrderList.cshtml" />
+    <Content Include="Views\Distribute\CommodityOrderDetail.cshtml" />
+    <Content Include="Views\Distribute\CommodityDistribute.cshtml" />
+    <Content Include="Views\Distribute\DistributeDetail.cshtml" />
+    <Content Include="Views\Commodity\Error.cshtml" />
+    <Content Include="Views\SelectCommodity\AoSelComdty.cshtml" />
+    <Content Include="Views\Storefront\Index.cshtml" />
+    <Content Include="Views\Storefront\Map.cshtml" />
+    <Content Include="Views\Store\SignPositionMap.cshtml" />
+    <Content Include="Views\CustomMenu\Index.cshtml" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target> -->
+  <Target Name="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(ProjectDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>12854</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>
+          </IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <PropertyGroup>
+    <PostBuildEvent>xcopy $(TargetDir)$(TargetName).* $(TargetDir)..\..\..\..\..\..\Lib\BizUI\*.* /Y
+xcopy $(TargetDir)$(TargetName).dll $(TargetDir)..\..\..\..\..\..\Product\Portal\BizUI\ /y
+xcopy $(TargetDir)$(TargetName).pdb $(TargetDir)..\..\..\..\..\..\Product\Portal\BizUI\ /y
+xcopy $(TargetDir)$(TargetName).xml $(TargetDir)..\..\..\..\..\..\Product\Portal\BizUI\ /y
+xcopy $(ProjectDir)Views\*.*  $(TargetDir)..\..\..\..\..\..\Product\Portal\Views\*.*  /E/Y
+xcopy $(ProjectDir)Global.asax  $(TargetDir)..\..\..\..\..\..\Product\Portal\  /y
+
+xcopy $(ProjectDir)Content\*.*  $(TargetDir)..\..\..\..\..\..\Product\Portal\Content\*.*  /E/Y</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>自定义快递模板</title>
+    <link rel="stylesheet" href="styles/index.css">
+</head>
+<body>
+    <div id="app">
+    <div class="express-order-wrap" v-on:click="selectItem = null;selectItemIndex = null;">
+        <div class="express-order-wrap" >
+            <div class="express-order-content">
+                <a href="javascript: void(0);" class="express-order-close" v-on:click="CloseDialog">&#10006</a>
+                <div class="express-order-header">快递模板管理</div>
+                <div class="express-order-left">
+                    <div class="express-order-list">
+                        <h4 class="title">快递模板列表</h4>
+                        <ul class="list">
+                            <li v-for="(item,index) in lists" v-on:click="listClick(index)" :class="{selected: index == curSelectIndex}"><span v-if="item.TemplateType == 0" style="color:#999">系统--</span>{{item.TemplateName}}</li>
+                        </ul>
+                    </div>
+                    <div class="express-order-opera">
+                        <a class="btn" v-on:click="createTemplate">新建</a>
+                        <a class="btn" v-on:click="editTemplateClick" :class="{disable: curSelect.TemplateType == 0}">编辑</a>
+                        <a class="btn" v-on:click="cancelTemplateClick" :class="{disable: curSelect.TemplateType == 0}">删除</a>
+                    </div>
+                </div>
+                <div class="express-order-right">
+                    <div class="express-order-right-content">
+                        <div class="express-order-bg" :style="{width:Math.ceil(curSelect.Width) + 'px',height: Math.ceil(curSelect.Height) + 'px','background-image':'url(' + curSelect.ExpressImage + ')'}">
+                            <div v-for="(item,$index) in selectProperty" :style="{left:Math.ceil(item.Left)+ 'px',top:Math.ceil(item.Top) + 'px',width: Math.ceil(item.Width) + 'px',height: Math.ceil(item.Height) + 'px'}" :class="{active: $index == selectItemIndex,disable: sysTemplate == true}" class="express-order-bg-item" v-on:click.stop="">
+                                <div style="position:absolute;width:100%;height:100%;">
+                                    <div v-if="selectItemIndex ==$index" class="left-drag-dashed" v-on:mousedown="resizeLeftStart($event,$index,'left')"></div>
+                                    <div v-if="selectItemIndex ==$index" class="right-drag-dashed" v-on:mousedown="resizeLeftStart($event,$index,'right')"></div>
+                                    <div v-if="selectItemIndex ==$index" class="top-drag-dashed" v-on:mousedown="resizeLeftStart($event,$index,'top')"></div>
+                                    <div v-if="selectItemIndex ==$index" class="bottom-drag-dashed" v-on:mousedown="resizeLeftStart($event,$index,'bottom')"></div>
+                                </div>
+                                <div style="position:absolute;width:100%;height:100%;" v-on:mousedown="dragstart($event,$index,item)">{{item.PropertyName | propertyNameFilter}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="express-order-size">
+                        <span>物理尺寸(毫米): {{((curSelect.Width  / 96) * 25.4).toFixed(0)}} * {{((curSelect.Height / 96) * 25.4).toFixed(0)}}</span>
+                        <span v-html="expCompanyFilter(curSelect.ExpCode)"></span>
+                    </div>
+                </div>
+                <div class="express-order-footer">
+                    <div v-if="selectItem" class="express-order-footer-position" v-on:click.stop="">
+                        <span class="title">位置：</span>
+                        <label>X:<input type="number" v-model="selectItem.Left" v-on:input="changePosX"></label>
+                        <label>Y:<input type="number" v-model="selectItem.Top" v-on:input="changePosY"></label>
+                        <span class="title" style="margin-left: 20px;">尺寸(单位: 毫米)：</span>
+                        <label>宽:<input type="number" v-model="selectItem.Width" v-on:input="changeWidth"></label>
+                        <label>高:<input type="number" v-model="selectItem.Height" v-on:input="changeHeight"></label>
+                    </div>
+                    <div class="express-order-footer-btn">
+                        <a class="bottom-btn" v-on:click="setCommonTemplates">设置常用模板</a>
+                        <a href="javascript:void(0);" class="bottom-btn" :class="{disable: curSelect.TemplateType == 0}" v-on:click="openPropertyModal">设置打印内容</a>
+                        <a class="bottom-btn" :class="{disable: curSelect.TemplateType == 0}" v-on:click="saveProperty">保存</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-show="addModal" class="express-order-wrap modal">
+            <div class="express-order-content create scale-in">
+                <a href="javascript: void(0);" class="express-order-close" v-on:click="close">&#10006</a>
+                <div class="express-order-header">新建快递模板</div>
+                <div class="express-order-body h180">
+                    <div class="express-order-group">
+                        <span class="title">模板名称: </span>
+                        <input class="w350" type="text" v-model="createTemName">
+                    </div>
+                    <div class="express-order-group">
+                        <span class="title">快递公司:</span>
+                        <i class="icon-down"></i>
+                        <select class="w350" v-model="selectExpCode">
+                            <option v-for="company in expCompany" :value="company.ExpCode">{{company.ExpCompanyName}}</option>
+                        </select>
+                    </div>
+                    <div class="express-order-group">
+                        <span class="title">背景</span>
+                        <input v-model="createTemExpPic" class="w280" disabled>
+                        <a class="upload-btn">选择背景</a>
+                        <input class="upload" ref="inputFile" type="file" v-on:change="onFileChange">
+                    </div>
+                    <div class="express-order-group">
+                        <span class="title">尺寸</span>
+                        <span>宽度：</span><input v-model="createTemWidth" class="w120" type="number" v-on:input="inputChange('width')">
+                        <span>高度：</span><input v-model="createTemHeight" class="w120" type="number" v-on:input="inputChange('height')">
+                    </div>
+                    <div class="express-order-tips">快递单的实际宽度和盖度，单位：毫米</div>
+                </div>
+                <div class="express-order-footer">
+                    <a href="javascript:void(0);" v-on:click="createBtnClick" class="bottom-btn">保存</a>
+                    <a href="javascript:void(0);" v-on:click="close" class="bottom-btn">取消</a>
+                </div>
+            </div>
+        </div>
+        <!--打印设置弹窗-->
+        <div v-show="propertyModal" class="express-order-wrap modal">
+            <div class="express-order-content property scale-in">
+                <a href="javascript: void(0);" class="express-order-close" v-on:click="propertyModal=false;">&#10006</a>
+                <div class="express-order-header">设置打印内容</div>
+                <div class="express-order-body h180">
+                    <div v-for="list in PropertyLists" class="property-group">
+                        <span class="property-group-title">{{list.Name}}</span>
+                        <label v-for="item in list.Content"><input v-model="checkPropertyNames" :value="item.Id" :checked="item.Checked" :disabled="item.Default" type="checkbox">{{item.Name}}</label>
+                    </div>
+                    <div class="property-group">
+                        <span class="property-group-title">直接打印</span>
+                        <div v-for="item in printTips">
+                            <label><input v-model="checkPropertyNames" :value="item.Id" :checked="item.Checked" type="checkbox">{{item.Name}}</label>
+                            <input type="text" v-model="item.Context" class="print-tips"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="express-order-footer">
+                    <a href="javascript:void(0);" v-on:click="propertySubmit" class="bottom-btn">确定</a>
+                    <a href="javascript:void(0);" v-on:click="propertyModal=false;" class="bottom-btn">取消</a>
+                </div>
+            </div>
+        </div>
+        <!--设置常用模板弹窗-->
+        <div v-show="commonTemplatesModal" class="express-order-wrap modal">
+            <div class="express-order-content common-templates scale-in">
+                <a href="javascript: void(0);" class="express-order-close" v-on:click="commonTemplatesModal = false">&#10006</a>
+                <div class="express-order-header">设置常用模板</div>
+                <div class="express-order-body clearfix">
+                    <div class="common-templates-left">
+                        <div class="common-templates-title">可选模板</div>
+                        <div class="common-templates-list">
+                            <ul style="height:99%;overflow:auto">
+                                <li class="item" :class="{selected: selectTempIndex == index}" v-for="(item,index) in selectTemplatesLists" v-on:click="chooseTemplate('left',index)"><span v-if="item.TemplateType == 0">系统-</span>{{item.TemplateName}}</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="common-templates-center">
+                        <a href="javascript:void(0);" class="button-icon" v-on:click="changeComTemplate('left')" style="margin-bottom:20px;">&gt;&gt;</a>
+                        <a href="javascript:void(0);" class="button-icon" v-on:click="changeComTemplate('right')">&lt;&lt;</a>
+                    </div>
+                    <div class="common-templates-right">
+                        <div class="common-templates-title">
+                            <span>常用模板</span>
+                            <a href="javascript:void(0);" v-on:click="chooseTemplate('up')" class="button-icon" :class="{disabled: this.selectComTempIndex == 0 || this.selectComTempIndex == null}">&#8593;</a>
+                            <a href="javascript:void(0);" v-on:click="chooseTemplate('down')" class="button-icon" :class="{disabled: this.selectComTempIndex == (this.commonTemplatesLists.length - 1) || this.selectComTempIndex == null}">&#8595;</a>
+                        </div>
+                        <div class="common-templates-list">
+                            <ul style="height:99%;overflow:auto">
+                                <li class="item" :class="{selected: selectComTempIndex == index}" v-for="(item,index) in commonTemplatesLists" v-on:click="chooseTemplate('right',index)"><span v-if="item.TemplateType == 0">系统-</span>{{item.TemplateName}}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="express-order-footer">
+                    <a href="javascript:void(0);" v-on:click="commonTemplatesSubmit" class="bottom-btn">确定</a>
+                    <a href="javascript:void(0);" v-on:click="commonTemplatesModal = false;" class="bottom-btn">取消</a>
+                </div>
+            </div>
+        </div>
+        <!--确认删除弹窗-->
+        <div v-show="dialogShow" class="dialog-wrap">
+            <div class="dialog-cover">
+                <div class="dialog-content">
+                    <div class="dialog-body">
+                        <span>确认要删除选中模板吗？</span>
+                    </div>
+                    <div class="dialog-footer">
+                        <a href="javascript:void(0)" class="cancel pull-left" v-on:click="cancelTemplate">确定</a>
+                        <a href="javascript:void(0)" class="sure pull-right" v-on:click="dialogShow = false;">取消</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-show="maskShow" class="mask-wrap">
+            <img src="images/loader.gif">
+        </div>
+    </div>
+</body>
+<script src="libs/vue.min.js"></script>
+<script src="libs/vue-resource.js"></script>
+<script src="libs/components.js"></script>
+<script src="js/index.js?ver=5"></script>
+</html>

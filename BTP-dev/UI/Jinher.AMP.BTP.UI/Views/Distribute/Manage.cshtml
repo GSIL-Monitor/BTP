@@ -1,0 +1,714 @@
+﻿@{
+    ViewBag.Title = "title";
+    Jinher.AMP.BTP.Deploy.CustomDTO.ManageNumDTO managerNum = ViewBag.ManageNc;
+}
+<head>
+    <!--弹出选择框使用-->
+    <script type="text/javascript" src="/Scripts/jquery.watermark.js"></script>
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.jhtablebox.css" />
+    <script type="text/javascript" src="/Scripts/TableBox/jquery.ui.jhtablebox.js"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.datepicker.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhdatetime.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhstartandenddate.js" type="text/javascript"></script>
+    <script src="/Scripts/CommLib.js" type="text/javascript"></script>
+    <script src="/Content/Mobile/allEvent.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var index = 1;
+        var _sortId = 1;
+        var _sort = "";
+        var _pageSize = "";
+        var _pageIndex = "";
+        var addTemplete = $("#divTableTemplete table").html();
+        var _parentId = "";
+        var countM = 0;
+        var nameM = "";
+        var userCodeM = "";
+        var key = "";
+        var level = 1;
+        var _isLoading = false;
+
+        $(document).ready(function () {
+            initData();
+            $("#seeMore").hide();
+            $('#EndTime').datepicker({
+                changeMonth: true,
+
+                changeYear: true,
+
+                showOtherMonths: true,
+
+                selectOtherMonths: true
+            });
+
+            $('#StartTime').datepicker({
+                changeMonth: true,
+
+                changeYear: true,
+
+                showOtherMonths: true,
+
+                selectOtherMonths: true
+            });
+        });
+
+
+        //初始化
+        function initData() {
+            document.getElementById("yjid1").style.display = "";
+            document.getElementById("yjid2").style.display = "";
+            document.getElementById("ejid").style.display = "none";
+            _sortId = 1;
+            _sort = 0;
+            _pageSize = 50;
+            _pageIndex = 1;
+            _parentId = '00000000-0000-0000-0000-000000000000';
+            AddData();
+        }
+
+        //查询
+        function toSearch() {
+            $("#dataTable tbody").html("");
+            index = 1;
+            _sortId = 1;
+            _sort = 0;
+            _pageSize = 50;
+            _pageIndex = 1;
+            var startTime = $("#StartTime").val();
+            var endTime = $("#EndTime").val();
+            var sDate = new Date(startTime.replace(/\-/g, "\/"));
+            var eDate = new Date(endTime.replace(/\-/g, "\/"));
+            if (sDate > eDate) {
+                alert("结束日期不能小于开始日期");
+                $("#EndTime").focus();
+            }
+            AddData();
+            _isLoading = true;
+        }
+        //查看更多
+        function seeMore() {
+
+            _pageSize = 50;
+            if (_pageIndex == 1) {
+                $("#dataTable tbody").html("");
+                index = 1;
+                _pageIndex = 1;
+            } else {
+                _pageIndex = _pageIndex + 1;
+                index = index + _pageSize - 1;
+            }
+            AddData();
+            _isLoading = true;
+        }
+        //导出
+        function ShowExportData() {
+            ExportData();
+        }
+        //点击下级分销商
+        function UnderCount(obj) {
+            document.getElementById("yjid1").style.display = "none";
+            document.getElementById("yjid2").style.display = "none";
+            document.getElementById("ejid").style.display = "";
+            $("#dataTable tbody").html("");
+            index = 1;
+            _pageSize = 50;
+            _pageIndex = 1;
+            _parentId = $(obj).attr('id');
+            nameM = $(obj).attr('name');
+            level += 1;
+            key = $(obj).attr('key');
+
+            userCodeM = $(obj).attr('userCode');
+            if (nameM == "") {
+                document.getElementById('name').innerHTML = userCodeM;
+            } else {
+                document.getElementById('name').innerHTML = nameM;
+            }
+            if (level == 1) {
+                document.getElementById("Higher").style.display = "none";
+                document.getElementById("Top").style.display = "none";
+            }
+            else if (level == 2) {
+                document.getElementById("Higher").style.display = "";
+                document.getElementById("Top").style.display = "none";
+            }
+            else if (level > 2) {
+                document.getElementById("Higher").style.display = "";
+                document.getElementById("Top").style.display = "";
+            }
+            AddData();
+        }
+        var _distributorId = "";
+        var _searchType = "";
+        function SearchByOa(distributorId, searchType) {
+            _distributorId = distributorId;
+            _searchType = searchType;
+            var url = "/Distribute/DistributeOrderList" + window.location.search + "&distributorId=" + distributorId + "&searchType=" + searchType;
+
+            $("#commodityListFrame").attr("src", url);
+            $("#commodityListFrame").jhtablebox({
+                height: 600,
+                width: 910,
+                resizable: false,
+                title: "",
+                modal: true,
+                buttons: {},
+                autoOpen: true,
+                closedByHide: true
+            });
+            $("#commodityListFrame").attr("width", "910");
+            $("#commodityListFrame").css("width", "910px");
+        }
+
+
+        function SortM() {
+            $("#dataTable tbody").html("");
+            index = 1;
+            _pageSize = 50;
+            _pageIndex = 1;
+            _sort = 1;
+            AddData();
+            _isLoading = true;
+        }
+        function SortY() {
+            $("#dataTable tbody").html("");
+            index = 1;
+            _pageSize = 50;
+            _pageIndex = 1;
+            _sort = 2;
+            AddData();
+            _isLoading = true;
+        }
+        function SortF() {
+            $("#dataTable tbody").html("");
+            index = 1;
+            _pageSize = 50;
+            _pageIndex = 1;
+            _sort = 3;
+            AddData();
+            _isLoading = true;
+        }
+    </script>
+    <script type="text/javascript">
+        var tempComArray = [];
+        //获取数据
+
+        function TopLevel() {
+            $("#dataTable tbody").html("");
+            index = 1;
+            level = 1;
+            document.getElementById("yjid1").style.display = "";
+            document.getElementById("yjid2").style.display = "";
+            document.getElementById("ejid").style.display = "none";
+            document.getElementById("Higher").style.display = "none";
+            document.getElementById("Top").style.display = "none";
+            _sortId = 1;
+            _sort = 0;
+            _pageSize = 50;
+            _pageIndex = 1;
+            _parentId = '00000000-0000-0000-0000-000000000000';
+            AddData();
+        }
+
+        function HigherLevel() {
+            $("#dataTable tbody").html("");
+            index = 1;
+            level -= 1;
+            _sortId = 1;
+            _sort = 0;
+            _pageSize = 50;
+            _pageIndex = 1;
+
+            $("#CommodityName").val("");
+            $("#StartTime").val("");
+            $("#EndTime").val("");
+
+            var tempArr = key.split(".");
+            if (level == 1) {
+                document.getElementById("yjid1").style.display = "";
+                document.getElementById("yjid2").style.display = "";
+                document.getElementById("ejid").style.display = "none";
+                document.getElementById("Higher").style.display = "none";
+                document.getElementById("Top").style.display = "none";
+                _parentId = '00000000-0000-0000-0000-000000000000';
+            } else if (level == 2) {
+                document.getElementById("yjid1").style.display = "none";
+                document.getElementById("yjid2").style.display = "none";
+                document.getElementById("ejid").style.display = "";
+                document.getElementById("Higher").style.display = "";
+                document.getElementById("Top").style.display = "none";
+                _parentId = tempArr[level - 2];
+            } else if (level > 2) {
+                document.getElementById("yjid1").style.display = "none";
+                document.getElementById("yjid2").style.display = "none";
+                document.getElementById("ejid").style.display = "";
+                document.getElementById("Higher").style.display = "";
+                document.getElementById("Top").style.display = "";
+                _parentId = tempArr[level - 2];
+            }
+            AddData(1);
+        }
+        function refreshLayout() {
+            try {
+                $("body").height($("body div:first").outerHeight());
+                if (window.parent.refreshLayout != window.refreshLayout)
+                    window.parent.refreshLayout();
+            }
+            catch (err) {
+            }
+        }
+        function AddData(ynos) {
+            if (_isLoading) {
+                return;
+            }
+            var commodityName = $("#CommodityName").val();
+            var startTime = $("#StartTime").val();
+            var endTime = $("#EndTime").val();
+            var subData = {};
+            subData.StartTime = startTime;
+            subData.EndTime = endTime;
+            subData.ParentId = _parentId;
+            subData.UserName = commodityName;
+            subData.PageIndex = _pageIndex;
+            subData.PageSize = _pageSize;
+            subData.SortCol = _sort;
+            subData.AppId = getQueryString('appId');
+            if (ynos) {
+                subData.Ynos = ynos;
+            }
+
+
+            $('#count').html(0);
+
+            var subDataJson = CommLib.ObjToString(subData);
+            $.ajax({
+                url: '/Distribute/ManagerList',
+                type: 'post',
+                dataType: "json",
+                contentType: "application/json",
+                data: subDataJson,
+                success: function (msg) {
+                    _isLoading = false;
+                    if (msg == null || msg.Count < 1 || msg.Manager == null || msg.Manager.length < 1) {
+                        return;
+                    }
+                    var resultData = msg.Manager;
+                    if (ynos) {
+                        if (msg.ParentName == "") {
+                            document.getElementById('name').innerHTML = msg.ParentCode;
+                        } else {
+                            document.getElementById('name').innerHTML = msg.ParentName;
+                        }
+                    }
+                    $('#count').html(msg.Count);
+                    var num = msg.Manager.length;
+                    for (var i = 0; i < num; i++) {
+                        var id = resultData[i].Id;
+                        var pic = resultData[i].Pic;
+                        var name = resultData[i].Name;
+                        var userCode = resultData[i].UserCode;
+                        var orderAmount = resultData[i].OrderAmount;
+                        var commissionAmount = resultData[i].CommissionAmount;
+                        var underlingCount = resultData[i].UnderlingCount;
+                        var userSubTimer = resultData[i].UserSubTime.match(/\d/g).join('');
+                        var userSubTime = getFormatDate(new Date(Number(userSubTimer)));
+                        var nowKey = resultData[i].Key;
+                        var nowlevel = resultData[i].Level;
+                        var remarks = resultData[i].Remarks || '';
+
+                        if (!name || name == 'null')
+                            name = '无';
+                        if (!pic || pic == 'null')
+                            pic = '/Content/images/touxiang.png';
+                        if (!userCode || userCode == 'null')
+                            userCode = '无';
+
+                        var displayRemarksDiv1 = remarks ? "block" : "none";
+                        var displayRemarksDiv2 = remarks ? "none" : "block";
+
+                        var identityClicked = resultData[i].HasIdentityInfo ? "onclick=\"showIdentityInfo('" + resultData[i].ApplyId + "')\" style='color:#0000FF;cursor:pointer;'" : "style=\"text-decoration:none;color:#8C94A9;cursor:not-allowed\"";
+                        var tr = "<tbody><tr class='t_tr2'><td class='Id'>" + index + "</td><td class='three'><a><img src='" + pic + "' width='60' height='60' /></a><ul><li><p><a " + identityClicked + ">" + name + "</a></p></li><li><a " + identityClicked + ">" + userCode + "</a></li></ul></td><td><a href='javascript:' onclick=\"SearchByOa('" + id + "',1)\">" + orderAmount + "</a></td><td><a href='javascript:' onclick=\"SearchByOa('" + id + "',2)\">" + commissionAmount + "</a></td><td ><a id='" + id + "' name='" + name + "' key='" + nowKey + "' level='" + nowlevel + "' userCode='" + userCode + "' href='javascript:'  onclick='UnderCount(this)'>" + underlingCount + "</a></td><td >" + userSubTime + "</td>";
+                        var remarkTd = [
+                            "<td class=\"autoNewline\">",
+                            "<span id=\"remarks-" + id + "\">" + remarks + "</span>",
+                            "<div id=\"div-updatedelete-remarks-" + id + "\" style=\"display:" + displayRemarksDiv1 + "\">",
+                            "    <span><a href=\"javascript:void(0)\"  onclick=\"openEditDiv('" + id + "')\">修改</a></span>",
+                            "    <span><a href=\"javascript:void(0)\"  onclick=\"deleteRemarks('" + id + "')\">删除</a></span>",
+                            "</div>",
+                            "<div id=\"div-edit-remarks-" + id + "\" style=\"display:" + displayRemarksDiv2 + "\">",
+                            "    <span><a href=\"javascript:void(0)\"  onclick=\"openEditDiv('" + id + "')\" >编辑</a></span>",
+                            "</div>",
+                            "</td>"
+                        ];
+                        tr += remarkTd.join('');
+                        tr += "</tr></tbody>";
+                        $("#dataTable").append(tr);
+                        index++;
+                    }
+                    if (num > 50) {
+                        document.getElementById("More").style.display = "";
+                    }
+                    refreshLayout();
+                }
+            });
+        }
+
+        //导出数据
+        function ExportData() {
+            var commodityName = $("#CommodityName").val();
+            var startTime = $("#Sime").val();
+            var endTime = $("#Eime").val();
+            $("#ParentId").val(_parentId);
+            $("#UserName").val(commodityName);
+            $("#UserCode").val(commodityName);
+            $("#Sime").val(startTime);
+            $("#Eime").val(endTime);
+            $("#PageIndex").val(1);
+            $("#PageSize").val(65535);
+            $("#FormExcel").submit();
+        }
+
+        function showOrderDetail(orderId) {
+            $("#commodityListFrame").jhtablebox("close");
+            var url = '/CommodityOrder/CommodityOrderDetail?commodityOrderId=' + orderId + '&isShowChangeExp=0'
+            $("#orderDetailFrame").attr("src", url);
+            $("#orderDetailFrame").jhtablebox({
+                width: 1200,
+                height: 800,
+                resizable: false,
+                title: "",
+                modal: true,
+                buttons: {},
+                autoOpen: true,
+                closedByHide: true,
+                beforeClose: function (e) {
+                    //$("#commodityListFrame").jhtablebox("open");
+                    SearchByOa(_distributorId, _searchType);
+                }
+            });
+            $("#orderDetailFrame").attr("width", "1200");
+            $("#orderDetailFrame").css("width", "1200px");
+        }
+
+
+        function showIdentityInfo(id) {
+            $("#identityInfoUrl").attr("src", "/DistributionApplyAuditor/IdentityInfo?&applyId=" + id + "&r=" + Math.random());
+
+            $("#identityInfoDiv").jhtablebox({
+                title: "分销商身份信息",
+                width: 500,
+                height: 400,
+                draggable: true,
+                modal: true,
+                resizable: false,
+                beforeClose: function (e) {
+                }
+            });
+        }
+
+        var eidtId;
+        function openEditDiv(id) {
+            eidtId = id;
+
+            $("#editTitle").text("请填写备注：");
+            var content = $("#remarks-" + id).text();
+            $("#editContent").val(content);
+
+            $("#divEdit").OpenDiv();
+
+            $("#divEdit").css("top", 50 + $(document).scrollTop());
+        }
+
+        function closeEditDiv() {
+            $("#editTitle").text("");
+            $("#editContent").val("");
+            $("#divEdit").CloseDiv();
+        }
+
+        //单击 Edit对话框
+        function submitEdit() {
+            var content = $("#editContent").val();
+            var url = '/Distribute/RemarkDistributor';
+
+            $.ajax({
+                url: url,
+                type: 'post',
+                data: {
+                    id: eidtId,
+                    content: encodeURIComponent(content)
+                },
+                success: function (data) {
+                    if (data.Result) {
+                        closeEditDiv();
+
+                        alert("编辑完成。");
+                        afterRemarks(eidtId, content);
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    alert(xhr.status, xhr.readyState);
+                    alert(textStatus);
+                }
+            });
+        }
+        function deleteRemarks(id) {
+            var url = '/Distribute/RemarkDistributor';
+            $.ajax({
+                url: url,
+                type: 'post',
+                data: {
+                    id: id,
+                    content: ""
+                },
+                success: function (data) {
+                    alert("备注删除完成。");
+                    afterRemarks(id, "");
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    alert(xhr.status, xhr.readyState);
+                    alert(textStatus);
+                }
+            });
+        }
+        function afterRemarks(id, remarks) {
+            $("#remarks-" + id).text(remarks);
+            if (remarks) {
+                $("#div-edit-remarks-" + id).hide();
+                $("#div-updatedelete-remarks-" + id).show();
+            } else {
+                $("#div-edit-remarks-" + id).show();
+                $("#div-updatedelete-remarks-" + id).hide();
+            }
+        }
+
+        function remarkKeyup() {
+            var inputLen = $("#editContent").val().length;
+            if (140 < inputLen) {
+                var newContent = $("#editContent").val().substr(0, 140);
+                $("#editContent").val(newContent);
+                $('#editContentWarn').text('还可以输入' + 0 + '个字符。');
+            } else {
+                $('#editContentWarn').text('还可以输入' + (140 - inputLen) + '个字符。');
+            }
+        };
+
+        function showIdentityImg(imgUrl) {
+            $("#imgCtrl").attr("src", imgUrl);
+            showInCenter($("#imgDiv"));
+        }
+
+        $(function () {
+            $("body").click(function (event) {
+                var $this = $(event.target);
+                if ($this.id != "imgDiv") {
+                    $("#imgDiv").hide();
+                }
+            });
+
+            $("#imgDiv").click(function (e) {
+                e.stopPropagation();
+            });
+        });
+
+        function showInCenter(i) {
+            var h = $(document).scrollTop(),
+            e = $(window).height(),
+            d = $(window).width(),
+            g = i.height(),
+            f = i.width();
+
+            var posiTop = (e - g) / 2 + h;
+            var posiLeft = (d - f) / 2;
+            console.log(h, e, d, g, f);
+            i.css({
+                left: posiLeft + "px",
+                top: posiTop + "px",
+                display: "block"
+            });
+        }
+    </script>
+    <style type="text/css">
+        .btn60
+        {
+            display: inline-block;
+            width: 60px;
+            height: 16px;
+            line-height: 28px;
+            background: url(/Content/default/images/btn60.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+        }
+        .btn120
+        {
+            display: inline-block;
+            width: 120px;
+            height: 28px;
+            line-height: 28px;
+            background: url(/Content/default/images/btn120.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            background-color: #DDDDDD;
+            box-shadow: 1px 1px 2px #DDDDDD;
+        }
+        input.inp-txt
+        {
+            height: 14px;
+            line-height: 16px;
+            border: 1px solid #B6C0CD;
+            padding: 4px 5px;
+            vertical-align: middle;
+            border-radius: 3px;
+            box-shadow: inset 1px 1px 2px #DBDBDB;
+        }
+        .manag_m
+        {
+            text-align: left;
+        }
+        .manag_bot .m_talbe tr td.three
+        {
+            width: 238px;
+        }
+        .manag_bot .m_talbe tr td.three img
+        {
+            float: left;
+            margin: 5px 0 0 25px;
+        }
+        
+        .manag_bot .m_talbe tr td.three ul li p
+        {
+            margin: 15px 10px 10px 10px;
+        }
+        .plgl_bot .m_talbe tr td.three ul li a, .plgl_bot .m_talbe tr.t_tr2 td.eight a
+        {
+            color: #409FFF;
+        }
+        .plgl_bot .m_talbe tr td.three ul li a:hover, .plgl_bot .m_talbe tr.t_tr2 td.eight a:hover
+        {
+            color: #80BDE3;
+        }
+        
+        .autoNewline
+        {
+            width: 150px;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<form id="FormExcel" action="/Distribute/ExportManagerInfo" method="post">
+<input type="hidden" name="ParentId" id="ParentId" />
+<input type="hidden" name="UserName" id="UserName" />
+<input type="hidden" name="UserCode" id="UserCode" />
+<input type="hidden" name="StartTime" id="Sime" />
+<input type="hidden" name="EndTime" id="Eime" />
+<input type="hidden" name="PageIndex" id="PageIndex" />
+<input type="hidden" name="PageSize" id="PageSize" />
+</form>
+<div class="box" style="padding: 10px 0 10px 0px;">
+    <div class="content">
+        <div class="manag_m" style="margin-bottom: 0; margin-top: 10px; font-size: 13px;
+            height: 32px;">
+            <span>分销商：</span>
+            <input type="text" id="CommodityName" class="inp-txt" style="width: 130px;" />
+            <span>注册时间：</span>
+            <input type="text" id="StartTime" class="inp-txt" style="width: 120px;" />
+            <strong style="font-weight: normal;">-</strong>
+            <input type="text" id="EndTime" class="inp-txt" style="width: 120px;" />
+            <a class="btn120" id="search" style="margin-left: 10px;" onclick="toSearch()">查询</a>
+        </div>
+        <div style="background: #F2F2F2; margin-bottom: 10px; font-size: 14px; line-height: 36px;
+            text-align: right;">
+            <span style="float: left; margin-left: 13px;">
+                <label id="yjid1">
+                    分销商总共<label>@managerNum.Count</label>个,<label>@managerNum.MaxLevel</label>个层级</label>
+                <label id="yjid2" style="margin-left: 35px;">
+                    注：用户注册后即成为分销商</label>
+                <label id="ejid">
+                    <label id="name">
+                    </label>
+                    的一级分销商共<label id="count"></label>个</label>
+            </span><a id="Top" class="btn120" style="margin-right: 9px; display: none" onclick="TopLevel()">
+                返回顶级</a> <a id="Higher" class="btn120" style="margin-right: 9px; display: none" onclick="HigherLevel()">
+                    返回上一级</a> <a class="btn120" onclick="ShowExportData()">导出</a>
+        </div>
+        <div class="plgl_bot">
+            <table id="dataTable" border="0" cellspacing="0" cellpadding="0" class="m_talbe">
+                <thead>
+                    <tr class="t_tr1">
+                        <td class="one" style="width: 50px;">
+                            序号
+                        </td>
+                        <td class="two">
+                            分销商
+                        </td>
+                        <td class="four" style="width: 100px;">
+                            销量(元)
+                            <img src="/Images/jtou.jpg" width="18px" height="18px" onclick="SortM()" style="vertical-align: middle" />
+                        </td>
+                        <td class="five" style="width: 100px;">
+                            佣金(元)
+                            <img src="/Images/jtou.jpg" width="18px" height="18px" onclick="SortY()" style="vertical-align: middle" />
+                        </td>
+                        <td class="six" style="width: 100px;">
+                            下级分销商数
+                            <img src="/Images/jtou.jpg" width="18px" height="18px" onclick="SortF()" style="vertical-align: middle" />
+                        </td>
+                        <td class="seven" style="width: 110px;">
+                            注册时间
+                        </td>
+                        <td class="seven" style="width: 110px;">
+                            备注
+                        </td>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <div id="More" style="margin-top: 30px; text-align: center; display: none;">
+            <a class="btn120" href="#" onclick="seeMore()" style="">点击查看更多</a>
+        </div>
+        @*弹出窗体*@
+        <div id="loadCommodityList" style="overflow: hidden; width: auto; min-height: 0;
+            height: 470px; display: none;">
+            <iframe id="commodityListFrame" name="commodityListFrame" scrolling="yes" src=""
+                frameborder="0" style="border: 0; overflow: hidden; padding: 0; margin: 0; height: 430px;
+                width: 939px" width="939"></iframe>
+        </div>
+        @*弹出窗体*@
+        <div id="loadOrderDetail" style="overflow: hidden; width: auto; min-height: 0; height: 470px;
+            display: none;">
+            <iframe id="orderDetailFrame" name="orderDetailFrame" scrolling="yes" src="" frameborder="0"
+                style="border: 0; overflow: hidden; padding: 0; margin: 0; height: 430px; width: 939px"
+                width="939"></iframe>
+        </div>
+    </div>
+</div>
+<div class="tanchu" id="divEdit">
+    <div>
+        <div class="tanchu_r">
+            <p id="editTitle">
+            </p>
+            <textarea rows="5" cols="10" id="editContent" style="border: 1px solid #B8BFCF; width: 95%;
+                margin-left: 10px; height: 160px;" onkeyup="remarkKeyup()"></textarea>
+            <div id="editContentWarn" style="text-align: right; font-size: 10px; color: red;
+                margin-right: 10px;">
+                还可以输入140个字</div>
+            <div style="text-align: center;">
+                <button onclick="submitEdit()">
+                    确定</button>
+                <button onclick="closeEditDiv()">
+                    取消</button></div>
+        </div>
+    </div>
+    <div class="shut" onclick="closeEditDiv()">
+        <img src="/images/shut.png" alt="" width="7" height="7" />
+    </div>
+</div>
+<div id="imgDiv" style="display: none; z-index: 9999; position: absolute">
+    <img id="imgCtrl" src="#" />
+</div>
+<div style="display: none;">
+    <div id="identityInfoDiv" style="margin: 0 auto;">
+        <iframe id="identityInfoUrl" src="" width="1193px;" height="690px" style="margin-bottom: 20px;
+            border: 0px;"></iframe>
+    </div>
+</div>

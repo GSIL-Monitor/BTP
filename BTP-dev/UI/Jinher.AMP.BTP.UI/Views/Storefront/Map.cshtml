@@ -1,0 +1,226 @@
+﻿@{
+    Layout = "~/Views/Shared/_MobileFittedLayout.cshtml";
+}
+@section LTitleHtml
+{
+        <title>查看路线</title>
+}
+@section CssStyles{
+    <link rel="stylesheet" href="http://cache.amap.com/lbs/static/main1119.css" />
+    <link href="/Content/Mobile/zphStyle/mobileKit-min.css" rel="stylesheet" type="text/css" />
+    <link href="/Content/Mobile/zphStyle/checkRoute.css" rel="stylesheet" type="text/css" />
+}
+@section ClientScript
+{
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.3&plugin=AMap.Driving&key=@Jinher.AMP.BTP.Common.CustomConfig.AmapKey"></script>
+    <script src="/Content/Mobile/zepto.min.js" type="text/javascript"></script>
+      <script type="text/javascript">
+          //JS验证 不是有效的值
+          function JsVilaDataNull(obj) {
+              if (obj != undefined && obj != "" && obj != "null" && obj != null && obj != "undefined" && obj) {
+                  return true;
+              }
+              else {
+                  return false;
+              }
+          }
+          //高德地图获取当前位置。
+          var map, geolocation;
+          ////构造路线导航类
+          var driving;
+          //门店信息
+          var storeInfo = new Object();
+
+          //当前位置（只有一个门店直接跳到该页面，需要定位）。
+          var _position = new Object();
+
+          $(function () {
+              if (isShowFootmenu()) {
+                  $("#btnPlanningRoute").css("bottom", "80px;");
+                  $("#map").height($("#map").height() - 50);
+              }
+
+              $('.show-hide-btn').on('click', function () {
+                  $('.info-intro').toggle();
+                  var i = $(this).find('i');
+                  i.hasClass('fa-angle-up') ? i.removeClass('fa-angle-up').addClass('fa-angle-down') : i.removeClass('fa-angle-down').addClass('fa-angle-up');
+              });
+
+              //路线规划
+              $("#btnPlanningRoute").on("click", function () {
+                  document.location.href = "http://m.amap.com/navi/?start=" + sessionStorage.currentUserLongitude + "," + sessionStorage.currentUserLatitude + "&dest=" + storeInfo.XAxis + "," + storeInfo.YAxis + "&destName=" + storeInfo.StoreName + "&naviBy=car&key=@Jinher.AMP.BTP.Common.CustomConfig.AmapKey";
+              });
+
+              if (JsVilaDataNull(sessionStorage.storeInfo)) {
+                  storeInfo = $.parseJSON(sessionStorage.storeInfo);
+
+              }
+              else {
+                  storeInfo = $.parseJSON(decodeURIComponent("@ViewBag.StoreDTOJson"));
+                  storeInfo.Phone1 = storeInfo.Phone[0].PhoneNumber;
+                  storeInfo.PhoneCount = storeInfo.Phone.length;
+              }
+
+              initMap();
+
+              initStoreInfo();
+          });
+
+          function initStoreInfo() {
+              $("#imgPicPath").attr("src", storeInfo.PicPath);
+              $("#divStoreName").text(storeInfo.StoreName);
+              document.title = storeInfo.StoreName;
+              $("#divAddress").text(storeInfo.Address);
+              $("#divDistanceText").text(storeInfo.DistanceText);
+              $("#aPhone1").text(storeInfo.Phone1);
+
+              $("#spanPhoneCount").text(storeInfo.PhoneCount);
+              if (storeInfo.PhoneCount > 1) {
+                  $("#spanPhoneCountParent").show();
+
+                  $('.phone').on('click', function () {
+                      $('.mask').removeClass('hide');
+                  });
+                  $('.call').on('click', '.call-num', function () {
+                      $('.mask').addClass('hide');
+                  }).find('i').on('click', function () {
+                      $('.mask').addClass('hide');
+                  });
+              }
+              else {
+                  $("#spanPhoneCountParent").hide();
+                  $("#aPhone1").attr("href", "tel:" + storeInfo.Phone1);
+              }
+
+              $('.mask ul li.call-num').remove();
+              var html = "";
+              var phones = storeInfo.Phone;
+              for (var i = 0; i < phones.length; i++) {
+                  html += '<li class="call-num"><a href="tel:' + phones[i].PhoneNumber + '">' + phones[i].PhoneNumber + '</li>';
+              }
+              $('.mask ul').append(html);
+          }
+
+          function initMap() {
+              //加载地图，调用浏览器定位服务
+              map = new AMap.Map('container', {
+                  resizeEnable: true
+                  //, center: [storeInfo.XAxis, storeInfo.YAxis] //地图中心点
+                  //, zoom: 13 //地图显示的缩放级别
+              });
+
+
+              //构造路线导航类
+              driving = new AMap.Driving({
+                  map: map
+                  //,panel: "panel"
+              });
+
+              if (JsVilaDataNull(sessionStorage.storeInfo)) {
+                  // 设置缩放级别和中心点
+                  map.setZoomAndCenter(13, [storeInfo.XAxis, storeInfo.YAxis]);
+                  // 在新中心点添加 marker 
+                  var marker = new AMap.Marker({
+                      map: map,
+                      position: [storeInfo.XAxis, storeInfo.YAxis]
+                  });
+              }
+              else {
+                  map.plugin('AMap.Geolocation', function () {
+                      geolocation = new AMap.Geolocation({
+                          enableHighAccuracy: true, //是否使用高精度定位，默认:true
+                          timeout: 10000,          //超过10秒后停止定位，默认：无穷大
+                          buttonOffset: new AMap.Pixel(10, 20), //定位按钮与设置的停靠位置的偏移量，默认：Pixel(10, 20)
+                          zoomToAccuracy: false,      //定位成功后调整地图视野范围使定位位置及精度范围视野内可见，默认：false
+                          buttonPosition: 'RB'
+                      });
+                      map.addControl(geolocation);
+                      geolocation.getCurrentPosition();
+                      AMap.event.addListener(geolocation, 'complete', onComplete); //返回定位信息
+                      AMap.event.addListener(geolocation, 'error', onError);      //返回定位出错信息
+                  });
+              }
+          }
+
+          //解析定位结果
+          function onComplete(data) {
+              if (_position.getLng) {
+                  return;
+              }
+              _position = data.position;
+              sessionStorage.currentUserLongitude = _position.getLng();
+              sessionStorage.currentUserLatitude = _position.getLat();
+
+              var lnglat = new AMap.LngLat(_position.getLng(), _position.getLat());
+              var distance = lnglat.distance([storeInfo.XAxis, storeInfo.YAxis]);
+              storeInfo.Distance = distance;
+              storeInfo.DistanceText = distance > 1000 ? (distance / 1000).toFixed(2) + "km" : distance.toFixed(0) + "m";
+
+              initStoreInfo();
+
+              // 设置缩放级别和中心点
+              map.setZoomAndCenter(13, [storeInfo.XAxis, storeInfo.YAxis]);
+              // 在新中心点添加 marker 
+              var marker = new AMap.Marker({
+                  map: map,
+                  position: [storeInfo.XAxis, storeInfo.YAxis]
+              });
+          }
+          //解析定位错误信息
+          function onError(data) {
+          }
+
+    </script>
+}
+    <div class="page" id="storePage" style="position: relative;">
+        @* <header class="bar bar-nav">
+            <a class="fa fa-chevron-left pull-left" href="javascript:void(0);"></a>
+            <h1 class="title">门店信息</h1>
+        </header>*@
+        <div class="content">
+            <div class="check-route">
+                <div class="stores-info" style="z-index: 10;">
+                    <div class="info-intro">
+                        <div class="pic">
+                            <img id="imgPicPath" src="/Content/Mobile/storeDefault.png" alt="" />
+                        </div>
+                        <div class="info-text">
+                            <div id="divStoreName" class="name">
+                            </div>
+                            <div class="address">
+                                <div class="fa fa-map-marker">
+                                </div>
+                                <div id="divAddress" class="address-info">
+                                </div>
+                                <div id="divDistanceText" class="distance">
+                                </div>
+                            </div>
+                            <div class="phone">
+                                <i class="fa fa-phone"></i><a class="phone-number" id="aPhone1"></a><span class="number"
+                                    id="spanPhoneCountParent">等<span id="spanPhoneCount">1</span>个号码</span></div>
+                        </div>
+                    </div>
+                    <div class="show-hide-btn">
+                        <i class="fa fa-angle-up"></i>
+                    </div>
+                </div>
+                <div class="map" id="map" style="position: relative;">
+                    <div id="container">
+                    </div>
+                    <div id="panel">
+                    </div>
+                </div>
+                <a id="btnPlanningRoute" href="javascript:void(0);" class="line">
+                    <img src="/Content/Mobile/zphStyle/images/line.png" alt="" />
+                </a>
+                <div class="mask hide">
+                    <ul class="call">
+                        <i>×</i>
+                        <li>拨打电话</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+  
+

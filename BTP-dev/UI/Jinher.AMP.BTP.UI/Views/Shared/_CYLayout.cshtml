@@ -1,0 +1,41 @@
+﻿@{
+    var currency = Jinher.AMP.BTP.UI.Util.WebUtil.GetCurrency();
+}
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="/Scripts/jquery.js"></script>
+	<script type="text/javascript" src="/Scripts/jquery.extend.js"></script>
+	<script type="text/javascript" src="/Scripts/jquery.ui.base.js"></script>
+	<script type="text/javascript" src="/Scripts/i18n/jquery.ui-zh.js"></script>
+	<script type="text/javascript" src="/Scripts/TableBox/jquery.ui.jhtablebox.js"></script>
+	<link type="text/css" href="/Content/default/jquery.ui.all.css" rel="stylesheet" />
+	<script src="/Scripts/Pager/jquery.ui.jhpager.js" type="text/javascript"></script>
+	<script src="/Scripts/jquery.cookie.js" type="text/javascript"></script>
+	<script src="/Content/Business/CYBusinessAllEvent.js"></script>
+	<link href="/Content/css/style.css" rel="stylesheet" type="text/css" />
+    @RenderSection("Css", required: false)
+    @RenderSection("CssStyles", required: false)
+	<script>
+		try{
+			var rootPath = "@Url.Content("~")";
+		    var arr = window.location.host.split('.');
+		    if (arr.length > 0) {
+		        document.domain =  arr[arr.length - 2] +"."+ arr[arr.length - 1];
+		    }
+			//document.domain = "iuoooo.com";
+		}catch(err){}
+		function getCurrency() {
+		    return $("appCurrency").val();
+		}
+	</script>
+    @RenderSection("ClientScript", required: false)
+    @RenderSection("Script", required: false)
+</head>
+
+<body>
+    @RenderBody()
+        <input id="appCurrency" type="hidden" value="@currency" />
+</body>
+</html>

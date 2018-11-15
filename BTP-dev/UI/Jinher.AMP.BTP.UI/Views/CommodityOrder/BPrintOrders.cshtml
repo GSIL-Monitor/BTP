@@ -1,0 +1,297 @@
+﻿@{
+    ViewBag.Title = "接单打印";
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.CommodityOrderVM> commodityOrderList = ViewBag.commodityOrderList;
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.CommodityOrderMoneyToModelDTO> moneyToList = ViewBag.MoneyToList;
+    List<int> directArrivalPayments = Jinher.AMP.BTP.UI.Models.PaySourceVM.GetDirectArrivalPayment();
+    string dapStr = "," + string.Join(",", directArrivalPayments) + ",";
+
+    List<int> stwogPayments = Jinher.AMP.BTP.UI.Models.PaySourceVM.GetSecTransWithoutGoldPayment();
+    string stwogStr = "," + string.Join(",", stwogPayments) + ",";
+}
+<!--
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>接单打印</title>
+    <style type="text/css">
+
+    </style>
+    <script type="text/javascript">
+
+    </script>
+</head>
+-->
+@section CssStyles{
+    <link rel="stylesheet" href="/Content/css/mobileKit-min.css" />
+    <link rel="stylesheet" href="/Content/css/printorder.css" />
+}
+<div class="box">
+    <div class="content">
+        @Html.Action("CYPartialIndex", "CommodityOrder")
+    </div>
+</div>
+<div style="height: 0; overflow: hidden; margin: 0 auto;">
+    <iframe id="orderdetailurl" style="border: 0px;"></iframe>
+</div>
+<div id="tempData" style="display:none;">
+    <div id="{covm.CommodityOrderId}" class="order-detail">
+        <div class="header">
+            <div class="title"><span>{ViewBag.StoreName}</span></div>
+            <div class="sub-title"><span>外卖</span></div>
+        </div>
+        <div class="one-three">
+            <div class="one">
+                <div class="order-address">
+                    <div class="order-num clearfix"><span class="num">订单号：</span><span class="detail">{covm.Batch}</span></div>
+                    <div class="order-receiver clearfix"><span class="receiver">收货人：{covm.ReceiptUserName}</span><span class="phone">{covm.ReceiptPhone}</span>
+                        <span class="address">{covm.ReceiptAddress}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="two">
+                <div class="order-list"></div>
+            </div>
+            <div class="three">
+                <div class="total-num clearfix"><span class="commodity">商品金额：</span><span class="commodity-num">¥{covm.Price}</span></div>
+                <div class="total-num clearfix">{getMealBoxFee(covm)}</div>
+                <div class="total-num clearfix"><span class="deliver">配送费：</span><span class="deliver-num">¥{covm.Freight}</span></div>
+                <div class="total-num clearfix">{getFreight(covm)}</div>
+                <div class="total-num clearfix"><span class="coupon">优惠券：</span>{getCouponNum(covm)}</div>
+                <div class="total-num clearfix"><span class="total">合计：</span>{getTotalNum(covm)}</div>
+                <div class="remark clearfix">{getRemark(covm)}</div>
+            </div>
+        </div>
+        <div class="nav">
+            <div class="print"><a href="javascript:void(0)"><span id="{covm.CommodityOrderId}" class="print-btn" onclick="alinkClick(this)">接单并打印</span></a></div>
+        </div>
+    </div>
+</div>
+<div id="tempOrderData" style="display: none;">
+	<div class="com-detail">
+        <div class="com-detail-wb">
+            <div class="com-two clearfix">
+                <div class="com-name">
+                    <div class="com-change">
+                        <div class="com-name-one">
+                            <span class="dish">{oivm.CommodityIdName}</span>
+                        </div>
+                        <div class="com-name-two">
+                            <span class="taste">{oivm.SizeAndColorId0}</span>
+                            <span class="size">{oivm.SizeAndColorId1}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="com-number"><span>×{oivm.Number}</span></div>
+            </div>
+            <div class="total-price-finish">¥{getUnitPrice(oivm)}</div>
+        </div>
+    </div>
+</div>
+    <iframe name="comeOrder_iframe" id="comeOrder_iframe" src="" style="display: none;">
+    </iframe>
+@section ClientScript
+{
+    <script src="/Scripts/jquery.nicescroll.js" type="text/javascript"></script>
+    <script src="/Content/js/printorder.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        if (window.parent) {
+            $(window.parent.document).scrollTop(0);
+        }
+
+        function GetQueryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]); return null;
+        }
+
+        function hideNoOrder() {
+            if ($(".page").html().trim() == "") {
+                $("#noOrder").removeClass("hide");
+            } else {
+                $("#noOrder").addClass("hide");
+            }
+        }
+
+        function reloadOrders() {
+            var jsonData = {};
+            jsonData.state = 18;
+            $.ajax({
+                url: "/CommodityOrder/CYPartialIndex",
+                type: "post",
+                datatype: "json",
+                data: jsonData,
+                success: function (result) {
+                    //$(".box .content").html(result.data);
+                },
+                err: function (e) {
+                    console.log(e);
+                }
+            });
+        }
+
+        var getFreight = function (obj) {
+            if (obj.Freight) {
+                return "<span class=\"remark-title\">配送费优惠：</span><span class=\"remark-con\">" + obj.Freight + "</span>";
+            } else {
+                return "";
+            }
+        };
+
+        var getMealBoxFee = function (obj) {
+            if (obj.MealBoxFee) {
+                return "<span class=\"remark-title\">餐盒费：</span><span class=\"remark-con\">" + obj.MealBoxFee + "</span>";
+            } else {
+                return "";
+            }
+        };
+
+        var getCouponNum = function (obj) {
+            if (obj > 0) {
+                return "<span class=\"coupon-num\">-¥" + obj + "</span>";
+            } else {
+                return "<span class=\"coupon-num\">¥" + obj + "</span>";
+            }
+        };
+
+        var getTotalNum = function (obj) {
+            var totalNum = obj.Price - obj.CouponValue + obj.Freight;
+            return "<span class=\"num\">¥" + totalNum + "</span>";
+        };
+
+        var getRemark = function (obj) {
+            if (obj.Details) {
+                return "<span class=\"remark-title\">备注：</span><span class=\"remark-con\">" + obj.Details + "</span>";
+            } else {
+                return "";
+            }
+        };
+
+        var formatOrderData = function (data) {
+            var covmList = "";
+            var oivmList = $("#tempOrderData").html();
+            var comDetailHTML = "";
+            var orderDetailHTML = "";
+            for (var covmNum = 0; covmNum < data.length; covmNum++) {
+                var covmData = data[covmNum];
+                for (var oivmNum = 0; oivmNum < covmData.OrderItems.length; oivmNum++) {
+                    var oivmData = covmData.OrderItems[oivmNum];
+                    var sizeAndColorStr = oivmData.SizeAndColorId;
+                    comDetailHTML += oivmList.replace("{oivm.CommodityIdName}", oivmData.CommodityIdName)
+            		.replace("{oivm.Number}", oivmData.Number).replace("{getUnitPrice(oivm)}", (oivmData.RealPrice / oivmData.Number));
+
+                    if (sizeAndColorStr == ",") {
+                        comDetailHTML = comDetailHTML.replace("{oivm.SizeAndColorId0}", "").replace("{oivm.SizeAndColorId1}", "");
+                    } else {
+                        comDetailHTML = comDetailHTML.replace("{oivm.SizeAndColorId0}", sizeAndColorStr.substring(0, sizeAndColorStr.indexOf(',')))
+            				.replace("{oivm.SizeAndColorId1}", sizeAndColorStr.substring(sizeAndColorStr.indexOf(',') + 1));
+                    }
+                    $("#tempData .order-list").html(comDetailHTML);
+                }
+                covmList = $("#tempData").html();
+                orderDetailHTML += covmList.replace("{ViewBag.StoreName}", $("#storeName").val()).replace("{covm.Batch}", covmData.Batch)
+            	.replace("{covm.ReceiptUserName}", covmData.ReceiptUserName).replace("{covm.ReceiptPhone}", covmData.ReceiptPhone)
+            	.replace("{covm.ReceiptAddress}", covmData.Province + covmData.District + covmData.ReceiptAddress)
+            	.replace("{covm.Price}", covmData.Price).replace("{covm.Freight}", covmData.Freight)
+            	.replace("{covm.CommodityOrderId}", covmData.CommodityOrderId).replace("{covm.CommodityOrderId}", covmData.CommodityOrderId)
+            	.replace("{getCouponNum(covm)}", getCouponNum(covmData.CouponValue)).replace("{getTotalNum(covm)}", getTotalNum(covmData))
+            	.replace("{getRemark(covm)}", getRemark(covmData)).replace("{getMealBoxFee(covm)}", getMealBoxFee(covmData))
+                .replace("{getFreight(covm)}", getFreight(covmData));
+            }
+            return orderDetailHTML;
+        };
+
+        function checkOrders() {
+            var jsonData = {};
+            jsonData.appId = GetQueryString("appId");
+            jsonData.cylastPayTicks = $("#cylastPayTicks").val();
+            $.ajax({
+                url: "/CommodityOrder/HasNewCyCommodityOrder",
+                type: "post",
+                datatype: "json",
+                data: jsonData,
+                success: function (result) {
+                    if (result.success) {
+                        var newData = formatOrderData(result.data);
+                        $(".page").append(newData);
+                        $("#cylastPayTicks").val(result.orderTicks);
+                        comeOrder();
+                    }
+                },
+                err: function (e) {
+                    console.log(e);
+                }
+            });
+        }
+
+        var alinkClick = function (delbtn) {
+            $("#orderdetailurl").attr("src", '@Url.Action("CYOrderPrint", "CommodityOrder")' + "?orderId=" + delbtn.id + "&appId=" + GetQueryString("appId"));
+            var jsonData = {};
+            jsonData.commodityOrderId = delbtn.id;
+            jsonData.state = 19;
+            jsonData.message = "已处理";
+            jsonData.userId = GetQueryString("userId");
+
+            $.ajax({
+                url: "/CommodityOrder/UpdateCommodityOrder",
+                type: "post",
+                datatype: "json",
+                data: jsonData,
+                success: function (result) {
+                    if (result.success) {
+                    }
+                },
+                err: function (e) {
+                    console.log(e);
+                }
+            });
+            $("#" + delbtn.id).remove();
+            hideNoOrder();
+        };
+
+        $(document).ready(function () {
+            hideNoOrder();
+            setInterval("checkOrders()", 1000);
+
+            $(".print .print-btn").on('click', function () {
+                alinkClick(this);
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        function comeOrder() {
+            audioplayer('audioComeOrder', "/Content/mp3/comeorder.mp3");
+        }
+        var hasVideo = !!(document.createElement('video').canPlayType);
+        function audioplayer(id, file) {
+            var audioplayer = document.getElementById(id);
+            if (typeof (file) != 'undefined') {
+                if (navigator.userAgent.indexOf("MSIE") > 0) {// IE
+                    if (audioplayer != null) {
+                        document.body.removeChild(audioplayer);
+                    }
+                    var player = document.createElement('bgsound');
+                    player.id = id;
+                    player.src = file;
+                    player.setAttribute('autostart', 'true');
+                    player.setAttribute('loop', 0);
+                    document.body.appendChild(player);
+
+                } else if (hasVideo) { // h5
+                    if (audioplayer == null) {
+                        var player = document.createElement('audio');
+                        player.id = id;
+                        document.body.appendChild(player);
+                        var mp3 = document.createElement('source');
+                        mp3.src = file;
+                        mp3.type = 'audio/mpeg';
+                        player.appendChild(mp3);
+                        audioplayer = player;
+                    }
+                    audioplayer.play();
+                }
+                else { //Other FF Chome Safari Opera 
+                    window.open(file, "comeOrder_iframe");
+                }
+            }
+        }
+    </script>
+}

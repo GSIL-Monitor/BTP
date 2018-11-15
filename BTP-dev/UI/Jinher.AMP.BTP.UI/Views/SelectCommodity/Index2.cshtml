@@ -1,0 +1,328 @@
+﻿@using Jinher.JAP.MVC
+@using Jinher.JAP.MVC.UIJquery
+@using Jinher.JAP.MVC.UIJquery.Validate
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "选择商品";
+}
+@section Css{
+@*@{Html.jQuery().StyleSheetRegistrar().DefaultGroup(group => group.Add("common.css").Add("default/ui.jqgrid.css").Add("default/jquery.ui.jhtablebox.css"));}*@
+<link href="/Content/common.css" rel="stylesheet" type="text/css" />
+<link href="/Content/default/ui.jqgrid.css" rel="stylesheet" type="text/css" />
+<link href="/Content/default/jquery.ui.jhtablebox.css" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+        body, th, td
+        {
+            font-size: 12px;
+        }
+        .input
+        {
+            border: 1px solid #B8BFCF;
+        }
+        .ui-jqgrid tr.jqgrow
+        {
+            height: 50px;           
+        }
+        .SAppUL
+        {
+        }
+        .SAppUL li
+        {
+            padding: 5px 0;
+            cursor: pointer;
+        }
+        .SAppUL li a
+        {
+            float: right;
+        }
+        .SAppUL li img
+        {
+            width: 20px;
+            height: 20px;
+        }
+        .radioLabel
+        {
+            width: 120px;
+            display: inline-block;
+            line-height: 30px;
+        }
+    </style>
+}
+<div id="outer" class="formList" style="padding: 5px;">
+    <div id="divMyApp" class="item" style=" text-align:center;font-weight:bold; font-size:15px;">
+        选择商品
+    </div>
+    <div class="bor-top" style="margin: 10px 0; clear: both;">
+    </div>
+    <div style="padding-top: 5px; width: 98%;">
+        <div id="partOneDiv" style="width: 150px; float: left; padding-right: 10px">
+            APP列表：
+            <div style="border: solid #DBDBDB 1px; padding: 10px; margin-top: 10px; height: 420px;
+                overflow: auto;">
+                <ul id="APPList" class="SAppUL">
+                </ul>
+            </div>
+            <div style="text-align: center">
+                <a onclick="prepage()" style="cursor: pointer">上一页</a><a onclick="nextpage()" style="margin-left: 10px;
+                    cursor: pointer">下一页</a>
+            </div>
+        </div>
+        <div id="leftDiv" style="float: left;">
+            <div class="item" style="padding-left: 10px;">
+                <span>APP名称：</span>
+                <input class="inp-txt mr10" id="txtAppName" maxlength="30" />&nbsp; <span>商品名称：</span>
+                <input class="inp-txt mr10" id="txtCommodityName" maxlength="30" />&nbsp;
+                <a id="search" href="javascript:void(0);" type="button" class="btn60" onclick="SelSingleCommodityNameI()" />查 询</a>
+            </div>
+            <table id="GoodsGrid">
+            </table>
+            <div id="GoodsPage">
+            </div>
+        </div>
+        <div id="rightDiv" style="width: 150px; float: left; padding-left: 10px">            
+            <div style="margin-top: 39px; font-weight:bold;">已选商品：</div>
+            <div style="border: solid #DBDBDB 1px; padding: 10px; margin-top: 10px; height: 390px;overflow: auto;">
+                <ul id="selectedGoodsList" class="SAppUL">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div style="clear: both;">
+    </div>
+    <div class="btn-center" style="padding: 5px 0 5px 0;">
+        <a href="javascript:ConfirmSelect()" class="btn120">确定</a> <a href="javascript:ConsoleClick()" class="btn120">取消</a>
+    </div>
+</div>
+@section ClientScript{
+    	<script type="text/javascript" src="/Content/Mobile/allEvent.js"></script>
+	<script type="text/javascript" src="/Scripts/i18n/jquery.ui-zh.js"></script>
+	<script type="text/javascript" src="/Scripts/Grid/jquery.grid.base.js"></script>
+	<script type="text/javascript" src="/Scripts/TableBox/jquery.ui.jhtablebox.js"></script>
+	<script type="text/javascript" src="/Scripts/jquery.ui.base.js"></script>
+	<script type="text/javascript" src="/Scripts/jquery.nicescroll.min.js"></script>
+	<script type="text/javascript" src="/Scripts/Pager/jquery.ui.jhpager.js"></script>
+	<script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.jhdatetime.js"></script>
+	<script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.datepicker.js"></script>
+    <script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.jhstartandenddate.js"></script>
+
+    <script type="text/javascript">
+        var MaxSelectedCount = 50;
+        var SelectedGoodsList = new Array();
+        var selectedCount = 0;
+        var apppage = 1;
+        var totalpage = 1;
+        var pagesize = 15;
+
+        $(document).ready(function () {
+            InitAppList();
+
+            initGoodsGrid();
+        });
+
+        function prepage() {
+            if (apppage == 1) return;
+            else {
+                apppage = apppage - 1;
+                InitAppList();
+            }
+        }
+
+        function nextpage() {
+            if (apppage == totalpage) return;
+            else {
+                apppage = apppage + 1;
+                InitAppList();
+            }
+        }
+
+        function InitAppList() {
+            var appId = getQueryString('appId');
+            $.ajax({
+                async: true,
+                type: "POST",
+                dataType: "json",
+                url: "/SelectCommodity/GetAppList?appId=" + appId + "&apppage=" + apppage + "&pagesize=" + pagesize,
+                data: {},
+                success: function (ret) {
+                    var data = ret.applist;
+                    if (data && data.length > 0) {
+                        $("#APPList").empty();
+                        $(data).each(function (index) {
+                            var val = data[index];
+
+                            if (typeof (val) == "object") {
+                                var appitem = "<li id='" + val.AppId + "'><a href='javascript:void(0)' onclick='SearchCommodityByAppId(\"" + val.AppId + "\")'>" + val.AppName + "</a><div style='clear:both;'></div></li>";
+                                $("#APPList").append(appitem);
+                                //console.info(appitem);
+                            }
+                        });
+                    }
+                    totalpage = ret.totalpage;
+                },
+                error: function (err) {
+                    alert("操作失败.");
+                }
+            });
+        }
+
+        function SearchCommodityByAppId(appId) {
+            var apppage = 1;
+            var totalpage = 1;
+            var data = { "AppId": appId };
+            if (data) {
+                $('#GoodsGrid').jqGrid('setGridParam', { url: "/SelectCommodity/SelSingleCommodityNameI?random=" + Math.random() + "&AppId=" + appId + "&BeLongTo=" + getQueryString('appId'), page: 1 });
+                $("#GoodsGrid").trigger("reloadGrid", [{ page: 1}]);
+                //ClearSelectedGoods();
+            }
+        }
+
+        function initGoodsGrid() {
+            $("#GoodsGrid").jqGrid({
+                datatype: "json",
+                mtype: 'POST',
+                colNames: ['AppId', 'App名称', '商品图片', '商品名称', '商品价格(元)','已上架分类', '库存'],
+                colModel: [
+                        { name: 'AppId', index: 'AppId', align: "center", sortable: false, hidden: true },
+                        { name: 'AppName', index: 'AppName', width: 150, align: "center", sortable: false },
+                        { name: 'Pic', index: 'Pic', width: 60, align: "center", sortable: false, formatter: FormatePic },
+                        { name: 'Name', index: 'Name', width: 150, align: "center", sortable: false },
+                        { name: 'Price', index: 'Price', width: 80, align: "center", sortable: false },
+                        { name: 'categoryName', index: 'categoryName', width: 80, align: "center", sortable: false },
+                        { name: 'Stock', index: 'Stock', width: 80, align: "center", sortable: false }
+
+   	            ],
+                rowNum: 20,
+                pager: 'GoodsPage',
+                height: 420,
+                pagerAlone: true,
+                autowidth: false,
+                multiselect: true,
+                forceFit: true,
+                rownumbers: true,
+                scroll: false,
+                shrinkToFit: true,
+                onSelectRow: function (rowid, status) {
+                    SelectActCommodity(rowid, status);
+                },
+                onSelectAll: function (aRowids, status) {
+                    MultiSelectActCommodity(aRowids, status);
+                },
+                gridComplete: function () {
+                    SelectedCommodity(SelectedGoodsList);
+                    $("#cb_GoodsGrid").attr('checked', false);
+                }
+            });
+        }
+        function FormatePic(callvalue, opts, rowdata) {
+            return "<img id='img" + opts.rowId + "' src='" + callvalue + "' style='width:48px;height:48px;' />";
+        }
+        function FormatterGoodsProcess(callvalue, opts, rowdata) {
+            var imgId = "SGM_" + opts.rowId;
+            var exists = false;
+            for (var i = 0; i < SelectedGoodsList.length; i++) {
+                if (SelectedGoodsList[i].Id == opts.rowId) {
+                    exists = true;
+                    break;
+                }
+            }
+            if (exists == false) {
+                return "<div onclick='SelectCommodity(\"" + opts.rowId + "\",\"" + rowdata[0] + "\",\"" + rowdata[1] + "\",\"" + rowdata[2] + "\",\"" + rowdata[3] + "\",\"" + rowdata[4] + "\",\"" + imgId + "\")'><img id='" + imgId + "' src='/Content/images/sl-3.png' style='width:28px;height:28px;' /></div>";
+            } else {
+                return "<div onclick='SelectCommodity(\"" + opts.rowId + "\",\"" + rowdata[0] + "\",\"" + rowdata[1] + "\",\"" + rowdata[2] + "\",\"" + rowdata[3] + "\",\"" + rowdata[4] + "\",\"" + imgId + "\")'><img id='" + imgId + "' src='/Content/images/sl-3-1.png' style='width:28px;height:28px;' /></div>";
+            }
+        }
+
+        function MultiSelectActCommodity(aRowids, status) {
+            for (i = 0; i < aRowids.length; i++) {
+                SelectActCommodity(aRowids[i], status);
+            }
+        }
+
+        function SelectActCommodity(rowid, status) {
+            var jsonObj = $("#GoodsGrid").jqGrid("getRowData", rowid);
+            if (jsonObj != null && status == true) {
+                SelectCommodity(rowid, jsonObj);
+            }
+            else {
+                RemoveCommodity(rowid);
+            }
+        }
+        function SelectCommodity(id, jsonObj) {
+            var exists = false;
+            for (var i = 0; i < SelectedGoodsList.length; i++) {
+                if (SelectedGoodsList[i].Id == id) {
+                    exists = true;
+                    break;
+                }
+            }
+            var seId = "SG_" + id;
+            if (exists == false) {
+                if (SelectedGoodsList.length + selectedCount >= MaxSelectedCount) {
+                    alert("最多选择 " + MaxSelectedCount + " 个商品");
+                } else {
+                    SelectedGoodsList.push({ "Id": id, "appid": jsonObj.AppId, "appname": jsonObj.AppName, "pic": $("#img" + id).attr("src"), "name": jsonObj.Name, "price": jsonObj.Price });
+                    var appItem = "<li id='SG_" + id + "'>" + jsonObj.Name + "<a href='javascript:void(0)' onclick='RemoveCommodity(\"" + id + "\")'><img src='/Content/images/RemoveApp.jpg'/></a><div style='clear:both;'></div></li>";
+                    $("#selectedGoodsList").append(appItem);
+                }
+            } else {
+                //RemoveCommodity(id);
+            }
+        }
+
+        //移除
+        function RemoveCommodity(seId) {
+            for (var i = 0; i < SelectedGoodsList.length; i++) {
+                if (SelectedGoodsList[i].Id == seId) {
+                    SelectedGoodsList.splice(i, 1);
+                }
+            }
+            try {
+                $("#SG_" + seId).remove();
+                var curChk = $("#" + seId).find(":checkbox");
+                curChk.attr("checked", false);
+            } catch (err) {
+            }
+        }
+        function SelectedCommodity(SelectedGoodsList) {
+            if (SelectedGoodsList.length > 0) {
+                for (var i = 0; i < SelectedGoodsList.length; i++) {
+                    $("#jqg_GoodsGrid_" + SelectedGoodsList[i].Id + "").attr('checked', true);
+                }
+            }
+        }
+        function SelSingleCommodityNameI() {
+            //$('#GoodsGrid').jqGrid('setGridParam', { url: "/SelectCommodity/SelSingleCommodityNameI?random=" + Math.random() + "&appName=" + encodeURIComponent($("#txtAppName").val()) + "&commodityName=" + encodeURIComponent($("#txtCommodityName").val()), page: 1 });
+            $('#GoodsGrid').jqGrid('setGridParam', { url: "/SelectCommodity/SelSingleCommodityNameI?BeLongTo="+getQueryString('appId')+"&random=" + Math.random() + "&appName=" + encodeURIComponent($("#txtAppName").val()) + "&commodityName=" + encodeURIComponent($("#txtCommodityName").val()), page: 1 });
+            $("#GoodsGrid").trigger("reloadGrid", [{ page: 1}]);
+        }
+
+        function GetCommidityIds() {
+            var ids = "";
+            if (SelectedGoodsList) {
+                for (var i = 0; i < SelectedGoodsList.length; i++) {
+                    if (i > 0) {
+                        ids += ",";
+                    }
+                    ids += SelectedGoodsList[i].Id;
+                }
+            }
+            return ids;
+        }
+
+        function ClearSelectedGoods() {
+            SelectedGoodsList = new Array();
+            $("#selectedGoodsList").html("");
+        }
+        //确定选择
+        function ConfirmSelect() {
+            if (SelectedGoodsList && SelectedGoodsList.length > 0) {
+                window.parent.GoodsWallComplete(SelectedGoodsList);
+            } else {
+                alert("请选择商品");
+            }
+        }
+        function ConsoleClick() {
+            window.parent.windowClose();
+        }
+    </script>
+}

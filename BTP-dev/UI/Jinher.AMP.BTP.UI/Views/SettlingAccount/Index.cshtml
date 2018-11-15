@@ -1,0 +1,642 @@
+﻿@{
+    ViewBag.Title = "Index";
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.SettlingAccountVM> comcalist = ViewBag.CommodityList;
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.CategorySDTO> categorylist = ViewBag.CategoryList;
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.AppSetAppDTO> applist = ViewBag.AppList;
+}
+<head>
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.jhtablebox.css" />
+    <script src="/Scripts/DatePicker/jquery.ui.datepicker.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhdatetime.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhstartandenddate.js" type="text/javascript"></script>
+    <script type="text/javascript" src="/Scripts/TableBox/jquery.ui.jhtablebox.js"></script>
+    <style type="text/css">
+        .bgstock
+        {
+            background-color: #fff2f2 !important;
+        }       
+        .item
+        {
+            line-height: 28px;
+            margin-bottom: 10px;
+            min-height: 28px;
+            padding-left: 10px;
+        }
+        
+        .lable
+        {
+            display: block;
+            float: left;
+            width: 125px;
+            line-height: 28px;
+            padding-right: 5px;
+            margin-left: -130px;
+            _display: inline;
+            text-align: right;
+        }
+        input.inp-txt
+        {
+            height: 18px;
+            line-height: 18px;
+            border: 1px solid #B6C0CD;
+            padding: 4px 5px;
+            vertical-align: middle;
+            border-radius: 3px;
+            box-shadow: inset 1px 1px 2px #DBDBDB;
+        }
+        select.inp-txt
+        {
+            height: 18px;
+            line-height: 18px;
+            border: 1px solid #B6C0CD;
+            padding: 4px 5px;
+            vertical-align: middle;
+            border-radius: 3px;
+            box-shadow: inset 1px 1px 2px #DBDBDB;
+        }
+        .btn120
+        {
+            display: inline-block;
+            width: 120px;
+            height: 28px;
+            line-height: 28px;
+            background: url(../Content/default/images/btn120.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+        }
+        .floa2 h1,
+		.bbtn h1{
+			font-size: 14px;
+			color: #8c94a9;
+			padding-bottom: 5px;
+			border-bottom: 1px solid #DDDDDD;	
+		}
+		.close{
+			margin-top: 10px;
+			float: right;
+			display: inline-block;
+			*zoom:1;
+			*display: inline;
+			width: 7px;
+			height: 7px;
+			color:transparent;
+			background: url(/Images/shut.png) center no-repeat;
+		}
+		
+		
+		.floa2 ul {
+			padding: 0px 0 10px 10px;
+		}
+		
+		.floa2 ul li{
+			margin-top: 5px;
+			color:#8c94a9;
+		}
+		.addfloa2{
+			display: none; 
+			z-index: 3;
+			padding: 5px 10px;
+			height:auto;
+			border:1px solid #B8BFCF;
+			
+			-webkit-border-radius: 3px;
+			-moz-border-radius: 3px;
+			border-radius: 3px;
+		}
+		
+		/*erci*/
+		.btn60
+        {
+            display: inline-block;
+            width: 60px;
+            height: 28px;
+            line-height: 28px;
+            background: url(../Content/default/images/btn60.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+        }
+        a,input,select,span
+        {
+            color: #4F4F4F;
+            font-size: 14px;
+  font-family: "微软雅黑";
+        }
+        
+          #UpdateSettlingAccount .three input 
+          {
+             background-color:White;              
+  margin-right: 10px;
+  border: 1px solid #B8BFCF;
+  background: url('/images/time.jpg') no-repeat right center;
+          }
+    </style>
+    <script type="text/javascript">
+
+        var _rowCount = 0;
+
+        function toResetSearch() {
+            $("#appIds").val("");
+            $("#commodityname").val("");
+            $("#commoditycategory").val("");
+            searchcateogryIdList = "";
+            searchcategoryNameList = "";
+            $(".floa2").load('/SettlingAccount/showGetCategories?selectappId=', function () { });
+        }
+
+        function sendSuccess2(msg) {
+            $('#content_makes2').html(msg);
+        }
+
+        function deleteHistory(id, commodityId) {
+            $.ajax({
+                url: '/SettlingAccount/DeleteSettlingAccount',
+                type: 'post',
+                data: { id: id },
+                error: function () {
+                    window.location.href = "/SettlingAccount/Index";
+                },
+
+                complete: function () {
+                    //		                    ajaxLoading(1, '#content_makes');
+                },
+                success: function (msg) {
+                    sendSuccess2(msg);
+                    $("#pager2").jhpager({
+                        requestData: function () { return _searchEntity; },
+                        dataType: 'html',
+                        requestType: 'post',
+                        dataSource: '/SettlingAccount/SettingAccountHistoryPartialIndex?commodityId=' + commodityId,
+                        async: true,
+                        totalCount: _rowCount2,
+                        rowNum: 20,
+                        requestSuccess: showHistory(commodityId, ""),
+                        beforeRequest: function () {
+                            $("#content_makes2").empty();
+                        },
+                        requestFailure: function () {
+                        }
+                    });
+                    //                    if (rowCount == 0 || rowCount == "0") {
+                    //                        alert("当前没有查到相匹配的数据！");
+                    //                    }
+                }
+
+            });
+        }
+
+
+        function showHistory(commodityId, commodityName) {
+
+            $("#SettingAccountHistoryName").text("历史结算价");
+
+            $.ajax({
+                url: '/SettlingAccount/SettingAccountHistoryPartialIndex',
+                type: 'post',
+                data: { commodityId: commodityId },
+                error: function () {
+                    window.location.href = "/SettlingAccount/Index";
+                },
+
+                complete: function () {
+                    //		                    ajaxLoading(1, '#content_makes');
+                },
+                success: function (msg) {
+                    sendSuccess2(msg);
+                    //$("#SettingAccountHistoryName").text("历史结算价");
+                    var rowCount = $("#rowcounts2").val();
+                    //                    if (rowCount == 0 || rowCount == "0") {
+                    //                        alert("当前没有查到相匹配的数据！");
+                    //                    }
+                    $("#pager2").jhpager("refresh", 1, rowCount);
+                }
+
+            });
+
+            //内容页
+            $("#pager2").jhpager({
+                requestData: function () { return _searchEntity; },
+                dataType: 'html',
+                requestType: 'post',
+                dataSource: '/SettlingAccount/SettingAccountHistoryPartialIndex?commodityId=' + commodityId,
+                async: true,
+                totalCount: _rowCount2,
+                rowNum: 20,
+                requestSuccess: showContent2,
+                beforeRequest: function () {
+                    $("#content_makes2").empty();
+                    //$(window.parent.document).scrollTop(0);
+                    //ajaxLoading(1, '#content_makes2');
+                },
+                requestFailure: function () {
+                }
+            });
+            $("#History").jhtablebox({
+                title: "历史结算价",
+                width: 650,
+                height: 610,
+                modal: true,
+                resizable: false
+            });
+
+        }
+        function closeHistory() {
+            $("#History").jhtablebox("close");
+        }
+
+        function CloseSearchCate(obj) {
+            $("#SearchcategoryDiv").hide();
+        }
+
+        $("#SearchtcategoryUl input[type='checkbox']").change(function () {
+            toSearchCheckSelected(this);
+        });
+
+        var searchcateogryIdList = "";
+        var searchcategoryNameList = "";
+        function toSearchCheckSelected(obj) {
+            searchcateogryIdList = "";
+            searchcategoryNameList = "";
+            $("#SearchtcategoryUl input:checkbox:checked").each(function () {
+                searchcateogryIdList = searchcateogryIdList + "," + $(this).val();
+                searchcategoryNameList = searchcategoryNameList + "," + $(this).next().text();
+            });
+            if (searchcateogryIdList.length > 0) {
+                searchcateogryIdList = searchcateogryIdList.substring(1, searchcateogryIdList.length);
+                searchcategoryNameList = searchcategoryNameList.substring(1, searchcategoryNameList.length);
+            }
+            $("#commoditycategory").val(searchcategoryNameList);
+        }
+
+        function showContent(event, data) {
+            $("#content_makes").html(data);
+            newSetIframeHeight();
+            // clickSetElementValue();
+            window.addEvent('domready', function () {
+                var dragSort = new Sortables('sortables', {
+                    handle: ".sortHandel",
+                    onStart: function (element, clone) {
+                    },
+
+                    onSort: function (element, clone) {
+                        element.setStyle('background-color', '#99FF33');
+                    },
+
+                    onComplete: function (element) {
+                        element.setStyle('background-color', '');
+                        var cardIdStr = dragSort.serialize();
+                    }
+                });
+
+            });
+        }
+
+        function showContent2(event, data) {
+            $("#content_makes2").html(data);
+        }
+
+        //关闭厂家价页
+        function closeUpdateSettlingAccountDIV() {
+            $("#UpdateSettlingAccount").jhtablebox("close");
+        }
+
+        $(document).ready(function () {
+            window.parent.document.referrer_url = window.location.href;
+            //选择
+            $("input[name=itemCheckBox]").bind("click", function () {
+                if ($("input[name=itemCheckBox]").length == $("input[name=itemCheckBox]:checked").length) {
+                    $("#selecetall").attr("checked", 'true')
+                }
+                else {
+                    $("#selecetall").removeAttr("checked");
+                }
+
+            });
+
+
+            //商品分类
+            $("#commoditycategory").focus(function () {
+                if ("@ViewBag.IsShowCategoryTree".toLowerCase() == "false") {
+                    return;
+                }
+                var top = $('#commoditycategory').offset().top;
+                var left = $('#commoditycategory').offset().left;
+                var height = $('#commoditycategory').height();
+                $("#SearchcategoryDiv").css({ "top": top + height, "left": left }).show();
+            });
+
+
+            //app分类
+            $("#appIds").change(function () {
+                //                $.ajax({
+                //                    url: '/SettlingAccount/showGetCategories',
+                //                    type: 'post',
+                //                    data: _searchEntity,
+                //                    error: function () {
+                //                        window.location.href = "/SettlingAccount/Index?appId=" + getQueryString('appId');
+                //                    },
+                //                    beforeSend: beforeSends,
+                //                    complete: function () {
+                //                        //		                    ajaxLoading(1, '#content_makes');
+                //                    },
+                //                    success: function (msg) {
+                //                        sendSuccess(msg);
+                //                        
+
+                //                    }
+                //                });
+                $("#commodityname").val("");
+                $("#commoditycategory").val("");
+                searchcateogryIdList = "";
+                searchcategoryNameList = "";
+                $(".floa2").load('/SettlingAccount/showGetCategories?selectappId=' + $("#appIds").val(), function () { });
+            });
+
+            //内容页
+            $("#pager").jhpager({
+                requestData: function () { return _searchEntity; },
+                dataType: 'html',
+                requestType: 'post',
+                dataSource: '/SettlingAccount/PartialIndex',
+                async: true,
+                totalCount: _rowCount,
+                rowNum: 20,
+                requestSuccess: showContent,
+                beforeRequest: function () {
+                    $("#content_makes").empty();
+                    $(window.parent.document).scrollTop(0);
+                    ajaxLoading(1, '#content_makes');
+                },
+                requestFailure: function () {
+                }
+            });
+
+            $("select option:nth-child(2)").attr("selected", "selected");
+            $(".floa2").load('/SettlingAccount/showGetCategories?selectappId=' + $("#appIds").val(), function () { });
+            //保存
+            $("#saveUpdateSettlingAccount").click(function () {
+                //参数判断
+                if ($("#manufacturerClearingPriceAdd").val() == "") {
+                    alert("厂家结算价格不能为空");
+                    return;
+                }
+                if (!decimalInput($("#manufacturerClearingPriceAdd").val())) {
+                    alert("请输入浮点类型的数字");
+                    return;
+                }
+                if ($("#effectiveTime").val() == "") {
+                    alert("有效时间不能为空");
+                    return;
+                }
+
+
+                if ($("#ManufacturerClearingPrice").val() >= 0 && $("#ManufacturerClearingPrice").val() !== "") {
+                    var a = $("#effectiveTime").val();
+                    var c = GetDateNow();
+                    if (a < c) {
+                        alert("生效时间不能小于当前时间");
+                        return;
+                    }
+                }
+
+                var _saveData = {
+                    commodityId: $("#CommodityId").val(),
+                    appId: $("#AppID").val(),
+                    manufacturerClearingPrice: $("#manufacturerClearingPriceAdd").val(),
+                    effectiveTime: $("#effectiveTime").val()
+                };
+
+
+
+                $.ajax({
+                    url: '/SettlingAccount/AddSettlingAccount',
+                    type: 'post',
+                    data: _saveData,
+                    error: function () {
+                        window.location.href = "/SettlingAccount/Index";
+                    },
+                    complete: function () {
+                        //		                    ajaxLoading(1, '#content_makes');
+                    },
+                    success: function (msg) {
+                        if (!msg.Success) {
+                            alert(msg.Messages);
+                            return;
+                        }
+                        $("#manufacturerClearingPriceAdd").val("")
+                        $("#ManufacturerClearingPrice").val("");
+                        $("#effectiveTime").val("");
+                        //默认时间不当前时间
+                        $('#effectiveTime').val(GetDateNow());
+                        $("#search").click();
+                    }
+                });
+            });
+
+
+            //
+            $('#effectiveTime').datepicker({
+                changeMonth: true,
+                changeYear: true,
+                showOtherMonths: true,
+                selectOtherMonths: true,
+                timer: true,
+                dateFormat: 'yy-mm-dd h:i'
+            });
+
+            //点击
+            $("#search").bind("click", function () {
+                // CommLib.getUrlParamByName("");
+
+                var appId = $.trim($("#appIds").val());
+                if (appId == "") {
+                    alert("请选择一个app");
+                    return;
+                }
+                var commodityName = $("#commodityname").val();
+                if ($.trim($("#commoditycategory").val()) == "") {
+                    searchcateogryIdList = "";
+                }
+                var commodityCategory = searchcateogryIdList; //searchcateogryIdList;
+
+                _searchEntity = { appId: appId, commodityName: commodityName, commodityCategory: commodityCategory };
+                _searchEntity.categoryNameList = searchcategoryNameList;
+
+                //将查询条件保存到cookie中。
+                // var json = CommLib.ObjToString(_searchEntity);
+
+                $.ajax({
+                    url: '/SettlingAccount/PartialIndex',
+                    type: 'post',
+                    data: _searchEntity,
+                    error: function () {
+                        window.location.href = "/SettlingAccount/Index";
+                    },
+                    beforeSend: beforeSends,
+                    complete: function () {
+                        //		                    ajaxLoading(1, '#content_makes');
+                    },
+                    success: function (msg) {
+                        sendSuccess(msg);
+                        var rowCount = $("#rowcounts").val();
+                        if (rowCount == 0 || rowCount == "0") {
+                            alert("当前没有查到相匹配的数据！");
+                        }
+                        $("#pager").jhpager("refresh", 1, rowCount);
+                        clickSetElementValue();
+                    }
+                });
+            });
+            $("#search").click();
+
+            //默认时间不当前时间
+            $('#effectiveTime').val(GetDateNow());
+
+        });
+
+
+    </script>
+    <script type="text/javascript">
+        try {
+            document.domain = "iuoooo.com";
+        }
+        catch (err) {
+        }
+
+        function GetDateNow() {
+            var date = new Date();
+            var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+            var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+            var hour = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+            var minu = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+            var miao = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+            return date.getFullYear() + "-" + month + "-" + currentDate + " " + hour + ":" + minu;
+        }
+
+        function ChangeDateFormat(cellval, state) {
+            try {
+                var date = new Date(cellval);
+                var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+                var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+                var hour = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+                var minu = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+                var miao = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+                if (state == 1) {
+                    return date.getFullYear() + "-" + month + "-" + currentDate + " " + hour + ":" + minu;
+                }
+                else {
+                    return date.getFullYear() + "-" + month + "-" + currentDate + " " + hour + ":" + minu + ":" + miao;
+                }
+            } catch (e) {
+                return "";
+            }
+        }
+        function decimalInput(item) {
+            var reg = /^\d+(\.*\d*)$/;
+            return reg.test(item);
+        }
+    </script>
+</head>
+<div class="box" style="padding: 10px 0 10px 0px;">
+    <div class="content">
+        <div style="margin-top: 10px; height: 45px;">
+            <span>APP名称：</span>
+            <select id="appIds" class="inp-txt" style="width: 150px; height: 28px;">
+                <option value="">请选择</option>
+                @{
+                    foreach (Jinher.AMP.BTP.Deploy.CustomDTO.AppSetAppDTO tempObject in applist)
+                    {                    
+                    <option value="@tempObject.AppId" >@tempObject.AppName</option>
+                    }
+                }
+            </select>
+            <span style="margin-left: 10px;">商品名称：</span>
+            <input type="text" id="commodityname" class="inp-txt" style="width: 70px;">
+            <span style="margin-left: 10px;">商品类目：</span>
+            <input type="text" id="commoditycategory" class="inp-txt" style="width: 70px;" readonly="readonly">
+            <a class="btn60" id="search" href="javascript:;" style="/*margin-left: 10px; */">查询</a>
+            <a href="javascript:;" class="reset btn60" onclick="toResetSearch()" id="reset" style="margin-left: 5px;">
+                重置</a>
+        </div>
+        <div class="manag_bot manag_bot1" style="width: 100%; margin-top: 10px;">
+            <div id="divListParent">
+                <div id="content_makes">
+                    @Html.Action("PartialIndex", "SettlingAccount")
+                </div>
+            </div>
+            <div id="pager">
+            </div>
+        </div>
+    </div>
+    <div class="floa2 addfloa2" id="SearchcategoryDiv" style="display: none; left: 800px;
+        top: 50px;">
+        <!-- gyy-->
+        @Html.Action("showGetCategories", "SettlingAccount")
+    </div>
+    <div class="title" id="UpdateSettlingAccount" style="display: none;">
+        <div>
+            <input type="hidden" id="CommodityId" value="" />
+            <input type="hidden" id="AppID" value="" />
+            <input type="hidden" id="ManufacturerClearingPrice" value="" />
+            <table style="margin: 0 auto;">
+                <tr>
+                    <td style="height: 10px;">
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span>厂家结算价格：</span>
+                    </td>
+                    <td>
+                        <input type="text" id="manufacturerClearingPriceAdd" value="" class="inp-txt" style="width: 145px;
+                            height: 19px; line-height: 19px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="height: 10px;">
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+                <tr style="">
+                    <td>
+                        <span>生效时间：</span>
+                    </td>
+                    <td class="three">
+                        <input type="text" id="effectiveTime" class="one inp-txt" style="color: Gray; width: 145px;
+                            height: 19px; line-height: 19px;" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="bbtn" style="text-align: center; border: 0; margin-top: 40px;">
+            <a href="javascript:;" onclick="closeUpdateSettlingAccountDIV()" class="btn120" style="margin-top: 6px;">
+                取消</a> <a href="javascript:;" id="saveUpdateSettlingAccount" onclick="closeUpdateSettlingAccountDIV()"
+                    class="btn120" style="margin-top: 6px;">确定</a>
+        </div>
+    </div>
+    <div class="title" id="History" style="display: none;">
+        <div>
+            <div id="divListParent2">
+                <div id="content_makes2" style="width: 99%">
+                    <h1>
+                    </h1>
+                    @Html.Action("SettingAccountHistoryPartialIndex", "SettlingAccount")
+                </div>
+            </div>
+            <div id="pager2">
+            </div>
+        </div>
+        <div class="bbtn" style="text-align: center;">
+            <h1>
+            </h1>
+            <a href="javascript:;" onclick="closeHistory()" class="btn120" style="margin-top: 6px;">
+                关闭</a>
+        </div>
+    </div>
+</div>

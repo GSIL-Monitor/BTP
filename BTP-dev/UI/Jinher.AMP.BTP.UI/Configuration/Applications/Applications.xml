@@ -1,0 +1,873 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<applications>
+  <!--应用的名称、类型和状态-->
+  <application id="0101" name="Jinher.JAP.BF" type="PlatForm" state="Useabled">
+    <!--应用部署信息-->
+    <deploy>
+      <!--Web服务器名称、IP、部署名、路径-->
+      <webServer id="0101" serverName="jh-shangws.bjjh.com" serverIp="192.168.1.59" serverPort="80" deployName="c6v3" deployPath="D:\Work\VSS\JCF.net\08编程3\Product\JAP\Portal"/>
+      <!--应用服务器的名称、IP、部署名称、部署路径-->
+      <appServer id="0101" serverName="jh-shangws.bjjh.com" serverIp="192.168.1.59" deployName="jbf" deployPath="D:\Work\VSS\JCF.net\08编程3\Product\JAP\Portal\"/>
+      <!--应用数据库服务器名称、IP、数据库名称、用户名、密码-->
+      <dbServer id="0101" serverName="JH-SHANGWS" serverIp="192.168.1.59" dbName="JAPTest" userId="sa" pwd="sa"/>
+    </deploy>
+    <script>
+      <dataScript path="Script\公共资源初始化脚本.sql"/>
+      <ddlScript path="Script\JAPTest.sql"/>
+    </script>
+    <configure>
+      <rmConfigure/>
+      <cacheConfigure/>
+      <plConfigure/>
+      <wcfConfigure path="Service\Data\Service.config"/>
+      <iocConfigure path="Configuration\IOC.config"/>
+      <transConfigure/>
+      <blogConfigure path="LogConfiguration"/>
+      <exceptionConfigure/>
+    </configure>
+    <!--应用说明信息-->
+    <content>c6v3平台之业务框架</content>
+    <!--被该应用依赖的其它应用-->
+    <forward>
+      <application name="Jinher.JAP.PL"/>
+      <application name="Jinher.JAP.AOP"/>
+      <application name="Jinher.JAP.Common"/>
+      <application name="Jinher.JAP.EMB"/>
+      <application name="Jinher.JAP.SysLog"/>
+      <application name="Jinher.JAP.RuleEngine"/>
+      <application name="Jinher.JAP.RM"/>
+      <application name="Jinher.JAP.Metadata"/>
+      <application name="Jinher.JAP.Exception"/>
+      <application name="Jinher.JAP.Cache"/>
+      <application name="Jinher.JAP.Exception"/>
+    </forward>
+    <!--依赖该应用的其它应用-->
+    <backward>
+      <application name="Jinher.JAP.MVC"/>
+      <application name="Jinher.C6V3.App.Base"/>
+    </backward>
+    <!--应用中的程序集-->
+    <assemblies>
+      <!--应用框架业务对象程序集-->
+      <assembly id="01010101" name="Jinher.JAP.BF.BE" type="BE">
+        <forward>
+          <assembly name="Jinher.JAP.BF.BE.Deploy"/>
+          <assembly name="Jinher.JAP.Common"/>
+          <assembly name="Jinher.JAP.Metadata"/>
+          <assembly name="Jinher.JAP.PL"/>
+          <assembly name="Jinher.JAP.RuleEngine"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.JAP.BF.BP"/>
+          <assembly name="Jinher.JAP.BF.SV"/>
+          <assembly name="Jinher.C6V3.App.Base.BE"/>
+        </backward>
+      </assembly>
+      <!--应用框架数据传输对象程序集-->
+      <assembly id="01010202" name="Jinher.JAP.BF.BE.Deploy" type="Deploy">
+        <forward>
+          <assembly name="Jinher.JAP.Common"/>
+          <assembly name="Jinher.JAP.Metadata"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.JAP.BF.BE"/>
+          <assembly name="Jinher.JAP.BF.BP"/>
+          <assembly name="Jinher.JAP.BF.BP.Agent"/>
+          <assembly name="Jinher.JAP.BF.SV"/>
+          <assembly name="Jinher.JAP.BF.SV.Agent"/>
+          <assembly name="Jinher.JAP.BF.Facade"/>
+          <assembly name="Jinher.JAP.BF.Host"/>
+          <assembly name="Jinher.C6V3.App.Base.BE.Deploye"/>
+        </backward>
+      </assembly>
+      <!--应用框架业务接口程序集-->
+      <assembly id="01010303" name="Jinher.JAP.BF.IService" type="IService">
+        <forward>
+          <assembly name="Jinher.JAP.BF.BE.Deploy"/>
+          <assembly name="Jinher.JAP.Common"/>
+          <assembly name="Jinher.JAP.Metadata"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.JAP.BF.BP"/>
+          <assembly name="Jinher.JAP.BF.BP.Agent"/>
+          <assembly name="Jinher.JAP.BF.SV"/>
+          <assembly name="Jinher.JAP.BF.SV.Agent"/>
+          <assembly name="Jinher.JAP.BF.Facade"/>
+          <assembly name="Jinher.JAP.BF.Host"/>
+          <assembly name="Jinher.C6V3.App.Base.IService"/>
+        </backward>
+      </assembly>
+      <!--应用框架业务过程程序集-->
+      <assembly id="01010404" name="Jinher.JAP.BF.BP" type="BP">
+        <forward>
+          <assembly name="Jinher.JAP.AOP"/>
+          <assembly name="Jinher.JAP.BF.BE"/>
+          <assembly name="Jinher.JAP.BF.BE.Deploy"/>
+          <assembly name="Jinher.JAP.BF.IService"/>
+          <assembly name="Jinher.JAP.Common"/>
+          <assembly name="Jinher.JAP.Metadata"/>
+          <assembly name="Jinher.JAP.PL"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.JAP.BF.SV"/>
+          <assembly name="Jinher.C6V3.App.Base.BP"/>
+        </backward>
+      </assembly>
+      <!--应用框架业务过程代理程序集-->
+      <assembly id="01010505" name="Jinher.JAP.BF.BP.Agent" type="BpAgent">
+        <forward>
+          <assembly name="Jinher.JAP.BF.BE.Deploy"/>
+          <assembly name="Jinher.JAP.BF.IService"/>
+          <assembly name="Jinher.JAP.Common"/>
+          <assembly name="Jinher.JAP.Metadata"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.C6V3.App.Base.BPAgent"/>
+        </backward>
+      </assembly>
+      <!--应用框架服务组程序集-->
+      <assembly id="01010606" name="Jinher.JAP.BF.SV" type="SV">
+        <forward>
+          <assembly name="Jinher.JAP.AOP"/>
+          <assembly name="Jinher.JAP.BF.BE"/>
+          <assembly name="Jinher.JAP.BF.BE.Deploy"/>
+          <assembly name="Jinher.JAP.BF.IService"/>
+          <assembly name="Jinher.JAP.Common"/>
+          <assembly name="Jinher.JAP.Metadata"/>
+          <assembly name="Jinher.JAP.PL"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.C6V3.App.Base.SV"/>
+        </backward>
+      </assembly>
+      <!--应用框架服务组代理程序集-->
+      <assembly id="01010707" name="Jinher.JAP.BF.SV.Agent" type="SvAgent">
+        <forward>
+          <assembly name="Jinher.JAP.BF.BE.Deploy"/>
+          <assembly name="Jinher.JAP.BF.IService"/>
+          <assembly name="Jinher.JAP.Common"/>
+          <assembly name="Jinher.JAP.Metadata"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.C6V3.App.Base.SVAgent"/>
+        </backward>
+      </assembly>
+      <!--应用框架业务外观层程序集-->
+      <assembly id="01010808" name="Jinher.JAP.BF.Facade" type="Facade">
+        <forward>
+          <assembly name="Jinher.JAP.BF.BE.Deploy"/>
+          <assembly name="Jinher.JAP.BF.IService"/>
+          <assembly name="Jinher.JAP.Common"/>
+          <assembly name="Jinher.JAP.Metadata"/>
+          <assembly name="JMicrosoft.Practices.ObjectBuilder2"/>
+          <assembly name="Microsoft.Practices.Unity"/>
+          <assembly name="Microsoft.Practices.Unity.Configuration"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.C6V3.App.Base.Facade"/>
+        </backward>
+      </assembly>
+      <!--应用框架SOA宿主-->
+      <assembly name="Jinher.JAP.BF.Host" type="Host">
+        <forward>
+          <assembly name="Jinher.JAP.AOP"/>
+          <assembly name="Jinher.JAP.BF.IService"/>
+        </forward>
+        <backward>
+        </backward>
+      </assembly>
+			<!--应用框架业务对象程序集-->
+			<assembly id="02010101" name="Jinher.C6V3.SystemManage.BE" type="BE">
+				<forward>
+					<assembly name="Jinher.C6V3.SystemManage.BE.Deploy"/>
+					<assembly name="Jinher.JAP.BF.BE"/>
+					<assembly name="Jinher.JAP.Metadata"/>
+					<assembly name="Jinher.JAP.Common"/>
+					<assembly name="Jinher.JAP.PL"/>
+				</forward>
+				<backward>
+
+				</backward>
+			</assembly>
+			<!--应用框架数据传输对象程序集-->
+			<assembly id="02010202" name="Jinher.C6V3.SystemManage.Deploy" type="Deploy">
+				<forward>
+					<assembly name="Jinher.C6V3.SystemManage.Deploy"/>
+					<assembly name="Jinher.JAP.BF.BE.Deploy"/>
+					<assembly name="Jinher.JAP.Common"/>
+					<assembly name="Jinher.JAP.Metadata"/>
+				</forward>
+				<backward>
+					
+				</backward>
+			</assembly>
+			<!--应用框架服务组程序集-->
+			<assembly id="02010606" name="Jinher.C6V3.SystemManage.ISV" type="SV">
+				<forward>
+					
+				</forward>
+				<backward>
+					
+				</backward>
+			</assembly>
+			<!--应用框架服务组代理程序集-->
+			<assembly id="02010707" name="Jinher.C6V3.SystemManage.SV.Agnet" type="SvAgent">
+				<forward>
+					
+				</forward>
+				<backward>
+					
+				</backward>
+			</assembly>
+			<!--应用框架业务外观层程序集-->
+			<assembly id="02010808" name="Jinher.C6V3.SystemManage.Facade" type="Facade">
+				<forward>
+					<assembly name="Jinher.C6V3.SystemManage.Deploy"/>
+					<assembly name="Jinher.C6V3.SystemManage.IBP"/>					
+					<assembly name="Jinher.JAP.BF.Facade"/>
+					<assembly name="Jinher.JAP.BF.IService"/>
+					<assembly name="Jinher.JAP.Common"/>
+					<assembly name="JMicrosoft.Practices.ObjectBuilder2"/>
+					<assembly name="Microsoft.Practices.Unity"/>
+					<assembly name="Microsoft.Practices.Unity.Configuration"/>
+				</forward>
+				<backward>
+					<assembly name="Jinher.C6V3.App.Base.Facade"/>
+				</backward>
+			</assembly>
+			<!--应用框架SOA宿主-->
+			<assembly name="Jinher.JAP.BF.Host" type="Host">
+				<forward>
+					<assembly name="Jinher.JAP.AOP"/>
+					<assembly name="Jinher.JAP.BF.IService"/>
+				</forward>
+				<backward>
+				</backward>
+			</assembly>
+    </assemblies>
+
+  </application>
+
+  <application id="JHForm" name="Jinher.IWE.JHForm" type="PlatForm" state="Useabled">
+    <!--应用部署信息-->
+    <deploy>
+      <!--Web服务器名称、IP、部署名、路径-->
+      <webServer id="0101" serverName="jh-shangws.bjjh.com" serverIp="192.168.1.59" serverPort="80" deployName="c6v3" deployPath="D:\Work\VSS\JCF.net\08编程3\Product\JAP\Portal"/>
+      <!--应用服务器的名称、IP、部署名称、部署路径-->
+      <appServer id="0101" serverName="jh-shangws.bjjh.com" serverIp="192.168.1.59" deployName="jbf" deployPath="D:\Work\VSS\JCF.net\08编程3\Product\JAP\Portal\"/>
+      <!--应用数据库服务器名称、IP、数据库名称、用户名、密码-->
+      <dbServer id="0101" serverName="JH-SHANGWS" serverIp="192.168.1.59" dbName="JAPTest" userId="sa" pwd="sa"/>
+    </deploy>
+    <script>
+      <dataScript path=""/>
+      <ddlScript path=""/>
+    </script>
+    <configure>
+      <rmConfigure/>
+      <cacheConfigure/>
+      <plConfigure/>
+      <wcfConfigure path="Service\Data\Service.config"/>
+      <iocConfigure path="Configuration\IOC.config"/>
+      <transConfigure/>
+      <blogConfigure path="LogConfiguration"/>
+      <exceptionConfigure/>
+    </configure>
+    <!--应用说明信息-->
+    <content>AMP平台之表单</content>
+    <!--被该应用依赖的其它应用-->
+    <forward>
+      <application name="Jinher.JAP.PL"/>
+    </forward>
+    <!--依赖该应用的其它应用-->
+    <backward>
+      <application name="Jinher.JAP.MVC"/>
+    </backward>
+    <!--应用中的程序集-->
+    <assemblies>
+      <!--应用框架业务对象程序集-->
+      <assembly id="01010101" name="Jinher.JAP.BF.BE" type="BE">
+        <forward>
+          <assembly name="Jinher.JAP.BF.BE.Deploy"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.JAP.BF.BP"/>
+        </backward>
+      </assembly>
+      <!--应用框架数据传输对象程序集-->
+      <assembly id="01010202" name="Jinher.JAP.BF.BE.Deploy" type="Deploy">
+        <forward>
+          <assembly name="Jinher.JAP.Common"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.JAP.BF.BE"/>
+        </backward>
+      </assembly>
+      <!--应用框架业务接口程序集-->
+      <assembly id="01010303" name="Jinher.JAP.BF.IService" type="IService">
+        <forward>
+          <assembly name="Jinher.JAP.BF.BE.Deploy"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.JAP.BF.BP"/>
+        </backward>
+      </assembly>
+      <!--应用框架业务过程程序集-->
+      <assembly id="01010404" name="Jinher.JAP.BF.BP" type="BP">
+        <forward>
+          <assembly name="Jinher.JAP.PL"/>
+        </forward>
+        <backward>
+        </backward>
+      </assembly>
+      <!--应用框架业务过程代理程序集-->
+      <assembly id="01010505" name="Jinher.JAP.BF.BP.Agent" type="BpAgent">
+        <forward>
+          <assembly name="Jinher.JAP.Metadata"/>
+        </forward>
+        <backward>
+        </backward>
+      </assembly>
+      <!--应用框架服务组程序集-->
+      <assembly id="01010606" name="Jinher.JAP.BF.SV" type="SV">
+        <forward>
+          <assembly name="Jinher.JAP.PL"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.C6V3.App.Base.SV"/>
+        </backward>
+      </assembly>
+      <!--应用框架服务组代理程序集-->
+      <assembly id="01010707" name="Jinher.JAP.BF.SV.Agent" type="SvAgent">
+        <forward>
+          <assembly name="Jinher.JAP.BF.BE.Deploy"/>
+        </forward>
+        <backward>
+        </backward>
+      </assembly>
+      <!--应用框架业务外观层程序集-->
+      <assembly id="01010808" name="Jinher.JAP.BF.Facade" type="Facade">
+        <forward>
+          <assembly name="Microsoft.Practices.Unity.Configuration"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.C6V3.App.Base.Facade"/>
+        </backward>
+      </assembly>
+    </assemblies>
+  </application>
+  
+  <application id="00000000-0000-0000-0000-000000000001" name="天气预报" type="SmallTool" state="Useabled">
+      <smallTool type="Html" imagePath="/Content/base/images/app32/app_weather_32.png" smallImagePath="Content/base/images/app16/app_weather_16.png" urlPath="Areas/SmallTools/weatherForecast/index.html" height="130" width="250" />
+  </application>
+  <application id="00000000-0000-0000-0000-000000000002" name="钟表" type="SmallTool" state="Useabled">
+      <smallTool type="Html" imagePath="/Content/base/images/app32/app_clock_32.png" smallImagePath="Content/base/images/app16/app_clock_16.png" urlPath="Areas/SmallTools/clock/index.html" height="200" width="200" />
+  </application>
+  <application id="00000000-0000-0000-0000-000000000003" name="我的待办" type="SmallTool" state="Useabled">
+      <smallTool type="Html" imagePath="/Content/base/images/app32/app_information_release_32.png" smallImagePath="Content/base/images/app16/app_information_release_16.png" urlPath="Areas/SmallTools/todolist/index.html" height="200" width="300" />
+  </application>
+
+	<application id="C6" name="C6系统" type="HomogeneousSystem" state="Useabled">
+		<outerSystem systemUrl="http://192.168.9.220/C6" ssoUrl="Jinher.AMP.Integration.C6.SSO/LoginByAMP.aspx"/>
+		<messages>
+			<message name="C6消息" code="C6" canDelete="false" menuItemId="4008" />
+		</messages>
+    <!--<customConfigs>
+      <customConfigFile name="应用配置" xmlPath="Configuration/Applications/Applications.xml">
+        <customConfigNode name="系统地址" nodePath="/applications/application[@id='C6']/outerSystem" attributeName="systemUrl" example="http://192.168.9.20/C6" isRequired="true" value="" />
+      </customConfigFile>
+    </customConfigs>-->
+    <customConfigs>
+      <customConfigFile name="应用配置" root="Portal" xmlPath="Configuration/Applications/Applications.xml">
+        <customConfigNode name="外部系统配置" nodePath="/applications/application[@id='C6']/outerSystem" needConfig="false" isRequired="true" >
+          <attributes>
+            <attribute  name="systemUrl" content="系统地址" isRequired="true" example="http://192.168.9.20/C6"/>
+          </attributes>
+        </customConfigNode>
+      </customConfigFile>
+      <customConfigFile name="搜索引擎配置" root="Portal"  xmlPath="Configuration/SEConfiguration/Jinher.JAP.SE.SearchEngineConfig.xml">
+        <customConfigNode name="索引文件路径" nodePath="/Index/Source/Module/IndexFilePath" needConfig="true" isRequired="false" >
+          <nodeExample>..\Index\Message</nodeExample>
+        </customConfigNode>
+        <customConfigNode name="自定义数据" nodePath="/Index/Source/Module/ModuleData" needConfig="true" isRequired="false" >
+          <nodeExample>
+            <data key="LastedID" value="0" />
+            <data key="Top" value="10" />
+            <!--此处是业务ID，与下面SearchConfig中的BizName保持一致-->
+            <data key="AppId" value="C6" />
+            <data key="BaseURI" value="http://192.168.9.20:81/Areas/Jinher.ESB.UI/SVC/JinherServiceNews.svc/REST" />
+            <data key="licenseKey" value="4cbc5475-bec1-4cb0-a16e-4a7bb165c733" />
+            <data key="AuthorizeURI" value="http://192.168.9.20:8080/SSOCenter/Jinher.JAP.SSOCenter.BP.AuthorizeBP.svc" />
+          </nodeExample>
+        </customConfigNode>
+        <customConfigNode name="搜索结果属性" nodePath="/Index/Source/Module/SearchConfig" needConfig="true" isRequired="false" >
+          <nodeExample>
+            <!--搜索结果属性项（模块名称）-->
+            <Property Name="ModuleName">C6信息发布</Property>
+            <!--搜索结果属性项（此处是业务ID，与上面ModuleData中的AppId保持一致）-->
+            <Property Name="AppId">C6</Property>
+            <!--搜索结果属性项（标题）-->
+            <Property Name="Title" HighLight="1" MaxLength="30">$MessageTitle$</Property>
+            <!--搜索结果属性项（内容）-->
+            <Property Name="Content" HighLight="1" MaxLength="80">$MessageBody MessageFiles$</Property>
+            <!--搜索结果属性项（URL）-->
+            <Property Name="URL">
+              http://jh-daipei/C6/Jinher.AMP.Integration.C6.SSO/LoginByAMP.aspx?Sign=[signId]&amp;Url=^../JHSoft.Web.Message/Message/MessageDisplay$ModuleTypeID$.htm?^MessageID=$MessageID$
+            </Property>
+          </nodeExample>
+        </customConfigNode>
+      </customConfigFile>
+    </customConfigs>
+	</application>
+
+  <application id="JCS" name="JCS系统" type="HeterogeneousSystem" state="Useabled">
+    <outerSystem systemUrl="http://192.168.1.19:8080/jcs" ssoUrl="platform/sys/login-by-amp!loginJump.action"/>
+    <messages>
+      <message name="JCS消息" code="jcs" canDelete="false" menuItemId="4009" />
+    </messages>
+    <customConfigs>
+      <customConfigFile name="应用配置" xmlPath="Configuration/Applications/Applications.xml">
+        <customConfigNode name="系统地址" nodePath="/applications/application[@id='JCS']/outerSystem" attributeName="systemUrl" example="http://192.168.1.19:8080/jcs" isRequired="true" value="" />
+      </customConfigFile>
+    </customConfigs>
+  </application>
+
+  <application id="ESB" name="ESB系统" type="OuterBussinessModule" state="Useabled">
+  </application>
+
+	<application id="NOB" name="NOB系统" type="OuterBussinessModule" state="Useabled">
+	</application>
+
+  <application id="SMS" name="Jinher.IWE.SMS" type="InnerBussinessModule" state="Useabled">
+    <!--应用部署信息-->
+    <deploy>
+      <!--Web服务器名称、IP、部署名、路径-->
+      <webServer id="0101" serverName="jh-shangws.bjjh.com" serverIp="192.168.1.59" serverPort="80" deployName="c6v3" deployPath="D:\Work\VSS\JCF.net\08编程3\Product\JAP\Portal"/>
+      <!--应用服务器的名称、IP、部署名称、部署路径-->
+      <appServer id="0101" serverName="jh-shangws.bjjh.com" serverIp="192.168.1.59" deployName="jbf" deployPath="D:\Work\VSS\JCF.net\08编程3\Product\JAP\Portal\"/>
+      <!--应用数据库服务器名称、IP、数据库名称、用户名、密码-->
+      <dbServer id="0101" serverName="JH-SHANGWS" serverIp="192.168.1.59" dbName="JAPTest" userId="sa" pwd="sa"/>
+    </deploy>
+    <script>
+      <dataScript path=""/>
+      <ddlScript path=""/>
+    </script>
+    <configure>
+      <rmConfigure/>
+      <cacheConfigure/>
+      <plConfigure/>
+      <wcfConfigure path="Service\Data\Service.config"/>
+      <iocConfigure path="Configuration\IOC.config"/>
+      <transConfigure/>
+      <blogConfigure path="LogConfiguration"/>
+      <exceptionConfigure/>
+    </configure>
+    <!--应用说明信息-->
+    <content>AMP平台之短信</content>
+    <!--被该应用依赖的其它应用-->
+    <forward>
+      <application name="Jinher.JAP.PL"/>
+    </forward>
+    <!--依赖该应用的其它应用-->
+    <backward>
+      <application name="Jinher.JAP.MVC"/>
+    </backward>
+    <!--应用中的程序集-->
+    <assemblies>
+      <!--应用框架业务对象程序集-->
+      <assembly id="01010101" name="Jinher.JAP.BF.BE" type="BE">
+        <forward>
+          <assembly name="Jinher.JAP.BF.BE.Deploy"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.JAP.BF.BP"/>
+        </backward>
+      </assembly>
+      <!--应用框架数据传输对象程序集-->
+      <assembly id="01010202" name="Jinher.JAP.BF.BE.Deploy" type="Deploy">
+        <forward>
+          <assembly name="Jinher.JAP.Common"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.JAP.BF.BE"/>
+        </backward>
+      </assembly>
+      <!--应用框架业务接口程序集-->
+      <assembly id="01010303" name="Jinher.JAP.BF.IService" type="IService">
+        <forward>
+          <assembly name="Jinher.JAP.BF.BE.Deploy"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.JAP.BF.BP"/>
+        </backward>
+      </assembly>
+      <!--应用框架业务过程程序集-->
+      <assembly id="01010404" name="Jinher.JAP.BF.BP" type="BP">
+        <forward>
+          <assembly name="Jinher.JAP.PL"/>
+        </forward>
+        <backward>
+        </backward>
+      </assembly>
+      <!--应用框架业务过程代理程序集-->
+      <assembly id="01010505" name="Jinher.JAP.BF.BP.Agent" type="BpAgent">
+        <forward>
+          <assembly name="Jinher.JAP.Metadata"/>
+        </forward>
+        <backward>
+        </backward>
+      </assembly>
+      <!--应用框架服务组程序集-->
+      <assembly id="01010606" name="Jinher.JAP.BF.SV" type="SV">
+        <forward>
+          <assembly name="Jinher.JAP.PL"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.C6V3.App.Base.SV"/>
+        </backward>
+      </assembly>
+      <!--应用框架服务组代理程序集-->
+      <assembly id="01010707" name="Jinher.JAP.BF.SV.Agent" type="SvAgent">
+        <forward>
+          <assembly name="Jinher.JAP.BF.BE.Deploy"/>
+        </forward>
+        <backward>
+        </backward>
+      </assembly>
+      <!--应用框架业务外观层程序集-->
+      <assembly id="01010808" name="Jinher.JAP.BF.Facade" type="Facade">
+        <forward>
+          <assembly name="Microsoft.Practices.Unity.Configuration"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.C6V3.App.Base.Facade"/>
+        </backward>
+      </assembly>
+    </assemblies>
+  </application>
+
+  <application id="BAC" name="Jinher.IWE.BAC" type="InnerBussinessModule" state="Useabled">
+    <!--应用部署信息-->
+    <deploy>
+      <!--Web服务器名称、IP、部署名、路径-->
+      <webServer id="0101" serverName="jh-shangws.bjjh.com" serverIp="192.168.1.59" serverPort="80" deployName="c6v3" deployPath="D:\Work\VSS\JCF.net\08编程3\Product\JAP\Portal"/>
+      <!--应用服务器的名称、IP、部署名称、部署路径-->
+      <appServer id="0101" serverName="jh-shangws.bjjh.com" serverIp="192.168.1.59" deployName="jbf" deployPath="D:\Work\VSS\JCF.net\08编程3\Product\JAP\Portal\"/>
+      <!--应用数据库服务器名称、IP、数据库名称、用户名、密码-->
+      <dbServer id="0101" serverName="JH-SHANGWS" serverIp="192.168.1.59" dbName="JAPTest" userId="sa" pwd="sa"/>
+    </deploy>
+    <script>
+      <dataScript path=""/>
+      <ddlScript path=""/>
+    </script>
+    <configure>
+      <rmConfigure/>
+      <cacheConfigure/>
+      <plConfigure/>
+      <wcfConfigure path="Service\Data\Service.config"/>
+      <iocConfigure path="Configuration\IOC.config"/>
+      <transConfigure/>
+      <blogConfigure path="LogConfiguration"/>
+      <exceptionConfigure/>
+    </configure>
+    <!--应用说明信息-->
+    <content>AMP平台之业务生成器</content>
+    <!--被该应用依赖的其它应用-->
+    <forward>
+      <application name="Jinher.JAP.PL"/>
+    </forward>
+    <!--依赖该应用的其它应用-->
+    <backward>
+      <application name="Jinher.JAP.MVC"/>
+    </backward>
+    <!--应用中的程序集-->
+    <assemblies>
+      <!--应用框架业务对象程序集-->
+      <assembly id="01010101" name="Jinher.JAP.BF.BE" type="BE">
+        <forward>
+          <assembly name="Jinher.JAP.BF.BE.Deploy"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.JAP.BF.BP"/>
+        </backward>
+      </assembly>
+      <!--应用框架数据传输对象程序集-->
+      <assembly id="01010202" name="Jinher.JAP.BF.BE.Deploy" type="Deploy">
+        <forward>
+          <assembly name="Jinher.JAP.Common"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.JAP.BF.BE"/>
+        </backward>
+      </assembly>
+      <!--应用框架业务接口程序集-->
+      <assembly id="01010303" name="Jinher.JAP.BF.IService" type="IService">
+        <forward>
+          <assembly name="Jinher.JAP.BF.BE.Deploy"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.JAP.BF.BP"/>
+        </backward>
+      </assembly>
+      <!--应用框架业务过程程序集-->
+      <assembly id="01010404" name="Jinher.JAP.BF.BP" type="BP">
+        <forward>
+          <assembly name="Jinher.JAP.PL"/>
+        </forward>
+        <backward>
+        </backward>
+      </assembly>
+      <!--应用框架业务过程代理程序集-->
+      <assembly id="01010505" name="Jinher.JAP.BF.BP.Agent" type="BpAgent">
+        <forward>
+          <assembly name="Jinher.JAP.Metadata"/>
+        </forward>
+        <backward>
+        </backward>
+      </assembly>
+      <!--应用框架服务组程序集-->
+      <assembly id="01010606" name="Jinher.JAP.BF.SV" type="SV">
+        <forward>
+          <assembly name="Jinher.JAP.PL"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.C6V3.App.Base.SV"/>
+        </backward>
+      </assembly>
+      <!--应用框架服务组代理程序集-->
+      <assembly id="01010707" name="Jinher.JAP.BF.SV.Agent" type="SvAgent">
+        <forward>
+          <assembly name="Jinher.JAP.BF.BE.Deploy"/>
+        </forward>
+        <backward>
+        </backward>
+      </assembly>
+      <!--应用框架业务外观层程序集-->
+      <assembly id="01010808" name="Jinher.JAP.BF.Facade" type="Facade">
+        <forward>
+          <assembly name="Microsoft.Practices.Unity.Configuration"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.C6V3.App.Base.Facade"/>
+        </backward>
+      </assembly>
+    </assemblies>
+  </application>
+
+  <application id="EnterprisePortal" name="Jinher.IWE.EnterprisePortal" type="InnerBussinessModule" state="Useabled">
+    <!--应用部署信息-->
+    <deploy>
+      <!--Web服务器名称、IP、部署名、路径-->
+      <webServer id="0101" serverName="jh-shangws.bjjh.com" serverIp="192.168.1.59" serverPort="80" deployName="c6v3" deployPath="D:\Work\VSS\JCF.net\08编程3\Product\JAP\Portal"/>
+      <!--应用服务器的名称、IP、部署名称、部署路径-->
+      <appServer id="0101" serverName="jh-shangws.bjjh.com" serverIp="192.168.1.59" deployName="jbf" deployPath="D:\Work\VSS\JCF.net\08编程3\Product\JAP\Portal\"/>
+      <!--应用数据库服务器名称、IP、数据库名称、用户名、密码-->
+      <dbServer id="0101" serverName="JH-SHANGWS" serverIp="192.168.1.59" dbName="JAPTest" userId="sa" pwd="sa"/>
+    </deploy>
+    <script>
+      <dataScript path=""/>
+      <ddlScript path=""/>
+    </script>
+    <configure>
+      <rmConfigure/>
+      <cacheConfigure/>
+      <plConfigure/>
+      <wcfConfigure path="Service\Data\Service.config"/>
+      <iocConfigure path="Configuration\IOC.config"/>
+      <transConfigure/>
+      <blogConfigure path="LogConfiguration"/>
+      <exceptionConfigure/>
+    </configure>
+    <!--应用说明信息-->
+    <content>AMP平台之业务生成器</content>
+    <!--被该应用依赖的其它应用-->
+    <forward>
+      <application name="Jinher.JAP.PL"/>
+    </forward>
+    <!--依赖该应用的其它应用-->
+    <backward>
+      <application name="Jinher.JAP.MVC"/>
+    </backward>
+    <!--应用中的程序集-->
+    <assemblies>
+      <!--应用框架业务对象程序集-->
+      <assembly id="01010101" name="Jinher.JAP.BF.BE" type="BE">
+        <forward>
+          <assembly name="Jinher.JAP.BF.BE.Deploy"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.JAP.BF.BP"/>
+        </backward>
+      </assembly>
+      <!--应用框架数据传输对象程序集-->
+      <assembly id="01010202" name="Jinher.JAP.BF.BE.Deploy" type="Deploy">
+        <forward>
+          <assembly name="Jinher.JAP.Common"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.JAP.BF.BE"/>
+        </backward>
+      </assembly>
+      <!--应用框架业务接口程序集-->
+      <assembly id="01010303" name="Jinher.JAP.BF.IService" type="IService">
+        <forward>
+          <assembly name="Jinher.JAP.BF.BE.Deploy"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.JAP.BF.BP"/>
+        </backward>
+      </assembly>
+      <!--应用框架业务过程程序集-->
+      <assembly id="01010404" name="Jinher.JAP.BF.BP" type="BP">
+        <forward>
+          <assembly name="Jinher.JAP.PL"/>
+        </forward>
+        <backward>
+        </backward>
+      </assembly>
+      <!--应用框架业务过程代理程序集-->
+      <assembly id="01010505" name="Jinher.JAP.BF.BP.Agent" type="BpAgent">
+        <forward>
+          <assembly name="Jinher.JAP.Metadata"/>
+        </forward>
+        <backward>
+        </backward>
+      </assembly>
+      <!--应用框架服务组程序集-->
+      <assembly id="01010606" name="Jinher.JAP.BF.SV" type="SV">
+        <forward>
+          <assembly name="Jinher.JAP.PL"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.C6V3.App.Base.SV"/>
+        </backward>
+      </assembly>
+      <!--应用框架服务组代理程序集-->
+      <assembly id="01010707" name="Jinher.JAP.BF.SV.Agent" type="SvAgent">
+        <forward>
+          <assembly name="Jinher.JAP.BF.BE.Deploy"/>
+        </forward>
+        <backward>
+        </backward>
+      </assembly>
+      <!--应用框架业务外观层程序集-->
+      <assembly id="01010808" name="Jinher.JAP.BF.Facade" type="Facade">
+        <forward>
+          <assembly name="Microsoft.Practices.Unity.Configuration"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.C6V3.App.Base.Facade"/>
+        </backward>
+      </assembly>
+    </assemblies>
+  </application>
+
+  <application id="ADM" name="Jinher.IWE.ADM" type="InnerBussinessModule" state="Useabled">
+    <!--应用部署信息-->
+    <deploy>
+      <!--Web服务器名称、IP、部署名、路径-->
+      <webServer id="0101" serverName="jh-shangws.bjjh.com" serverIp="192.168.1.59" serverPort="80" deployName="c6v3" deployPath="D:\Work\VSS\JCF.net\08编程3\Product\JAP\Portal"/>
+      <!--应用服务器的名称、IP、部署名称、部署路径-->
+      <appServer id="0101" serverName="jh-shangws.bjjh.com" serverIp="192.168.1.59" deployName="jbf" deployPath="D:\Work\VSS\JCF.net\08编程3\Product\JAP\Portal\"/>
+      <!--应用数据库服务器名称、IP、数据库名称、用户名、密码-->
+      <dbServer id="0101" serverName="JH-SHANGWS" serverIp="192.168.1.59" dbName="JAPTest" userId="sa" pwd="sa"/>
+    </deploy>
+    <script>
+      <dataScript path=""/>
+      <ddlScript path=""/>
+    </script>
+    <configure>
+      <rmConfigure/>
+      <cacheConfigure/>
+      <plConfigure/>
+      <wcfConfigure path="Service\Data\Service.config"/>
+      <iocConfigure path="Configuration\IOC.config"/>
+      <transConfigure/>
+      <blogConfigure path="LogConfiguration"/>
+      <exceptionConfigure/>
+    </configure>
+    <!--应用说明信息-->
+    <content>AMP广告平台</content>
+    <!--被该应用依赖的其它应用-->
+    <forward>
+      <application name="Jinher.JAP.PL"/>
+    </forward>
+    <!--依赖该应用的其它应用-->
+    <backward>
+      <application name="Jinher.JAP.MVC"/>
+    </backward>
+    <!--应用中的程序集-->
+    <assemblies>
+      <!--应用框架业务对象程序集-->
+      <assembly id="01010101" name="Jinher.JAP.BF.BE" type="BE">
+        <forward>
+          <assembly name="Jinher.JAP.BF.BE.Deploy"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.JAP.BF.BP"/>
+        </backward>
+      </assembly>
+      <!--应用框架数据传输对象程序集-->
+      <assembly id="01010202" name="Jinher.JAP.BF.BE.Deploy" type="Deploy">
+        <forward>
+          <assembly name="Jinher.JAP.Common"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.JAP.BF.BE"/>
+        </backward>
+      </assembly>
+      <!--应用框架业务接口程序集-->
+      <assembly id="01010303" name="Jinher.JAP.BF.IService" type="IService">
+        <forward>
+          <assembly name="Jinher.JAP.BF.BE.Deploy"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.JAP.BF.BP"/>
+        </backward>
+      </assembly>
+      <!--应用框架业务过程程序集-->
+      <assembly id="01010404" name="Jinher.JAP.BF.BP" type="BP">
+        <forward>
+          <assembly name="Jinher.JAP.PL"/>
+        </forward>
+        <backward>
+        </backward>
+      </assembly>
+      <!--应用框架业务过程代理程序集-->
+      <assembly id="01010505" name="Jinher.JAP.BF.BP.Agent" type="BpAgent">
+        <forward>
+          <assembly name="Jinher.JAP.Metadata"/>
+        </forward>
+        <backward>
+        </backward>
+      </assembly>
+      <!--应用框架服务组程序集-->
+      <assembly id="01010606" name="Jinher.JAP.BF.SV" type="SV">
+        <forward>
+          <assembly name="Jinher.JAP.PL"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.C6V3.App.Base.SV"/>
+        </backward>
+      </assembly>
+      <!--应用框架服务组代理程序集-->
+      <assembly id="01010707" name="Jinher.JAP.BF.SV.Agent" type="SvAgent">
+        <forward>
+          <assembly name="Jinher.JAP.BF.BE.Deploy"/>
+        </forward>
+        <backward>
+        </backward>
+      </assembly>
+      <!--应用框架业务外观层程序集-->
+      <assembly id="01010808" name="Jinher.JAP.BF.Facade" type="Facade">
+        <forward>
+          <assembly name="Microsoft.Practices.Unity.Configuration"/>
+        </forward>
+        <backward>
+          <assembly name="Jinher.C6V3.App.Base.Facade"/>
+        </backward>
+      </assembly>
+    </assemblies>
+  </application>
+  
+</applications>
+

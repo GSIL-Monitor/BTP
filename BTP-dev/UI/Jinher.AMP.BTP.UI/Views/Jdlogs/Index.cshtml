@@ -1,0 +1,51 @@
+﻿@{
+    ViewBag.Title = "第三方日志";
+}
+<style type="text/css">
+    .nav_right
+    {
+        width: 100%;
+        height: 100%;
+        float: left;
+        overflow: hidden;
+    }
+    
+    .nav_block
+    {
+        width: 100px;
+        height: 110px;
+        display: inline-block;
+        margin-left: 100px;
+        margin: 20px 0px 0px 100px;
+        float: left;
+    }
+    .spn
+    {        
+        display: inline-block;
+        font-size: 13px;
+    }
+</style>
+<body>
+    <div class="nav_right">
+        <div class="nav_block">
+            <a href="@Url.Action("JdIndex", "Jdlogs")?appId=@ViewBag.appId">
+                <img src="../../Content/images/jderrorlog.png" style="width: 80px; height: 80px;" />
+            </a><span class="spn">京东日志</span>
+        </div>
+        <div class="nav_block">
+            <a href="@Url.Action("YxIndex", "Jdlogs")?appId=@ViewBag.appId">
+                <img src="../../Content/images/yxerrorlog.png" style="width: 80px; height: 80px;" />
+            </a><span class="spn">严选日志</span>
+        </div>
+        <div class="nav_block">
+            <a href="@Url.Action("FzIndex", "Jdlogs")?appId=@ViewBag.appId">
+                <img src="../../Content/images/fzerrorlog.png" style="width: 80px; height: 80px;" />
+            </a><span class="spn">方正日志</span>
+        </div>
+        <div class="nav_block">
+            <a href="@Url.Action("SnIndex", "Jdlogs")?appId=@ViewBag.appId">
+                <img src="../../Content/images/fzerrorlog.png" style="width: 80px; height: 80px;" />
+            </a><span class="spn">苏宁日志</span>
+        </div>
+    </div>
+</body>

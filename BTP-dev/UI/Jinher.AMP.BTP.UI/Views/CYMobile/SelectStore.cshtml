@@ -1,0 +1,139 @@
+﻿<div class="info">
+    <div class="name" id="hStoreInfo" onclick="selectShop()">
+        <span id="hStoreName">西部马华上地店</span> <em id="hIsWork">(营业中)</em><em id="down"></em>
+    </div>
+    <div class="message-wrap swiper-container">
+        <div class="swiper-wrapper">
+            <a href="javascript:;" class="swiper-slide">为了您的就餐体验，我们支持<span id="hlucheng"></span>公里范围内配送
+            </a><a id="hCouponInfo" href="javascript:void();" onclick="goCoupon();" class="swiper-slide coupon"><i
+                class="youhj"></i>有优惠券可领哦，领取后再下单更实惠~<i class="right-nav"></i> </a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var storeInfo = null;
+    var newTime = "@ViewBag.NowTime";
+    $(function () {
+        //显示导航图
+        GetAppPavilionInfo();
+        storeInfo = JSON.parse(sessionStorage.storeInfo_CY);
+        //调用接口判断是否有优惠券
+        HasCoupon();
+        //判断是否在营业中
+        CheckWorkTime();
+    });
+    function HasCoupon() {
+        var _shopId = sessionStorage.appId;
+        getDataAjax2({
+            url: '/Mobile/GetCouponByShop',
+            type: 'post',
+            data: { shopId: _shopId },
+            beforeSend: function () {
+            },
+            complete: function () {
+            },
+            callback: function (data) {
+                if (data > 0) {
+                    $("#hCouponInfo").removeClass("hide");
+                }
+                else {
+                    $("#hCouponInfo").addClass("hide");
+                }
+            },
+            error: function (date, text) {
+            }
+        });
+    }
+    function CheckWorkTime() {
+        $("#hStoreName").html(storeInfo.store.StoreName);
+        $("#hlucheng").html(storeInfo.setting.CateringSetting.DeliveryRange);
+        var dt = DateParse(newTime);
+        var ymd = GetDataYMD(dt);
+        var isWork = false;
+        for (var i = 0; i < storeInfo.setting.CYBusinessHours.length; i++) {
+            var hours = storeInfo.setting.CYBusinessHours[0];
+            var sdt = ChangeDateFormat(hours.openingTime, ymd);
+            var edt = ChangeDateFormat(hours.closingTime, ymd);
+            if (DateParse(sdt) <= dt && dt <= DateParse(edt)) {
+                isWork = true;
+                break;
+            }
+        }
+        $("#hIsWork").html(isWork ? "(营业中)" : "(休息中)");
+
+        sessionStorage.IsWork = isWork;
+    }
+    function selectShop() {
+        var _shopId = sessionStorage.appId;
+        var _esAppId = sessionStorage.appId_CY;
+        var _storeId = storeInfo.store.Id;
+        var url = "/Mobile/Store?comefirst=1&appId=" + _esAppId + "&storeId=" + _storeId;
+        url = addSessionToUrl(url);
+        document.location.href = url;
+    }
+    function goCoupon() {
+        var _shopId = sessionStorage.appId;
+        var _esAppId = sessionStorage.appId_CY;
+        var _storeId = storeInfo.store.Id;
+        var url = getUrlPrerfix() + "coupon.iuoooo.com/CouponList/Index?from=cy&esAppId=" + _esAppId + "&shopId=" + _shopId;
+        url = addSessionToUrl(url);
+        var srcurl = getCYDomain() + "/Mobile/CYCommodityList?appId=" + _esAppId + "&shopId=" + _shopId + "&storeId=" + _storeId;
+        url += "&srcUrl=" + encodeURIComponent(srcurl);
+        document.location.href = url;
+        //window.location = srcUrl + "&go=detail/list"
+    }
+
+    // 转换时间格式
+    function ChangeDateFormat(dateTime, ymd) {
+        var date = new Date(parseInt(dateTime.replace("/Date(", "").replace(")/", ""), 10));
+        var hour = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+        var min = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+        return ymd.y + "-" + ymd.m + "-" + ymd.d + " " + hour + ":" + min;
+    }
+
+    //获取年月日
+    function GetDataYMD(date) {
+        var ymd = {};
+        ymd.m = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+        ymd.d = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+        ymd.y = date.getFullYear();
+        return ymd;
+    }
+
+    function DateParse(DateStr) {
+        DateStr = DateStr.replaceAll("-", "/");
+        var converted = Date.parse(DateStr);
+        var myDate = new Date(converted);
+        return myDate;
+    }
+    //获取馆信息
+    function GetAppPavilionInfo() {
+        getDataAjax2({
+            url: '/Mobile/GetAppPavilionInfo',
+            type: 'post',
+            data: { id: getQueryString("appId") },
+            beforeSend: function () {
+                //ajaxLoading(1, '');
+            },
+            complete: function () {
+                //ajaxLoading(1, ''); 
+            },
+            callback: function (data) {
+                ajaxLoadingSingle.hide();
+                if (data) {
+                    if (data.ret == null || data.ret.navBanner == null || data.ret.navBanner == undefined) {
+                        $(".info").css("background-image", "url(/content/style/images/beijingtu.png)");
+                    }
+                    else {
+                        if (data.ret.navBanner != null || data.ret.navBanner != "") {
+                            $(".info").css("background-image", "url(" + data.ret.navBanner + ")");
+                        }
+                    }
+                }
+            },
+            error: function (date, text) {
+                //
+            }
+        });
+    }
+</script>

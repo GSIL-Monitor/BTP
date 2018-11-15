@@ -1,0 +1,55 @@
+﻿@{
+    ViewBag.Title = "自提点设置";
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.AppSelfTakeStationResultDTO> appSelfTakeStationResultDTOList = ViewBag.AppSelfStationList;
+    int rows = ViewBag.Count;
+    int lastIndex = ViewBag.lastIndex;
+}
+<input type="hidden" id="rowcounts" value="@rows"/>
+<table id="dataTable" border="0" cellspacing="0" cellpadding="0" class="m_talbe m_talbe2">
+    <tr class="t_tr1">
+        <td class="one" style="width: 43px;">
+            序号
+        </td>
+        <td class="two">
+            自提点名称
+        </td>
+        <td class="three">
+            地址
+        </td>
+        <td class="four" width="200px">
+            联系电话
+        </td>
+      <td class="eight">
+            操作
+        </td>
+    </tr>
+    @{
+                           if (appSelfTakeStationResultDTOList.Count() > 0)
+                            {
+                                int index = 1;
+                                foreach (Jinher.AMP.BTP.Deploy.CustomDTO.AppSelfTakeStationResultDTO appSelfTakeModel in appSelfTakeStationResultDTOList)
+                                { 
+                               
+                            <tr class="t_tr2">
+                                <td class="one" style="width: 43px;">
+                                     @(lastIndex + index)
+                                </td>
+                                <td class="two">
+                                    @appSelfTakeModel.Name
+                                </td>
+                                <td class="three">
+                                    @appSelfTakeModel.Address
+                                </td>
+                                <td class="four">
+                                    @appSelfTakeModel.Phone
+                                </td>
+                               <td class="eight">
+                                    <span><a href="/SelfTakeStation/AppIndex?Id=@appSelfTakeModel.Id&status=1
+">编辑</a></span> <span><a href="javascript:void(0)" class="del" id="">
+                                        删除</a></span>
+                                </td>
+                            </tr>
+                                   index++;
+                                }
+                            }}
+                  </table>

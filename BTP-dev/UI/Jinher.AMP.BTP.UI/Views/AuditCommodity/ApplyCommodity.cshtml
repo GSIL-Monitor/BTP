@@ -1,0 +1,280 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>商品修改记录</title>
+    <link rel="stylesheet" type="text/css" href="/Content/css/common.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.all.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.jhtablebox.css" />    
+    <link rel="stylesheet" type="text/css" href="/Content/default/ui.jqgrid.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.datepicker.css" />
+    <link rel="stylesheet" type="text/css" href="/Scripts/bigautocomplete/jquery.bigautocomplete.css" />
+    <style>
+        .ui-jqgrid tr.jqgrow td {          
+            height: 100px;
+            vertical-align: text-top;
+            padding-top: 2px;
+            overflow: hidden;
+            white-space: nowrap; 
+			white-space: normal !important;
+            vertical-align:middle;
+			font-size:15px;
+			background-color:#FFF0F5;   
+            border: 0;            
+        }
+        .breadcrumb
+        {
+            padding: 10px;
+            line-height: 15px;
+            font-size: 14px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        .breadcrumb > span + span
+        {
+            padding-left: 5px;
+        }
+        .breadcrumb .back
+        {
+            float: right;
+            color: #7e7e7e;
+        }
+        .breadcrumb .back img
+        {    
+            height: 17px;
+            width:17px;
+            vertical-align: middle;
+            margin-bottom: 3px;
+            border:0px;
+        }
+    </style>
+</head>
+<body>
+    @if(ViewBag.IsEsAppId){
+	<div id="bread" class="breadcrumb" >
+        <span>商品列表</span>
+        <span> > </span>
+        <span style="color:red">申请记录</span>
+        <a class="back" href="javascript:window.history.back();">
+            <img src="/Content/images/wx-back.png"  /><span>&nbsp;返回上一级</span>
+        </a>
+    </div>	
+	  }
+    <!--查询条件-->
+    <div id="SearchArea" style="margin-top: 10px; height:45px;">
+            <span style="margin-left:10px;">商品名称：</span>
+            <input type="text" id="txtName" class="inp-txt" style="width:160px;" />				
+            <span style="margin-left:10px;">商品类目：</span>
+            <input type="text" id="txtCategory" class="inp-txt" style="width: 160px;"  />
+            <span style="margin-left:10px;">审核状态：</span>
+            <select id="txtState" class="inp-txt w120" style="width:160px;height:28px">
+                <option value="-1">全部</option>
+                <option value="0">待审核</option>				
+                <option value="1">审核已通过</option>
+				<option value="2">审核不通过</option>
+                <option value="4">已撤销</option>
+            </select> 				
+            <a class="btn120" id="btnSearch" href="javascript:;" style="margin-left:20px;">查询</a>
+            <a href="javascript:;" class="reset btn120" onclick="toResetSearch()" id="reset" style="margin-left:20px;">重置</a>
+	</div>
+    <!--表格-->
+    <div class="GridArea mt10 ml10">
+        <table id="jqGrid">
+        </table>
+        <div id="jqGridPager">
+        </div>        
+    </div>     
+</body>
+</html>
+<script type="text/javascript" src="/Scripts/jquery.js"></script>
+<script type="text/javascript" src="/Scripts/jquery.extend.js"></script>
+<script type="text/javascript" src="/Scripts/jquery.ui.base.js"></script>
+<script type="text/javascript" src="/Scripts/i18n/jquery.ui-zh.js"></script>
+<script type="text/javascript" src="/Scripts/Grid/jquery.grid.base.js"></script>
+<script type="text/javascript" src="/Scripts/TableBox/jquery.ui.jhtablebox.js"></script>
+<script type="text/javascript" src="/Scripts/Pager/jquery.ui.jhpager.js"></script>
+<script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.datepicker.js"></script>
+<script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.jhdatetime.js"></script>
+<script type="text/javascript" src="/Scripts/i18n/jquery.ui.datepicker-zh.js"></script>
+<script type="text/javascript" src="/Scripts/bigautocomplete/jquery.bigautocomplete.js"></script>
+<script type="text/javascript" src="/Scripts/CommLib.js"></script>
+<script type="text/javascript" src="/Content/Business/BusinessAllEvent.js"></script>
+<script type="text/javascript">
+    try{
+		var rootPath = "/";
+		var arr = window.location.host.split('.');
+		if (arr.length > 0) {
+			document.domain =  arr[arr.length - 2] +"."+ arr[arr.length - 1];
+		}
+		//document.domain = "iuoooo.com";
+	}catch(err){}
+    //初始化表格
+    function InitGrid() {  
+            
+        var data = {             
+            "Appid":'@ViewBag.appId',
+            "Name":$.trim($("#txtName").val()),
+            "CateNames":$.trim($("#txtCategory").val()),
+            "AuditState": $("#txtState").val()
+        };
+        $("#jqGrid").jqGrid({
+            datatype: "json",
+            postData: data,
+            url: "/AuditCommodity/GetApplyCommodityList",
+            mtype: 'POST',
+            colModel: [               
+                { sortable: false, label: '商品类目', name: 'CateNames',align:"center", width: 150,formatter: FormateCateNames},
+                { sortable: false, label: '条形码', name: 'BarCode',align:"center", width: 150 },
+                { sortable: false, label: '缩略图', name: 'PicturesPath',align:"center", width: 150,formatter: FormatePic },
+                { sortable: false, label: '商品名称', name: 'Name',align:"center", width: 220,formatter: FormateName },
+                { sortable: false, label: '现价', name: 'Price',align:"center", width: 100 },
+                { sortable: false, label: '进货价', name: 'CostPrice',align:"center", width: 100 },
+                { sortable: false, label: '商品数量', name: 'Stock',align:"center", width: 100 },
+                { sortable: false, label: '计量单位', name: 'Unit',align:"center", width: 100 },
+                { sortable: false, label: '申请时间', name: 'ApplyTime',align:"center", width: 170 },
+                { sortable: false, label: '申请行为', name: 'ActionName',align:"center", width: 150 },
+                { sortable: false, label: '审核状态', name: 'AuditState',align:"center", width: 150,formatter:State_Operation},               
+                {name:'Modify',label: '操作',index:'AuditId',width:150,align:"center",sortable:false,formatter:Format_Operation}
+            ],
+            rowNum: 20,
+            pager: '#jqGridPager',
+            height: 500,
+            autowidth: true,
+            //shrinkToFit: false,
+            forceFit: true,
+            rownumbers: true           
+        });
+    } 
+    //格式化商品名称
+    function FormateName(cellvalue, options, rowObject){
+        var str=""; 		
+        var url = "/AuditCommodity/GetApplyComDetail?Id="+options.rowId+"&commodityId="+rowObject[12]+"&appId="+rowObject[13];	
+        var ComName=rowObject[3];
+        str += '<a  href="'+ url +'" style="color:#1154E6" title="'+ComName+'">'+ComName+'</a>';
+        return str;
+    }
+	//格式化商品类目
+	function FormateCateNames(cellvalue, options, rowObject){
+        var str=""; 		
+       if(rowObject[0]=='请选择'){return str="";}else{return str="<span>"+rowObject[0]+"</span>"}
+    }
+    //格式化状态
+    function State_Operation(cellvalue, options, rowObject){
+        var str=""; 		
+        if(rowObject[10]==0) {return str="待审核";}
+        if(rowObject[10]==1) {return str="<label >审核已通过</label><br/><span style=\"line-height:28px;color:#0066FF\">"+rowObject[11]+"</span>";}
+		if(rowObject[10]==2) {return str="<label >审核不通过</label><br/><span style=\"line-height:28px;color:#D52B4D\">"+rowObject[11]+"</span>";}
+		if(rowObject[10]==3) {return str="<label >审核不通过</label><br/><span style=\"line-height:28px;color:#D52B4D\">"+rowObject[11]+"</span>";}  
+		if(rowObject[10]==4) {return str="已撤销";}
+        return str;
+    }
+   //格式化操作
+    function Format_Operation(cellvalue, options, rowObject){
+       var str="";
+        if(rowObject[10]==0)
+        {
+        var str = "<a href=\"#\" style=\"color:#1154E6\" title=\"撤销\" onclick=\"backout('"+ options.rowId +"')\">撤  销</a><br/>";
+        }
+		if(rowObject[10]==2)
+        {
+            var Action="";
+           if(rowObject[9]=='商品发布'){Action="111" }
+           var Eurl = "/AuditCommodity/UpdateAuditCom?Id="+options.rowId+"&commodityId="+rowObject[12]+"&appId="+rowObject[13]+"&state="+0+"&ActionName="+Action;
+           var str = '<a  href="'+ Eurl +'" style="color:#1154E6" title="编辑">编  辑</a><br/>';
+        }	
+        var url = "/AuditCommodity/GetApplyComDetail?Id="+options.rowId+"&commodityId="+rowObject[12]+"&appId="+rowObject[13];	
+        str += '<a  href="'+ url +'" style="color:#1154E6" title="查看详情">查看详情</a>';
+        return str;
+    }  
+	//格式化图片
+    function FormatePic(callvalue, opts, rowdata) {
+            return "<img id='img" + opts.rowId + "' src='" + callvalue + "' style='width:86px;height:85px;' />";
+        }
+    function CreateCallBack(){
+        RefreshList();
+        hideDialog();
+    }    
+    //隐藏弹窗
+    function  hideDialog(){        
+        $("#addchangeprice,#detailform,#editform").jhtablebox("hide");    
+    } 
+    //刷新列表
+    function RefreshList(pageNo) {
+       
+        var isPageNo = typeof (pageNo) == "number";
+        if (isPageNo) {
+            if (pageNo <= 0) pageNo = $("#jqGrid").getGridParam("page");
+        } else {
+            pageNo =1;
+        }        		
+        var data = {
+		    "Appid":'@ViewBag.appId',
+            "Name":$.trim($("#txtName").val()),
+            "CateNames":$.trim($("#txtCategory").val()),
+            "AuditState": $("#txtState").val()
+        };
+        $('#jqGrid').jqGrid('setGridParam', {
+            datatype: "json",
+            postData: data,
+            url: '/AuditCommodity/GetApplyCommodityList',
+            mtype: 'POST'
+        });
+        $('#jqGrid').trigger("reloadGrid", [
+            {
+                page: pageNo
+            }
+        ]);
+    }
+    //撤销修改    
+    function backout(rowId) {          
+        if(confirm('确认撤销吗?')){  
+            $.ajax({  
+                type:'post',  
+                url: "/AuditCommodity/BackOut",  
+                data:{Id:rowId},  
+                success: function(res){ 
+                    if(res.code==0){ 
+                        RefreshList();
+                        alert(res.Messages);  
+                    }else{  
+                        alert(res.Messages);  
+                    }  
+                }  
+            });  
+        }         
+    }
+    function toResetSearch(){
+          //重置所有选择框。
+            $("#SearchArea input[type='text']").val("");
+            $("#txtState").val("-1");
+    }
+    //调整页面布局
+    function AdjustLayout() {
+        $("#jqGrid").setGridWidth($(window).width() - 25);
+        $("#jqGrid").setGridHeight($(window).height() - $("#SearchArea").height() - 130);
+    }
+    //初始化事件
+    function InitEvent() {   
+        //查询
+        $("#btnSearch").click(function () {
+            RefreshList();
+        });        
+    }
+    //页面加载完成
+    $(function () {
+        //初始化事件
+        InitEvent();
+        //初始化表格
+        InitGrid();
+        //调整页面布局
+        AdjustLayout();
+        $(window).resize(function () {
+            AdjustLayout();
+        });
+        
+    });
+</script>

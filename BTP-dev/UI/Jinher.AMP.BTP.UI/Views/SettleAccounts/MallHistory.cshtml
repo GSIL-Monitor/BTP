@@ -1,0 +1,277 @@
+﻿@{
+    ViewBag.Title = "历史结算单";
+    Layout = "~/Views/Shared/_VueLayout.cshtml";
+}
+<div class="breadcrumb">
+    <span>入驻管理</span>
+    <span> > </span>
+    <span>结算管理</span>
+    <span> > </span>
+    <span style="color:red">历史结算单</span>
+    <a class="back" href="javascript:window.history.back();">
+        <img src="/Content/images/wx-back.png" /><span>&nbsp;返回上一级</span>
+    </a>
+</div>
+<div class="content">
+    <div id="listWithFiltersPage">
+        <div class="content-inner">
+            <!-- filters start -->
+            <div class="filters">
+                <el-form :inline="true" :model="searchForm" :rules="searchFormRules" ref="searchForm">
+                    <el-form-item label="App名称：" prop="AppName">
+                        <el-input v-model="searchForm.AppName"></el-input>
+                    </el-form-item>
+                    <el-form-item label="商家类型：" prop="SellerType">
+                        <el-select v-model="searchForm.SellerType">
+                            <el-option label="全部" value=""></el-option>
+                            <el-option v-for="item in mallTypeOptions" :key="item.value" :label="item.label" :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="结算时间：" prop="AmountDate">
+                        <el-date-picker type="daterange" v-model="searchForm.AmountDate" type="date" placeholder="选择日期范围" :picker-options="pickerOptions" style="width:210px"></el-date-picker>
+                    </el-form-item>
+                    <el-form-item label="结算结果：" prop="SettleStatue">
+                        <el-select v-model="searchForm.SettleStatue">
+                            <el-option  v-for="item in settleStatueOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @@click="handleSearch">查询</el-button>
+                        <el-button @@click="handleExport">导出结算单</el-button>  
+                    </el-form-item>
+                </el-form>
+            </div>
+
+            <el-table :data="tableData" style="width: 100%" element-loading-text="拼命加载中" v-loading="loading" border stripe @@selection-change="handleSelectionChange">
+                <el-table-column type="index" lable="序号" width="60"></el-table-column>
+                <el-table-column type="selection" width="55"></el-table-column>
+                <el-table-column prop="AppName" label="App名称" min-width="130"></el-table-column>
+                <el-table-column prop="SellerType" label="商家类型" min-width="100">
+                    <template scope="scope">
+                        {{RN.getMallType(scope.row.SellerType)}}
+                    </template>
+                </el-table-column>
+                <el-table-column prop="OrderAmount" label="订单总额" min-width="90"></el-table-column>
+                <el-table-column prop="SellerAmount" label="商家结算金额 " min-width="110">
+                    <template scope="scope">
+                        <span v-if="scope.row.SettleStatue && scope.row.SellerAmount > 0">{{scope.row.SellerAmount}}</span>
+                        <span v-else style="color:red">{{scope.row.SellerAmount}}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="结算日期" min-width="110" :formatter="dateFormat"></el-table-column>
+                <el-table-column label="结算结果" min-width="90">
+                    <template scope="scope">
+                        <span v-if="scope.row.SettleStatue">结算成功</span>
+                        <span v-else style="color:red">结算异常</span>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="Remark" label="备注"></el-table-column>
+                <el-table-column label="操作" width="143" align="center">
+                    <template scope="scope">
+                        <el-button v-if="!scope.row.SettleStatue" type="primary" size="mini" @@click="handleEditing(scope.$index, scope.row)">编辑</el-button>
+                        <el-button type="info" size="mini" @@click="handleDetails(scope.row.Id)">查看详情</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <div class="pagination-wrapper" v-show="!loading">
+                <el-pagination layout="total, sizes, prev, pager, next, jumper" @@size-change="handleSizeChange" @@current-change="handleCurrentChange" :total="total" :current-page="page" :page-sizes="[10, 20, 50, 100]" :page-size="pageSize" >
+                </el-pagination>
+            </div>
+        </div>
+    </div>
+</div>
+
+<template>
+    <el-dialog title="编辑结算结果" v-model="editDialog" size="tiny">
+        <el-form ref="editForm" :model="editForm" :rules="editFormRules" label-width="100px">        
+            <el-form-item label="结算结果：" prop="SettleStatue">
+                <el-select v-model="editForm.SettleStatue" class="el-col-24">
+                    <el-option value="true" label="结算成功"></el-option>
+                    <el-option value="false" label="结算异常"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="备注：" prop="Remark">
+                <el-input type="textarea" :rows="4" placeholder="请输入备注" v-model="editForm.Remark" class="el-col-24"></el-input>
+            </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+            <el-button @@click="editDialog = false">取 消</el-button>
+            <el-button type="primary" @@click="handleSaveEdit()">确 定</el-button>
+        </span>
+    </el-dialog>
+</template>
+@section Script{
+    <script>
+        var currentDate = new Date();
+        var defaultVue = new Vue({
+            el: '#app',
+            data: {
+                settleStatueOptions:[{
+                    value:'',label:'全部'
+                },{
+                    value:'true',label:'结算成功'
+                },{
+                    value:'false',label:'结算异常'
+                }],
+                searchForm: {
+                    AppName: '',
+                    SellerType:'',
+                    AmountDate:[new Date(currentDate.getTime() - 3600 * 1000 * 24 * 30), currentDate],
+                    SettleStatue:'',
+                },
+                searchFormRules: {
+                    AppName: [
+                        { max: 30, message: '最多输入30个字', trigger: 'change' }
+                    ]
+                },
+                pickerOptions:{
+                    shortcuts: [{
+                        text: '最近一周',
+                        onClick: function(picker) {
+                            var end = new Date();
+                            var start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '最近一个月',
+                        onClick: function(picker) {
+                            var end = new Date();
+                            var start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '最近三个月',
+                        onClick: function(picker) {
+                            var end = new Date();
+                            var start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }]
+                },
+                loading: true,
+                tableData: [],
+                total:0,
+                page:1,
+                pageSize:20,
+                selectedIds: [],
+                editDialog: false,
+                editRowIndex:'',
+                editForm:{
+                    SettleStatue:'true',
+                    Remark:''
+                },
+                editFormRules: {
+                    SettleStatue: [
+                        { required:true, message:'请选择结算结果'}
+                    ],
+                    Remark:[
+                        { required:true, message:'请输入备注内容'},
+                        { max: 100, message: '最多输入100个字', trigger: 'change' }
+                    ]
+                },
+                mallTypeOptions: RN.mallTypeOptions
+            },
+            methods: {
+                 handleSelectionChange: function(val) {
+                    var tempArr = new Array();
+                    val.forEach(function(v){tempArr.push(v.Id);});
+                    this.selectedIds = tempArr;
+                },
+                handleSearch: function() {
+                    this.$refs['searchForm'].validate(function(valid) {
+                        if (valid) {
+                            defaultVue.page=1;
+                            defaultVue.fetchData();
+                        } else {
+                            console.log('error submit!!');
+                        }
+                    });
+                },
+                handleSizeChange: function(val){
+                    this.pageSize =val;
+                    this.page=1;
+                    this.fetchData();
+                },
+                handleCurrentChange: function(page) {
+                    this.page=page||this.page;
+                    this.fetchData();
+                },
+                fetchData: function(){
+                    this.loading = true;
+                    var data = {
+                        PageSize:this.pageSize, 
+                        PageIndex:this.page,
+                        AppName:this.searchForm.AppName,
+                        SellerType:this.searchForm.SellerType,
+                        SettleStatue:this.searchForm.SettleStatue};
+                    if(this.searchForm.AmountDate[0]) data["StartDate"] = this.searchForm.AmountDate[0];
+                    if(this.searchForm.AmountDate[1]) data["EndDate"] = this.searchForm.AmountDate[1];
+                    this.$http.post('@Url.Action("GetMallHistoryData")', data).
+                    then(function(res) {
+                        if(res.body.isSuccess){
+                            defaultVue.tableData = res.body.Data.List;
+                            defaultVue.total = res.body.Data.Count;
+                        } else {
+                            defaultVue.$message.error(res.body.Message);
+                        }
+                    });
+                },
+                dateFormat: function(row, column) { 
+                    return moment(row.AmountDate).format("YYYY-MM-DD"); 
+                },
+                // 导出
+                handleExport: function(){
+                    if(this.selectedIds.length==0){
+                        this.$message.warning({
+                            duration:1000,
+                            message: '请选择要导出的记录'
+                        });
+                        return;
+                    }
+                    window.location.href= '@Url.Action("Export")/'+this.selectedIds.join(',');
+                },
+                // 编辑
+                handleEditing: function($index, row){
+                    this.editDialog = true;
+                    this.editRowIndex = $index;
+                },
+                handleSaveEdit: function(){
+                    var editRow = this.tableData[this.editRowIndex];
+                    var editForm = this.$refs['editForm'];
+                    editForm.validate(function(valid) {
+                        if (valid) {
+                            defaultVue.$http.post('@Url.Action("UpdateSettleStatue")', {
+                                Id: editRow.Id,
+                                SettleStatue: defaultVue.editForm.SettleStatue,
+                                Remark: defaultVue.editForm.Remark }).
+                            then(function(res) {
+                                if(res.body.isSuccess) {
+                                    defaultVue.$message.success('保存成功');
+                                    defaultVue.editDialog = false;
+                                    editRow.SettleStatue = defaultVue.editForm.SettleStatue==='true';
+                                    editRow.Remark = defaultVue.editForm.Remark;
+                                    editForm.resetFields();
+                                } else {
+                                    defaultVue.$message.error(res.body.Message);
+                                }
+                            });
+                        } else {
+                            defaultVue.$message.error('验证失败');
+                        }
+                    });
+                },
+                // 查看结算单
+                handleDetails: function(id){
+                    window.location.href="@Url.Action("Details")/"+id;
+                }
+            },
+            mounted: function() {
+                this.fetchData();
+            }
+        })
+    </script>
+}

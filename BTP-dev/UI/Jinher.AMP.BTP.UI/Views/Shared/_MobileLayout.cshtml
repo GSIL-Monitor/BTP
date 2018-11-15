@@ -1,0 +1,332 @@
+﻿@using Jinher.AMP.BTP.Common
+@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+}
+@section TitleHtml
+{
+    @RenderSection("MTitleHtml", required: false)
+}
+@section CssStyles{
+    <link href="/Content/Mobile/zphStyle/icons.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="/Content/Mobile/css.css" />
+    <style type="text/css">
+        .fix-footer a
+        {
+            text-decoration: none;
+        }
+        .fix-footer li
+        {
+            list-style: none;
+        }
+        .topval
+        {
+            height: 45px;
+            line-height: 45px;
+            background-color: #fafbfc;
+            text-indent: 20px;
+            color: #717070;
+        }
+        .fix-footer
+        {
+            width: 100%;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            font-size: 0.9em;
+            background: #eaeaea;
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            border-top: 1px solid #e4e4e4;
+        }
+        .fix-footer ul
+        {
+            width: 100%;
+            height: 100%;
+        }
+        .fix-footer ul li
+        {
+            float: left;
+            width: 22%;
+            position: relative;
+        }
+        .fix-footer ul li span
+        {
+            display: block;
+            margin-top: 0px;
+        }
+        .fix-footer ul li a
+        {
+            display: block;
+            color: #8a8a8a;
+        }
+        
+        .fix-footer ul li a .tab-label
+        {
+            color: #000000;
+        }
+        
+        #footul li a.active
+        {
+            color: #FF0054;
+        }
+        #footul li a.active .tab-label
+        {
+            color: #FF0054;
+        }
+    </style>
+    @RenderSection("CssStyles", required: false)
+}
+@RenderBody()
+<div class="fix-footer footdi" style="z-index: 999; display: none;">
+    <ul id="footul" style="line-height: normal; padding-top: 6px;">
+        <li><a class="active" id="guang" href="javascript:void(0);"><span class="icon i-home">
+        </span><span class="tab-label">首页</span> </a></li>
+        <li style="width: 11%;"><a href="javascript:void(0);" id="search" style="display: none;">
+            <span class="icon i-class"></span><span class="tab-label">分类</span></a></li>
+        <li><a href="javascript:void(0);" id="promotion"><span class="icon i-tag"></span><span
+            class="tab-label">促销优惠</span></a></li>
+        <li><a href="javascript:void(0);" id="ESNetLnk"><span class="icon i-netshop"></span>
+            <span class="tab-label">馆馆互联</span> </a></li>
+        <li style="width: 25%;"><a href="javascript:void(0);" id="searchZPH" style="display: none;">
+            <span class="icon i-class"></span><span class="tab-label">分类</span></a></li>
+        <li><a href="javascript:void(0);" id="o2oMall" style="display: none;"><span class="icon i-mall">
+        </span><span class="tab-label">O2O商城</span> </a></li>
+        <li><a href="javascript:void(0);" id="shopcart"><span class="icon i-carts"></span><span
+            class="tab-label">购物车</span> </a></li>
+        <li><a href="javascript:void(0);" id="myhome"><span class="icon i-user"></span><span
+            class="tab-label">我的</span> </a></li>
+    </ul>
+</div>
+@section ClientScript
+  {
+    <script type="text/javascript">
+        var zphIndexUrl = "@CustomConfig.ZPHUrl" + "zph?isshowsharebenefitbtn=1";
+        var zphCategoryUrl = "@CustomConfig.ZPHUrl" + "zph/CategoryList";
+        //电商馆首页url
+        var dshguanHomeUrl = "@CustomConfig.BacEUrl" + "/AppPage/TemplatePage/BusinessActive.html?isshowsharebenefitbtn=1";
+        //馆馆互联url.
+        var guanguanLinkUrl = "@CustomConfig.ZPHUrl" + "ESNet/ESNetLnk?isshowsharebenefitbtn=1";
+        //app店铺首页地址
+        var appShopUrl = "@CustomConfig.ZPHUrl" + "zph/appShop";
+
+        var baurl = window.location.href;
+        //获取正品会首页url
+        function getZphIndexUrl() {
+            var result = "javascript:void(0);";
+
+            //0、正品会； 1、自由超市； 2、掌上商城； 3、未定义； 4、电商馆； 5、电商馆APP；
+            if (sessionStorage.appTypeZPH == 0) {
+                //首页显示“正品会”首页。
+                if (zphIndexUrl && zphIndexUrl.indexOf("http") == 0) {
+                    result = zphIndexUrl + getZphUrlParams();
+                }
+            }
+            else if (sessionStorage.appTypeZPH == 4) {
+                //首页显示 某个馆。
+                var gglinkUrl = dshguanHomeUrl + getZphUrlParams();
+                if (sessionStorage.source != "share") {
+                    gglinkUrl += "&active=finish";
+                }
+                if (gglinkUrl && gglinkUrl.indexOf("http") == 0) {
+                    result = gglinkUrl;
+                }
+            }
+            else if (sessionStorage.appTypeZPH == 5) {
+                //首页显示 app店铺。
+                if (appShopUrl && appShopUrl.indexOf("http") == 0) {
+                    result = appShopUrl;
+                }
+            }
+            return result;
+        }
+        //获取正品会分类url
+        function getZphCategoryUrl() {
+            var result = "javascript:void(0);";
+            if (zphCategoryUrl && zphCategoryUrl.indexOf("http") == 0) {
+                result = zphCategoryUrl + "?zph=zph" + getZphUrlParams();
+            }
+            return result;
+        }
+        //校验h5的参数
+        checkMobileParams();
+
+        var sharepar = "&SrcType=" + sessionStorage.SrcType + "&share=" + getShareId() + "&source=" + sessionStorage.source;
+        $(function () {
+            saveContextDTOByUrl();
+            var psource = sessionStorage.source == "share" ? "&source=share" : "";
+            //正品会
+            if (sessionStorage.ProductType == "appcjzy" || sessionStorage.ProductType == "webcjzy") {
+                $("#myhome").show().attr("href", "/Mobile/MyHome?vc=vc&type=tuwen" + psource);
+                //正品O2O中，只有购物车、我的有可能显示底部导航
+                if (baurl.toLowerCase().indexOf("shoppongcartlist") <= 0 && baurl.toLowerCase().indexOf("myhome") <= 0) {
+                    $(".footdi").hide();
+                }
+                else if (sessionStorage.AppType == "tuwen" || JsVilaDataNull(getQueryString("srcAppId"))) {
+                    $(".footdi").show();
+                    $("#promotion").hide();
+                    $("#search").hide();
+
+                    //显示首页
+                    $("#guang").attr("href", getZphIndexUrl());
+                    //$("#guang span").text("购物");
+
+                    //显示分类、o2o商城
+                    //0、正品会； 1、自由超市； 2、掌上商城； 3、未定义； 4、电商馆； 5、电商馆APP；
+                    if (sessionStorage.appTypeZPH == 0) {
+                        $("#searchZPH").show().attr("href", getZphCategoryUrl());
+                        $("#o2oMall").hide();
+                        $("#ESNetLnk").show();
+                    }
+                    else if (sessionStorage.appTypeZPH == 4) {
+                        $("#searchZPH").hide();
+                        $("#o2oMall").show();
+                        $("#ESNetLnk").show();
+                    }
+                    else if (sessionStorage.appTypeZPH == 5) {
+                        var esNetLnkHtml = $("#ESNetLnk").parent("li").html();
+                        var o2oMallHtml = $("#o2oMall").parent("li").html();
+
+                        esNetLnkHtml = "<li>" + esNetLnkHtml + "</li>";
+                        o2oMallHtml = "<li>" + o2oMallHtml + "</li>";
+
+                        $("#ESNetLnk").parent("li").remove();
+                        $("#o2oMall").parent("li").remove();
+
+                        $("#promotion").parent("li").after(o2oMallHtml);
+                        $("#shopcart").parent("li").before(esNetLnkHtml);
+
+                        $("#ESNetLnk").show();
+                        $("#o2oMall").show();
+                    }
+                }
+            } else { //web版app
+                $("#myhome").show().attr("href", "/Mobile/MyHome?vc=vc&type=tuwen" + psource);
+                $("#guang").attr("href", "/Mobile/CommodityList?appId=" + sessionStorage.appId + "&type=tuwen" + sharepar);
+                $("#searchZPH").hide();
+                $("#ESNetLnk").hide();
+                sessionStorage.neeLoginWhenLoad = 1;
+                //end   接收参数
+                if (sessionStorage.AppType == "tuwen") {
+                    sessionStorage.AppType = "tuwen";
+                    $(".footdi").show();
+                    if (JsVilaDataNull(sessionStorage.appId)
+                    && sessionStorage.appId.toUpperCase() == "bb545ae5-d3ac-47ca-96a5-a8bf002bfd08".toUpperCase()) {
+                        $("#promotion").hide();
+                        $("#guang span.tab-label").text("报刊订阅");
+                        $("#footul li").css("width", "27%");
+                        $("#search").parent().css("width", "11%");
+                    } else {
+
+                    }
+                    if (sessionStorage.appName == "" || sessionStorage.appName == undefined) {
+                        $.ajax({
+                            type: "POST",
+                            async: false,
+                            url: "/mobile/GetAppName",
+                            data: { appId: sessionStorage.appId },
+                            dataType: "json",
+                            success: function (data) {
+                                if (data != null && data != undefined) {
+                                    sessionStorage.appName = data;
+                                }
+                            }
+                        });
+                    }
+                    if (sessionStorage.appName != undefined && sessionStorage.appName != "") {
+                        document.title = sessionStorage.appName;
+                    }
+                    if (JsVilaDataNull(sessionStorage.AppMenuChangeInfo)) {
+                        setMenus(JSON.parse(sessionStorage.AppMenuChangeInfo));
+                    } else {
+                        $.ajax({
+                            type: "POST",
+                            async: true,
+                            url: "/Mobile/GetAppMenuChangeInfo",
+                            data: { appId: sessionStorage.appId },
+                            dataType: "json",
+                            success: function (data) {
+                                sessionStorage.AppMenuChangeInfo = JSON.stringify(data);
+                                setMenus(data);
+                            }
+                        });
+                    }
+                }
+            }
+            setFootWidth();
+            //兼容在图文应用下 需要调两次 本地登录方法才能获取 到userid
+            $("#shopcart").attr("href", "/Mobile/ShoppongCartList?appId=" + sessionStorage.appId + "&type=tuwen" + sharepar);
+            $("#search").attr("href", "/Mobile/CommodityList?appId=" + sessionStorage.appId + "&type=tuwen&opa=search" + sharepar);
+            $("#promotion").attr("href", "/Mobile/PromotionList?appId=" + sessionStorage.appId + "&type=tuwen" + sharepar);
+            //$("#myhome").attr("src", "/Mobile/MyOrderList?appId=" + sessionStorage.appId + psource);
+            guanguanLinkUrl += getZphUrlParams();
+            $("#ESNetLnk").attr("href", guanguanLinkUrl);
+
+            //o2o商城显示“正品会”首页。
+            var o2oMallUrl = "javascript:void(0);";
+            if (zphIndexUrl && zphIndexUrl.indexOf("http") == 0) {
+                o2oMallUrl = zphIndexUrl + "&page=o2omall" + getZphUrlParams();
+            }
+            $("#o2oMall").attr("href", o2oMallUrl);
+            //		showLazyLoadImg();
+
+
+            //            $("#footul li").on("click", function () {
+            //                $("#footul li a").removeClass("active");
+            //                $(this).find("a").addClass("active");
+            //            });
+
+        });
+
+        function footmenu(obj) {
+            $("#footul li a").removeClass("active");
+            obj.addClass("active");
+        }
+
+        function setFootWidth() {
+            var arr = [];
+            $("#footul").find('li a').each(function () {
+                if ($(this).css("display") != 'none') {
+                    arr.push($(this).parent());
+                }
+                else {
+                    $(this).parent("li").css('width', '0');
+                }
+            });
+            if (arr.length > 0) {
+                var itemWidth = parseInt(100 / arr.length).toString() + "%";
+                for (var i = 0; i < arr.length; i++) {
+                    arr[i].css('width', itemWidth);
+                }
+            }
+        }
+        function setMenus(data) {
+            if (data != null) {
+                if (data.appMenuList && data.appMenuList.length > 0) {
+                    var appMenuList = data.appMenuList;
+                    for (var i = 0; i < appMenuList.length; i++) {
+                        if (appMenuList[i].MenuCode == "promotions") {
+                            if (!appMenuList[i].IsDisPlay) {
+                                $("#promotion").hide();
+                                $("#footul li").css("width", "27%");
+                                $("#search").parent().css("width", "11%");
+                            } else {
+                                if (appMenuList[i].IsChanged) {
+                                    $("#promotion span.tab-label").text(appMenuList[i].CurrentName);
+                                }
+                            }
+                        } else if (appMenuList[i].MenuCode == "stroll" && appMenuList[i].IsChanged) {
+                            $("#guang span.tab-label").text(appMenuList[i].CurrentName);
+                        }
+                    }
+                }
+                if (data.isShowSearchMenu) {
+                    $("#search").show();
+                }
+            }
+            setFootWidth();
+        }
+    </script>
+    @RenderSection("ClientScript", required: false)
+}
+

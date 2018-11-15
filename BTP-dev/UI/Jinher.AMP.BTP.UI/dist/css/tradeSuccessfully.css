@@ -1,0 +1,212 @@
+body{
+    width: 100%;
+    max-width:500px;
+    margin: 0 auto;
+    font-size: 16px;
+    background-color: #fff;
+    font-family: Helvetica, Tahoma, Arial, "PingFang SC", "Hiragino Sans GB", "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+    background: #fefeff;
+}
+* {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-text-size-adjust: none;
+    -webkit-tap-highlight-color: transparent
+}
+a{
+    text-decoration: none;
+}
+img{
+    border:0;
+}
+em{
+    font-style: normal;
+}
+ul,li{
+    padding:0;
+    margin: 0;
+    list-style:none;
+}
+h1,h2,h3,h4,h5,h6,p{
+    padding: 0;
+    margin: 0;
+    font-weight: 400;
+    font-size: 12px;
+    font-weight: 400;
+}
+/*tradeSuccessfully.css*/
+.zhifu-suc{
+    padding-top: .4rem;
+    padding-bottom: .6rem;
+    text-align: center;
+    border-bottom: 1px solid #e8e8e8;
+}
+.zhifu-suc .pic{
+    display:block;
+    margin: 0 auto;
+    width: 1.29rem;
+    height: 1.29rem;
+}
+.zhifu-suc .tips{
+    margin-top: .4rem;
+    line-height: .3rem;
+    font-size: .3rem;
+    color:#333;
+    font-weight: 600;
+}
+.zhifu-suc .zhifu-btns{
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    padding: 0 1.3rem;
+    margin-top: .6rem;
+    justify-content: space-between;
+}
+.zhifu-suc .zhifu-btns .zhifu-btn{
+    width: 1.84rem;
+    height: .6rem;
+    line-height: .6rem;
+    text-align: center;
+    color: #333;
+    font-size: .26rem;
+    border: 1px solid #333;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+}
+.zhifu-suc .zhifu-btns .zhifu-btn.active{
+    color: #dc2828;
+    border-color: #dc2828;
+}
+.height20{
+    height:.2rem;
+    background-color: rgb(248,248,248);
+}
+/*推荐商品列表*/
+.recommend-list{
+    background: #ffffff;
+}
+.tradeList-item .list-img,.tradeList-item .list-img img{
+    width:100%;
+    height: 3.2rem;
+}
+.tradeList-item:nth-child(even){
+    padding-left:.1rem;
+}
+.tradeList-item:nth-child(odd){
+    padding-right:.1rem;
+}
+.tradeList-item .list-info{
+    color: #333333;
+    font-size: 0.26rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width:100%;
+    padding-left: .2rem;
+    line-height:  1.5;
+}
+.tradeList{
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    flex-wrap: wrap;
+    padding: .4rem;
+    overflow: hidden;
+}
+.line{
+    border-bottom: 1px solid #989898;
+    width: 3.5rem;
+    margin:0 auto;
+    display:block;
+    padding-top: .6rem;
+}
+
+.recommend-list h3{
+    font-size: .36rem;
+    color: #333333;
+    width: 1.8rem;
+    margin:0 auto;
+    text-align: center;
+    margin-top: -.2rem;
+    background:  #fff;
+}
+.more-recommend-wrap{
+    padding: .36rem .36rem 0;
+    font-size: .22rem;
+}
+.more-recommend-hd{
+    border-bottom: 1px solid #e6e6ef;
+}
+.more-recommend-hd a{
+    display: block;
+}
+.more-recommend-hd .more-recommend-title{
+    line-height: .58rem;
+    font-size: .38rem;
+    color: #333;
+}
+.more-recommend-hd .more-recommend-message{
+    margin: .1rem 0 .3rem 0;
+    font-size: .22rem;
+    color: #999;
+}
+.more-recommend-lists{
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: .36rem;
+}
+.more-recommend-lists .more-recommend-list{
+    width: 3.33rem;
+}
+.more-recommend-lists .more-recommend-list a{
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+.more-recommend-list a .pic{
+    width: 100%;
+    height: 3.33rem;
+}
+.more-recommend-list a .pic>img{
+    width: 100%;
+    height: 100%;
+}
+.more-recommend-list a .list-tips{
+    padding-top: 1px;
+}
+.more-recommend-list a .list-tips>span{
+    display: inline-block;
+    font-size: .18rem;
+    color: #f5343e;
+    border: 1px solid #f5343e;
+    padding: 1px 3px;
+    margin-right: .1rem;
+    margin-bottom: .05rem;
+}
+.more-recommend-list a .title{
+    margin-top: .3rem;
+    padding: 0 .2rem;
+    font-size: .26rem;
+    color: #333;
+    font-family: 'PingFangSC Regular';
+    overflow:hidden;
+    text-overflow:ellipsis;
+    display:-webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient:vertical;
+}
+.more-recommend-list a .price{
+    padding: .2rem 0 .3rem 0;
+    text-align: center;
+    font-size: .26rem;
+    color: #dc2828;
+}
+.more-recommend-list a .price .num{
+    font-size: .36rem;
+}

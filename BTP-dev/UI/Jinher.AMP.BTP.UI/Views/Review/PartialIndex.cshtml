@@ -1,0 +1,128 @@
+﻿@{
+    Layout = null;
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.ReviewVM> reviewVMList = ViewBag.ReviewList;
+}
+<input type="hidden" id="rowcounts" value="@ViewBag.Count"/>
+<table border="0" id="dataTable" cellspacing="0" cellpadding="0" class="m_talbe">
+    <tr class="t_tr1">
+        <td class="one">
+            序号
+        </td>
+        <td class="three">
+            评价内容
+        </td>
+        <td class="two">
+            对应产品
+        </td>
+        <td class="four">
+            评价人昵称
+        </td>
+        <td class="five">
+            评价时间
+        </td>
+        <td class="eight">
+            操作
+        </td>
+    </tr>
+    @{
+        int index = 1;
+        foreach (Jinher.AMP.BTP.Deploy.CustomDTO.ReviewVM tempObject in reviewVMList)
+        {
+        <tr class="t_tr2">
+            <td class="one">
+                @index
+            </td>
+            <td class="two" style="text-align: left; padding: 0 10px; word-break:break-all;">
+                <font style="color: #3F5164">
+                    @{
+           string reName = string.Empty;
+           if (tempObject.ReviewUserName == "" || tempObject.ReviewUserName == null || tempObject.ReviewUserName == "null")
+           {
+               reName = "";
+           }
+           else
+           {
+               reName = tempObject.ReviewUserName + ":";
+           }
+                                   
+                    }
+                    @reName @tempObject.Details </font>
+                @if (tempObject.ReplyList.Count > 0 || tempObject.ReplyList != null)
+                {
+                    int i = 1;
+                    foreach (var item in tempObject.ReplyList)
+                    {
+                        string uName = string.Empty;
+                        if (item.ReplyerUserName == "" || item.ReplyerUserName == null || item.ReplyerUserName == "null")
+                        {
+                            uName = "";
+                        }
+                        else
+                        {
+                            uName = item.ReplyerUserName + ":";
+                        }
+                        if (i % 2 != 0)
+                        {
+                    <p class="se2" style="margin: 10px 0 10px 0;">
+                        @uName @item.ReplyerDetails</p>
+                                            
+                        }
+                        else
+                        {
+                    <p class="se2" style="margin: 10px 0 10px 0;">
+                        <font style="color: #3F5164">@uName @item.ReplyerDetails</font></p>
+                                            
+                        }
+                        i++;
+                    }
+                }
+            </td>
+            <td class="three">
+                <a href="/Review/CommodityReview?commodityId=@tempObject.CommodityId">
+                    <img src="@tempObject.CommodityPicture" width="80" height="80" /></a>
+                <ul>
+                    <li>
+                        <p>
+                            <a href="/Review/CommodityReview?commodityId=@tempObject.CommodityId"><span>名称：</span>@tempObject.CommodityName</a></p>
+                    </li>
+                    <li><a href="/Review/CommodityReview?commodityId=@tempObject.CommodityId"><span>评价数：@tempObject.ReviewNum</span></a></li>
+                </ul>
+            </td>
+            <td class="four">
+                @{
+                   string reuName = string.Empty;
+                   if (tempObject.ReviewUserName == "" || tempObject.ReviewUserName == null || tempObject.ReviewUserName == "null")
+                   {
+                       reuName = "无";
+                   }
+                   else
+                   {
+                       reuName = tempObject.ReviewUserName;
+                   }
+                                   
+                }
+                @reuName
+            </td>
+            <td class="five">
+                @tempObject.SubTime.ToString("yyyy-MM-dd HH:mm")
+            </td>
+            @if (tempObject.IsReply == false)
+            {
+                <td class="eight">
+                    <span><a href="javascript:void(0)" onclick="toReplay('@tempObject.ReviewId')" class="re">
+                        回复</a></span>
+                </td>
+                                    
+            }
+            else
+            {
+                <td class="eight">
+                    <span><a href="javascript:void(0)" onclick="Message()">回复</a></span>
+                </td>
+            }
+        </tr>
+                           
+            index++;
+        }
+    }
+</table>

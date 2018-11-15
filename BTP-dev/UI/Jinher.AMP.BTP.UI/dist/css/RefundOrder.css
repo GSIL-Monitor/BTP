@@ -1,0 +1,400 @@
+html,body{
+    max-width: 500px;
+    margin: 0 auto;
+    font-family:  'Microsoft YaHei';
+    word-break: break-all;
+    font-size: 16px;
+    background-color: #f8f8f8;
+    -webkit-user-select:none;
+    user-select: none;
+}
+.lock{
+    position: fixed;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    max-width: 500px;
+    margin: 0 auto;
+}
+.top20{
+    margin-top:.2rem;
+}
+.cursor{
+    cursor: pointer;
+}
+.toast-content{
+    font-size: 14px!important;
+}
+.tips{
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+    height: .6rem;
+    padding: 0 .4rem;
+    background-color: rgb(66,72,85);
+}
+.tips .tips-title{
+    -webkit-flex:1;
+    flex: 1;
+    color: #fff;
+    font-size: .22rem;
+}
+.tips .tips-close{
+    width: .22rem;
+    height: .22rem;
+    cursor: pointer;
+}
+/*服务类型*/
+.type{
+    padding: .3rem .4rem;
+    background-color: #fff;
+    border-bottom: 1px solid #e8e8e8;
+}
+.type .type-title{
+    line-height: .3rem;
+    font-size: .3rem;
+    color: #333;
+}
+.refund-btns{
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+    margin-top: .2rem;
+}
+.refund-btns .btns{
+    width: 1.6rem;
+    text-align: center;
+    line-height: .45rem;
+    margin-right: .3rem;
+    font-size: .24rem;
+    color: #333;
+    border: 1px solid #333;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+}
+.refund-btns .btns.active{
+    color: #d92b2f;
+    border-color: #d92b2f;
+}
+/*订单*/
+.order-list{
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    border-bottom: 1px solid #e8e8e8;
+    padding: .5rem .3rem;
+    background-color: #fff;
+}
+.order-list .pic{
+    width: 1.4rem;
+    height: 1.4rem;
+    margin-right: .15rem;
+}
+.order-list .detail{
+    -webkit-box-flex: 1;
+    flex: 1;
+    -webkit-flex: 1;
+}
+.order-list .detail .title{
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    padding-right: .2rem;
+    font-size: .29rem;
+    color: #333;
+    word-break: break-all;
+    overflow: hidden;
+}
+.order-list .detail .size{
+    margin-top: .17rem;
+    font-size: .22rem;
+    line-height: .22rem;
+    color: #666;
+}
+.order-list .detail .price-wrap{
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+    margin-top: .3rem;
+}
+.order-list .detail .price-wrap .price{
+    -webkit-flex: 1;
+    flex: 1;
+    font-size: .25rem;
+    color: #333;
+    line-height: .35rem;
+}
+.order-list .detail .price-wrap .price .num{
+    font-size: .35rem;
+}
+.order-list .detail .price-wrap .count{
+    font-size: .29rem;
+}
+/*退货原因*/
+.reason{
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+    height: .8rem;
+    padding: 0 .4rem;
+    margin-top: .2rem;
+    background-color: #fff;
+    border-bottom: 1px solid #e8e8e8;
+    border-top: 1px solid #e8e8e8;
+    cursor: pointer;
+}
+.reason .reason-title{
+    -webkit-flex: 1;
+    flex: 1;
+    color: #333;
+    font-size: .3rem;
+}
+.reason .reason-text{
+    font-size: .26rem;
+    color: #ccc;
+}
+.reason .reason-pic{
+    width: .14rem;
+    margin-left: .14rem;
+}
+.refund-price-wrap{
+    margin-top: .2rem;
+    padding: .4rem;
+    background-color: #fff;
+    border-bottom: 1px solid #e8e8e8;
+    border-top: 1px solid #e8e8e8;
+}
+.refund-price-wrap .price-wrap{
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+}
+.refund-price-wrap .price-wrap .title{
+    font-size: .3rem;
+    color: #333;
+}
+.refund-price-wrap .price-wrap>em{
+    color: #dc2828;
+    font-style:normal;
+    font-size: .25rem;
+}
+.refund-price-wrap .price-wrap .price{
+    -webkit-flex: 1;
+    flex: 1;
+    padding: 0;
+    margin: 0;
+    line-height: .29rem;
+    height: 100%;
+    color: #dc2828;
+    font-size: .29rem;
+    border: 0;
+}
+.refund-price-wrap .price-tips{
+    margin-top: .3rem;
+    font-size: .22rem;
+    color: #999;
+}
+.refund-dec-wrap{
+    margin-top: .2rem;
+    padding: .4rem 0;
+    background-color: #fff;
+    border-top: 1px solid #e8e8e8;
+    border-bottom: 1px solid #e8e8e8;
+}
+.refund-dec-wrap .title{
+    padding: 0 .4rem;
+    font-size: .3rem;
+    color: #333;
+    line-height: .3rem;
+}
+.refund-dec-wrap .dec{
+    margin-top: .24rem;
+    margin-left: .4rem;
+    width: 6.7rem;
+    height:2.3rem;
+    padding: .3rem;
+    color: #999;
+    font-size: .3rem;
+    resize: none;
+    background-color: rgb(245,245,245);
+    border:0;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+}
+/*上传图片*/
+.upload-wrap{
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+    margin-top: .3rem;
+    padding: 0 .4rem;
+}
+.upload-wrap .upload-pic{
+    position: relative;
+    top:0;
+    left:0;
+    width: 1.18rem;
+    height: 1.18rem;
+    margin-right: .2rem;
+    background-color: rgb(245,245,245);
+}
+.upload-wrap .upload-pic:nth-child(5){
+    margin:0;
+}
+.upload-wrap .upload-pic:nth-child(6){
+    display:none;
+}
+.upload-wrap .upload-pic .img{
+    position: absolute;
+    top:0;
+    left:0;
+    width: 100%;
+    height: 100%
+}
+.upload-wrap .upload-pic .cancel{
+    position: absolute;
+    top: -.15rem;
+    right: -.15rem;
+    display:inline-block;
+    width: .3rem;
+    height: .3rem;
+    background-image: url(/Content/Mobile/icon-close.png);
+    background-size: 100% 100%;
+}
+.upload-wrap .add-pic-wrap{
+    background-color: #fff;
+    border: 1px dashed #ccc;
+    cursor: pointer;
+}
+.upload-wrap .add-pic-wrap .add-pic{
+    display: block;
+    width: .42rem;
+    height: .42rem;
+    margin: .2rem auto 0;
+}
+.upload-wrap .add-pic-wrap .add-text{
+    display: block;
+    font-size: .18rem;
+    line-height:1;
+    margin-top: .1rem;
+    color: #ccc;
+    text-align: center;
+}
+.upload-input{
+    display:none;
+}
+.refund-method{
+    margin-top: .2rem;
+    background-color: #fff;
+    padding: .4rem .4rem 0;
+    border-top: 1px solid #e8e8e8;
+}
+.refund-method .title{
+    font-size: .3rem;
+    color: #333;
+    line-height: .3rem;
+}
+/*地址*/
+.address-wrap{
+    padding-top: .36rem;
+    background-color: #fff;
+}
+.address-wrap .address-info{
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+    height: 1rem;
+    border-top: 1px solid #e8e8e8;
+    padding: 0 .4rem;
+    line-height: 1rem;
+    font-size: .3rem;
+    color: #333;
+}
+.address-wrap .address-info .address-text{
+    -webkit-flex: 1;
+    flex: 1;
+    margin-left: .2rem;
+    border:0;
+    outline: none;
+    font-size: .3rem;
+}
+.address-wrap .address-info .address-text::-webkit-input-placeholder{
+    color: #eee;
+}
+.address-wrap .address-pic{
+    width: .14rem;
+    margin-left: .14rem;
+}
+.bottom-tips{
+    padding: .6rem .4rem;
+    font-size: .22rem;
+    color: #999;
+}
+.bottom-btn{
+    height: 1rem;
+    line-height: 1rem;
+    background: #dc2828;
+    color: #fff;
+    text-align: center;
+    cursor: pointer;
+    font-size: .34rem;
+}
+/*弹窗*/
+.logistics-modal{
+    position: fixed;
+    top: 0;
+    left:0;
+    right: 0;
+    bottom: 0;
+    max-width: 500px;
+    margin: 0 auto;
+    background-color: rgba(0,0,0,.5);
+}
+.logistics-modal .logistics-modal-content{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right:0;
+    background-color: #fff;
+}
+.logistics-modal .logistics-modal-content .modal-hd{
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+    height: 1rem;
+    border-bottom: 1px solid #e8e8e8;
+}
+.logistics-modal .logistics-modal-content .modal-hd .title{
+    -webkit-flex:1;
+    flex: 1;
+    text-align: center;
+    font-size: .3rem;
+    color: #333;
+}
+.logistics-modal .logistics-modal-content .modal-hd .close{
+    width: .6rem;
+    height: .6rem;
+    margin-right: .3rem;
+    cursor: pointer;
+}
+.logistics-modal .logistics-modal-content .modal-bd{
+    height: 3.4rem;
+    overflow-y: auto;
+}
+.logistics-modal .logistics-modal-content .modal-bd .list{
+    height: .8rem;
+    line-height: .8rem;
+    padding-left: .6rem;
+    font-size: .26rem;
+    color: #333;
+    cursor: pointer;
+}

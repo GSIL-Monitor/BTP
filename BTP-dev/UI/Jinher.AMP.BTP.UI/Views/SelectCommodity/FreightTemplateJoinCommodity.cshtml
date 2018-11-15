@@ -1,0 +1,248 @@
+﻿@using Jinher.JAP.MVC
+@using Jinher.JAP.MVC.UIJquery
+@using Jinher.JAP.MVC.UIJquery.Validate
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "关联商品";
+    bool showAssociated = false;
+    bool.TryParse(Request.QueryString["showAssociated"], out showAssociated);
+}
+@section Css {
+    <link href="/Content/common.css" rel="stylesheet" type="text/css" />
+    <link href="/Content/default/ui.jqgrid.css" rel="stylesheet" type="text/css" />
+    <link href="/Content/default/jquery.ui.jhtablebox.css" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+        body, th, td
+        {
+            font-size: 12px;
+        }
+        .input
+        {
+            border: 1px solid #B8BFCF;
+        }
+        .ui-jqgrid tr.jqgrow
+        {
+            height: 50px;
+        }
+        .radioLabel
+        {
+            width: 120px;
+            display: inline-block;
+            line-height: 30px;
+        }
+    </style>
+}
+<div id="outer" class="formList" style="padding: 5px;">
+    <div id="divMyApp" class="item" style="text-align: center; font-weight: bold; font-size: 15px;">
+        @if (showAssociated)
+        {
+            <text>关联的商品</text>
+        }
+        else
+        { 
+            <text>选择商品</text>
+        }
+    </div>
+    <div class="bor-top" style="margin: 10px 0; clear: both;">
+    </div>
+    <div style="padding-top: 5px; width: 98%;">
+        <div class="item" style="padding-left: 10px;">
+            <span>商品名称：</span>
+            <input class="inp-txt mr10" id="txtCommodityName" maxlength="30" />&nbsp;
+
+            @if (!showAssociated)
+            { 
+            <input type="checkbox" id="chkPromotion" /><label for="chkPromotion">参与店铺促销活动</label>
+            }
+
+            &nbsp; <a id="search" href="javascript:;" type="button" class="btn60">查 询</a>
+
+            @if (showAssociated)
+            { 
+            <a href="javascript:;" id="bulkUnjoin" style="float: right;">批量解除关联</a>
+            }
+        </div>
+        <table id="grid">
+        </table>
+        <div id="pager">
+        </div>
+    </div>
+    <div style="clear: both;">
+    </div>
+    <div class="btn-center" style="padding: 5px 0 5px 0;">
+        @if (!showAssociated)
+        {
+            <a id="confirm" href="javascript:;" class="btn120">确定</a> 
+            <a href="javascript:;" class="btn120">取消</a>
+        }
+    </div>
+</div>
+@section Script{
+    <script type="text/javascript" src="/Scripts/Grid/jquery.grid.base.js"></script>
+    <script type="text/javascript">
+
+        var callbackName = "@(Request.QueryString["callback"])"
+            , commodityIds = []
+            , request = {
+                appId: "@(Request.QueryString["appId"])"
+                , showAssociated: @(showAssociated.ToString().ToLower())
+                , templateId: "@(Request.QueryString["templateId"])"
+                , commodityName: ""
+                , joinPromotion: false
+            };
+
+        function formatPic(cellvalue, opts, rowdata) {
+                return "<img id='img" + opts.rowId + "' src='" + cellvalue + "' style='width:48px;height:48px;' />";
+        }
+
+        @if (showAssociated)
+        {
+        <text>
+        function formatUnjoin(cellvalue, opts, row){
+            return "<a href='javascript:;' onclick='unjoinSingle(\"" + opts.rowId + "\");'>解除关联</a>";
+        }
+        </text>
+        }
+
+        function unjoinSingle(commodityId){
+            unjoinRel([ commodityId ]);
+        }
+
+        function unjoinRel(commodityIds){
+            $.ajax({
+                url: '/freight/unjoinCommodity',
+                type: 'POST',
+                data: JSON.stringify({ templateId: request.templateId, commodityIds: commodityIds }),
+                dataType: 'json',
+                contentType: "application/json",
+                success: function (data) {
+                    if(data.ResultCode == 0){
+                        alert(data.Message);
+                        var page = $('#jqGrid').getGridParam('page');
+                        $("#grid").trigger("reloadGrid", [{ page: page}]);
+                    }
+                },
+                error: function () {
+                    alert('解除绑定失败');
+                }
+            });
+        }
+
+        $(function () {
+
+            $("#grid").jqGrid({
+                datatype: "json",
+                mtype: 'GET',
+                url: "/selectCommodity/freightTemplateCommodityRel?random=" + Math.random() 
+                                                               + "&appId=" + request.appId 
+                                                               + "&templateId=" + request.templateId 
+                                                               + "&showAssociated=" + request.showAssociated
+                                                               + "&joinPromotion=" + request.joinPromotion
+                                                               + "&commodityName=" + request.commodityName 
+                                                               + "&belongTo=" + request.appId,
+                colNames: ['商品图片', '商品名称', '商品价格(元)', '库存'@if (showAssociated)
+                                                          {<text>, '操作'</text>}],
+                colModel: [
+                    { name: 'Pic', index: 'Pic', width: 60, align: "center", sortable: false, formatter: formatPic }
+                    , { name: 'Name', index: 'Name', width: 150, align: "center", sortable: false }
+                    , { name: 'Price', index: 'Price', width: 80, align: "center", sortable: false }
+                    , { name: 'Stock', index: 'Stock', width: 80, align: "center", sortable: false }
+                    @if (showAssociated)
+                    {<text>, { name: 'Id', index: 'Id', width: 80, align: "center", sortable: false, formatter: formatUnjoin }</text>}
+   	            ],
+                rowNum: 20,
+                pager: 'pager',
+                height: 420,
+                pagerAlone: true,
+                autowidth: true,
+                multiselect: true,
+                forceFit: true,
+                rownumbers: true,
+                scroll: false,
+                shrinkToFit: true,
+                onSelectRow: function (rowId, status, event, d, e) {
+                    if (status) {
+                        commodityIds.push(rowId);
+                    }
+                    else
+                    {
+                        var index = $.inArray(rowId, commodityIds);
+
+                        commodityIds.splice(index, 1);
+                    }
+                },
+                onSelectAll: function (rowIds, status, c) {
+                    if(status){
+                        commodityIds = commodityIds.concat(rowIds);
+                    }
+                    else{
+                        commodityIds = [];
+                    }
+                }
+            });
+
+            $("#search").click(function () { 
+
+                commodityIds = [];
+
+                request.commodityName = $.trim($("#txtCommodityName").val());
+                @if (!showAssociated)
+                { 
+                <text>
+                request.joinPromotion = $("#chkPromotion").is(":checked");
+                </text> 
+                }
+
+                console.log("request:" + JSON.stringify(request));
+
+                var url = "/selectCommodity/freightTemplateCommodityRel?random=" + Math.random() 
+                                                                    + "&appId=" + request.appId 
+                                                                    + "&templateId=" + request.templateId 
+                                                                    + "&showAssociated=" + request.showAssociated
+                                                                    + "&joinPromotion=" + request.joinPromotion
+                                                                    + "&commodityName=" + request.commodityName 
+                                                                    + "&belongTo=" + request.appId;
+
+                $("#grid").setGridParam({ url: url }).trigger("reloadGrid", [{ page: 1}]);
+            });
+
+            $("#bulkUnjoin").click(function(){
+                if(commodityIds.length < 1){
+                    alert("请选择商品");
+                    return;
+                }
+                
+                unjoinRel(commodityIds);
+            });
+
+            $("#confirm").click(function(){
+
+                if(commodityIds.length < 1){
+                    alert("请选择商品");
+                    return;
+                }
+
+                $.ajax({
+                    url: '/freight/joinCommodity',
+                    type: 'POST',
+                    data: JSON.stringify({ templateId: request.templateId, commodityIds: commodityIds }),
+                    dataType: 'json',
+                    contentType: "application/json",
+                    success: function (data) {
+                        if(data.ResultCode == 0){
+                            alert(data.Message);
+                            var page = $('#jqGrid').getGridParam('page');
+                            $("#grid").trigger("reloadGrid", [{ page: page}]);
+                        }
+                    },
+                    error: function () {
+                        alert('绑定失败');
+                    }
+                });
+            })
+            .next().click(function(){
+                window.parent[callbackName]();
+            });
+        });
+    </script>
+}

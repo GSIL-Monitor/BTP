@@ -1,0 +1,567 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="/Scripts/jquery.js?ver=7757bab5c91f419d13f5270ec02c4a22?ver=7757bab5c91f419d13f5270ec02c4a22"></script>
+    <script type="text/javascript" src="/Scripts/jquery.extend.js?ver=5f72ce43692142e564f929327113e6e7?ver=5f72ce43692142e564f929327113e6e7"></script>
+    <script type="text/javascript" src="/Scripts/jquery.ui.base.js?ver=b865b3fb0d08f9ab60dbc1dd136f3e9c?ver=b865b3fb0d08f9ab60dbc1dd136f3e9c"></script>
+    <script type="text/javascript" src="/Scripts/i18n/jquery.ui-zh.js?ver=5f42af395c46fc93078e2579b49d2e18?ver=5f42af395c46fc93078e2579b49d2e18"></script>
+    <script type="text/javascript" src="/Scripts/TableBox/jquery.ui.jhtablebox.js?ver=14293ffc0c24e322ebef8a36d4074a9b?ver=14293ffc0c24e322ebef8a36d4074a9b"></script>
+    <link type="text/css" href="/Content/default/jquery.ui.all.css?ver=9eb9d931f1f3eb1cfce8667e3640588c?ver=9eb9d931f1f3eb1cfce8667e3640588c" rel="stylesheet" />
+    <script src="/Scripts/Pager/jquery.ui.jhpager.js?ver=5f5142506e6c4f3a0ab6879c63a50890?ver=5f5142506e6c4f3a0ab6879c63a50890" type="text/javascript"></script>
+    <script src="/Scripts/jquery.cookie.js?ver=8300eb5446df027b01ddd21e03c361b4" type="text/javascript"></script>
+    <script src="/Content/Business/BusinessAllEvent.js?ver=fd5e037582060c4425146fd72c319de9"></script>
+    <link href="/Content/css/style.css?ver=cd311b9afa634d245782a4c25d30c3b8" rel="stylesheet" type="text/css" />
+    
+    
+    <script>
+		try{
+			var rootPath = "/";
+		    var arr = window.location.host.split('.');
+		    if (arr.length > 0) {
+		        document.domain =  arr[arr.length - 2] +"."+ arr[arr.length - 1];
+		    }
+			//document.domain = "iuoooo.com";
+		}catch(err){}
+//		$(function() {
+//		    var currency = '&#165;';
+//		    if (!currency || currency == "￥")
+//		        return;
+//		    $("body :not(script)").each(function() {
+//		        var $this = $(this);
+//		        var text = $this.html();
+//		        if (text.indexOf("￥") >= 0) {
+//		            $this.html(text.replace(new RegExp(/(￥)/g),currency));
+//		        }
+//		    });
+//		});
+		function getCurrency() {
+		    return $("#appCurrency").val();
+		}
+    </script>
+    
+    
+</head>
+<body>
+    <!DOCTYPE html>
+<html>
+<head>	
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>商品明细报表</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="/Content/css/common.css?ver=3d75634277020d78bdf662df7d52d409" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.all.css?ver=9eb9d931f1f3eb1cfce8667e3640588c?ver=9eb9d931f1f3eb1cfce8667e3640588c" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/ui.jqgrid.css?ver=2fe1621998866f271fa02663c2a5551e" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.datepicker.css?ver=d966464252d195af2c9c4b26393534f5" />
+    <link rel="stylesheet" type="text/css" href="/Scripts/bigautocomplete/jquery.bigautocomplete.css?ver=5e6b5255e0638c5f23d7bfc7b579ec12" />
+    <style>
+         .ui-jqgrid tr.jqgrow td {          
+            border-collapse: collapse;
+            line-height: 1.5em;
+            border: 1px solid #ccc;
+            padding: 0.1em;
+             white-space: normal !important;   
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+     <form id="FormExcel" action="/CommodityChanged/ExportExcelData" method="post">
+     <input type="hidden" name="hidSupplierCode" id="hidSupplierCode" />
+     <input type="hidden" name="hidEsAppid" id="hidEsAppid" />
+     <input type="hidden" name="hidAppId" id="hidAppId" />
+     <input type="hidden" name="hidName" id="hidName" />
+     <input type="hidden" name="hidJDCode" id="hidJDCode" />
+     <input type="hidden" name="hidBarcode" id="hidBarcode" />
+     <input type="hidden" name="hidSubName" id="hidSubName" />
+     <input type="hidden" name="hidModName" id="hidModName" />
+     <input type="hidden" name="hidSubStarTime" id="hidSubStarTime" />
+     <input type="hidden" name="hidSubEndTime" id="hidSubEndTime" />
+     <input type="hidden" name="hidModStarTime" id="hidModStarTime" />
+     <input type="hidden" name="hidModEndTime" id="hidModEndTime" />
+     <input type="hidden" name="hidState" id="hidState" />
+    </form>
+    <input type="hidden" id="hidESAppId" value="@ViewBag.appId" />
+    <!--查询条件-->
+    <div class="SearchArea ml10">        
+        <div class="mt10">
+             供应商名称：
+            <input type="text" id="txtSupName" class="inp-txt w120" />
+             供应商编码：
+            <input type="text" id="txtSupCode" class="inp-txt w120" />
+             APP名称：
+            <input type="text" id="txtAppName" class="inp-txt w130" />
+             商品名称：
+            <input type="text" id="txtName" class="inp-txt w130" />
+             备注编码：
+            <input type="text" id="txtJDCode" class="inp-txt w130" />
+             条形码：
+            <input type="text" id="txtBarcode" class="inp-txt w130" />
+        </div>
+        <div class="mt10">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;发布人：
+             <input type="text" id="txtSubName" class="inp-txt w120" />
+            发布时间：
+            <input type="text" id="txtSubStarTime" class="date-time inp-txt w60" />至
+            <input type="text" id="txtSubEndTime" class="date-time inp-txt w60" />
+            修改人：
+             <input type="text" id="txtModName" class="inp-txt w120" />
+            修改时间：
+            <input type="text" id="txtModStarTime" class="date-time inp-txt w60" />至
+            <input type="text" id="txtModEndTime" class="date-time inp-txt w60" />
+            商品状态：
+			<select id="txtState" class="inp-txt w120" style="width:160px;height:28px">
+                <option value="-1">全部</option>
+                <option value="0">在售中</option>
+                <option value="1">已下架</option>
+                <option value="3">已删除</option>
+            </select> 
+            <a class="btn80" id="btnSearch" href="javascript:;" style="/*margin-left:10px;*/">查询</a>
+			<a href="javascript:;" class="reset btn80" onclick="toResetSearch()" id="reset" style="margin-left:5px;">重置</a>           
+                            
+        </div>
+    </div>
+    <!--合计-->
+    <div class="TotalArea mt10 tr mr20">
+		 <span >共<label id="totalnum"></label>种商品&nbsp;&nbsp;&nbsp;<label id="onsale"></label>种出售中&nbsp;&nbsp;&nbsp; <label id="outsale"></label>种已下架&nbsp;&nbsp;&nbsp;<label id="isdel"></label>种已删除</span>
+         <a href="javascript:void(0)" class="btn80 ml10" id="btnExport" >导出</a> 
+    </div>
+    <!--表格-->
+    <div class="GridArea mt10 ml10" style="overflow-x:auto;width=150%">	
+        <table id="jqGrid" >
+        </table>
+	
+        <div id="jqGridPager">
+        </div>
+    </div>    
+</body>
+</html>
+
+<script type="text/javascript" src="/Scripts/jquery.js?ver=7757bab5c91f419d13f5270ec02c4a22?ver=7757bab5c91f419d13f5270ec02c4a22"></script>
+<script type="text/javascript" src="/Scripts/jquery.extend.js?ver=5f72ce43692142e564f929327113e6e7?ver=5f72ce43692142e564f929327113e6e7"></script>
+<script type="text/javascript" src="/Scripts/jquery.ui.base.js?ver=b865b3fb0d08f9ab60dbc1dd136f3e9c?ver=b865b3fb0d08f9ab60dbc1dd136f3e9c"></script>
+<script type="text/javascript" src="/Scripts/i18n/jquery.ui-zh.js?ver=5f42af395c46fc93078e2579b49d2e18?ver=5f42af395c46fc93078e2579b49d2e18"></script>
+<script type="text/javascript" src="/Scripts/Grid/jquery.grid.base.js?ver=815ae060e626a32174018eb8938b69f8"></script>
+<script type="text/javascript" src="/Scripts/Pager/jquery.ui.jhpager.js?ver=5f5142506e6c4f3a0ab6879c63a50890?ver=5f5142506e6c4f3a0ab6879c63a50890"></script>
+<script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.datepicker.js?ver=6f7f07cca996776e5d644807c367cd9e"></script>
+<script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.jhdatetime.js?ver=e1208f6c37a0efc7052ca9c5229e5745"></script>
+<script type="text/javascript" src="/Scripts/i18n/jquery.ui.datepicker-zh.js?ver=86ff9238743841e9def6e1e23bb3ab44"></script>
+<script type="text/javascript" src="/Scripts/bigautocomplete/jquery.bigautocomplete.js?ver=d7af3e8b692b8d46e9bea14c5a115ed2"></script>
+<script type="text/javascript" src="/Scripts/TableBox/jquery.ui.jhtablebox.js?ver=14293ffc0c24e322ebef8a36d4074a9b?ver=14293ffc0c24e322ebef8a36d4074a9b" ></script>
+<script type="text/javascript" src="/Scripts/CommLib.js?ver=9a561a2e1afac4673b7db3ec2bd76391"></script>
+<script type="text/javascript">
+    var curApp = null;
+    var curEsapp=null;
+    var curcode=null;
+    //获取商户应用
+    function GetApp() {
+        var appName = $.trim($("#txtAppName").val());
+        if (appName.length == 0) {
+            return { AppId: "00000000-0000-0000-0000-000000000000", AppName: "" };
+        } else {
+            if (curApp && curApp.title == appName)
+                return { AppId: curApp.result, AppName: "" };
+            else
+                return { AppId: "00000000-0000-0000-0000-000000000000", AppName: appName };
+        }
+    }    
+    //获取供货商
+    function GetEsApp() {
+        var SupplyName = $.trim($("#txtSupName").val());                     
+        if (SupplyName.length == 0) {
+            return { SupplyCode: "", SupplyName: "" };
+        } else {
+            if (curEsapp && curEsapp.title == SupplyName){                
+                return { SupplyCode: curEsapp.code, SupplyName: SupplyName };
+            }else
+                return { SupplyCode: "", SupplyName:"" };
+        }
+    }    
+    //获取供货商code
+    function GetSupCode() {
+        var SupCode = $.trim($("#txtSupCode").val());
+        if (SupCode.length == 0) {
+            return { SupplyCode: "", SupplyName: ""  };
+        } else {
+            if (curcode && curcode.code == SupCode)
+                return { SupplyCode: curEsapp.code, SupplyName: SupplyName};
+            else
+                return {  SupplyCode: "", SupplyName: "" };
+        }
+    }         
+    //初始化表格
+    function InitGrid() {   
+        var app = GetApp();
+        var esapp=GetEsApp();        
+        var data = {
+             "SupplierCode": esapp.SupplyCode,
+             "EsAppid": $("#hidESAppId").val(),
+             "AppId": app.AppId,
+             "Name": $.trim($("#txtName").val()),
+             "JDCode": $.trim($("#txtJDCode").val()),
+             "Barcode": $.trim($("#txtBarcode").val()),
+             "SubName": $.trim($("#txtSubName").val()),
+             "ModName": $.trim($("#txtModName").val()),
+             "SubStarTime": $.trim($("#txtSubStarTime").val()),
+             "SubEndTime": $.trim($("#txtSubEndTime").val()),
+             "ModStarTime": $.trim($("#txtModStarTime").val()),
+             "ModEndTime": $.trim($("#txtModEndTime").val()),
+             "State": $.trim($("#txtState").val())
+        };
+        $("#jqGrid").jqGrid({
+            datatype: "json",
+            postData: data,
+            url: "/CommodityChanged/GetCommodityChangedList",
+            mtype: 'POST',
+            colModel: [
+                { sortable: false, label: '供应商名称', name: 'SupplierName', align: "center", width: 100 },
+                { sortable: false, label: '供应商类型', name: 'SupplierTypeName', align: "center", width: 100 },
+                { sortable: false, label: 'APP名称', name: 'AppName',align:"center", width: 100 },
+                { sortable: false, label: '商品条码', name: 'Barcode',align:"center", width: 120 },
+                { sortable: false, label: '商品类型', name: 'CommodityTypeName',align:"center", width: 100 },
+                { sortable: false, label: '活动编码', name: 'YJCouponActivityId',align:"center", width: 100 },
+                { sortable: false, label: '类型编码', name: 'YJCouponType',align:"center", width:100 },
+				{ sortable: false, label: '商品编号', name: 'No_Code',align:"center", width:100 },
+                { sortable: false, label: '备注编码', name: 'JDCode',align:"center", width: 120 },
+                { sortable: false, label: '商品名称', name: 'Name',align:"center", width: 180 },
+                { sortable: false, label: '市场价', name: 'MarketPrice',align:"center", width: 90 },
+                { sortable: false, label: '商品现价', name: 'Price',align:"center", width: 90 },
+                { sortable: false, label: '进货价', name: 'CostPrice',align:"center", width: 90 },
+                { sortable: false, label: '税收编码', name: 'TaxClassCode',align:"center", width: 120 },
+                { sortable: false, label: '销项税', name: 'TaxRate',align:"center", width: 90 },
+                { sortable: false, label: '进项税', name: 'InputRax',align:"center", width: 90 },
+                { sortable: false, label: '商品属性', name: 'ComAttribute',align:"center", width: 120 },
+                { sortable: false, label: '计价单位', name: 'Unit',align:"center", width: 80 },
+                { sortable: false, label: '发布人', name: 'SubCode',align:"center", width: 150 ,formatter:Format_subname},
+                { sortable: false, label: '发布时间', name: 'SubTime',align:"center", width: 120 ,formatter:Format_subtime},
+                { sortable: false, label: '修改人', name: 'ModifiedName',align:"center", width: 150,formatter:Format_modname },
+                { sortable: false, label: '修改时间', name: 'ModifiedOn',align:"center", width: 120,formatter:Format_modTime},
+				{ sortable: false, label: '状态', name: 'State',align:"left", width: 110,formatter:Format_state}                              
+            ],
+            //rowNum: 20,
+            pager: '#jqGridPager',
+            height: 700,
+            loadonce:false,  			
+            //shrinkToFit: false,
+            forceFit: true,
+            rownumbers: true,			
+            gridComplete: function () {
+              //加载统计数据
+              gettotalnum();
+            }
+        });
+    }    
+   //格式化提交人
+    function Format_subname(cellvalue, options, rowObject){
+        var str="";
+        str += ""+rowObject[18]+"";                
+        str += "<br/>"+rowObject[23]+"";
+        return str;
+    }
+    //格式化申请人
+    function Format_modname(cellvalue, options, rowObject){        
+		var str="";
+		if(rowObject[19]==rowObject[21]){
+            str += "";  
+        }else{
+			if(rowObject[20]!=""){
+			str += ""+rowObject[20]+"<br/>"; 
+			}
+			if(rowObject[24]!=null){
+			str += ""+rowObject[24]+"";
+			}   
+        }		
+        return str;
+    }
+    //格式化发布时间
+    function Format_subtime(cellvalue, options, rowObject){
+        var str="";
+        var i= rowObject[19].indexOf(' ');        
+        str+=""+rowObject[19].substring(0,i)+"";
+        str += "<br/>"+rowObject[19].substring(i,30)+"";  
+        return str;
+    }
+    //格式化修改时间
+    function Format_modTime(cellvalue, options, rowObject){
+        var str="";
+        if(rowObject[19]==rowObject[21]){
+            str += "";  
+        }else{
+        var i= rowObject[21].indexOf(' ');        
+        str+=""+rowObject[21].substring(0,i)+"";
+        str += "<br/>"+rowObject[21].substring(i,30)+"";  
+        }       
+        return str;
+    }
+	  //格式化状态
+    function Format_state(cellvalue, options, rowObject){
+        var str="";
+        if(rowObject[26]=='False'){
+        if(rowObject[25]==0) {return str="出售中";}
+        if(rowObject[25]==1) {return str="已下架";} 
+        }else{
+         return str="已删除";
+        }     
+    }
+    //加载统计数据
+    function gettotalnum() {
+            var app = GetApp();
+            var esapp=GetEsApp();  
+            if ($("#txtSubStarTime").val() != "" && $("#txtSubEndTime").val() != "") {
+                var substartTime = new Date($("#txtSubStarTime").val().replace(/\-/g, "\/"));
+                var subendTime = new Date($("#txtSubEndTime").val().replace(/\-/g, "\/"));
+                if (substartTime > subendTime) {
+                    alert('发布开始时间不能大于结束时间！');
+                    return false;
+                }
+            }    
+		    if ($("#txtModStarTime").val() != "" && $("#txtModEndTime").val() != "") {
+                var modstartTime = new Date($("#txtModStarTime").val().replace(/\-/g, "\/"));
+                var modendTime = new Date($("#txtModEndTime").val().replace(/\-/g, "\/"));
+                if (modstartTime > modendTime) {
+                    alert('修改开始时间不能大于结束时间！');
+                    return false;
+                }
+            }           
+            var data = {
+                "SupplierCode": esapp.SupplyCode,
+                "EsAppid": $("#hidESAppId").val(),
+                "AppId": app.AppId,
+                "Name": $.trim($("#txtName").val()),
+                "JDCode": $.trim($("#txtJDCode").val()),
+                "Barcode": $.trim($("#txtBarcode").val()),
+                "SubName": $.trim($("#txtSubName").val()),
+                "ModName": $.trim($("#txtModName").val()),
+                "SubStarTime": $.trim($("#txtSubStarTime").val()),
+                "SubEndTime": $.trim($("#txtSubEndTime").val()),
+                "ModStarTime": $.trim($("#txtModStarTime").val()),
+                "ModEndTime": $.trim($("#txtModEndTime").val()),
+                "State": $.trim($("#txtState").val())
+            };
+            $.ajax({
+            url: '/CommodityChanged/GetTotalNum',
+            type: 'post',
+            data: data,
+            success:function(res){                 
+                $("#totalnum").text(res.data[0].totalGoods);
+                $("#onsale").text(res.data[0].selling);
+                $("#outsale").text(res.data[0].soldout);
+                $("#isdel").text(res.data[0].isdel);                
+           }
+        });
+            
+        }
+    //刷新列表
+    function RefreshList(pageNo) {       
+        var isPageNo = typeof (pageNo) == "number";
+        if (isPageNo) {
+            if (pageNo <= 0) pageNo = $("#jqGrid").getGridParam("page");
+        } else {
+            pageNo = $("#jqGrid").getGridParam("page");
+        }
+        var app = GetApp();
+        var esapp=GetEsApp(); 
+		if ($("#txtSubStarTime").val() != "" && $("#txtSubEndTime").val() != "") {
+                var substartTime = new Date($("#txtSubStarTime").val().replace(/\-/g, "\/"));
+                var subendTime = new Date($("#txtSubEndTime").val().replace(/\-/g, "\/"));
+                if (substartTime > subendTime) {
+                    window.alert('发布开始时间不能大于结束时间！');
+                    return false;
+                }
+            }    
+		if ($("#txtModStarTime").val() != "" && $("#txtModEndTime").val() != "") {
+                var modstartTime = new Date($("#txtModStarTime").val().replace(/\-/g, "\/"));
+                var modendTime = new Date($("#txtModEndTime").val().replace(/\-/g, "\/"));
+                if (modstartTime > modendTime) {
+                    alert('修改开始时间不能大于结束时间！');
+                    return false;
+                }
+            }       
+        var data = {
+             "SupplierCode": esapp.SupplyCode,
+             "EsAppid": $("#hidESAppId").val(),
+             "AppId": app.AppId,
+             "Name": $.trim($("#txtName").val()),
+             "JDCode": $.trim($("#txtJDCode").val()),
+             "Barcode": $.trim($("#txtBarcode").val()),
+             "SubName": $.trim($("#txtSubName").val()),
+             "ModName": $.trim($("#txtModName").val()),
+             "SubStarTime": $.trim($("#txtSubStarTime").val()),
+             "SubEndTime": $.trim($("#txtSubEndTime").val()),
+             "ModStarTime": $.trim($("#txtModStarTime").val()),
+             "ModEndTime": $.trim($("#txtModEndTime").val()),
+             "State": $.trim($("#txtState").val())
+        };
+        $('#jqGrid').jqGrid('setGridParam', {
+            datatype: "json",
+            postData: data,
+            url: "/CommodityChanged/GetCommodityChangedList",
+            mtype: 'POST'
+        });
+        $('#jqGrid').trigger("reloadGrid", [
+            {
+                page: pageNo
+            }
+        ]);
+    }
+    //导出数据
+    function DownExcel() {
+        var app = GetApp();
+        var esapp=GetEsApp();  
+        var SupplierCode=esapp.SupplyCode;
+        var EsAppid=$("#hidESAppId").val();
+        var AppId=app.AppId;
+        var Name= $.trim($("#txtName").val());
+        var JDCode= $.trim($("#txtJDCode").val());
+        var Barcode= $.trim($("#txtBarcode").val());
+        var SubName= $.trim($("#txtSubName").val());
+        var ModName=$.trim($("#txtModName").val());
+        var SubStarTime=$.trim($("#txtSubStarTime").val());
+        var SubEndTime=$.trim($("#txtSubEndTime").val());
+        var ModStarTime=$.trim($("#txtModStarTime").val());
+        var ModEndTime=$.trim($("#txtModEndTime").val());
+        var State=$.trim($("#txtState").val());
+        if ($("#txtSubStarTime").val() != "" && $("#txtSubEndTime").val() != "") {
+                var substartTime = new Date($("#txtSubStarTime").val().replace(/\-/g, "\/"));
+                var subendTime = new Date($("#txtSubEndTime").val().replace(/\-/g, "\/"));
+                if (substartTime > subendTime) {
+                    alert('发布开始时间不能大于结束时间！');
+                    return false;
+                }
+            }    
+		if ($("#txtModStarTime").val() != "" && $("#txtModEndTime").val() != "") {
+                var modstartTime = new Date($("#txtModStarTime").val().replace(/\-/g, "\/"));
+                var modendTime = new Date($("#txtModEndTime").val().replace(/\-/g, "\/"));
+                if (modstartTime > modendTime) {
+                    alert('修改开始时间不能大于结束时间！');
+                    return false;
+                }
+            }           
+        var data = {
+             "SupplierCode":SupplierCode,
+             "EsAppid":EsAppid,
+             "AppId": AppId,
+             "Name":Name,
+             "JDCode": JDCode,
+             "Barcode":Barcode,
+             "SubName": SubName,
+             "ModName": ModName,
+             "SubStarTime": SubStarTime,
+             "SubEndTime": SubEndTime,
+             "ModStarTime": ModStarTime,
+             "ModEndTime": ModEndTime,
+             "State":State
+        };
+            $.ajax({
+                url: '/CommodityChanged/ExportData',
+                type: 'post',
+                data: data,
+                success: function (res) {
+                    if(res.data>0){
+					alert("正在为您导出数据,请稍候..."); 
+                    $("#hidSupplierCode").val(SupplierCode);
+                    $("#hidEsAppid").val(EsAppid);
+                    $("#hidAppId").val(AppId);
+                    $("#hidName").val(Name);
+                    $("#hidJDCode").val(JDCode);
+                    $("#hidBarcode").val(Barcode);
+                    $("#hidSubName").val(SubName);
+                    $("#hidModName").val(ModName);
+                    $("#hidSubStarTime").val(SubStarTime);
+                    $("#hidSubEndTime").val(SubEndTime);
+                    $("#hidModStarTime").val(ModStarTime);
+                    $("#hidModEndTime").val(ModEndTime);
+                    $("#hidState").val(State);
+                    $("#FormExcel").submit(); 					
+                    }
+                    else {
+                        alert("没有找到要导出的数据");                       
+                    }
+                }
+            });
+        }
+    function toResetSearch() {
+            
+
+            //重置所有选择框。
+            $(".SearchArea input[type='text']").val("");
+            $("#txtState").val("-1");
+
+        }
+    //调整页面布局
+    function AdjustLayout() {
+        $("#jqGrid").setGridWidth($(window).width() - 25);
+        $("#jqGrid").setGridHeight($(window).height() - $(".SearchArea").height() - $(".TotalArea").height() - 90);
+    }
+    //初始化事件
+    function InitEvent() {        
+        //智能匹配商家名称
+        $("#txtAppName").bigAutocomplete({
+            url: "/CommodityChanged/GetMallAppInfo?esAppId=" + $("#hidESAppId").val(),
+            callback: function (data) {
+                curApp = data;
+            }
+        });
+		//智能匹配供应商名称
+        $("#txtSupName").bigAutocomplete({
+            url: "/CommodityChanged/GetSupplierInfo?esAppId=" + $("#hidESAppId").val(),
+            callback: function (data) {                
+                curEsapp = data;                
+				$("#txtSupCode").val(data.code);
+				$("#txtSupName").val(data.title);
+            }
+        });
+		//智能匹配供应商code
+        $("#txtSupCode").bigAutocomplete({
+            url: "/CommodityChanged/GetSupplierCode?esAppId=" + $("#hidESAppId").val(),
+            callback: function (data) {
+                curcode = data.code;
+                $("#txtSupCode").val(data.title);
+				$("#txtSupName").val(data.code);
+            }
+        });		
+		 //清除供应商
+        $("#txtSupName,#txtSupCode").on("input propertychange", function () {
+            if ($.trim($(this).val()).length == 0) {
+                $("#txtSupName,#txtSupCode").val("");
+            }
+        });
+        //绑定日期控件
+        var today = new Date();
+        //today.setDate(today.getDate() - 1);        
+        $(".date-time").attr("ReadOnly", "true").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            showOtherMonths: true,
+            selectOtherMonths: true,
+            numberOfMonths: 1,
+            maxDate: new Date()
+        });
+        //查询
+        $("#btnSearch").click(function () {
+            RefreshList();
+        });   
+		//导出
+		$("#btnExport").click(function () {
+            DownExcel();
+        });   
+    }
+    //页面加载完成
+    $(function () {
+        //初始化事件
+        InitEvent();
+        //初始化表格
+        InitGrid();        
+        //调整页面布局
+        AdjustLayout();
+        $(window).resize(function () {
+            AdjustLayout();
+        });
+    });
+</script>
+
+    <input id="appCurrency" type="hidden" value="&#165;" />
+</body>
+</html>

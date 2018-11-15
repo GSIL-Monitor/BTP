@@ -1,0 +1,138 @@
+﻿@{
+    ViewBag.Title = "拼团管理";
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.DiyGroupManageVM> diyOrderList = ViewBag.diyOrderList;
+}
+@helper GetdiyState(Jinher.AMP.BTP.Deploy.CustomDTO.DiyGroupManageVM diyOrderList)
+    {
+        switch (diyOrderList.DiyGroupState)
+        {
+            case 1:
+    <text>待成团</text>
+            break;
+           case 2:
+    <text>组团成功</text>
+            break;
+           case 3:
+    <text>组团成功</text>
+            break;
+           case 4:
+    <text>未成团</text>
+            break;
+           case 5:
+    <text>未成团</text>
+            break;
+           case 6:
+    <text>未成团</text>
+            break;
+           default:
+          break;
+        }
+
+}
+
+<input type="hidden" id="rowcounts" value="@ViewBag.Count"/>
+
+ <table class="m_talbe" style="color: #8C94A9; table-layout: fixed; word-break: break-all; width: 100%; border: 1px solid #8C94A9"  cellspacing="0" cellpadding="0">
+     
+     <thead>
+         <tr class="t_tr1" >
+             <td width="18%">
+                 拼团编号
+             </td>
+             <td width="18%">
+                 拼团商品
+             </td>
+             <td width="7%">
+                 拼团价格
+             </td>
+             <td width="7%">
+                 成团人数
+             </td>
+             <td width="18%">
+                 订单编号
+             </td>
+             <td width="16%">
+                 参团人员
+             </td>
+             <td width="8%">
+                 拼团状态
+             </td>
+             <td width="8%">
+                 操作
+             </td>
+         </tr>
+     </thead>
+   
+     <tbody>
+         @foreach (Jinher.AMP.BTP.Deploy.CustomDTO.DiyGroupManageVM diyGroupManageVM in diyOrderList)
+         {
+             if (diyGroupManageVM.OrderDataList.Count > 0 && diyGroupManageVM.OrderDataList != null)
+             {
+                 var count = diyGroupManageVM.OrderDataList.Count;
+
+                 for (var i = 0; i < count; i++)
+                 {
+                     var orderDataLists = diyGroupManageVM.OrderDataList;
+                     Jinher.AMP.BTP.Deploy.CustomDTO.DiyGroupManageMM orderDataList = orderDataLists[i];
+                     <tr class="t_tr2">
+                         @if (i == 0)
+                         {
+                             <td style="text-align: center" rowspan="@count" >@diyGroupManageVM.DiyGroupNumber
+                             </td>
+                             <td style="text-align: center" rowspan="@count">@diyGroupManageVM.DiyGroupName
+                             </td>
+                             if (@diyGroupManageVM.DiyGroupPrice <= 0)
+                             {
+                                 <td style="text-align: center" rowspan="@count">@diyGroupManageVM.OrderDataList[0].DiyGroupPrice
+                                 </td>
+                             }
+                             else
+                             {
+                                 <td style="text-align: center" rowspan="@count">@diyGroupManageVM.DiyGroupPrice
+                                 </td>
+                             }
+                             <td style="text-align: center" rowspan="@count" >@diyGroupManageVM.DiyGroupCount
+                             </td>
+                         }
+                         <td ><p id="orderDetail" class="orderDetail" onclick="orderDetail(this,'@orderDataList.DiyGroupOrderId')">@orderDataList.DiyGroupOrderCode</p>
+                         </td>
+                         <td >@orderDataList.DiyGroupPersonCode
+                            @if (orderDataList.DiyGroupPersonRole == 0)
+                            {
+                                 <span>(团长)</span>
+                            }
+                            else if (orderDataList.DiyGroupPersonRole == 1)
+                            {
+                             <span>(团员)</span>
+                            }
+                                      
+                         </td>
+                         <td >
+                             @GetdiyState(diyGroupManageVM)
+                         </td>
+                         @if (i == 0)
+                         {
+                             <td style="text-align: center" rowspan="@count">
+                                 @switch (diyGroupManageVM.DiyGroupState)
+                                 {
+                                     case 2: 
+                                         <p id="cg" class="cgcl" onclick="cgbt(this,'@diyGroupManageVM.DiyId')">确认成团</p>
+                                                                                break;
+                                     case 4:
+                                         <p id="tk" class="tkcl" onclick="tkbt(this,'@diyGroupManageVM.DiyId')">退款</p>
+                                                                                break;
+                                     default:
+                                                                                break;
+                                 }
+                             </td>
+                         }
+                     </tr>   
+                 }
+             }
+         }
+     </tbody>
+     
+ </table>
+
+
+                

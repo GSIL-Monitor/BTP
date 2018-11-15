@@ -1,0 +1,376 @@
+body {
+    background: #eee;
+    font-family: 'Microsoft Yahei';
+}
+/*头部*/
+.process-header{
+    height: .88rem;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 0 .3rem;
+    border-bottom-color: #dbd6d6;
+}
+.process-header a {
+    height: 22px;
+    line-height: 22px;
+    text-align: center;
+}
+.process-header a.pull-left{
+    width: .44rem;
+    height: .44rem;
+    margin-top: .2rem;
+}
+.process-header a.pull-left img{
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+.process-header .title {
+    line-height: .88rem;
+    margin: 0 -.3rem;
+    font-size: .36rem;
+}
+/*内容*/
+.bar-nav~.content {
+    padding-top: .88rem;
+}
+.sure-order {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    padding-bottom: .98rem;
+}
+/*添加收货地址*/
+.add-receiving-information{
+    height: 1.52rem;
+}
+.add-receiving-information a{
+    display: block;
+}
+.add-receiving-information, .receiving-information {
+    position: relative;
+    margin-bottom: .2rem;
+    background: #fff;
+}
+.add-receiving-information img{
+    float: left;
+    height: .44rem;
+    margin-left: 1.72rem;
+    margin-top: .56rem;
+}
+.add-receiving-information span{
+    float: left;
+    padding-left: .2rem;
+    font-size: .28rem;
+    color: #333;
+    line-height: 1.52rem;
+    margin-top: .03rem;
+}
+/*显示收货地址*/
+.receiving-information{
+    display: flex;
+    padding-top: .14rem;
+    padding-left: .24rem;
+    padding-right: .14rem;
+    font-size: .28rem;    
+    color: #000;
+}
+.receiving-information .info {
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+    flex: 1;
+}
+.receiving-information .icon, .receiving-information .angle-right {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-pack: center;
+    -webkit-box-orient: vertical;
+    -webkit-align-items: center;
+    align-items: center;
+}
+.receiving-information .icon{
+    margin-right: .2rem;
+}
+.receiving-information .icon img{
+    height: .44rem;
+}
+.receiving-information .name-tel {
+    font-weight: bold;
+    line-height: .28rem;
+    margin-bottom: .15rem;
+}
+.receiving-information .address-detail
+{
+    margin-bottom: .3rem;
+    }
+.receiving-information .address {
+    line-height: .38rem;
+}
+.receiving-information .info .address span{
+    display: block;
+    float:left;
+}
+.add-receiving-information:after, .receiving-information:after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: .1rem;
+    width: 100%;
+    background: #fff url(/Content/style/images/dizhilan.png) bottom no-repeat;
+    -webkit-background-size: 100%;
+    background-size: 100%;
+}
+.receiving-information .angle-right img {
+    width: .44rem;
+    height: .44rem;
+}
+.pay-intro{
+    background: #fff;
+    margin-bottom: .2rem;
+}
+.pay-intro .title{
+    height: .64rem;
+    line-height: .64rem;
+    padding-left: .21rem;
+    font-size: .28rem;
+    border-bottom: solid 1px #eee;
+}
+.pay-intro .title img{
+    width: .42rem;
+    vertical-align: middle;
+}
+.pay-intro .title span{
+    margin-left: .1rem;
+}
+.pay-intro .title span:nth-child(3){
+    color: #e4393c;
+    margin-right: .3rem;
+    float: right;
+}
+
+.pay-intro .com-detail{
+    position :relative;
+    display: -webkit-box;
+    -webkit-box-flex: 1;
+    height: 1rem;
+}
+.pay-intro .com-detail .com-detail-wb{
+    margin-left: .3rem;
+    margin-right: .3rem;
+    width: 5.8rem;
+    border-bottom: solid 1px #eee;
+}
+.pay-intro .com-detail .com-detail-wb .com-two{
+    width: 4.6rem;
+}
+.pay-intro .com-detail .com-detail-wb .com-two .com-name{
+    width: 3.6rem;
+    height: 1rem;
+    padding: .18rem 0 .2rem 0;
+    float: left;
+    box-sizing: border-box;
+    position: relative;
+}
+.pay-intro .com-detail .com-detail-wb .com-two .com-name .com-change{
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.pay-intro .com-detail .com-detail-wb .com-two .com-name .com-change .com-name-one{
+    font-size: .28rem;
+    line-height: .28rem;
+}
+.pay-intro .com-detail .com-detail-wb .com-two .com-name .com-change .com-name-one .dish{
+	display: inline-block;
+	width: 3rem;
+	overflow: hidden;
+    text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.pay-intro .com-detail .com-detail-wb .com-two .com-name .com-change .com-name-two{
+    font-size: .22rem;
+    color: #757575;
+    line-height: .22rem;
+    margin-top: .16rem;
+    width: 3rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pay-intro .com-detail .com-detail-wb .com-two .com-number{
+    width: 1rem;
+    height: 1rem;
+    float: left;
+    font-size: .28rem;
+    color: #757575;
+    line-height: 1rem;
+}
+.pay-intro .com-detail .com-detail-wb .total-price-finish{
+    font-size: .28rem;
+    margin-right: .3rem;
+    -webkit-box-flex: 1;
+    text-align: right;
+    transform: translateY(-50%);
+    position: absolute;
+    top: 50%;
+    right: 0;
+    line-height: .28rem;
+}
+
+.pay-intro .com-intro{
+    height: 2.5rem;
+    padding-top: .2rem;
+}
+.pay-intro .com-intro ul{
+    margin-left: .3rem;
+}
+.pay-intro .com-intro ul li{
+    color: #999;
+    padding: 0 .3rem 0 0;
+    line-height: .28rem;
+    border-bottom: 0px solid #e8e8e8;
+    font-size: .28rem;
+    margin-top: .18rem;
+}
+.pay-intro .com-intro ul li span{
+    float: right;
+}
+.pay-intro .com-intro .com-price{
+    margin-top: .02rem;
+}
+.pay-intro .com-intro .fee span{
+    margin-top: .04rem;
+}
+.pay-intro .com-intro .coupon span{
+    margin-top: .04rem;
+}
+.pay-intro .com-intro .total span{
+    margin-top: .04rem;
+}
+/*备注*/
+.remark{
+    background: #fff;
+    height: .7rem;
+    line-height: .7rem;
+    position: relative;
+}
+.remark .remark-title{
+    font-size: .28rem;
+    margin-left: .3rem;
+    line-height: .7rem;
+    display: block;
+    float: left;
+    color: #757575;
+}
+.remark input{
+    font-size: .24rem;
+    padding-top: .05rem;
+    margin: 0;
+    border: none;
+    height: .7rem;
+    line-height: .7rem;
+    resize: none;
+    word-break: break-all;
+    position: relative;
+    z-index: 2;
+    background: transparent;
+    float: right;
+    width: 5.4rem;
+    color: #999;
+}
+/*结算*/
+.settlement {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: .98rem;
+    border-top: 1px solid #DBD6D6;
+    background-color: #fff;
+    padding-left: .3rem;
+    font-size: .28rem;
+    z-index: 10;
+    max-width: 500px;
+    margin: 0 auto;
+}
+.settlement .total-price {
+    line-height: .88rem;
+    font-size: .3rem;
+}
+.settlement .money {
+    line-height: .88rem;
+    padding-left: .2rem;
+    color: #e4393c;
+    font-size: .3rem;
+}
+.settlement .settlement-btn {
+    width: 2.04rem;
+    height: 100%;
+    line-height: .98rem;
+    background: #e4393c;
+    text-align: center;
+    color: #fff;
+    font-size: .34rem;
+}
+.settlement .settlement-btn.active {
+    opacity: 1;
+    background: #b3b3b3;
+    width: 2.04rem;
+    height: 100%;
+    line-height: .98rem;
+    text-align: center;
+    color: #fff;
+    font-size: .34rem;
+}
+/*弹出框*/
+.check{
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(0, 0, 0, .5);
+}
+.check > div {
+    width: 4.3rem;
+    text-align: center;
+    height: 1.76rem;
+    background: #fff;
+    -webkit-border-radius: 5px;
+    border-radius: .1rem;
+    overflow: hidden;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.check > div .title {
+    height: 1.08rem;
+    line-height: 1.08rem;
+    border-bottom: 1px solid #E8E8E8;
+    font-size: .26rem;
+}
+
+.check > div li {
+    height: .66rem;
+    line-height: .66rem;
+    font-size: .24rem;
+}
+
+.check > div li:active {
+    background: #f1f1f1;
+}
+
+.check > div .sure {
+    font-size: .28rem;
+}
+
+.toast .toast-content{
+	font-size: 12px;
+}

@@ -1,0 +1,189 @@
+﻿@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+}
+@section TitleHtml
+{
+    <title>@(ViewBag.ShareOrderTitle)-晒单</title>
+}
+<div class="container">
+    <div class="banner">
+    </div>
+    <div class="share_middle">
+        <div class="share_talk">
+            <div class="share_person_img" id="userimg" style=' background-image:url(/Content/ShareOrder/img/drawable-xhdpi/touxiang.png)'>
+            </div>
+            <div class="share_talk_info">
+                <div class="share_person_name share_text nickname">
+                    </div>
+                <div class="share_person_talk">
+                    <span class="share_text">快看我的战利品，正品、低价、超级划算哦~ </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="hr_info">
+        <!-- <span class="hr_img"></span> -->
+        <img src="/Content/ShareOrder/img/drawable-xhdpi/jiantou.png">
+    </div>
+    <div class="list" id="list">
+        <div class="bg">
+            <!-- 商品展示区域 -->
+            <!-- 按钮 -->
+            <div class="btn_containt" id="divGoodsLast">
+                <a href="javascript:void(0)" class="btn active" onclick="buyOrder();return false;">照单买
+                </a><a href="javascript:void(0)" class="btn" onclick="goShopping();return false;">去逛逛
+                </a>
+            </div>
+            <!-- 按钮 -->
+        </div>
+    </div>
+</div>
+<div id="divGoodsTemplate" style="display: none;">
+    <div class="item">
+        <div class="item_img" onclick="scanGoods('{Id}');">
+                <img {goodssrc}="{GoodsImg}">
+        </div>
+        <div class="item_info">
+            <div class="info">
+                <div class="info_text" onclick="scanGoods('{Id}');">
+                    {GoodsName}
+                </div>
+                <div class="info_types">
+                    <span class="info_type">{GoodsAttr}</span>
+                </div>
+                <div class="pos_abs">
+                    <div>
+                        <span class="list_yuan mrg-r-5">{DanWei}<span class="list_yuan_num">{RealPrice}</span>
+                        </span><span style=" visibility:{State}" class="share_yuan_num">{DanWei}<span class="share_yuan_num">{MarketPrice}</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section CssStyles{
+    <link href="/Content/ShareOrder/css/share.css?ver=88fbb6d8c472ae1abdca8b283f3f2e93" rel="stylesheet" type="text/css" />
+}
+@section ClientScript{
+    <script type="text/javascript">
+        var _appId = "@ViewBag.AppId";
+        //  var shopId = "@ViewBag.ShopId";
+        var _orderId = "@ViewBag.OrderId";
+
+        $(function () {
+            if (!JsVilaDataNull(_orderId)) {
+                if (JsVilaDataNull(getQueryString('orderId'))) {
+                    _orderId = getQueryString('orderId');
+                }
+                else if (JsVilaDataNull(sessionStorage.shareOrderId)) {
+                    _orderId = sessionStorage.shareOrderId;
+                }
+
+            }
+            sessionStorage.shareOrderId = _orderId;
+            checkMobileParams();
+            loadOrder();
+        });
+
+        function loadOrder() {
+            getDataAjax({
+                url: '/Mobile/GetShareOrderDetail',
+                data: { orderId: _orderId },
+                callback: function (data) {
+                    //  $(".userimg").attr("src", data.userimg)
+                    $("#userimg").css("background-image", 'url("' + data.userimg + '")');
+                    $(".nickname").html(data.nickname)
+                    var t = $("#divGoodsTemplate").html();
+                    var html = "";
+                    //向页面填充 商品
+                    for (var i = 0; i < data.data.ShareOrderItemDTO.length; i++) {
+                        var item = data.data.ShareOrderItemDTO[i];
+                        var yan = "";
+                        var chi = "";
+                        var size = data.data.ShareOrderItemDTO[i].Size;
+                        if (size != "undefined" && size != "" && size != null) {
+                            if (size.split(',')[0] != "" && size.split(',')[0] != null && size.split(',')[0] != "null") {
+                                yan = size.split(',')[0];
+                            }
+                            if (size.split(',')[1] != "" && size.split(',')[1] != null && size.split(',')[1] != "null") {
+                                chi = size.split(',')[1];
+                            }
+                        }
+                        html += t.replaceAll("{goodssrc}", "src")
+                                 .replaceAll("{GoodsImg}", item.Pic)
+                                 .replaceAll("{Id}", item.CommodityId)
+                                 .replaceAll("{GoodsName}", SubStrShowLength(item.Name, 20, "..."))
+                                 .replaceAll("{GoodsAttr}", yan + " " + chi)
+                                 .replaceAll("{DanWei}", getCurrency())
+                                 .replaceAll("{RealPrice}", item.RealPrice)
+                                 .replaceAll("{MarketPrice}", item.ShowOriPrice)
+                                 .replaceAll("{State}", (item.ShowOriPrice == null || item.RealPrice == item.ShowOriPrice) ? "hidden" : "visible");
+                    }
+                    $("#divGoodsLast").before(html);
+                },
+                beforeSend: function () {
+                }
+            });
+        }
+
+        function setBuyOrderData(ids) {
+            sessionStorage.BuyOrderGoodsIds = "";
+            if (ids && ids.length && ids.length > 0) {
+                sessionStorage.BuyOrderGoodsIds = ids.join("|");
+            }
+        }
+
+        function buyOrder() {
+            if (DealLoginPartial == undefined) {
+                return;
+            }
+            DealLoginPartial.setCallback(function () {
+                doBuyOrderGoods();
+            });
+            DealLoginPartial.initPartialPage();
+        }
+
+        function doBuyOrderGoods() {
+            //start 复制商品到购物车
+            getDataAjax({
+                async: false,
+                url: '/Mobile/CopyShareOrderToShoppingCart',
+                data: { orderId: _orderId, userId: getUserId(), appId: _appId },
+                callback: function (data) {
+                    if (data.ResultCode == 0) {
+                        setBuyOrderData(data.Data);
+                        // window.location.href = urlAppendCommonParams("/Mobile/ShoppongCartList?shopId=" + shopId + "&type=tuwen");
+                        window.location.href = urlAppendCommonParams("/Mobile/ShoppongCartList");
+                    }
+                    else {
+                        toast("加入购物车失败");
+                    }
+                    $("#ajaxLoadBlind").remove();
+                },
+                beforeSend: function () {
+                    ajaxLoading('22', '');
+                },
+                error: function () {
+                    toast("加入购物车失败,请重试");
+                    $("#ajaxLoadBlind").remove();
+                }
+            });
+            //end   复制商品到购物车
+        }
+
+        function goShopping() {
+            window.location.href = '@Html.Raw(ViewBag.ShopHome)';
+        }
+
+        function scanGoods(id) {
+            //window.location.href = "/Mobile/CommodityDetail?commodityId=" + id + "&shopId=" + shopId + "&user=" + getUserId() + '&share=' + getShareId();
+            window.location.href = urlAppendCommonParams("/Mobile/CommodityDetail?commodityId=" + id + "&user=" + getUserId() + '&share=' + getShareId());
+        }
+
+        String.prototype.replaceAll = function (AFindText, ARepText) {
+            var raRegExp = new RegExp(AFindText, "g");
+            return this.replace(raRegExp, ARepText);
+        };
+    </script>
+   
+}

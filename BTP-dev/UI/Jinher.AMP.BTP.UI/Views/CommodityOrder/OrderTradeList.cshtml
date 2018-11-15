@@ -1,0 +1,364 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>订单交易明细</title>
+    <link rel="stylesheet" type="text/css" href="/Content/css/common.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.all.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/ui.jqgrid.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.datepicker.css" />
+    <link rel="stylesheet" type="text/css" href="/Scripts/bigautocomplete/jquery.bigautocomplete.css" />
+    <style>
+        .ui-jqgrid tr.jqgrow td
+        {
+            white-space: normal !important;
+            height: auto;
+            vertical-align: text-top;
+            padding-top: 2px;
+        }
+    </style>
+</head>
+<body>
+    <input type="hidden" id="hidESAppId" value="@ViewBag.ESAppId" />
+    <!--查询条件-->
+    <div class="SearchArea ml10">
+        <div class="mt10">
+            <label class="w80" style="display: inline-block;">
+                商户类型：</label>
+            <input type="checkbox" name="ckAppType" checked="checked" value="2" />自营自配自采
+            <input type="checkbox" name="ckAppType" checked="checked" value="3" class="ml10" />自营自配统采
+            <input type="checkbox" name="ckAppType" checked="checked" value="0" class="ml10" />自营他配
+            <input type="checkbox" name="ckAppType" checked="checked" value="1" class="ml10" />第三方
+        </div>
+        <div class="mt10">
+            <label class="w80" style="display: inline-block;">
+                支付方式：</label>
+            <input type="checkbox" name="ckPayType" checked="checked" value="5" />银联&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="checkbox" name="ckPayType" checked="checked" value="6" class="ml10" />微信&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="checkbox" name="ckPayType" checked="checked" value="1" class="ml10" />支付宝&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="checkbox" name="ckPayType" checked="checked" value="2001" class="ml10" />金采&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="checkbox" name="ckPayType" checked="checked" value="0" class="ml10" />易捷抵用券
+        </div>
+        <div class="mt10">
+            <label class="w80" style="display: inline-block;">
+                供应商名称：</label>
+            <input type="text" id="txtSupplierName" class="inp-txt w300" />
+        </div>
+        <div class="mt10">
+            <label class="w80" style="display: inline-block;">
+                供应商编码：</label>
+            <input type="text" id="txtSupplierCode" class="inp-txt w300" />
+        </div>
+        <div class="mt10">
+            <label class="w80" style="display: inline-block;">
+                商户名称：</label>
+            <input type="text" id="txtAppName" class="inp-txt w300" />
+        </div>
+        <div class="mt10">
+            <label class="w80" style="display: inline-block;">
+                订单时间：</label>
+            <input type="text" id="txtBeginDate" class="date-time" />至
+            <input type="text" id="txtEndDate" class="date-time" />
+            <a href="javascript:void(0)" class="btn80 ml10" id="btnSearch">查询</a> <a href="javascript:void(0)"
+                class="btn80 ml10" id="btnExport">导出</a> <a href="javascript:void(0)" class="btn80 ml10"
+                    id="btnPrint">打印</a>
+        </div>
+    </div>
+    <!--金额合计-->
+    <div class="TotalArea mt10 tr mr20">
+    </div>
+    <!--表格-->
+    <div class="GridArea mt10 ml10">
+        <table id="jqGrid">
+        </table>
+        <div id="page">
+        </div>
+    </div>
+    <!--打印frame-->
+    <iframe id="framePrint" style="display: none;"></iframe>
+</body>
+</html>
+<script type="text/javascript" src="/Scripts/jquery.js"></script>
+<script type="text/javascript" src="/Scripts/jquery.extend.js"></script>
+<script type="text/javascript" src="/Scripts/jquery.ui.base.js"></script>
+<script type="text/javascript" src="/Scripts/i18n/jquery.ui-zh.js"></script>
+<script type="text/javascript" src="/Scripts/Grid/jquery.grid.base.js"></script>
+<script type="text/javascript" src="/Scripts/Pager/jquery.ui.jhpager.js"></script>
+<script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.datepicker.js"></script>
+<script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.jhdatetime.js"></script>
+<script type="text/javascript" src="/Scripts/i18n/jquery.ui.datepicker-zh.js"></script>
+<script type="text/javascript" src="/Scripts/bigautocomplete/jquery.bigautocomplete.js"></script>
+<script type="text/javascript" src="/Scripts/CommLib.js"></script>
+<script type="text/javascript">
+    var curApp = null;
+    var curSupplier = null;
+    var totalCommodityNumber = 0;
+    var totalCommodityCostPrice = 0.00;
+    var totalCommodityCostpurchase = 0.00;
+    var totalPayMoney = 0.00;
+    var totalCommodityMoney = 0.00;
+    var totalFreightMoney = 0.00;
+    var totalYJCouponUseMoney = 0.00;
+    var totalYJCouponRefundMoney = 0.00;
+    //获取商户应用
+    function GetApp() {
+        var appName = $.trim($("#txtAppName").val());
+        if (appName.length == 0) {
+            return { AppId: "00000000-0000-0000-0000-000000000000", AppName: "" };
+        } else {
+            if (curApp && curApp.title == appName)
+                return { AppId: curApp.result, AppName: "" };
+            else
+                return { AppId: "00000000-0000-0000-0000-000000000000", AppName: appName };
+        }
+    }
+    //获取供应商code
+    function GetSupplierCode() {
+        return curSupplier && $.trim($("#txtSupplierName").val()).length > 0 ? curSupplier.result : "";
+    }
+    //获取商户类型条件
+    function GetAppTypeArr() {
+        var arr = "";
+        $("input:checkbox[name='ckAppType']:checked").each(function () {
+            arr += $(this).val() + ",";
+        });
+        return arr;
+    }
+
+    //获取支付方式条件
+    function GetPayTypeArr() {
+        var arr = "";
+        $("input:checkbox[name='ckPayType']:checked").each(function () {
+            arr += $(this).val() + ",";
+        });
+        return arr;
+    }
+    //初始化表格
+    function InitGrid() {
+        var app = GetApp();
+        var data = {
+            "esAppId": $("#hidESAppId").val(),
+            "appTypes": GetAppTypeArr(),
+            "payTypes": GetPayTypeArr(),
+            "appId": app.AppId,
+            "appName": app.AppName,
+            "betinDate": $.trim($("#txtBeginDate").val()),
+            "endDate": $.trim($("#txtEndDate").val()),
+            "supplierCode": GetSupplierCode()
+        };
+        $("#jqGrid").jqGrid({
+            datatype: "json",
+            postData: data,
+            url: "GetOrderTradeList",
+            mtype: 'POST',
+            colModel: [
+                { sortable: false, label: '供应商编码', name: 'SupplierCode', width: 70 },
+                { sortable: false, label: '供应商名称', name: 'SupplierName', width: 100 },
+                { sortable: false, label: '商户名称', name: 'AppName', width: 90 },
+                { sortable: false, label: '商户类型', name: 'AppTypeStr', width: 70 },
+                { sortable: false, label: '商品名称', name: 'CommodityInfo', width: 350 },
+                { sortable: false, label: '数量', name: 'CommodityNumber', width: 50 },
+                { sortable: false, label: '进货价', name: 'CommodityCostPrice', width: 70 },
+                { sortable: false, label: '进货金额', name: 'CommodityCostpurchase', width: 100 },
+                { sortable: false, label: '交易状态', name: 'OrderState', width: 70 },
+                { sortable: false, label: '订单编号', name: 'OrderCode', width: 150 },
+                { sortable: false, label: '订单时间', name: 'TradeTimeStr', width: 140 },
+                { sortable: false, label: '订单交易流水号', name: 'TradeNum', width: 220 },
+                { sortable: false, label: '订单总金额', name: 'PayMoney', width: 90 },
+                { sortable: false, label: '支付方式', name: 'PayTypeStr', width: 70 },
+                { sortable: false, label: '订单商品金额', name: 'CommodityMoney', width: 100 },
+                { sortable: false, label: '订单运费金额   ', name: 'FreightMoney', width: 100 },
+                { sortable: false, label: '易捷抵用券   ', name: 'YJCouponMoney', width: 100 }
+            ],
+            rowNum: 100,
+            pager: 'page',
+            height: 700,
+            pagerAlone: true,
+            multiselect: true,
+            autowidth: true,
+            multiboxonly: false,
+            rownumbers: true,
+            forceFit: true,
+            scroll: false,
+            shrinkToFit: true,
+            cellEdit: true,
+            cellsubmit: "remote"
+        });
+    }
+
+
+    //从后台取数据 add by XJ
+    function JisuanTotal() {
+        $(".TotalArea").html("");
+        var app = GetApp();
+        var objdata = {
+            "esAppId": $("#hidESAppId").val(),
+            "appTypes": GetAppTypeArr(),
+            "payTypes": GetPayTypeArr(),
+            "appId": app.AppId,
+            "appName": $.trim($("#txtAppName").val()),
+            "betinDate": $.trim($("#txtBeginDate").val()),
+            "endDate": $.trim($("#txtEndDate").val()),
+            "supplierCode": GetSupplierCode()
+        };
+        $.ajax({
+            type: "post", //提交方式
+            url: "GetOrderTradeLists",
+            data: objdata,
+            success: function (data) {//返回数据根据结果进行相应的处理
+                totalCommodityNumber = data.TotalCommodityNumber;
+                totalCommodityCostPrice = data.TotalCommodityCostPrice;
+                totalCommodityCostpurchase = data.TotalCommodityCostpurchase;
+                totalPayMoney = data.TotalPayMoney;
+                totalCommodityMoney = data.TotalCommodityMoney;
+                totalFreightMoney = data.TotalFreightMoney;
+                if (data.TotalYJCouponUseMoney == null) {
+                    totalYJCouponUseMoney = 0;
+                }
+                else {
+                    totalYJCouponUseMoney = data.TotalYJCouponUseMoney;
+                }
+                totalYJCouponRefundMoney = data.TotalYJCouponRefundMoney;
+                $(".TotalArea").html("合计：订单总数量：" + totalCommodityNumber + " 订单总进货价：" + totalCommodityCostPrice.toFixed(2) + " 订单总进货金额：" + totalCommodityCostpurchase.toFixed(2) + " 订单总金额：" + totalPayMoney.toFixed(2) + " 订单商品金额：" + totalCommodityMoney.toFixed(2) + " 订单运费金额：" + totalFreightMoney.toFixed(2) + " 易捷抵用券抵用金额：" + totalYJCouponUseMoney.toFixed(2) + " 易捷抵用券退款金额：" + totalYJCouponRefundMoney.toFixed(2));
+            },
+            error: function () {
+                alert("操作失败");
+            }
+        });
+    }
+
+
+
+
+
+    //刷新列表
+    function RefreshList(pageNo) {
+        totalPayMoney = 0.00;
+        totalCommodityMoney = 0.00;
+        totalFreightMoney = 0.00;
+        totalYJCouponUseMoney = 0.00;
+        totalYJCouponRefundMoney = 0.00;
+        var isPageNo = typeof (pageNo) == "number";
+        if (isPageNo) {
+            if (pageNo <= 0) pageNo = $("#jqGrid").getGridParam("page");
+        } else {
+            pageNo = $("#jqGrid").getGridParam("page");
+        }
+        var app = GetApp();
+        var data = {
+            "esAppId": $("#hidESAppId").val(),
+            "appTypes": GetAppTypeArr(),
+            "payTypes": GetPayTypeArr(),
+            "appId": app.AppId,
+            "appName": $.trim($("#txtAppName").val()),
+            "betinDate": $.trim($("#txtBeginDate").val()),
+            "endDate": $.trim($("#txtEndDate").val()),
+            "supplierCode": GetSupplierCode()
+        };
+        $('#jqGrid').jqGrid('setGridParam', {
+            datatype: "json",
+            postData: data,
+            url: 'GetOrderTradeList',
+            mtype: 'POST'
+        });
+        $('#jqGrid').trigger("reloadGrid", [{ page: 1}]);
+        JisuanTotal();
+
+    }
+    //调整页面布局
+    function AdjustLayout() {
+        $("#jqGrid").setGridWidth($(window).width() - 25);
+        $("#jqGrid").setGridHeight($(window).height() - $(".SearchArea").height() - $(".TotalArea").height() - 150);
+    }
+    //初始化事件
+    function InitEvent() {
+        //智能匹配供应商名称
+        $("#txtSupplierName").bigAutocomplete({
+            url: "GetSupplierInfo?type=name&esAppId=" + $("#hidESAppId").val(),
+            callback: function (data) {
+                curSupplier = data;
+                $("#txtSupplierCode").val(data.result);
+            }
+        });
+        //智能匹配供应商编码
+        $("#txtSupplierCode").bigAutocomplete({
+            url: "GetSupplierInfo?type=code&esAppId=" + $("#hidESAppId").val(),
+            callback: function (data) {
+                curSupplier = { tilte: data.result, result: data.title };
+                $("#txtSupplierName").val(data.result);
+            }
+        });
+        //清除供应商
+        $("#txtSupplierName,#txtSupplierCode").on("input propertychange", function () {
+            if ($.trim($(this).val()).length == 0) {
+                $("#txtSupplierName,#txtSupplierCode").val("");
+            }
+        });
+        //智能匹配商家名称
+        $("#txtAppName").bigAutocomplete({
+            url: "GetMallAppInfo?esAppId=" + $("#hidESAppId").val(),
+            callback: function (data) {
+                curApp = data;
+            }
+        });
+        //绑定日期控件
+        var today = new Date();
+        //today.setDate(today.getDate() - 1);
+        $("#txtBeginDate").val(today.format("yyyy-MM-dd"));
+        $("#txtEndDate").val(new Date().format("yyyy-MM-dd"));
+        $(".date-time").attr("ReadOnly", "true").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            showOtherMonths: true,
+            selectOtherMonths: true,
+            numberOfMonths: 1,
+            maxDate: new Date()
+        });
+        //查询
+        $("#btnSearch").click(function () {
+            RefreshList();
+        });
+        //导出
+        $("#btnExport").click(function () {
+            var app = GetApp();
+            window.location.href = "ExportOrderTradeListExcel"
+            + "?esAppId=" + $("#hidESAppId").val() + "&appTypes=" + GetAppTypeArr()
+            + "&payTypes=" + GetPayTypeArr() + "&appId=" + app.AppId
+            + "&appName=" + $.trim($("#txtAppName").val()) + "&betinDate=" + $.trim($("#txtBeginDate").val())
+            + "&endDate=" + $.trim($("#txtEndDate").val()) + "&supplierCode=" + GetSupplierCode();
+        });
+        //打印
+        $("#btnPrint").click(function () {
+            $("#jqGrid").setGridWidth($(window).width() - 300);
+            $("#jqGrid").setGridHeight($(".ui-jqgrid-bdiv")[0].scrollHeight + 200);
+            var css = "<style>";
+            $.ajax({ async: false, url: "/Content/css/common.css", success: function (data) { css += data; } });
+            $.ajax({ async: false, url: "/Content/default/jquery.ui.all.css", success: function (data) { css += data; } });
+            $.ajax({ async: false, url: "/Content/default/ui.jqgrid.css", success: function (data) { css += data; } });
+            css += ".ui-jqgrid tr.jqgrow td{white-space: normal !important;height: auto;vertical-align: text-top;padding-top: 2px;}";
+            css += "</style>";
+            var frameWindow = $("#framePrint")[0].contentWindow;
+            frameWindow.document.body.innerHTML = css + $(".TotalArea")[0].outerHTML + $(".GridArea")[0].outerHTML;
+            frameWindow.print();
+        });
+    }
+    //页面加载完成
+    $(function () {
+
+        //初始化事件
+        InitEvent();
+        //初始化表格
+        InitGrid();
+        //调整页面布局
+        AdjustLayout();
+        $(window).resize(function () {
+            AdjustLayout();
+        });
+        JisuanTotal();
+    });
+</script>

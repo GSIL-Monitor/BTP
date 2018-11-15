@@ -1,0 +1,190 @@
+﻿@{
+    Layout = "~/Views/Shared/_MobileLayout.cshtml";
+}
+@section MTitleHtml
+{
+    <title>收货地址管理</title>
+}
+@section CssStyles{
+    <link rel="stylesheet" href="/Content/css/mobileKit-min.css" />
+    <link rel="stylesheet" href="/Content/Mobile/addressManage.css" />
+}
+@section ClientScript{
+    <script type="text/javascript">
+        var protype = getQueryString('producttype');
+        $(function () {
+            saveContextDTOByUrl();
+            var catering = getQueryString('catering');
+            if (sessionStorage.source == "share") {
+                $("#headerTxt").show();
+            } else {
+                $("#headerTxt").hide();
+            }
+
+            // co = 1 返回收货地址列表再创建订单
+            var par = "&type=" + sessionStorage.type + "&price=" + getQueryString('price') + "&co=" + getQueryString('co') + "&jcActivityId=" + getQueryString('jcActivityId') + "&setMealId=" + getQueryString('setMealId');
+            if (JsVilaDataNull(catering) && catering == "1") {
+                par = par + "&catering=1";
+            }
+
+            $('.delete').on('click', function () {
+                $('.sure-delete').removeClass('hide').attr('data-li', $(this).closest('li').index());
+            });
+            $('.cancel').on('click', function () {
+                $(this).closest('.sure-delete').addClass('hide');
+            });
+            $('.sure').on('click', function () {
+                var liIndex = $(this).closest('.sure-delete').attr('data-li');
+                $('.receiving-information').eq(liIndex).remove();
+                $(this).closest('.sure-delete').addClass('hide');
+            });
+
+            $("#adddev").bind("click", function () {
+                if (!isLogin()) {
+                    return;
+                }
+                window.location.href = urlAppendCommonParams("/Mobile/AddDeliveryAddress?opa=add" + par);
+            });
+            $(".btnedit").live("click", function () {
+                if (!isLogin()) {
+                    return;
+                }
+                window.location.href = urlAppendCommonParams("/Mobile/AddDeliveryAddress?opa=edit&addressid=" + $(this).attr("addid") + par);
+            });
+            $(".btndelete").live("click", function () {
+                if (!isLogin()) {
+                    return;
+                }
+                if (confirm("确定要删除吗？")) {
+                    var appId = getQueryString('appId');
+                    getDataAjax({
+                        url: '/Mobile/DeleteDeliveryAddress',
+                        data: { addressId: $(this).attr("addid"), appId: appId },
+                        callback: function (data) {
+                            if (data.ResultCode == 0) {
+                                $(".address-list").html("");
+                                Load();
+                            }
+                            $("#ajaxLoadBlind").remove();
+                        },
+                        beforeSend: function () {
+                            ajaxLoading('22', '');
+                        },
+                        error: function () {
+                            $("#ajaxLoadBlind").remove();
+                        }
+                    });
+                }
+            });
+            if (!isLogin()) {
+
+                if (DealLoginPartial == undefined) {
+                    return;
+                }
+
+                $("#deliveryALHeader").hide();
+                $(".content").html("");
+
+                DealLoginPartial.setCallback(function () {
+                    Load();
+
+                    $("#deliveryALHeader").show();
+                });
+                DealLoginPartial.initPartialPage();
+            } else {
+                if ($(".DeliveryAddressList").children("div").length <= 0) {
+                    Load();
+                }
+
+                $("#deliveryALHeader").show();
+            }
+
+            $("input[type=radio]").live("change", function () {
+                setTimeout(function () {
+                    getDataAjax({
+                        url: '/Mobile/UpdateDeliveryAddressIsDefault?addressId=' + $('input[type=radio]:checked').val(),
+                        callback: function (data) {
+                            if (data.ResultCode === 0) {
+                                toast("选择成功");
+                            } else {
+                                toast(data.Message);
+                                return;
+                            }
+                        }
+                    }, 100);
+                });
+            });
+        });
+
+        function Load() {
+            getDataAjax({
+                url: '/Mobile/GetDeliveryAddressList',
+                data: { userId: getUserId(), appId: "00000000-0000-0000-0000-000000000000", IsDefault: 0 },
+                callback: function (data) {
+                    var str = "";
+                    for (var i = 0; i < data.length; i++) {
+                        var backUrl = "javascript:void(0);";
+                        var refundUrl = sessionStorage['rn.refundReferer'];
+                        if (refundUrl) {
+                            backUrl = refundUrl + "&addressid=" + data[i].AddressId;
+                        } else {
+                            var catering = getQueryString('catering');
+                            var DefaultUrl = "/Mobile/CreateOrder?back=deladdlist&price=";
+                            if (JsVilaDataNull(catering) && catering == "1") {
+                                DefaultUrl = "/Mobile/CYCreateOrder?back=deladdlist&price="
+                            }
+
+                            if (getQueryString('co') === "1") {
+                                backUrl = urlAppendCommonParams(DefaultUrl + getQueryString('price') + "&type=" + sessionStorage.type + "&addressid=" + data[i].AddressId + "&setMealId=" + getQueryString('setMealId') + "&jcActivityId=" + getQueryString('jcActivityId'));
+                            }
+                        }
+
+                        str += "<li class=\"receiving-information swipe-toggle\"><a style=\"color:#555\" href=\"" + backUrl + "\"><div class=\"info swipeout\" data-fn=\"swipeToggle\"><div class=\"swipeout-content\">";
+                        str += "<div class=\"name-tel clearfix\"><span class=\"name pull-left\">" + data[i].ReceiptUserName + "</span>";
+                        str += " <span class=\"tel pull-right\">" + data[i].ReceiptPhone + "</span></div>";
+                        if (data[i].Street != null) {
+                            str += "<div class=\"address\">" + data[i].Province + " " + data[i].City + " " + data[i].District + " " + data[i].Street + " " + data[i].ReceiptAddress + "</div></div>";
+                        }
+                        else {
+                            str += "<div class=\"address\">" + data[i].Province + " " + data[i].City + " " + data[i].District + " " + data[i].ReceiptAddress + "</div></div>";
+                        }
+                        str += "<div class=\"delete swipeout-actions-button\"><div>删除</div></div></div></a>";
+
+                        if (data[i].IsDefault === 1) {
+                            str += "<div class=\"set-up\"><label class=\"default-address pull-left\"><input type=\"radio\" checked=\"\" name=\"address\" value=" + data[i].AddressId + "><span class=\"check-box\"></span><span>设为默认</span></label>";
+                        } else {
+                            str += "<div class=\"set-up\"><label class=\"default-address pull-left\"><input type=\"radio\" name=\"address\" value=" + data[i].AddressId + "><span class=\"check-box\"></span><span>设为默认</span></label>";
+                        }
+                        str += "<div class=\"delete pull-right\"><img src=\"/Content/Mobile/delete.png\" alt=\"\"/><span><a  href=\"javascript:void(0)\" class=\"header-btn r btndelete\" style=\"color: #666;\" addid=" + data[i].AddressId + ">删除</a></span></div>";
+                        str += "<div class=\"editor pull-right\"><img src=\"/Content/Mobile/editor.png\" alt=\"\"/><span><a  href=\"javascript:void(0)\" class=\"header-btn r btnedit\" style=\"color: #666;\" addid=" + data[i].AddressId + ">编辑</a></span></div></div></li>";
+                    }
+                    $(".address-list").append(str);
+                    $("#ajaxLoadBlind").remove();
+                },
+                beforeSend: function () {
+                    ajaxLoading('22', '');
+                },
+                error: function () {
+                    $("#ajaxLoadBlind").remove();
+                }
+            });
+        }
+    </script>
+}
+<div class="content">
+    <div class="address-manage">
+        <ul class="address-list">
+        </ul>
+        <div class="sure-delete hide">
+            <div>
+                <div class="title">
+                    确定需要删除此选项吗?</div>
+                <ul>
+                    <li class="cancel pull-left">取消</li>
+                    <li class="sure pull-right">确定</li>
+                </ul>
+            </div>
+        </div>
+        <div id="adddev" class="add-address"><span>添加新地址</span></div>
+    </div>
+</div>

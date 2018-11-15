@@ -1,0 +1,659 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>下架无货商品审核</title>
+    <link rel="stylesheet" type="text/css" href="/Content/css/common.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.all.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.jhtablebox.css" />    
+    <link rel="stylesheet" type="text/css" href="/Content/default/ui.jqgrid.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.datepicker.css" />
+    <link rel="stylesheet" type="text/css" href="/Scripts/bigautocomplete/jquery.bigautocomplete.css" />	
+    <style>
+        .ui-jqgrid tr.jqgrow td {          
+            height: 100px;
+            vertical-align: text-top;
+            padding-top: 2px;
+            overflow: hidden;
+            white-space: nowrap;
+            white-space: normal !important;
+            vertical-align:middle;
+			line-height: 1.5em;
+			font-size:15px;
+			background-color:#FFF0F5;   
+            border: 0;        
+        }
+        .breadcrumb
+        {
+            padding: 10px;
+            line-height: 15px;
+            font-size: 14px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        .breadcrumb > span + span
+        {
+            padding-left: 5px;
+        }
+        .breadcrumb .back
+        {
+            float: right;
+            color: #7e7e7e;
+        }
+        .breadcrumb .back img
+        {    
+            height: 17px;
+            width:17px;
+            vertical-align: middle;
+            margin-bottom: 3px;
+            border:0px;
+        }
+    </style>
+</head>
+<body>    
+    <div id="bread" class="breadcrumb" >
+        <span>商品列表</span>
+        <span> > </span>
+        <span style="color:red">下架无货商品审核记录</span>
+        <a class="back" href="javascript:window.history.back();">
+            <img src="/Content/images/wx-back.png"  /><span>&nbsp;返回上一级</span>
+        </a>
+    </div>
+    <!--导出数据-->
+    <form id="FormExcel" action="/JDAuditCommodity/ExportOffAndNoStockExcelData" method="post">
+     <input type="hidden" name="hidName" id="hidName" />
+      <input type="hidden" name="hidJdCode" id="hidJdCode" />
+     <input type="hidden" name="hidAuditState" id="hidAuditState" />
+     <input type="hidden" name="hidJdStatus" id="hidJdStatus" />
+     <input type="hidden" name="hidEditStartime" id="hidEditStartime" />
+     <input type="hidden" name="hidEditEndTime" id="hidEditEndTime" />
+	 <input type="hidden" name="hidappId" id="hidappId" value="@ViewBag.appId" />      
+    </form>
+    <!--查询条件-->
+    <div id="SearchArea" style="margin-top: 10px; height:45px;">			
+            <span style="margin-left:10px;">商品名称：</span>
+            <input type="text" id="txtName" class="inp-txt" style="width:140px;" />
+             <span style="margin-left:10px;">备注编码：</span>
+            <input type="text" id="txtJdCode" class="inp-txt" style="width:100px;" />
+            <span style="margin-left:10px;">处理方式：</span>
+            <select id="txtState" class="inp-txt w60" style="width:100px;height:28px">                
+                <option value="0">待处理</option>
+                <option value="11">置为下架</option>
+                <option value="12">置为售罄</option>
+                <option value="13">置为上架</option>
+                <option value="14">置为有货</option>
+            </select> 
+            <span style="margin-left:10px;">商品状态：</span>
+            <select id="txtjdState" class="inp-txt w60" style="width:100px;height:28px">                
+                <option value="-1">--请选择--</option>
+                <option value="1">已下架</option>
+                <option value="2">已上架</option>
+                <option value="3">无货</option>
+                <option value="4">有货</option>
+            </select> 
+             <span style="margin-left:10px;">修改时间：</span>
+             <input type="text" id="txtModStarTime" class="date-time inp-txt w60" />至
+             <input type="text" id="txtModEndTime" class="date-time inp-txt w60" />
+            <a class="btn80" id="btnSearch" href="javascript:;" style="margin-left:20px;">查询</a>
+            <a href="javascript:;" class="reset btn80" onclick="toResetSearch()" id="reset" style="margin-left:20px;">重置</a>
+	</div>
+    <div style="background:#F2F2F2;margin-bottom: 0; font-size: 14px;height:40px;line-height:35px;text-align:right;">
+     <a class="btn120" href="javascript:;" id="SetAudit" onclick="SetAudit()" style="margin-right: 10px;">审核设置</a>          
+     <a class="btn120" href="javascript:;" id="SetAllInStock" onclick="SetAllInStock()" style="margin-right:10px;">置为有货</a>
+	 <a class="btn120" href="javascript:;" id="SetAllPutaway" onclick="SetAllPutaway()" style="margin-right:10px;">置为上架</a>
+	 <a class="btn120" href="javascript:;" id="SetAllNoStock" onclick="SetAllNoStock()" style="margin-right:10px;">置为售罄</a>
+	 <a class="btn120" href="javascript:;" id="SetAllOffShelf" onclick="SetAllOffShelf()" style="margin-right:10px;">置为下架</a>
+     <a class="btn120" href="javascript:;" id="ExportEditPrice" onclick="ExportEditPrice()" style="margin-right:10px;">导出</a>     
+	</div>
+    <!--表格-->
+    <div class="GridArea mt10 ml10">
+        <table id="jqGrid">
+        </table>
+        <div id="jqGridPager">
+        </div>        
+    </div>            
+    <div id="SetAuditform" title="审核设置" style="display:none;font-size:15px;margin-buttom:50px;">  
+        <div style="margin-top:80px;margin-left:190px;">
+        <input type="checkbox" id="SetAuto" style="margin: 10px auto;" />&nbsp;&nbsp;&nbsp;&nbsp;自动审核通过
+        </div> 
+        <a class="btn120" href="javascript:;" onclick="hideDialog()" style="margin-left: 120px;margin-top:20px;">取消</a>          
+        <a class="btn120" href="javascript:;" onclick="saveoption()" style="margin-left:20px;margin-top:20px;">保存</a> 
+    </div> 
+</body>
+</html>
+<script type="text/javascript" src="/Scripts/jquery.js"></script>
+<script type="text/javascript" src="/Scripts/jquery.extend.js"></script>
+<script type="text/javascript" src="/Scripts/jquery.ui.base.js"></script>
+<script type="text/javascript" src="/Scripts/i18n/jquery.ui-zh.js"></script>
+<script type="text/javascript" src="/Scripts/Grid/jquery.grid.base.js"></script>
+<script type="text/javascript" src="/Scripts/TableBox/jquery.ui.jhtablebox.js"></script>
+<script type="text/javascript" src="/Scripts/Pager/jquery.ui.jhpager.js"></script>
+<script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.datepicker.js"></script>
+<script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.jhdatetime.js"></script>
+<script type="text/javascript" src="/Scripts/i18n/jquery.ui.datepicker-zh.js"></script>
+<script type="text/javascript" src="/Scripts/bigautocomplete/jquery.bigautocomplete.js"></script>
+<script type="text/javascript" src="/Scripts/CommLib.js"></script>
+<script type="text/javascript" src="/Content/Business/BusinessAllEvent.js"></script>
+<script type="text/javascript">
+	try{
+		var rootPath = "/";
+		var arr = window.location.host.split('.');
+		if (arr.length > 0) {
+			document.domain =  arr[arr.length - 2] +"."+ arr[arr.length - 1];
+		}
+		//document.domain = "iuoooo.com";
+	}catch(err){}   
+    //初始化表格
+    function InitGrid() {         
+        var data = {
+		    "appId":'@ViewBag.appId',            
+            "Name":$.trim($("#txtName").val()),
+             "JdCode":$.trim($("#txtJdCode").val()),
+            "AuditState":$.trim($("#txtState").val()),
+            "JdStatus":$.trim($("#txtjdState").val()),            
+            "EditStartime": $.trim($("#txtModStarTime").val()),
+            "EditEndTime": $.trim($("#txtModEndTime").val())          
+        };
+        $("#jqGrid").jqGrid({
+            datatype: "json",
+            postData: data,
+            url: "/JDAuditCommodity/GetJDEditShelfAndSTOCKList",
+            mtype: 'POST',
+            colModel: [ 
+				{ sortable: false, label: '供应商名称', name: 'SupplyName',align:"center", width: 120 },                
+				{ sortable: false, label: 'APP名称', name: 'AppName',align:"center", width: 120 },
+                { sortable: false, label: '缩略图', name: 'PicturesPath',align:"center", width: 120,formatter: FormatePic},
+                { sortable: false, label: '商品备注编码/名称', name: 'JDCode',align:"center", width: 150,formatter: FormateJdcode },
+                { sortable: false, label: '商品属性', name: 'ComAttribute',align:"center", width: 100 },
+                { sortable: false, label: '当前进价', name: 'CostPrice',align:"center", width: 90},
+                { sortable: false, label: '当前售价', name: 'Price',align:"center", width: 90 },
+                { sortable: false, label: '当前库存', name: 'Stock',align:"center", width: 100 },
+                { sortable: false, label: '商品状态', name: 'JdStatusName',align:"center", width: 120 },               
+                { sortable: false, label: '处理方式', name: 'AuditStateName',align:"center", width: 120},                             
+                {name:'Modify',label: '操作',index:'AuditId',width:200,align:"center",sortable:false,formatter:Format_Operation}
+            ],
+            rowNum: 100,
+            pager: '#jqGridPager',
+            height: 500,
+            autowidth: true,
+            multiselect: true,
+            //shrinkToFit: false,
+            forceFit: true
+            //rownumbers: true,           
+        });
+    }  
+    //格式化名称
+    function FormateJdcode(cellvalue, options, rowObject){
+       var str="";        
+        var str = "<span >"+rowObject[3]+"</span><br/><span >"+rowObject[13]+"</span>"; 
+        return str;
+    }  
+    //格式化操作
+    function Format_Operation(cellvalue, options, rowObject){
+       var str="";   
+       if(rowObject[14]==1&rowObject[15]==0){return str = "<a href=\"#\" style=\"color:#1154E6\" onclick=\"OffShelf('"+ options.rowId +"')\" title=\"置为下架\">置为下架</a><br/><a href=\"#\" style=\"color:#1154E6\" onclick=\"NoStock('"+ options.rowId +"')\" title=\"置为售罄\">置为售罄</a>";}
+       if(rowObject[14]==2&rowObject[15]==0){return str = "<a href=\"#\" style=\"color:#1154E6\" onclick=\"Putaway('"+ options.rowId +"')\" title=\"置为上架\">置为上架</a>";}
+       if(rowObject[14]==3&rowObject[15]==0){return str = "<a href=\"#\" style=\"color:#1154E6\" onclick=\"OffShelf('"+ options.rowId +"')\" title=\"置为下架\">置为下架</a><br/><a href=\"#\" style=\"color:#1154E6\" onclick=\"NoStock('"+ options.rowId +"')\" title=\"置为售罄\">置为售罄</a>";}    
+       if(rowObject[14]==4&rowObject[15]==0){return str = "<a href=\"#\" style=\"color:#1154E6\" onclick=\"InStock('"+ options.rowId +"')\" title=\"置为有货\">置为有货</a>";}
+       if(rowObject[15]!=0){return str+="<span style=\"line-height:28px;color:#0066FF\">"+rowObject[10]+"</span><br/><span style=\"line-height:28px;color:#0066FF\">"+rowObject[11]+"</span><br/><span style=\"line-height:28px;color:#0066FF\">"+rowObject[12]+"</span>";}
+    }  
+    //格式化状态
+    function State_Operation(cellvalue, options, rowObject){
+        var str=""; 		
+        if(rowObject[11]==0) {return str="待审核";}
+        if(rowObject[11]==1) {return str="<label >审核已通过</label><br/><span style=\"line-height:28px;color:#0066FF\">"+rowObject[12]+"</span>";}
+		if(rowObject[11]==2) {return str="<label >审核不通过</label><br/><span style=\"line-height:28px;color:#D52B4D\">"+rowObject[12]+"</span>";}	
+        return str;
+    }      
+	//格式化图片
+    function FormatePic(callvalue, opts, rowdata) {
+            return "<img id='img" + opts.rowId + "' src='" + callvalue + "' style='width:86px;height:85px;' />";
+        }
+    function CreateCallBack(){
+        RefreshList();
+        hideDialog();
+    }   
+    //隐藏弹窗
+    function  hideDialog(){        
+        $("#addchangeprice,#detailform,#editform").jhtablebox("hide");    
+    } 
+    //刷新列表
+    function RefreshList(pageNo) {       
+        var isPageNo = typeof (pageNo) == "number";
+        if (isPageNo) {
+            if (pageNo <= 0) pageNo = $("#jqGrid").getGridParam("page");
+        } else {
+            pageNo =1;
+        }   
+        if ($("#txtModStarTime").val() != "" && $("#txtModEndTime").val() != "") {
+                var modstartTime = new Date($("#txtModStarTime").val().replace(/\-/g, "\/"));
+                var modendTime = new Date($("#txtModEndTime").val().replace(/\-/g, "\/"));
+                if (modstartTime > modendTime) {
+                    alert('修改开始时间不能大于结束时间！');
+                    return false;
+                }
+            }  
+        var data = {   
+		    "appId":'@ViewBag.appId',           
+            "Name":$.trim($("#txtName").val()),
+             "JdCode":$.trim($("#txtJdCode").val()),
+            "AuditState":$.trim($("#txtState").val()),
+            "JdStatus":$.trim($("#txtjdState").val()),
+            "EditStartime": $.trim($("#txtModStarTime").val()),
+            "EditEndTime": $.trim($("#txtModEndTime").val())          
+        };   
+        $('#jqGrid').jqGrid('setGridParam', {
+            datatype: "json",
+            postData: data,
+            url: "/JDAuditCommodity/GetJDEditShelfAndSTOCKList",
+            mtype: 'POST'
+        });
+        $('#jqGrid').trigger("reloadGrid", [
+            {
+                page: pageNo
+            }
+        ]);
+    }    
+    //弹出审核设置窗口
+   function SetAudit() {  
+        $("#SetAuditform").jhtablebox({
+            width: 500,
+            height: 300,
+            modal: true,
+            resizable: false,
+            title: "审核设置",
+        });       
+    }   
+    //设置自动审核是否选中
+    if(@ViewBag.StockModeState==0){
+        $("#SetAuto").prop("checked",true);
+    }else{
+        $("#SetAuto").prop("checked",false);
+    }    
+    //保存设置信息
+    function saveoption(){
+        var mode;
+       if($("#SetAuto").attr('checked')){
+           mode=0;
+       }else{
+           mode=1;
+       };
+       var data={
+         AppId:'@ViewBag.AppId',
+         ModeStatus:mode
+        }
+        $.ajax({
+            url: "/JDAuditCommodity/SetOffAndNoStockMode",
+            type: 'post',
+            data: data,
+            success:function(res){   
+                if(res.code==0){
+                CreateCallBack(); 				
+                alert(res.Messages);				
+            }else{
+			alert(res.Messages);
+			} 
+           }
+        });
+    }
+    //置为下架(批量)
+    function  SetAllOffShelf(){
+        var CheckCom=[]; var StatusName=[];
+        SelectedList= jQuery("#jqGrid").jqGrid('getGridParam', 'selarrrow');
+        if (!(SelectedList && SelectedList.length>0)) {             
+            alert("请选择商品");
+            return false;
+        }
+        for (var i=0;i<SelectedList.length;i++)
+        {
+            var rowData = $("#jqGrid").jqGrid("getRowData",SelectedList[i]);
+            var state=rowData.JdStatusName;
+            if(!(state=="无货"||state=="已下架")){ 
+                alert("请选择商品状态为'已下架'或'无货'的商品");
+                return false;
+            }
+        }          
+        if(!confirm("确定置为下架么?")){return false;}       
+            for (var i=0;i<SelectedList.length;i++)
+            {
+                var Id=SelectedList[i];                
+                CheckCom.push({Id});          
+            }
+            var ids = JSON.stringify(CheckCom); 
+
+            var data={
+            "Ids":ids            
+            }
+            $.ajax({
+                url: "/JDAuditCommodity/AuditJDEditOffShelf",
+                type: 'post',
+                data: data,
+                success:function(res){   
+                    if(res.code==0){  
+                    CreateCallBack()                 
+                    alert(res.Messages);				
+                }else{
+                alert(res.Messages);
+                } 
+                }
+            });       
+    } 
+    //置为上架(批量)
+    function  SetAllPutaway(){
+        var CheckCom=[]; var StatusName=[];
+        SelectedList= jQuery("#jqGrid").jqGrid('getGridParam', 'selarrrow');
+        if (!(SelectedList && SelectedList.length>0)) {             
+            alert("请选择商品");
+            return false;
+        }
+        for (var i=0;i<SelectedList.length;i++)
+        {
+            var rowData = $("#jqGrid").jqGrid("getRowData",SelectedList[i]);
+            var state=rowData.JdStatusName;
+            if(state!="已上架"){ 
+                alert("请选择商品状态为'已上架'的商品");
+                return false;
+            }
+        }  
+        if(!confirm("确定置为上架么?")){return false;}
+        var CheckCom=[]; 
+        SelectedList= jQuery("#jqGrid").jqGrid('getGridParam', 'selarrrow');              
+          for (var i=0;i<SelectedList.length;i++)
+            {
+                var Id=SelectedList[i];                
+                CheckCom.push({Id});          
+            }
+            var ids = JSON.stringify(CheckCom);  
+            var data={
+            "Ids":ids            
+            }
+            $.ajax({
+                url: "/JDAuditCommodity/AuditJDEditOnShelf",
+                type: 'post',
+                data: data,
+                success:function(res){   
+                    if(res.code==0){  
+                    CreateCallBack()                 
+                    alert(res.Messages);				
+                }else{
+                alert(res.Messages);
+                } 
+              }
+            });
+    } 
+    //置为售罄(批量)
+    function  SetAllNoStock(){
+        var CheckCom=[]; var StatusName=[];
+        SelectedList= jQuery("#jqGrid").jqGrid('getGridParam', 'selarrrow');
+        if (!(SelectedList && SelectedList.length>0)) {             
+            alert("请选择商品");
+            return false;
+        }
+        for (var i=0;i<SelectedList.length;i++)
+        {
+            var rowData = $("#jqGrid").jqGrid("getRowData",SelectedList[i]);
+            var state=rowData.JdStatusName;
+            if(!(state=="无货"||state=="已下架")){ 
+                alert("请选择商品状态为'无货'或'已下架'的商品");
+                return false;
+            }
+        } 
+        if(!confirm("确定置为售罄么?")){return false;}
+        var CheckCom=[]; 
+        SelectedList= jQuery("#jqGrid").jqGrid('getGridParam', 'selarrrow');              
+          for (var i=0;i<SelectedList.length;i++)
+            {
+                var Id=SelectedList[i];                
+                CheckCom.push({Id});          
+            }
+            var ids = JSON.stringify(CheckCom);  
+            var data={
+            "Ids":ids            
+            }
+            $.ajax({
+                url: "/JDAuditCommodity/AuditJDEditNoStock",
+                type: 'post',
+                data: data,
+                success:function(res){   
+                    if(res.code==0){  
+                    CreateCallBack()                 
+                    alert(res.Messages);				
+                }else{
+                alert(res.Messages);
+                } 
+              }
+            });
+    } 
+    //置为有货(批量)
+    function  SetAllInStock(){  
+        var CheckCom=[]; var StatusName=[];
+        SelectedList= jQuery("#jqGrid").jqGrid('getGridParam', 'selarrrow');
+        if (!(SelectedList && SelectedList.length>0)) {             
+            alert("请选择商品");
+            return false;
+        }
+        for (var i=0;i<SelectedList.length;i++)
+        {
+            var rowData = $("#jqGrid").jqGrid("getRowData",SelectedList[i]);
+            var state=rowData.JdStatusName;
+            if(state!="有货"){ 
+                alert("请选择商品状态为'有货'的商品");
+                return false;
+            }
+        } 
+        if(!confirm("确定置为有货么?")){return false;}      
+        var CheckCom=[]; 
+        SelectedList= jQuery("#jqGrid").jqGrid('getGridParam', 'selarrrow');              
+         for (var i=0;i<SelectedList.length;i++)
+            {
+                var Id=SelectedList[i];                
+                CheckCom.push({Id});          
+            }
+            var ids = JSON.stringify(CheckCom);  
+            var data={
+            "Ids":ids            
+            }
+            $.ajax({
+                url: "/JDAuditCommodity/AuditJDEditInStock",
+                type: 'post',
+                data: data,
+                success:function(res){   
+                    if(res.code==0){   
+                    CreateCallBack()                
+                    alert(res.Messages);				
+                }else{
+                alert(res.Messages);
+                } 
+              }
+            });
+    }
+    //置为下架
+    function  OffShelf(Id){
+        if(!confirm("确定置为下架么?")){return false;}
+        var CheckCom=[];       
+        CheckCom.push({Id});
+        var ids = JSON.stringify(CheckCom);
+        var data={
+        "Ids":ids            
+        }
+        $.ajax({
+            url: "/JDAuditCommodity/AuditJDEditOffShelf",
+            type: 'post',
+            data: data,
+            success:function(res){   
+                if(res.code==0){  
+                CreateCallBack()                 
+                alert(res.Messages);				
+            }else{
+            alert(res.Messages);
+            } 
+            }
+        });        
+    } 
+    //置为上架
+    function  Putaway(Id){
+        if(!confirm("确定置为上架么?")){return false;}
+        var CheckCom=[];         
+        CheckCom.push({Id});
+        var ids = JSON.stringify(CheckCom); 
+        var data={
+        "Ids":ids            
+        }
+        $.ajax({
+            url: "/JDAuditCommodity/AuditJDEditOnShelf",
+            type: 'post',
+            data: data,
+            success:function(res){   
+                if(res.code==0){  
+                CreateCallBack()                 
+                alert(res.Messages);				
+            }else{
+            alert(res.Messages);
+            } 
+            }
+        });
+    } 
+    //置为售罄
+    function  NoStock(Id){
+        if(!confirm("确定置为售罄么?")){return false;}
+        var CheckCom=[];         
+        CheckCom.push({Id});
+        var ids = JSON.stringify(CheckCom); 
+        var data={
+        "Ids":ids            
+        }
+        $.ajax({
+            url: "/JDAuditCommodity/AuditJDEditNoStock",
+            type: 'post',
+            data: data,
+            success:function(res){   
+                if(res.code==0){  
+                CreateCallBack()                 
+                alert(res.Messages);				
+            }else{
+            alert(res.Messages);
+            } 
+            }
+        });
+    } 
+    //置为有货
+    function  InStock(Id){
+        if(!confirm("确定置为有货么?")){return false;}
+       var CheckCom=[];        
+        CheckCom.push({Id});
+        var ids = JSON.stringify(CheckCom); 
+        var data={
+        "Ids":ids            
+        }
+        $.ajax({
+            url: "/JDAuditCommodity/AuditJDEditInStock",
+            type: 'post',
+            data: data,
+            success:function(res){   
+                if(res.code==0){   
+                CreateCallBack()                
+                alert(res.Messages);				
+            }else{
+            alert(res.Messages);
+            } 
+            }
+        });
+    }
+    //导出数据
+    function ExportEditPrice() { 	     
+        var Name=$.trim($("#txtName").val()); 
+         var JdCode=$.trim($("#txtJdCode").val());   
+        var AuditState=$.trim($("#txtState").val()); 
+        var JdStatus=$.trim($("#txtjdState").val());
+        var EditStartime=$.trim($("#txtModStarTime").val());
+        var EditEndTime=$.trim($("#txtModEndTime").val());
+		if ($("#txtModStarTime").val() != "" && $("#txtModEndTime").val() != "") {
+                var modstartTime = new Date($("#txtModStarTime").val().replace(/\-/g, "\/"));
+                var modendTime = new Date($("#txtModEndTime").val().replace(/\-/g, "\/"));
+                if (modstartTime > modendTime) {
+                    alert('修改开始时间不能大于结束时间！');
+                    return false;
+                }
+            }           
+        var data = {
+		    "appId":'@ViewBag.appId', 
+            "Name":Name,
+             "JdCode":JdCode,
+            "AuditState":AuditState,
+            "JdStatus":JdStatus,
+            "EditStartime": EditStartime,
+            "EditEndTime": EditEndTime            
+        };
+            $.ajax({
+                url: '/JDAuditCommodity/ExportOffAndNoStockData',
+                type: 'post',
+                data: data,
+                success: function (res) {
+                    if(res.data>0){
+					alert("正在为您导出数据,请稍候..."); 
+                    $("#hidName").val(Name);
+                    $("#hidJdCode").val(JdCode);
+                    $("#hidAuditState").val(AuditState);
+                    $("#hidJdStatus").val(JdStatus);
+                    $("#hidEditStartime").val(EditStartime);
+                    $("#hidEditEndTime").val(EditEndTime);
+                    $("#FormExcel").submit(); 					
+                    }
+                    else {
+                        alert("没有找到要导出的数据");                       
+                    }
+                }
+            });
+        }    
+    //隐藏弹窗
+    function  hideDialog(){
+        $("#SetAuditform").jhtablebox("hide");
+        $("#Auditform").jhtablebox("hide");
+        $("#Auditform1").jhtablebox("hide");
+    } 
+    //重置所有选择框
+    function toResetSearch(){         
+            $("#SearchArea input[type='text']").val("");
+            $("#txtState").val("-1");
+    }
+    //调整页面布局
+    function AdjustLayout() {
+        $("#jqGrid").setGridWidth($(window).width() - 25);
+        $("#jqGrid").setGridHeight($(window).height() - $("#SearchArea").height() - 160);
+    }
+    //初始化事件
+    function InitEvent() {  		
+         //绑定日期控件
+        var today = new Date();
+        //today.setDate(today.getDate() - 1);        
+        $(".date-time").attr("ReadOnly", "true").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            showOtherMonths: true,
+            selectOtherMonths: true,
+            numberOfMonths: 1,
+            maxDate: new Date()
+        });
+        //查询
+        $("#btnSearch").click(function () {
+            RefreshList();
+        });        
+    }
+    //页面加载完成
+    $(function () {
+        //初始化事件
+        InitEvent();
+        //初始化表格
+        InitGrid();
+        //调整页面布局
+        AdjustLayout();
+        $(window).resize(function () {
+            AdjustLayout();
+        });
+        
+    });
+</script>

@@ -1,0 +1,35 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Vue2Layout.cshtml";
+}
+
+<h2>Index</h2>
+<div class="content">
+    <div id="listWithFiltersPage">
+        <div class="content-inner">
+            <div id="bread" class="breadcrumb">
+                <span>商品列表</span>
+                <span> > </span>
+                <span style="color:red">自动调价设置</span>
+                <a class="back" href="javascript:window.history.back();">
+                    <img src="/Content/images/wx-back.png" /><span>&nbsp;返回上一级</span>
+                </a>
+            </div>
+            <div class="operations">
+                <el-button size="small" type="primary" icon="el-icon-add" @@click="handleCreating">新增指定店铺</el-button>
+            </div>
+
+            <el-table :data="tableData" style="width: 100%;" class="scrollbar" max-height="860" element-loading-text="拼命加载中" v-loading="loading" border stripe>
+                <el-table-column type="index" lable="序号" width="60"></el-table-column>
+                <el-table-column prop="AppNames" label="指定店铺" min-width="200"></el-table-column>
+                <el-table-column prop="FloatPrice" label="浮动金额（元）" min-width="80"></el-table-column>
+                <el-table-column label="操作" width="195" align="center">
+                    <template scope="scope">
+                        <el-button type="primary" plain size="mini" @@click="handleUpdating(scope.row)">编辑</el-button>
+                        <el-button type="danger" plain size="mini" @@click="handleDelete(scope.row)">删除</el-button>
+                    </template>
+                </el-table-column>
+            </el-table> 
+        </div>
+    </div>
+</div>

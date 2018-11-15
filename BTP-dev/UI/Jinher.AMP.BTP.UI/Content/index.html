@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>自定义快递模板</title>
+    <link rel="stylesheet" href="styles/index.css">
+</head>
+<body>
+    <div id="app">
+    <div class="express-order-wrap" v-on:click="selectItem = null;selectItemIndex = null;">
+          <!--设置常用模板弹窗-->
+       <div class="express-order-content common-templates scale-in">
+                <a href="javascript: void(0);" class="express-order-close" v-on:click="CloseDialog">&#10006</a>
+                <div class="express-order-header">设置常用模板</div>
+                <div class="express-order-body clearfix">
+                    <div class="common-templates-left">
+                        <div class="common-templates-title">可选模板</div>
+                        <div class="common-templates-list">
+                            <ul>
+                                <li class="item" :class="{selected: selectTempIndex == index}" v-for="(item,index) in selectTemplatesLists" v-on:click="chooseTemplate('left',index)"><span v-if="item.TemplateType == 0">系统-</span>{{item.TemplateName}}{{index}}{{item.TemplateType}}</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="common-templates-center">
+                        <a href="javascript:void(0);" class="button-icon" v-on:click="changeComTemplate('left')" style="margin-bottom:20px;">&gt;&gt;</a>
+                        <a href="javascript:void(0);" class="button-icon" v-on:click="changeComTemplate('right')">&lt;&lt;</a>
+                    </div>
+                    <div class="common-templates-right">
+                        <div class="common-templates-title">
+                            <span>常用模板</span>
+                            <a href="javascript:void(0);" v-on:click="chooseTemplate('up')" class="button-icon" :class="{disabled: this.selectComTempIndex == 0 || this.selectComTempIndex == null}">&#8593;</a>
+                            <a href="javascript:void(0);" v-on:click="chooseTemplate('down')" class="button-icon" :class="{disabled: this.selectComTempIndex == (this.commonTemplatesLists.length - 1) || this.selectComTempIndex == null}">&#8595;</a>
+                        </div>
+                        <div class="common-templates-list">
+                            <ul>
+                                <li class="item" :class="{selected: selectComTempIndex == index}" v-for="(item,index) in commonTemplatesLists" v-on:click="chooseTemplate('right',index)"><span v-if="item.TemplateType == 0">系统-</span>{{item.TemplateName}}{{index}}{{item.TemplateType}}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="express-order-footer">
+                    <a href="javascript:void(0);" v-on:click="commonTemplatesSubmit" class="bottom-btn">确定</a>
+                    <a href="javascript:void(0);" v-on:click="CloseDialog" class="bottom-btn">取消</a>
+                </div>
+            </div>
+        <div v-show="maskShow" class="mask-wrap">
+            <img src="images/loader.gif">
+        </div>
+    </div>
+</body>
+<script src="libs/vue.min.js"></script>
+<script src="libs/vue-resource.js"></script>
+<script src="libs/components.js"></script>
+<script src="js/index.js"></script>
+</html>

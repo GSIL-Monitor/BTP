@@ -1,0 +1,82 @@
+﻿@{
+    ViewBag.Title = "CrowdDesc";
+}
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>金和IU</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta content="telephone=no" name="format-detection" />
+    <link rel="icon" href="../favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
+    <style>
+body
+{
+	background-color: #fff;
+	color: #666;
+	font-family:'微软雅黑';
+	font-size: 14px;
+	}
+.con
+{
+	border-radius: 4px;
+	background-color: #fff;
+	width:96%;
+	margin: 10px auto;
+	padding: 15px;
+	box-sizing: border-box;
+	
+}
+@*h1
+{
+	padding: 10px;
+	text-align: center;
+	font-size: 24px;
+	border-bottom: 1px solid #CCC;
+}
+p
+{
+	text-indent: 2em;
+	line-height: 1.8em;
+	margin:10px 0;
+}*@
+table{border-collapse: collapse;}
+td{ border:1px solid #CCC; padding:4px;}
+.title
+{
+	color:#069;
+	font-size: 16px;
+	font-weight: bold;
+	text-indent: 0
+}
+.title:before
+{
+	content: "●";
+	padding-right: 10px;
+}
+a{ color:#09F;}
+a:hover{ color:#06F}
+
+img
+{
+width:100%;
+height:auto;
+}
+</style>
+    <script type="text/javascript">
+
+        $(function () {
+            var mess = "@ViewBag.CrowdDesc";
+            $(".con").html(decodeURIComponent(mess));
+        });
+       
+    </script>
+</head>
+<body>
+    <div class="con">
+    </div>
+</body>
+</html>

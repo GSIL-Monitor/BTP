@@ -1,0 +1,506 @@
+﻿@using System.Web
+@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+}
+@helper Currency()
+    {
+    @Jinher.AMP.BTP.UI.Util.MobileCookies.GetCurrency();
+}
+@section TitleHtml
+{
+    <title>商品属性选择器</title>
+}
+@section CssStyles{
+
+
+    <link href="/Content/Mobile/zphStyle/mobileKit-min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="/Content/Mobile/css.css" />
+    <style type="text/css">
+		 .toast{
+			z-index:100000000!important;
+		}
+        body
+        {
+            font-size: 14px;
+            background: transparent !important;
+            margin: 0 !important;
+        }
+        #number .numjj
+        {
+            display: inline-block;
+            padding: 0px;
+            text-align: center;
+            line-height: 25px;
+            background: none;
+            margin: 0 !important;
+        }
+        #number .span_number
+        {
+            margin: 0 !important;
+            height: 25px;
+            text-align: center;
+            -webkit-appearance: none;
+            padding: 0;
+        }
+        .span_com
+        {
+            width: 26px;
+            height: 26px;
+            margin-top: 0.2em !important;
+            background-size: 25px 25px;
+        }
+        .li_disable
+        {
+            opacity: 1;
+            pointer-events: none;
+            background: #e5e5e5;
+            color: #a1a1a1;
+        }
+        .addCommodityDiy
+        {
+            position: absolute;
+            z-index: 210;
+            width: 100%;
+            top: 0;
+            display: none;
+            left: 0;
+        }
+        #addCommodityDiy .addCommodity_2
+        {
+            position: absolute;
+            bottom: 0px;
+           padding: 15px 10px 15px 10px;
+            background: #fff;
+            font-family: 'Microsoft Yahei';
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            z-index: 200000;
+        }
+        .goods-modal-content-list
+        {
+            padding-bottom: 0px;
+            position: relative;
+        }
+        .goods-modal-content-list .infowrap
+        {
+            display: -webkit-box;
+            -webkit-box-flex: 1;
+            height: 76px;
+            border-bottom: 1px solid #ddd;
+        }
+        .goods-modal-content-list .imgwrap
+        {
+            position: relative;
+            top: -26px;
+            width: 90px;
+            height: 90px;
+            -webkit-border-radius: 6px;
+            -moz-border-radius: 6px;
+            border-radius: 6px;
+            background: transparent;
+        }
+        .goods-modal-content-list .imgwrap img
+        {
+            display: block;
+            width: 80px;
+            height: 80px;
+            margin: 5px 5px 5px 0;
+            border-radius: 5px;
+        }
+        .infowrap .infowrap-info
+        {
+            position: relative;
+            -webkit-box-flex: 1;
+            height: 65px;
+            font-size: 14px;
+            margin-right:5px;
+        }
+        .infowrap-info .info-title
+        {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            overflow: hidden;
+            font-family: 'Microsoft Yahei';
+            font-size: 14px;
+        }
+        .infowrap-info .info-price
+        {
+            position: absolute;
+            left: 0;
+            color: #FF0054;
+        }
+        .icon-remove-sign.close
+        {
+            position: absolute;
+            right: 5px;
+            top: 2px;
+        }
+        a
+        {
+            color: #428bca;
+            text-decoration: none;
+            -webkit-tap-highlight-color: transparent;
+            position: absolute;
+            right: 5px;
+            top: 2px;
+            font-size: 16px;
+        }
+        .addCommodity_1
+        {
+            height: 100%;
+            width: 100%;
+            opacity: 0.6;
+            background-color: #000;
+            position: absolute;
+            top: 0;
+            left: 0;
+            max-width: 500px;
+        }
+        .addCommodity_2_ul_1 li ul
+        {
+            width: 100%;
+            clear: both;
+        }
+         .disable {
+            background-color: #ccc;
+            pointer-events: none;
+        }
+        .addCommodity_2_ul_1 li ul li {
+            margin-right: 5px;
+        }
+    </style>
+}
+@section ClientScript
+{
+    <script src="/Content/Mobile/multiAttributeSelector.js" type="text/javascript"></script>
+    <script src="/Content/Mobile/fastclick.min.js" type="text/javascript"></script>
+    <script src="../../Content/Mobile/iscroll.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var _myScroll;
+        //ios、android、pc点击事件在iscroll中的事件支持不一致，所以这里区分处理
+        var _clientEvent = "tap";
+        var timer, windowInnerHeight;
+        shareOperation = false;
+        function eventCheck(e) {
+            if (e) { //click,focus事件触发的
+                if (e.type == 'focus') {
+                    if ($.os.ios) {
+                        $(".addCommodity_2_ul_1").css("margin-bottom", "100px");
+                    }
+                    setTimeout(function () {
+                        windowInnerHeight = window.top.innerHeight;
+                        timer = setInterval(function () { eventCheck(); }, 100);
+                    }, 500);
+                }
+                else clearInterval(timer);
+            }
+            else {
+                var a = window.top.innerHeight;
+                if (a > windowInnerHeight) {
+                    clearInterval(timer);
+                    //do
+                    if ($.os.ios) {
+                        $(".addCommodity_2_ul_1").css("margin-bottom", "2.8px");
+                    }
+                    $(".span_number").trigger("blur");
+                }
+            }
+        }
+        //解决ios修改click事件
+        $(function () {
+            // FastClick.attach(document.body);
+        });
+        $(function () {
+            saveContextDTOByUrl();
+            //_myScroll = new IScroll('#attrs', { mouseWheel: true, click: true, tap: false, scrollbars: true,scrollY: true });
+            if ($.os.ios) {
+                _myScroll = new IScroll('#attrs', {
+                    mouseWheel: true,
+                    click: true,
+                    tap: false,
+                    scrollbars: true,
+                    scrollY: true,
+                    interactiveScrollbars: true,
+                    shrinkScrollbars: 'scale',
+                    fadeScrollbars: true
+                });
+                _clientEvent = "click";
+            }
+            else if ($.os.android) {
+                _myScroll = new IScroll('#attrs', {
+                    mouseWheel: true,
+                    click: false,
+                    tap: false,
+                    scrollbars: true,
+                    scrollY: true,
+                    interactiveScrollbars: true,
+                    shrinkScrollbars: 'scale',
+                    fadeScrollbars: true
+                });
+            } else {
+                _myScroll = new IScroll('#attrs', {
+                    mouseWheel: true,
+                    click: true,
+                    tap: false,
+                    scrollbars: true,
+                    scrollY: true,
+                    interactiveScrollbars: true,
+                    shrinkScrollbars: 'scale',
+                    fadeScrollbars: true
+                });
+                _clientEvent = "click";
+            }
+
+            $("body").on("touchmove", function (e) {
+                e.preventDefault();
+                //  if ($(e.target).parents("#attrs").length<=0){
+                //          //      if(!$(e.target).is("li")){
+                //                    e.preventDefault();    
+                //                }
+            })
+
+            multiAttributeSelector.initSelector($("#addCommodityDiy"));
+            multiAttributeSelector.CloseCallback = function () {
+                window.parent.postMessage("close", '*');
+                //window.parent.masClose && window.parent.masClose();
+            };
+
+            /**
+            *   接收父页面传递的商品消息
+            *   示例：$('#iframeName').contentWindow.postMessage({ commodityInfo: commodityInfo, operType: operType,needDoTask:1,esAppId:"834e882d-c90d-4efb-b5f3-25f2b54beec9" }, '*');
+            *   1 commodityInfo 商品对象，传递商品对象，则本页面不再访问后台，直接从对象中读取商品信息
+            *   2 commodityId 商品Id，根据商品id从后台读取商品信息展示在页面中，（commodityInfo与commodityId都传值，以commodityInfo为准）
+            *   3 operType 操作类型：1 加入购物车，2 直接购买，3 拼团，4 调用加购物车方法
+            *   4 needDoTask 只从页面取数据，请传false，否则请传true ，目前只支持加购物车
+            *   5 shopCartData 添加购物车接口 必传属性：CommodityId 商品Id，CommodityNumber 商品数量，SizeAndColorId 属性组合 ，UserId 用户Id ，AppId 商品所在appid，CommodityStockId 商品库存项id，esAppid
+            */
+            window.addEventListener('message', function (e) {
+
+                if (e.source != window.parent) {
+                    return;
+                }
+                if (e.data == null) {
+                    return;
+                }
+
+                var operType = e.data.operType;
+                if (operType == 4 && e.data.shopCartData) {
+                    addToShopCart(e.data.shopCartData);
+                }
+                var selectedResult = e.data.selectedResult;
+                //直接传商品信息。
+                if (JsVilaDataNull(e.data.commodityInfo)) {
+                    var cinfo = e.data.commodityInfo;
+                    var deafultPrice = 0;
+                    if (operType == 1 || operType == 2) {
+                        if (cinfo.PromotionTypeNew == 9999 && cinfo.VipPromotion && cinfo.VipPromotion.IsVipActive && cinfo.VipPromotion.IsVip) {
+                            deafultPrice = cinfo.Price;
+                            multiAttributeSelector.setDefault(deafultPrice, cinfo);
+                            multiAttributeSelector.show(cinfo, cinfo.VipPromotion, operType, selectedResult);
+                        } else {
+                            if (cinfo.DiscountPrice > 0 && cinfo.DiscountPrice) {
+                                deafultPrice = Math.abs(cinfo.DiscountPrice).toFixed(2);
+                            } else {
+                                deafultPrice = Math.abs(cinfo.Price * (cinfo.Intensity / 10)).toFixed(2);
+                            }
+                            if (sessionStorage.btntype === "goumai") {
+                                deafultPrice = cinfo.Price.toFixed(2);
+                            }
+                            multiAttributeSelector.setDefault(deafultPrice, cinfo);
+                            multiAttributeSelector.show(cinfo, cinfo, operType, selectedResult);
+                        }
+                    }
+                    else if (operType == 3) {
+                        deafultPrice = cinfo.DiyGroupPromotion.DiscountPrice;
+                        multiAttributeSelector.setDefault(deafultPrice, cinfo);
+                        multiAttributeSelector.show(cinfo, cinfo.DiyGroupPromotion, operType, selectedResult);
+                    }
+                }
+                else if (JsVilaDataNull(e.data.commodityId)) {
+                    multiAttributeSelector.showByCommodityId(e.data.commodityId, operType, selectedResult);
+                }
+                setOkCallBack(e.data.needDoTask);
+            }, false);
+            //            $("#addCommodityDiy").on("click", function (e) {
+            //                e.preventDefault();
+            //                var tar = e.srcElement || e.target;
+            //                if ($(tar).attr("class") != 'span_number') {
+            //                    if ($("#attrs").css("display") == "none") {
+            //                        $("#attrs").show();
+            //                    }
+            //                }
+            //            });
+            //            $("#attrs").on("click", function (e) {
+            //                e.preventDefault();
+            //                var tar = e.srcElement || e.target;
+            //                if ($(tar).attr("class") != 'span_number') {
+            //                    //_myScroll.scrollToElement(0, _myScroll.maxScrollY);
+            //                    if ($('.size').css("display") == "none") {
+            //                        setTimeout(function () {
+            //                            $(".span_number").trigger("blur");
+            //                        }, 10);
+            //                    }
+            //                }
+            //            });
+            //            $("#attrs").on("click", function (e) {
+            //                e.preventDefault();
+            //                alert("1");
+            //                var tar = e.srcElement || e.target;
+            //                if (tar.id != 'attrs') {
+            //                    _myScroll.scrollTo(0, _myScroll.maxScrollY);
+            //                    $('.span_number').blur();
+            //                }
+            //            });
+        });
+        function setOkCallBack(needDoTask) {
+            if (needDoTask) {
+                multiAttributeSelector.OkCallback = function (operType, seledResult) {
+                    //加入购物车
+                    if (operType == 1) {
+                        addToShopCartFromSeledResult(seledResult);
+                    }
+                };
+            } else {
+                multiAttributeSelector.OkCallback = function (operType, seledResult) {
+                    seledResult.operType = operType;
+                    window.parent.postMessage(seledResult, '*');
+                };
+            }
+        }
+
+        function showByCommodityId(commodityId, operType, selectedResult) {
+            multiAttributeSelector.showByCommodityId(commodityId, operType, selectedResult);
+        }
+        function showByCommodity(commodity, promotion, operType, selectedResult) {
+            multiAttributeSelector.show(commodity, promotion, operType, selectedResult);
+        }
+        //商品加购物车（对外使用，商品详情不使用；此处不做埋点，如果需要，业务来埋）
+        function addToShopCartFromSeledResult(cartInfo) {
+            if (!isLogin()) {
+                retunrdata(1);
+            }
+            if (!validParams()) {
+                retunrdata(2);
+            }
+            var postData = cartInfo;
+            postData.CommodityNumber = cartInfo.number;
+            postData.SizeAndColorId = (cartInfo.color ? cartInfo.color : '') + ',' + (cartInfo.size ? cartInfo.size : '');
+            postData.UserId = getUserId();
+            postData.EsAppId = getEsAppId();
+            addToShopCart(postData);
+            window.parent.postMessage("close", '*');
+            function validParams() {
+                if (!JsVilaDataNull(cartInfo) || !JsVilaDataNull(cartInfo.CommodityId) || !JsVilaDataNull(cartInfo.number) || !JsVilaDataNull(cartInfo.AppId) || !JsVilaDataNull(getEsAppId())) {
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        function addToShopCart(postData) {
+            if (!isLogin()) {
+                retunrdata(1);
+            }
+            postData.UserId = getUserId();
+            if (!validParams()) {
+                retunrdata(2);
+            }
+            //添加到购物车
+            getDataAjax2({
+                url: '/Mobile/SaveShoppingCart',
+                contentType: "application/json",
+                dataType: 'json',
+                type: 'POST',
+                data: JSON.stringify(postData),
+                callback: function (d) {
+                    if (d.ResultCode == 0) {
+                        retunrdata(d.ResultCode, d.Message);
+                    } else {
+                        retunrdata(99, d.Message);
+                    }
+                },
+                error: function () {
+                    retunrdata(99);
+                }
+
+            });
+            function validParams() {
+                if (!JsVilaDataNull(postData) || !JsVilaDataNull(postData.CommodityId) || !JsVilaDataNull(postData.CommodityNumber) || !JsVilaDataNull(postData.SizeAndColorId) || !JsVilaDataNull(postData.UserId)
+                    || !JsVilaDataNull(postData.EsAppId)) {
+                    return false;
+                }
+                return true;
+            }
+        }
+        //定义返回值
+        function retunrdata(code, message) {
+            if ("undefined" == typeof (code)) {
+                code = 99;
+            }
+            switch (code) {
+                case 0:
+                    message = '加入购物车成功';
+                    break;
+                default:
+                    message = message ? message : 'Error';
+                    break;
+            }
+            window.parent.postMessage({ Code: code, Message: message, alertMessage: 1 }, '*');
+        }
+
+    </script>
+    <div class="addCommodity_1">
+    </div>
+<div id="addCommodityDiy" style="min-height: 600px; width: 100%; height: 100%; z-index: 260;
+    display: none;">
+    <div class="addCommodity_2" style="overflow: visible; z-index: 20000;padding-bottom: 2px;">
+        <a href="javascript:;" data-dismiss="modal" masid="clearAddCommodity" class="fa fa-times close icon-remove-sign"
+            style="font-size: 16px;"></a>
+        <div class="goods-modal-content-list">
+            <div class="infowrap" style="height:78px;">
+                <div class="imgwrap">
+                    <img id="SelectCommodityPic" src="" style="width: 80px;">
+                </div>
+                <div class="infowrap-info">
+                    <span class="info-title" id="SelectCommodityName"></span><span class="info-price"
+                        id="SelectCommodityPrice"></span><span class="info-title" id="SelectCommodityDuty"></span>
+                </div>
+            </div>
+        </div>
+        <div class="addCommodity_3" style="display: none;">
+            <img src="/Content/Mobile/b_6.png" alt="" />
+        </div>
+        <div id="attrs" style="max-height: 216px; position: relative; overflow: hidden; min-height: 31px">
+            <ul class="addCommodity_2_ul_1 clearFloat">
+                <li class="clearFloat size"><span>请选择：</span>
+                    <ul>
+                        <li class="li_focus_1"></li>
+                    </ul>
+                </li>
+                <li class="clearFloat color"><span>请选择：</span>
+                    <ul>
+                        <li class="li_focus_1"></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div>
+            <ul class="addCommodity_2_ul_1 clearFloat" style="margin-top: 6px; padding-bottom: 0;">
+                <li class="clearFloat" masid="liNumber" style="display: none; padding-bottom: 5px;"><span>购买数量：</span> <span
+                    class="span_1" masid="numberBox" id="number" style="border: 1px solid #BABABA;">
+                    <span class="span_2 span_com numjj" style="border-right: 1px solid #bababa;">-</span><input
+                        class="span_number" value="1" type="number" style="ime-mode: disabled; float: left;
+                        width: 50px; text-align: center; vertical-align: middle; margin-top: 8px; border: 0px;" pattern="[0-9]*" /><span
+                            class="span_3 span_com numjj" style="border-left: 1px solid #bababa;">+</span></span>
+                    <span masid="txtMaxStock" style="display: none"></span></li>
+                <li class="clearFloat" style="padding-bottom: 2px;"><span>价格：</span> <span class="span_1" masid="pre_money_count">
+                    @Currency()0.00</span></li>
+            </ul>
+        </div>
+        <div class="box_2" masid="btnOk" style="margin-bottom:0px;">
+            确定
+        </div>
+    </div>
+</div>

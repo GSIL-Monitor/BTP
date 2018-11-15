@@ -1,0 +1,2305 @@
+﻿@using System.Collections.Generic
+@using System.Web
+@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+    List<int> secTranPayments = Jinher.AMP.BTP.UI.Models.PaySourceVM.GetSecuriedTransactionPayment();
+    string stpStr = "," + string.Join(",", secTranPayments) + ",";
+    
+    List<int> directArrivalPayments = Jinher.AMP.BTP.UI.Models.PaySourceVM.GetDirectArrivalPayment();
+    string dapStr = "," + string.Join(",", directArrivalPayments) + ",";
+
+    List<int> stwogPayments = Jinher.AMP.BTP.UI.Models.PaySourceVM.GetSecTransWithoutGoldPayment();
+    string stwogStr = "," + string.Join(",", stwogPayments) + ",";
+
+
+}
+@helper Currency()
+    {
+    @Jinher.AMP.BTP.UI.Util.MobileCookies.GetCurrency();
+}
+@section TitleHtml
+{
+    <title>订单详情</title>
+}
+@section CssStyles{
+    <link rel="stylesheet" href="/Content/Mobile/css.css" />
+    <link rel="stylesheet" href="/Content/style/toggle.css" />
+    <link rel="stylesheet" href="/Content/style/ratchet.css" />
+    <link rel="stylesheet" href="/Content/style/skin.css" />
+    <link rel="stylesheet" href="/Content/Mobile/zphStyle/font-awesome.css" />
+    <link rel="stylesheet" href="/Content/style/icons.css" />
+    <link rel="stylesheet" href="/Content/style/iCheck.css" />
+    <link rel="stylesheet" href="/Content/style/iSpinner.css" />
+    
+    <style type="text/css">
+		/*修改*/
+        body{
+			width: 100%;
+			max-width: 500px;
+			margin: 0 auto;
+        }
+        .bar{
+			width: 100%;
+			max-width: 500px;
+			right: inherit;
+			left: inherit;
+        }
+        .lock
+        {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+            overflow: hidden;
+        }
+        .mask{
+            position: fixed;
+            top: 0;
+			height: 100%;
+			display: none;
+			max-width: 500px;
+            background-color: #000;
+            opacity: .8;
+            z-index: 1100;
+        }
+        .bar .pay-submit {
+            background-color: #e4393c;
+        }
+		/*修改*/
+		 @@media screen and (min-width:1000px){
+            .dialog{
+				position: absolute !important;
+				top: 100px;
+				left: inherit !important;
+				right: inherit !important;
+				border-radius: 10px;
+				background-color: white;
+				min-height: 100px;
+				box-shadow: 0px 0px 10px 0px #666666;
+				padding: 20px;
+				z-index: 1101;
+				display: none;
+				width:100%;
+				max-width:500px;
+			}
+        }
+        .dialog
+        {
+            position: fixed;
+            top: 100px;
+            left: 30px;
+            right: 30px;
+            border-radius: 10px;
+            background-color: white;
+            min-height: 100px;
+            box-shadow: 0px 0px 10px 0px #666666;
+            padding: 20px;
+            z-index: 1101;
+            display: none;
+        }
+        .FF0054
+        {
+            color: #ff0054;
+        }
+        .contactOwner
+        {
+            color: #14B4E4;
+            margin-top: 4px;
+        }
+        .contactOwner:before
+        {
+            font-size: 1rem;
+            margin-right: 3px;
+        }
+        #ulCommodityList li .status-list button
+        {
+            margin-right: 10px;
+            margin-bottom: 6px;
+        }
+        #ulCommodityList li .status-list button:last-child
+        {
+            margin-right: 0px;
+            margin-bottom: 0px;
+        }
+        .f-double-row
+        {
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            white-space: normal;
+            word-break: break-all;
+        }
+        #bigImgDiv
+        {
+            position: fixed;
+            margin: 0 auto;
+            top: 50%;
+            left: 50%;
+            margin: -165.5px 0 0 -165.5px;
+            z-index: 1101;
+        }
+    </style>
+}
+@section ClientScript
+{
+    <script src="/Content/js/toggle.js" type="text/javascript"></script>
+    <script src="/Scripts/md5.js" type="text/javascript"></script>
+    <script src="/Scripts/ExpressRoute.js" type="text/javascript"></script>
+    <script src="/Scripts/CommLib.js" type="text/javascript"></script>
+    <script src="/Content/Mobile/fastClick.min.js" type="text/javascript"></script>
+    <script src="/Content/Mobile/Common.js" type="text/javascript"></script>
+    @Html.Raw(@Jinher.AMP.BTP.UI.Util.WebUtil.GetBehaviorRecordJs())
+    <script type="text/javascript">
+		//修改click事件
+        $(function() {
+            FastClick.attach(document.body);
+        });
+
+        function showDialog(el) {
+            $('.mask').show();
+            $(el).find("input").val("");
+            $(el).show();
+            $('.page').addClass('lock');
+        }
+
+        function hideDialog(el) {
+            $('.mask').hide();
+            $(el).hide();
+            $('.page').removeClass('lock');
+        }
+
+        var _pageAllInfoData = {};
+        var pay = 10;
+        var sta = 10;
+        var callbackurl = "";
+        var shareData = "";
+        var goutongData = "";
+        var service_type = "0x0007";
+        var viewRefundDetailUrl = "";
+        var orderId = "";
+        var appId = '@ViewBag.appId';
+        var _orderDetail = new Object();
+        var _expireTime;
+        var _isInZph = false;
+        var logOrderId = 'orderid:' + getQueryString("orderId") + '|';
+        var appName = "";
+
+        //显示商品列表。
+        var _commodityItemTemplate = "";
+
+        function setCommodity() {
+            return goutongData;
+        }
+
+        //订单id，appid，商品名称，商品缩略图  IOS分享
+        function GiveIsoShare() {
+            return shareData;
+        }
+
+        //Android分享
+        function GiveAndroidShare() {
+            if (window.tw && window.tw.setOrderInformation) {
+                window.tw.setOrderInformation(shareData);
+            }
+        }
+
+        function updateAppId(orderAppId) {
+            sessionStorage.appId = orderAppId;
+            var tempgoutong = { PaType: "2", AppId: orderAppId };
+            goutongData = JSON.stringify(tempgoutong);
+            appId = orderAppId;
+            setSessionStorage('commodityUpInfo', 'appId', orderAppId);
+        }
+
+        //订单状态发生变化时清楚订单缓存数据。
+
+        function clearOrderList() {
+            sessionStorage.orderList = false;
+        }
+
+
+        $(function() {
+            saveContextDTOByUrl();
+            var srcAppId = getQueryString("srcAppId");
+            if (JsVilaDataNull(getQueryString("srcAppId"))) {
+                sessionStorage.srcAppId = getQueryString("srcAppId");
+            }
+            //判断是否缓存了订单ID值.当没有时从地址栏获取并缓存      
+            sessionStorage.orderId = getQueryString('orderId');
+
+            if (sessionStorage.source != "share") {
+                $(".contract").show();
+            }
+            _commodityItemTemplate = $("#divCommodityItemTemplate").html();
+
+            //updateAppId(_orderDetail.data.AppId);
+            
+            sessionStorage.orderInfo = "";
+            var tempgoutong = { PaType: "2", AppId: appId };
+            goutongData = JSON.stringify(tempgoutong);
+            if (sessionStorage.source == "share") {
+                $(".clawpwd").show();
+            }
+
+            orderId = getQueryString('orderId');
+            
+            setSessionStorage('commodityUpInfo', 'appId', appId);
+            setSessionStorage('commodityUpInfo', 'userId', getUserId());
+            setSessionStorage('commodityUpInfo', 'orderId', orderId);
+            setSessionStorage('orderInfo', 'OrderId', orderId);
+
+            callbackurl = window.location.href;
+
+
+            $("#goldbalance").text(getCurrency() + "0.00");
+            
+            getDataAjax({
+                url: '/Mobile/GetOrderDetails',
+                data: { orderId: sessionStorage.orderId},
+                callback: function (data) {
+                    _orderDetail = data;
+                    //中石化物流
+//                    if(_orderDetail.data.EsAppId=="8B4D3317-6562-4D51-BEF1-0C05694AC3A6"){
+//                      
+//                      UpdateZSH(_orderDetail.data.ExpOrderNo);
+//                    }
+//                    else{
+//                      updateAppId(_orderDetail.data.AppId);
+//                      
+//                    }
+                    UpdateZSH(_orderDetail.data.ExpOrderNo);
+                    showOrderDetails(_orderDetail);
+                },
+                beforeSend: function () {
+                    ajaxLoading('22', '');
+                },
+                complete: function () {
+                    $("#ajaxLoadBlind").remove();
+                }
+            });
+            
+            //中石化物流信息的
+            function UpdateZSH(expOrderNo){
+
+                getDataAjax({
+                url: '/Mobile/UpdateZSH',
+                data: { ExpOrderNo:expOrderNo,userId: getUserId() },
+                callback: function (res) {
+                },
+                beforeSend: function () {
+                    ajaxLoading('22', '');
+                },
+                complete: function () {
+                    $("#ajaxLoadBlind").remove();
+                }
+            });
+            }
+            
+
+       
+            //正品会引用中 ，无法获得appId，所以做一下修改
+            
+
+            //            if (JsVilaDataNull(sessionStorage.orderId) && isLogin()) {
+            //                getDataAjax({
+            //                    url: '/Mobile/GetOrderDetails',
+            //                    data: { appId: appId, orderId: orderId, userId: getUserId() },
+            //                    callback: function (data) {
+            //                        sessionStorage.esappid = data.data.EsAppId;
+            //                        ajaxLoading('22', '');
+            //                        _orderDetail = data;
+            //                        showOrderDetails(_orderDetail);
+            //                        //正品会引用中 ，无法获得appId，所以做一下修改
+            //                        if (data.AppId != sessionStorage.appId)
+            //                            updateAppId(data.data.AppId);
+            //                    },
+            //                    beforeSend: function () {
+            //                        $(".page").hide();
+            //                        ajaxLoading('22', '');
+            //                    }
+            //                });
+            //            }
+
+            $("#goldpay").on('click', function(e) {
+                setTimeout(function() {
+                    if ($("#goldpay").is(".active")) {
+                        //行为记录->选择金币支付开
+
+                        logBTP(sessionStorage.SrcType, service_type, "0x0020", '', logOrderId);
+                    } else {
+                        //行为记录->选择金币支付关
+                        logBTP(sessionStorage.SrcType, service_type, "0x0021", '', logOrderId);
+                    }
+                    CalcPayPrice();
+                }, 100);
+            });
+            //点击您是否收到该订单商品确认按钮
+            $("#confirmlog").bind("click", function() {
+                hideDialog('#confirmDialog');
+                getDataAjax({
+                    url: '/Mobile/UpdateCommodityOrderc',
+                    data: { orderId: getQueryString('orderId'), userId: getUserId(), appId: appId, payment: pay },
+                    callback: function(data) {
+                        if (data.ResultCode == 1) {
+                            $("#zhifu").show();
+                            toast(data.Message);
+                        } else {
+                            clearOrderList();
+                            _orderDetail.data.State = 3;
+                            //货到付款的订单没有售后。
+                            if (_orderDetail.data.Payment != 1) {
+                                _orderDetail.data.StateAfterSales = 3;
+                            }
+                            showOrderDetails(_orderDetail);
+                            $("#fstate").html("交易成功");
+                            hideDialog('#payDialog');
+                            $("#zhifu").hide();
+                            //$("#delOrder").show();
+                            $("#closeDD").hide();
+                            $("#getRefundInfo").hide();
+                        }
+                    },
+                    beforeSend: function() {
+                        //                    ajaxLoading('22', '');
+                    },
+                    error: function() {
+
+                    }
+                });
+            });
+
+            //点击确认收货按钮
+            $("#zhifu").bind("click", function() {
+                var selfTakeFlag = $("#ulCommodityList").attr("selfTakeFlag");
+                //               pay = 1003;
+                //支付
+                if (sta == 0) {
+                    //行为记录->在线支付
+                    logBTP(sessionStorage.SrcType, service_type, pay == 1 ? "0x0015" : "0x0014", '', logOrderId);
+                    orderPay();
+                } else if (sta == 2 || sta == 13 || (sta == 1 && selfTakeFlag == 1)) { //确认收货
+                    //行为记录->确认收货
+                    logBTP(sessionStorage.SrcType, service_type, "0x0022", '', logOrderId);
+                    if ("@stpStr".indexOf("," + pay + ",") > -1) { //担保支付宝
+                        checkgoldpwd();
+                        return;
+                    }
+                    if ("@dapStr".indexOf("," + pay + ",") > -1) { //直接到账
+                        showDialog('#confirmDialog');
+                        return;
+                    } else {
+                        $("#zhifu").hide();
+                        getDataAjax({
+                            url: '/Mobile/UpdateCommodityOrderc',
+                            data: { orderId: getQueryString('orderId'), userId: getUserId(), appId: appId, payment: pay },
+                            callback: function(data) {
+                                if (data.ResultCode == 1) {
+                                    $("#zhifu").show();
+                                    toast(data.Message);
+                                } else {
+                                    clearOrderList();
+                                    $("#fstate").html("交易成功");
+                                    $("#delOrder").show();
+                                    $("#closeDD").hide();
+                                    $("#getRefundInfo").hide();
+                                    $("#zhifu").hide();
+                                    $('.orderItemReview').each(function(index) {
+                                        $(this).show();
+                                    });
+
+                                }
+                            },
+                            beforeSend: function() {
+                                //                    ajaxLoading('22', '');
+                            },
+                            error: function() {
+
+                            }
+                        });
+                    }
+                }
+            });
+
+            //点击延长收货时间按钮
+            $("#delayShip").bind("click", function() {
+                //行为记录->延长收货时间操作
+                logBTP(sessionStorage.SrcType, service_type, "0x000d", '', logOrderId);
+
+                if (confirm("确定要延长收货时间吗？")) {
+                    getDataAjax({
+                        url: '/Mobile/DelayShip',
+                        data: { orderId: orderId },
+                        callback: function(data) {
+                            if (data.ResultCode == 0) {
+                                $("#spanStateTipContent").html("发货15天后，如果用户未确认，系统将自动确认收货。");
+                                $("#delayShip").hide();
+                            } else {
+                                toast(data.Message);
+                            }
+                        },
+                        beforeSend: function() {
+
+                        },
+                        error: function() {
+
+                        }
+                    });
+                }
+            });
+            //查看退款申请
+            viewRefundDetailUrl = urlAppendCommonParams("/Mobile/RefundInfo?orderId=" + orderId + "&shopId=" + appId);
+            //退货方式、查看退货方式
+            $("#getRefundType").bind("click", function() {
+                var RefundExpCo = $("#refundExpCo").text();
+                if (RefundExpCo == "") {
+                    window.location.href = urlAppendCommonParams("/Mobile/RefundType?shopId=" + appId + "&userId=" + getUserId() + "&isAfterSale=0" + "&orderId=" + orderId);
+                } else {
+                    var refundExpNo = $("#refundExpNo").text();
+                    window.location.href = urlAppendCommonParams("/Mobile/RefundTypeInfo?RefundExpCo=" + escape(RefundExpCo) + "&RefundExpNo=" + escape(refundExpNo) + "&orderId=" + orderId + "&isAfterSale=0");
+                }
+            });
+            //点击金币确认收获 
+            $("#btnsure").bind("click", function() {
+                if ($("#txtpwd").val() == "") {
+                    toast("请输入密码");
+                    return;
+                }
+                //校验金币支付密码
+                var errInfo = checkGoldPayPwdVal();
+                if (errInfo != "") {
+                    toast(errInfo);
+                    return;
+                }
+                //付款
+                if (sta == 0) {
+                    payconfirm();
+                    return;
+                }
+                $("#zhifu").hide();
+                hideDialog('#payDialog');
+
+                //确认收货
+                if (pay == 0) {
+                    getDataAjax({
+                        url: '/Mobile/ConfirmOrder',
+                        data: { commodityOrderId: getQueryString('orderId'), password: $("#txtpwd").val() },
+                        callback: function(data) {
+                            $("#ajaxLoadBlind").remove();
+                            if (data.ResultCode == 1) {
+                                toast(data.Message);
+                            } else {
+                                _orderDetail.data.State = 3;
+                                //货到付款的订单没有售后。
+                                if (_orderDetail.data.Payment != 1) {
+                                    _orderDetail.data.StateAfterSales = 3;
+                                }
+                                showOrderDetails(_orderDetail);
+                                hideDialog('#payDialog');
+                                $("#fstate").html("交易成功");
+                                //$("#delOrder").show();
+                                $("#closeDD").hide();
+                                $("#getRefundInfo").hide();
+                                $("#zhifu").hide();
+                                $('.orderItemReview').each(function(index) {
+                                    $(this).show();
+                                });
+                            }
+                        },
+                        beforeSend: function() {
+                            ajaxLoading('22', '');
+                        },
+                        error: function() {
+                            $("#ajaxLoadBlind").remove();
+                        }
+                    });
+                } else if ("@stwogStr".indexOf("," + pay + ",") > -1) {
+                    getDataAjax({
+                        url: '/Mobile/UpdateCommodityOrderc',
+                        data: { orderId: getQueryString('orderId'), userId: getUserId(), appId: appId, payment: pay, goldpwd: $("#txtpwd").val() },
+                        callback: function(data) {
+                            $("#ajaxLoadBlind").remove();
+                            if (data.ResultCode == 1) {
+                                $("#zhifu").show();
+                                toast(data.Message);
+                            } else {
+                                clearOrderList();
+                                _orderDetail.data.State = 3;
+                                //货到付款的订单没有售后。
+                                if (_orderDetail.data.Payment != 1) {
+                                    _orderDetail.data.StateAfterSales = 3;
+                                }
+                                showOrderDetails(_orderDetail);
+                                $("#fstate").html("交易成功");
+                                hideDialog('#payDialog');
+                                $("#zhifu").hide();
+                                //$("#delOrder").show();
+                                $("#closeDD").hide();
+                                $("#getRefundInfo").hide();
+                            }
+                        },
+                        beforeSend: function() {
+                            ajaxLoading('22', '');
+                        },
+                        error: function() {
+                            $("#ajaxLoadBlind").remove();
+                        }
+                    });
+                }
+            });
+
+            //点击设置支付密码 
+            $("#btnSetPwd").bind("click", function() {
+
+                if ($.trim($("#txtSetPwd").val()) == "" || $.trim($("#txtNextPwd").val()) == "") {
+                    return;
+                }
+                if ($.trim($("#txtSetPwd").val()) != $.trim($("#txtNextPwd").val())) {
+                    toast("两次密码输入不一致");
+                    return;
+                }
+                $("#zhifu").hide();
+
+                getDataAjax({
+                    url: '/Mobile/SetGoldPayPwd',
+                    data: { userId: getUserId(), pwd: hex_md5($.trim($("#txtSetPwd").val())) },
+                    callback: function(data) {
+
+                        if (data.ResultCode == 1) {
+                            $("#zhifu").show();
+                            toast(data.Message);
+                        } else {
+                            hideDialog('#setPwdDialog');
+                            showDialog('#payDialog');
+                        }
+                    },
+                    beforeSend: function() {
+                        //                    ajaxLoading('22', '');
+                    }
+                });
+
+            });
+            //start 忘记密码
+            $("#wangpwd").bind("click", function() {
+
+                // 实例化
+                var base64 = new Base64();
+                // 给字符串加密
+                window.location.href = "@ViewBag.FSPUrl" + "/PasswordProtect/GetPassQuestion?userId=" + getUserId() + "&sessionId=" + getSessionId() + "&ChangeOrg=" + getChangeOrg() + "&token=12345678&clientType=web&callback=" + base64.encode(callbackurl);
+            });
+            //联系商家
+            $("#contactOwner").bind("click", function () {
+                var csUrl = '@System.Configuration.ConfigurationManager.AppSettings["CustomServiceUrl"]';
+                csUrl = csUrl.replace(/&amp;/gi, "&");
+                csUrl = csUrl.format({ appId: CommLib.getUrlParamByName("shopId"), userId: getUserId(), orderId: CommLib.getUrlParamByName("orderId")});
+                document.location.href = csUrl;
+                return;
+
+                //获取联系地址
+                getDataAjax2({
+                    url: '/Mobile/GetZPHContractUrl ',
+                    type: 'post',
+                    async: false,
+                    data: { esAppId: getEsAppId() },
+                    beforeSend: function () {
+                        ajaxLoading(1, '');
+                    },
+                    callback: function (data) {
+                        $("#ajaxLoadBlind").remove();
+                        var contactAppId = data.ContactObj ? appId : (getEsAppId() || appId);
+                        if (data.Code == 0 && JsVilaDataNull(data.Data) && data.Data.indexOf("http") >= 0) { //取到联系地址
+                            window.location.href = data.Data;
+                        } else if (sessionStorage.source == "share") {
+                            window.location.href = "@Html.Raw(Jinher.AMP.BTP.Common.CustomConfig.WebImUrl)".format(contactAppId, getUserId(), getSessionId(), getChangeOrg());
+                        } else {
+                            try {
+                                if (navigator.userAgent.toLowerCase().indexOf("iphone") > -1) {
+                                    window.location.href = "/Mobile/ContactAppOwner?type=goutong&appId=" + contactAppId;
+                                } else {
+                                    window.contactStoreOwner.startServiceList(contactAppId);
+                                }
+                            } catch (e) {
+                                toast("商家暂不支持此功能~");
+                            }
+                        }
+                        //行为记录->联系商家操作
+                        logBTP(sessionStorage.SrcType, service_type, "0x000f", '', logOrderId);
+                    },
+                    error: function () {
+                        $("#ajaxLoadBlind").remove();
+                    }
+                });
+
+            });
+            //删除订单。
+            $("#delOrder").on("click", function() {
+                deleteOrder();
+            });
+
+            $("#btnExpressRoute").on("click", function() {
+                //var shipExpCo = _orderDetail.data.ShipExpCo;
+                //var type = ExpressRoute.getKd100Type(shipExpCo);
+                //if (!JsVilaDataNull(type)) {
+                //    toast("未找到相关信息，请到 " + shipExpCo + " 官网查询！");
+                //    return;
+                //}
+                //var kd100Url = ExpressRoute.getKd100Url(shipExpCo, _orderDetail.data.ExpOrderNo);
+                //document.location.href = kd100Url;
+                var backUrl = document.location.href;
+                document.location.href = urlAppendCommonParams("/ExpressRoute/Index?shipExpCo=" + _orderDetail.data.ShipExpCo + "&expOrderNo=" + _orderDetail.data.ExpOrderNo + "&backUrl=" + encodeURIComponent(backUrl));
+            });
+            $("#hdfk").on("click", function() {
+                //行为记录选择货到付款
+                logBTP(sessionStorage.SrcType, service_type, "0x0015", '');
+
+                if ($("#hdfk").attr("checked")) {
+                    hideDialog('#payDialog');
+                    $("#ulPayGoldAndVoucher").hide();
+                    pay = 1;
+                }
+                CalcPayPrice();
+            });
+
+            $("#onlinePay").on("click", function() {
+                //行为记录选择在线支付
+                //logBTP(sessionStorage.SrcType, service_type, "0x0014", sessionStorage.commodityId_2 || '');
+
+                if ($("#onlinePay").attr("checked")) {
+                    $("#ulPayGoldAndVoucher").show();
+                    pay = 0;
+                }
+                CalcPayPrice();
+            });
+        });
+
+
+        function showOrderDetails(data) {
+
+            //转换时间格式 为了计算日期时间差
+            var myDate = new Date();
+            var month = myDate.getMonth() + 1 < 10 ? "0" + (myDate.getMonth() + 1) : myDate.getMonth() + 1;
+            var currentDate = myDate.getDate() < 10 ? "0" + myDate.getDate() : myDate.getDate();
+            var eDate = myDate.getFullYear() + "-" + month + "-" + currentDate;
+
+
+            $(".page").show();
+            pay = data.data.Payment;
+            sta = data.data.State;
+
+            setSessionStorage('commodityUpInfo', 'priceAll', data.data.Price);
+            setSessionStorage('commodityUpInfo', 'name', data.data.ShoppingCartItemSDTO[0].Name);
+            setSessionStorage('orderInfo', 'OrderCode', data.data.Code);
+            setSessionStorage('orderInfo', 'Freight', data.data.Freight);
+            if (document.referrer.indexOf("/Mobile/MyOrderList") > -1) {
+                sessionStorage.orderState = getQueryString("orderState");
+            }
+
+            var tempobjons = { OrderId: sessionStorage.orderId, AppId: appId, Pic: data.data.ShoppingCartItemSDTO[0].Pic, CommodityName: data.data.ShoppingCartItemSDTO[0].Name };
+            shareData = JSON.stringify(tempobjons);
+            GiveAndroidShare();
+
+            var url = getBtpDomain() + 'Mobile/CommodityView?orderId=' + sessionStorage.orderId + "&shopId=" + appId + "&type=tuwen";
+            shareAndroid("我已经购买了这个商品,还不错哦,你也快去看看吧!", data.data.ShoppingCartItemSDTO[0].Name, data.data.ShoppingCartItemSDTO[0].Pic, url, 2, 2);
+            $("#hidPayState").val(data.data.Payment);
+            $("#hidState").val(data.data.State);
+
+            //添加直接到账
+            var payType = pay == 1 ? "货到付款" : "在线支付";
+            if (data.data.State != 0) {
+                $("#payTypeLi").html('<span class="pull-right" id="payType">' + payType + ' </span>支付方式 ');
+            }
+            //附件
+            if (data.data.PicturesPath) {
+                SetImgGhc(data.data.PicturesPath);
+                $("#PicturesPathDiv").show();
+            } else {
+                $("#PicturesPathDiv").hide();
+            }
+            //判断订单状态
+            switch (data.data.State) {
+            case 0:
+//未支付
+                $("#fstate").html("待付款");
+                //$("#zhifu").attr("href", "/Mobile/Payment?appId=" + appId);
+                $("#zhifu").html("继续支付");
+                $("#closeDD").html("取消订单");
+                $("#showType").val("1");
+                $("#liExp").hide();
+                if (pay != 1 && pay != 2) {
+                    $("#goldpayli").show();
+                    getDataAjax2({
+                        type: "POST",
+                        async: false,
+                        url: "/mobile/CheckPayPattern",
+                        data: { userId: getUserId(), sessionId: getSessionId(), esAppId: getEsAppId(), appId: appId },
+                        dataType: "json",
+                        callback : function (data) {
+                            _pageAllInfoData = data;
+                            if (!data) {
+                                return;
+                            }
+                            if (data.IsHdfk) {
+                                $("#payTypeLi").html('<span class="pull-right"><span id="hdfkspan" class="f-inline-block f-m-r10"> <input id="hdfk" type="radio" name="iCheck" /><label class="text" for="q">货到付款</label></span> <span class="f-inline-block"> <input id="onlinePay" type="radio" name="iCheck" checked /><label class="text" for="x">在线支付</label></span> </span>支付方式 ');
+                            } else {
+                                $("#payTypeLi").html('<span class="pull-right"><span class="f-inline-block"> <input id="onlinePay" type="radio" name="iCheck" checked /><label class="text" for="x">在线支付</label></span> </span>支付方式 ');
+                            }
+                            if (data.TradeType == 0) {
+                                $("#ulPayGoldAndVoucher").show();
+                                var goldbalance = (Math.floor(data.GoldBal * 0.1) * 0.01).toFixed(2);
+                                $("#goldbalance").text(getCurrency() + goldbalance);
+                                if (goldbalance == 0) {
+                                    $("#goldpay").css("pointer-events", "none;");
+                                }
+                                if (data.IsAllAppInZPH) {
+                                    _isInZph = true;
+                                    $("#payCouponLi").show();
+                                    $("#paycouponCount").html(data.GoldCouponCount);
+                                } else {
+                                    $("#payCouponLi").hide();
+                                }
+                            } else if (data.TradeType == 1) {
+
+                            }
+
+
+                        }
+                    });
+                }
+                $("#zhifu").show();
+                //状态提示信息。
+                $("#liStateTip").hide();
+                break;
+            case 1:
+//未发货
+//自提
+
+                if (data.data.SelfTakeFlag == 1) {
+                    $("#fstate").html("待发货");
+                    $("#zhifu").html("确认收货");
+                    if (pay == 1) {
+                        $("#closeDD").html("取消订单");
+                        $("#showType").val("1");
+                    } else if (pay != 1) {
+                        $("#closeDD").html("退款");
+                        $("#showType").val("2");
+                    }
+                    $("#liExp").hide();
+                    $("#goldpayli").hide();
+                    //状态提示信息。
+                    $("#liStateTip").hide();
+                    $("#zhifu").show();
+                } else {
+                    $("#fstate").html("待发货");
+                    $("#zhifu").hide();
+                    if (pay == 1) {
+                        $("#closeDD").html("取消订单");
+                        $("#showType").val("1");
+                    } else if (pay != 1) {
+                        $("#closeDD").html("退款");
+                        $("#showType").val("2");
+                    }
+                    $("#liExp").hide();
+                    $("#goldpayli").hide();
+                    //状态提示信息。
+                    $("#liStateTip").hide();
+                }
+                break;
+            case 13:
+//出库中
+                $("#fstate").html("出库中");
+                $("#zhifu").html("确认收货");
+                if (pay != 1) {
+                    $("#closeDD").html("申请退款/退货");
+                    $("#showType").val("3");
+                } else {
+                    $("#closeDD").hide();
+                }
+                $("#liExp").hide();
+                $("#zhifu").show();
+                //状态提示信息。
+                $("#liStateTip").show();
+                $("#spanStateTipContent").html("发货后9天,若未确认收货,订单状态会自动变为已收货。");
+                break;
+            case 2:
+//已发货
+//状态提示信息。
+                $("#liStateTip").show();
+                //计算时间差
+                var sDate = ChangeDateFormat(data.data.ShipmentsTime, 2);
+                var sArr = sDate.split("-");
+                var eArr = eDate.split("-");
+                var sRDate = new Date(sArr[0], sArr[1], sArr[2]);
+                var eRDate = new Date(eArr[0], eArr[1], eArr[2]);
+                var result = (eRDate - sRDate) / (24 * 60 * 60 * 1000) + 1;
+                //
+                $("#fstate").html("已发货(第" + result + "天)");
+                $("#spanStateTipContent").html("发货后9天,若未确认收货,订单状态会自动变为已收货。");
+                $("#zhifu").html("确认收货");
+                if (pay != 1) {
+                    $("#closeDD").html("申请退款/退货");
+                    $("#showType").val("3");
+                } else {
+                    $("#closeDD").hide();
+                }
+                if (result >= 9 && result <= 12 && !data.data.IsDelayConfirmTime) {
+                    $("#delayShip").show();
+                }
+                if (data.data.SelfTakeFlag == 1) {
+                    $("#liExp").hide();
+                } else {
+                    $("#liExp").show();
+                }
+                $("#zhifu").show();
+                break;
+            case 3:
+//交易成功
+                var ostat = getOrderStateText(sta, data.data.StateAfterSales);
+                $("#fstate").html(ostat);
+                $("#zhifu").hide();
+                //订单状态（必填）：确认收货=3，售后退款中=5,已退款=7，商家未收到货=10 ,金和处理退款中=12,售后交易成功=15
+                if (data.data.StateAfterSales == 15) {
+                    $("#delOrder").show();
+                } else {
+                    $("#delOrder").hide();
+                }
+
+                $("#closeDD").hide();
+                if (data.data.SelfTakeFlag == 1) {
+                    $("#liExp").hide();
+                } else {
+                    $("#liExp").show();
+                }
+                if (data.data.StateAfterSales == 7) {
+                    //状态提示信息。
+                    $("#liStateTip").show();
+                    var rsm = data.data.RefundScoreMoney > 0 ? "(含" + data.data.RefundScoreMoney + "元积分)" : "";
+                    $("#spanStateTipContent").html("已成功退款" + data.data.RefundMoney + "元" + rsm + "，请到付款账号中核实~");
+                } else {
+                    $("#liStateTip").hide();
+                }
+                break;
+            case 4:
+//商家取消订单(交易失败)
+                $("#fstate").html("交易失败");
+                $("#zhifu").hide();
+                $("#delOrder").show();
+                $("#closeDD").hide();
+                $("#CancelReason").show();
+                $("#CancelReason").html("商家取消订单(原因：" + data.data.MessageToBuyer + ")");
+                $("#liExp").hide();
+                $("#liStateTip").hide();
+                break;
+            case 5:
+//客户取消订单(交易失败)
+                $("#fstate").html("交易失败");
+                $("#zhifu").hide();
+                $("#delOrder").show();
+                $("#closeDD").hide();
+                $("#CancelReason").show();
+                $("#CancelReason").html("客户取消订单(原因：" + data.data.MessageToBuyer + ")");
+                $("#liExp").hide();
+                $("#liStateTip").hide();
+                break;
+            case 6:
+//超时交易关闭
+                $("#fstate").html("交易关闭");
+                $("#zhifu").hide();
+                $("#closeDD").hide();
+                $("#delOrder").show();
+                $("#liExp").hide();
+                $("#liStateTip").hide();
+                break;
+            case 7:
+//已退款
+                $("#fstate").html("已退款");
+                $("#zhifu").hide();
+                $("#closeDD").hide();
+                $("#showType").val("4");
+                $("#delOrder").show();
+                $("#liExp").hide();
+                $("#getRefundInfo").hide();
+                //状态提示信息。
+                $("#liStateTip").show();
+                var rsm = data.data.RefundScoreMoney > 0 ? "(含" + data.data.RefundScoreMoney + "元积分)" : "";
+                $("#spanStateTipContent").html("已成功退款" + data.data.RefundMoney + "元" + rsm + "，请到付款账号中核实~");
+                break;
+            case 8:
+//待发货退款中
+                $("#fstate").html("退款中");
+                $("#zhifu").hide();
+                $("#closeDD").html("撤销退款申请");
+                $("#getRefundInfo").show();
+                $("#showType").val("5");
+                $("#liExp").hide();
+                //状态提示信息。
+                $("#liStateTip").show();
+                $("#spanStateTipContent").html("买家申请退款，10天内商家未响应，自动达成同意退款/退货申请协议。");
+                break;
+            case 9:
+//已发货退款中
+            case 14:
+//出库中退款中
+                $("#fstate").html("退款中");
+                $("#zhifu").hide();
+                $("#closeDD").html("撤销退款/退货申请");
+                $("#getRefundInfo").show();
+                $("#showType").val("5");
+                if (data.data.State == 9) {
+                    $("#liExp").show();
+                } else {
+                    $("#liExp").hide();
+                }
+                //状态提示信息。
+                $("#liStateTip").show();
+                $("#spanStateTipContent").html("买家申请退款/退货，10天内商家未响应，自动达成同意退款/退货申请协议。");
+                break;
+            case 10:
+//已发货退款中(商家同意退款，商家未收到货)(退款中)
+                $("#fstate").html("退款中");
+                $("#zhifu").hide();
+                $("#closeDD").hide();
+                $("#getRefundInfo").show();
+                $("#getRefundType").show();
+                if (JsVilaDataNull(data.data.RefundExpCo)) {
+                    $("#getRefundType").html('查看退货方式')
+                }
+                $("#showType").val("4");
+                if (data.data.AgreeFlag == 0) {
+                    $("#liExp").hide();
+                } else {
+                    $("#liExp").hide();
+                }
+                //状态提示信息。
+                $("#liStateTip").show();
+                $("#spanStateTipContent").html("卖家同意退款/退货，请在7天之内发货。");
+                break;
+            case 11:
+//付款中(待发货)
+                $("#fstate").html("待发货");
+                $("#zhifu").hide();
+                $("#closeDD").html("退款");
+                $("#showType").val("2");
+                $("#liExp").hide();
+                $("#liStateTip").hide();
+                break;
+            case 12:
+//金和处理退款中
+                $("#fstate").html("处理退款中");
+                $("#zhifu").hide();
+                $("#closeDD").hide();
+                if (data.data.RefundExpOrderNo) {
+                    $("#liExp").show();
+                } else {
+                    $("#liExp").hide();
+                }
+                $("#getRefundInfo").hide();
+                $("#liStateTip").hide();
+                break;
+            default:
+                $("#zhifu").hide();
+                $("#closeDD").hide();
+                break;
+            }
+
+            //提货码
+            if (data.data.State != 0 && data.data.State != 11) {
+                //自提
+                if (data.data.SelfTakeFlag == 1 && data.data.PickUpCode && data.data.PickUpCodeUrl) {
+                    $("#PickUpCodeUrl").attr("src", data.data.PickUpCodeUrl);
+                    $("#PickUpCode").html(data.data.PickUpCode);
+                    $("#PickUp").show();
+                } else {
+                    $("#PickUpCodeUrl").attr("src", "");
+                    $("#PickUp").hide();
+                }
+            }
+            //自提点地址
+            if (data.data.SelfTakeAddress != "") {
+                $("#selftakedesc span").html(data.data.SelfTakeAddress);
+            } else {
+                $("#selftakedesc span").html("自提地址：北京市海淀区上地东路1号盈创动力大厦A座北区401（18911992906）");
+            }
+
+
+            if (data.data.State == 0) {
+                $("#showPayment").hide();
+            } else {
+                var payment = data.data.PaymentName;
+                $("#showPayment").show();
+                $("#Payment").html(payment);
+            }
+
+            //var ostat = getOrderStateText(sta);
+            //$("#fstate").html(ostat);
+
+            var btns = getButtonByState(data.data, sta, pay);
+            if (btns.indexOf(1) > -1) {
+                $("#btnCancelOrder").show();
+            } else {
+                $("#btnCancelOrder").hide();
+            }
+
+            $("#refundExpCo").val(data.data.RefundExpCo);
+            $("#refundExpNo").val(data.data.RefundExpOrderNo);
+
+            //填充页面表单
+            //if ((data.data.ShipExpCo != null && data.data.ShipExpCo.length > 0)
+            //        || (data.data.ExpOrderNo != null && data.data.ExpOrderNo.length > 0)) {
+            //    $("#ulLogistics").show();
+            //}
+            //else {
+            //    $("#ulLogistics").hide();
+            //}
+            if (data.data.ShipExpCo != "") {
+                $("#ShipExpCo").text(data.data.ShipExpCo);
+            } else {
+                $("#ShipExpCo").text("无需物流");
+                $("#btnExpressRoute").hide();
+            }
+            if (data.data.ExpOrderNo != "") {
+                $("#ExpOrderNo").text(data.data.ExpOrderNo);
+            } else {
+                $("#ExpOrderNo").text("无需物流");
+                $("#btnExpressRoute").hide();
+            }
+
+            //0不开发票，1个人，2公司
+            var rInfo = "";
+            var itype = data.data.InvoiceType;
+            if (itype == 0) {
+                rInfo = "不开发票";
+            } else if (itype == 1) {
+                rInfo = "个人";
+            } else if (itype == 2) {
+                rInfo = "公司";
+                rInfo += "(" + data.data.InvoiceTitle + ")";
+            }
+            $("#spanReceiptInfo").html(rInfo);
+
+            $("#ReceiptUserName").html(data.data.ReceiptUserName);
+            $("#ReceiptPhone").html(data.data.ReceiptPhone);
+            $("#ReceiptAddress").html(data.data.Province + "" + data.data.City + "" + data.data.District + "" + data.data.Street + "" + data.data.ReceiptAddress);
+            $("#SubTime").html(ChangeDateFormat(data.data.SubTime, 1));
+            $("#Code").html(data.data.Code);
+
+            $("#spanShopName").html(data.AppName);
+
+            //商品件数。
+            var totalcn = 0;
+            var cis = data.data.ShoppingCartItemSDTO;
+            if (cis != null && cis.length > 0) {
+                for (var i = 0; i < cis.length; i++) {
+                    totalcn += cis[i].CommodityNumber;
+                }
+            }
+            $("#spanCommodityNum").html(totalcn);
+
+            $("#hidPrice").val(data.data.Price);
+            $("#payprice").text(getCurrency() + data.data.Price);
+
+            var couponCode = getQueryString("couponCodes");
+            var couponCount = eval(getQueryString("couponCount"));
+            if (JsVilaDataNull(couponCode) && couponCount > 0 && _isInZph) {
+                $("#couponInfo").text("使用" + couponCode.split(';').length + "张");
+            }
+            if (sessionStorage.goldpay == 1) {
+                $("#goldpay").addClass('active');
+            }
+            setReducationValue('couponValue', _orderDetail.data.CouponValue);
+            //积分抵现
+            setReducationValue('scoreValue', _orderDetail.data.ScorePrice);
+
+            //易捷币抵现
+            if(_orderDetail.data.YJBPrice==null)
+            {
+                $(".serveYJB").hide();
+                _orderDetail.data.YJBPrice = 0;
+            } else {
+                $(".serveYJB").show();
+                setReducationValue('yjbValue', _orderDetail.data.YJBPrice);
+            }
+
+            if (_orderDetail.data.GoldPrice > 0 || _orderDetail.data.GoldCoupon > 0) {
+                setReducationValue('goldValue', _orderDetail.data.GoldPrice);
+                setReducationValue('payCouponValue', _orderDetail.data.GoldCoupon);
+            } else {
+                CalcPayPrice();
+            }
+
+            //改过价，运费为0.
+            if (_orderDetail.data.IsModifiedPrice) {
+                $('#Freight').html("0.00");
+            } else {
+                $('#Freight').html(Math.abs(data.data.Freight).toFixed(2));
+            }
+
+            $("#Price").html(eval(_orderDetail.data.Price + _orderDetail.data.CouponValue + _orderDetail.data.ScorePrice).toFixed(2));
+            if (data.data.Details != "" && data.data.Details != null && data.data.Details != "undefined") {
+                $("#details").html("<span>备注</span><span >" + data.data.Details + "</span>");
+            }
+            $("#serphone").html(data.Msg);
+            //                    toast(JSON.stringify(data));
+            //向页面填充 商品
+            var html = getCommodityListHtml(data.data);
+            $("#ulCommodityList").html(html);
+            if (data.data.SelfTakeFlag == 1) {
+                $("#selfTakeAddressInfo").show();
+            } else {
+                $("#selfTakeAddressInfo").hide();
+            }
+            $("#ulCommodityList").attr("selfTakeFlag", data.data.SelfTakeFlag);
+            regeditEvents();
+
+
+        }
+
+        function deleteOrder() {
+            //行为记录->删除订单操作
+            logBTP(sessionStorage.SrcType, service_type, "0x000c", '', logOrderId);
+            if (confirm("确定要删除订单吗？")) {
+                getDataAjax({
+                    url: '/Mobile/DelOrder',
+                    data: { orderId: orderId },
+                    callback: function(data) {
+                        if (data.ResultCode == 0) {
+                            clearOrderList();
+                            var url = "/Mobile/MyOrderList";
+                            var orderState = sessionStorage.orderState;
+                            if (JsVilaDataNull(orderState)) {
+                                url += "?orderState=" + orderState;
+                            }
+                            window.location.href = url;
+                        } else {
+                            toast(data.Message);
+                        }
+                    },
+                    beforeSend: function() {
+
+                    },
+                    error: function() {
+
+                    }
+                });
+            }
+        }
+
+//订单评价
+
+        function orderComReview(ordeItemId) {
+            //行为记录->用户评分
+            logBTP(sessionStorage.SrcType, service_type, "0x0013", '', logOrderId);
+
+            var scis = _orderDetail.data.ShoppingCartItemSDTO;
+            var sci = scis.GetOnlyElement("Id", ordeItemId);
+            window.location.href = urlAppendCommonParams("/Mobile/OrderReview?shopId=" + appId + "&ordeItemId=" + ordeItemId + "&orderId=" + getQueryString('orderId'));
+ 
+        }
+
+//订单付款
+
+        function orderPay() {
+            getDataAjax2({
+                url: '/Jinher.AMP.BTP.SV.CommodityOrderSV.svc/ConfirmPayPrice',
+                data: JSON.stringify({ userId: getUserId(), commodityOrderId: getQueryString('orderId') }),
+                callback: function(data) {
+                    switch (data.ResultCode) {
+                    case 0:
+                        $('#Freight').html(eval(data.Freight).toFixed(2));
+                        $("#hidPrice").val(data.Message);
+                        $("#Price").html(eval(data.Message).toFixed(2));
+                        _orderDetail.data.Price = data.Message;
+                        _orderDetail.data.Freight = data.Freight;
+                        _expireTime = data.ExpireTime;
+
+                        CalcPayPrice();
+                        //payconfirm();
+                        //jinherWebPay(getQueryString('orderId'), getQueryString("shopId"), $("#hidPrice").val(), $("#Name").html());
+                        var ocName = _orderDetail.data.ShoppingCartItemSDTO[0].Name;
+                        if (pay == 1) {
+                            hdfkPay();
+                        } else {
+                            jinherWebPay(getQueryString('orderId'), appId, $("#hidPrice").val(), ocName);
+                        }
+
+                        break;
+                    case 1:
+                        toast(data.Message);
+                        break;
+                    case 6:
+                        toast(data.Message);
+                        _orderDetail.data.State = 6;
+                        showOrderDetails(_orderDetail);
+                        break;
+                    case 2:
+                        $('#Freight').html(data.Freight);
+                        $("#hidPrice").val(data.Message);
+                        $("#Price").html(eval(data.Message).toFixed(2) + "(" + new Number(data.Message * 1000).toFixed(0) + "金币)");
+                        setReducationValue('couponValue', data.CouponAmount);
+                        _orderDetail.data.Price = data.Message;
+                        _orderDetail.data.Freight = data.Freight;
+                        _orderDetail.data.CouponValue = data.CouponAmount;
+
+                        CalcPayPrice();
+
+                        if (confirm('当前商品价格已发生变化,是否继续?\n最新订单价格为(' + getCurrency() + data.Message + ')')) {
+                            var ocName = _orderDetail.data.ShoppingCartItemSDTO[0].Name;
+                            //jinherWebPay(getQueryString('orderId'), getQueryString("shopId"), $("#hidPrice").val(), $("#Name").html());
+                            jinherWebPay(getQueryString('orderId'), appId, $("#hidPrice").val(), ocName);
+                            //payconfirm();
+                        }
+                        break;
+                    }
+                    $("#ajaxLoadBlind").remove();
+                },
+                beforeSend: function() {
+                    ajaxLoading('22', '');
+                },
+                error: function(datas) {
+                    $("#ajaxLoadBlind").remove();
+                    toast('请求失败!');
+
+                }
+            });
+
+        }
+
+        function payconfirm() {
+            var payprice = $("#payprice").text().substring(1);
+            var gold = $("#goldValue").text();
+            var payCouponValue = $("#payCouponValue").html();
+            var couponCodes = "";
+            if (JsVilaDataNull(getQueryString("couponCodes"))) {
+                couponCodes = getQueryString("couponCodes");
+            }
+            //$("#Name").html()
+            var ocName = _orderDetail.data.ShoppingCartItemSDTO[0].Name;
+            var goldData = { orderId: getQueryString('orderId'), userId: getUserId(), appId: appId, goldpwd: hex_md5($("#txtpwd").val()), realprice: $("#hidPrice").val(), comName: ocName, sessionId: getSessionId(), gold: gold, couponCount: payCouponValue, couponCodes: couponCodes };
+            //直接调接口的全金币（代金券）支付
+            if (eval(payprice) == 0 && getEsAppId() != "8b4d3317-6562-4d51-bef1-0c05694ac3a6") {
+                getDataAjax2({
+                    type: "POST",
+                    async: true,
+                    url: "/Mobile/GoldPayCommodityOrder",
+                    data: '{ "goldDTO":' + JSON.stringify(goldData) + '}',
+                    dataType: "json",
+                    contentType: "application/json",
+                    callback : function (data) {
+                        $("#ajaxLoadBlind").remove();
+                        switch (data.ResultCode) {
+                            case 0:
+                                clearOrderList();
+                                hideDialog('#payDialog');
+                                hideDialog('#payCouponLi');
+                                _orderDetail.data.State = 1;
+                                showOrderDetails(_orderDetail);
+                                toast('支付成功!');
+                                break;
+                            case 1:
+                                toast(data.Message);
+                                break;
+                        }
+                    },
+                    beforeSend: function () {
+                        ajaxLoading('22', '');
+                    },
+                    error: function(datas) {
+                        $("#ajaxLoadBlind").remove();
+                    }
+                });
+            } else { //在线支付
+                //jinherPay(getQueryString('orderId'), getQueryString("shopId"), $("#hidPrice").val(), $("#Name").html());
+                var ocName = _orderDetail.data.ShoppingCartItemSDTO[0].Name;
+                jinherPay(getQueryString('orderId'), appId, $("#hidPrice").val(), ocName);
+            }
+        }
+
+        function checkGoldPayPwdVal() {
+            var errInfo = "";
+            if ($("#txtpwd").val() != "") {
+                getDataAjax2({
+                    type: "post",
+                    url: '/Mobile/CheckGoldPayPwdVal',
+                    async: false,
+                    data: { userId: getUserId(), sessionId: getSessionId(), pwd: hex_md5($("#txtpwd").val()) },
+                    dataType: "json",
+                    callback: function (data) {
+                        if (data.Code == 0) {
+                            errInfo = "";
+                        } else {
+                            errInfo = data.Message;
+                        }
+                    },
+                    error: function() {
+                        errInfo = "";
+                    }
+                });
+            }
+            return errInfo;
+        }
+
+        function checkgoldpwd() {
+            getDataAjax({
+                url: '/Mobile/CheckGoldPwd',
+                data: { userId: getUserId() },
+                callback: function(data) {
+                    if (data.Code == 1) { //未设置密码
+                        showDialog('#setPwdDialog');
+                    } else {
+                        showDialog('#payDialog');
+                    }
+                },
+                beforeSend: function() {
+                    //                    ajaxLoading('22', '');
+                },
+                error: function() {
+
+                }
+            });
+        }
+
+//货到付款支付
+
+        function hdfkPay() {
+            getDataAjax({
+                url: '/Mobile/UpdateCommodityOrder',
+                data: { orderId: getQueryString('orderId'), userId: getUserId(), appId: appId },
+                callback: function(data) {
+                    $("#ajaxLoadBlind").remove();
+                    if (data.ResultCode == 0) {
+                        hideDialog('#payDialog');
+                        hideDialog('#payCouponLi');
+                        _orderDetail.data.State = 1;
+                        _orderDetail.data.Payment = 1;
+                        showOrderDetails(_orderDetail);
+                    } else {
+                        toast(data.Message);
+                    }
+                },
+                beforeSend: function() {
+                    //                    ajaxLoading('22', '');
+                },
+                error: function() {
+
+                }
+            });
+        }
+
+        function jinherWebPay(borderId, bappId, bmoney, comName) {
+            if (eval(bmoney) == 0) {
+                //toast("订单金额为0，无法支付");
+                UpdateCommodityOrderStatus();
+                return 0;
+            }
+
+            var goldbalance = $("#goldbalance").text().substring(1);
+            goldbalance = eval(goldbalance);
+            if ($("#goldpay").is(".active") && goldbalance > 0) {
+                checkgoldpwd();
+                return;
+            }
+            payconfirm();
+        }
+
+        function jinherPay(borderId, bappId, bmoney, comName) {
+            if (!isLogin())
+                return;
+            
+            var payOrderToFspDto = {};
+
+            payOrderToFspDto.OrderId = borderId;
+            payOrderToFspDto.GoldCoupon = $("#payCouponValue").html();
+
+
+            if (JsVilaDataNull(getQueryString("couponCodes"))) {
+                payOrderToFspDto.GoldCouponIds = getQueryString("couponCodes");
+            }
+            payOrderToFspDto.GoldPrice = eval($("#goldValue").text()).toFixed(2);
+            payOrderToFspDto.Source = (JsVilaDataNull(sessionStorage.source) ? sessionStorage.source : 'internal');
+            payOrderToFspDto.SrcType = getSysName(sessionStorage.SrcType);
+            payOrderToFspDto.WxOpenId = bridge.getData('WeChatKey') || "";
+            payOrderToFspDto.FirstCommodityName = "电商" + comName; ;
+            payOrderToFspDto.EsAppId = getEsAppId();
+            payOrderToFspDto.ExpireTime = (_expireTime || null);
+            payOrderToFspDto.TradeType = _pageAllInfoData.TradeType;
+
+            getDataAjax2({
+                url: '/Mobile/GetPayUrl',
+                type: 'post',
+                async: false,
+                dataType: "json",
+                contentType: "application/json",
+                data: payOrderToFspDto,
+                error: function () {
+                    $("#ajaxLoadBlind").remove();
+                },
+                callback: function (msg) {
+                    if (!msg) {
+                        alert("生成在线支付地址失败");
+                        return;
+                    }
+                    if (msg.ResultCode != 0) {
+                        alert(msg.Message);
+                        return;
+                    }
+                    if (msg.Data == "") {
+                        alert("在线支付地址获得的值为空");
+                        return;
+                    }
+                    window.location.href = msg.Data;
+                }
+            });
+            
+        }
+
+        function ChangeDateFormat(cellval, state) {
+            try {
+                var date = new Date(parseInt(cellval.replace("/Date(", "").replace(")/", ""), 10));
+                var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+                var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+                var hour = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+                var minu = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+                if (state == 1) {
+                    return date.getFullYear() + "-" + month + "-" + currentDate + " " + hour + ":" + minu;
+                } else {
+                    return date.getFullYear() + "-" + month + "-" + currentDate;
+                }
+            } catch(e) {
+                return "";
+            }
+        }
+
+//退款相关
+
+        function JsRefund() {
+                   
+            var _showtype = $("#showType").val();
+            if (_showtype == "5") {
+                //行为记录->取消退款申请操作
+                logBTP(sessionStorage.SrcType, service_type, "0x000e", '', logOrderId);
+                // 提示取消
+                if (confirm('确定撤销退款/退货申请？')) {
+                    getDataAjax2({
+                        url: '/Mobile/CancelOrderRefund/',
+                        type: 'post',
+                        data: {
+                            orderId: getQueryString('orderId'),
+                            state: $("#hidState").val()
+                        },
+                        callback: function (data) {
+                            if (data.ResultCode == 0) {
+                                clearOrderList();
+                                toast("操作成功！");
+                                location.reload();
+                                return false;
+                            } else {
+                                toast("不好意思，操作失败，请您重试！");
+                                return false;
+                            }
+                        },
+                        error: function() {
+
+                        }
+                    })
+                }
+            } else if (_showtype == "1") {
+                //行为记录->取消订单操作
+                logBTP(sessionStorage.SrcType, service_type, "0x000b", '', logOrderId);
+                window.location.href = urlAppendCommonParams("/Mobile/OrderCancelReason?shopId=" + appId + "&orderId=" + orderId);
+            } else {
+                //行为记录->退款操作
+                logBTP(sessionStorage.SrcType, service_type, "0x000a", '', logOrderId);
+                if (confirm('建议先与商家进行沟通，协商一致后再申请退款。确定继续申请？')) {
+                    window.location.href = urlAppendCommonParams("/Mobile/RefundOrder?" + "shopId=" + appId + "&orderId=" + getQueryString('orderId') + "&pri=" + $("#hidPrice").val() + "&state=" + $("#hidState").val() + "&pay=" + $("#hidPayState").val() + "&type=" + _showtype + "&isAfterSale=0&spendScoreMoney=" + _orderDetail.data.ScorePrice + "&spendYJBMoney=" + _orderDetail.data.YJBPrice);
+                }
+            }
+
+        }
+
+        function usePayCoupon() {
+            if ($("#goldpay").is(".active")) {
+                sessionStorage.goldpay = 1;
+            }
+            var srcUrl = window.location.href;
+            if (srcUrl.indexOf("&couponCount") > 0) {
+                srcUrl = srcUrl.substr(0, srcUrl.indexOf("&couponCount"));
+            }
+            var couponCodes = "";
+            if (JsVilaDataNull(getQueryString("couponCodes"))) {
+                couponCodes = getQueryString("couponCodes");
+            }
+            var freightprice = $("#hidPrice").val();
+            window.location.href = "@ViewBag.PromotionUrl" + "/MyVouchers/VoucherList?srcApp=btp&userId=" + getUserId() + "&sessionId=" + getSessionId() + "&selectedVCodes=" + couponCodes + "&orderAmount=" + freightprice + "&ChangeOrg=00000000-0000-0000-0000-000000000000&esAppId=" + getEsAppId() + "&srcUrl=" + encodeURIComponent(srcUrl);            
+        }
+
+        function CalcPayPrice() {
+            var payCouponValue = 0, goldValue = 0;
+            var payPriceValue = eval($("#hidPrice").val());
+            if (pay == 1) {
+                setReducationValue('goldValue', goldValue);
+            }
+            if (JsVilaDataNull(getQueryString("couponCount")) && _isInZph) {
+                var couponCount = eval(getQueryString("couponCount")).toFixed(2);
+                if (couponCount > 0) {
+                    if (couponCount >= payPriceValue) {
+                        payCouponValue = payPriceValue;
+                    } else {
+                        payCouponValue = couponCount;
+                    }
+                    payCouponValue = eval(payCouponValue).toFixed(2);
+                    setReducationValue('couponValue', payCouponValue);
+                    $("#payCoupondiv").show();
+                }
+            }
+            payPriceValue = (payPriceValue - payCouponValue).toFixed(2);
+            if ($("#goldpay").is(".active")) {
+                var goldbalance = eval($("#goldbalance").text().substring(1));
+                if (goldbalance >= eval(payPriceValue)) {
+                    goldValue = payPriceValue;
+                } else {
+                    goldValue = goldbalance;
+                }
+                setReducationValue('goldValue', goldValue);
+                $("#golddiv").show();
+            } else {
+                setReducationValue('goldValue', goldValue);       
+            }
+            $("#payprice").text(getCurrency() + (payPriceValue - goldValue).toFixed(2));
+        }
+
+        function UpdateCommodityOrderStatus() {
+            ajaxLoading('22', '');
+            getDataAjax2({
+                url: '/PaymentNotify/UpdateCommodityOrderStatus',
+                type: 'post',
+                data: {
+                    orderId: getQueryString('orderId'),
+                    payment: 0,
+                    gold: 0,
+                    money: 0,
+                    couponCount: 0
+                },
+                callback: function (data) {
+                    $("#ajaxLoadBlind").remove();
+                    if (data.ResultCode == 0) {
+                        clearOrderList();
+                        hideDialog('#payDialog');
+                        hideDialog('#payCouponLi');
+                        _orderDetail.data.State = 1;
+                        showOrderDetails(_orderDetail);
+                    } else {
+                        toast(data.Message);
+                    }
+                },
+                error: function() {
+                    $("#ajaxLoadBlind").remove();
+                }
+            });
+        }
+
+
+        function getCommodityListHtml(orderInfo) {
+            var data = orderInfo.ShoppingCartItemSDTO;
+            var html = "";
+            if (data == null || data.length == 0) {
+                return html;
+            }
+
+            for (var i = 0; i < data.length; i++) {
+                var datai = data[i];
+                var obhtml = getOrderButtonHtml(orderInfo, datai.HasReview, datai.RealPrice, datai.CommodityId);
+                //datai.Size以，分隔；前颜色，后尺寸。
+                if (datai.Size != null && datai.Size.length > 1) {
+                    var splitR = datai.Size.split(",");
+                    var sizeText = "";
+                    var s01 = false;
+                    var s02 = false;
+                    if (splitR.length == 1) {
+                        if (splitR[0] != null && splitR[0].length > 0 && splitR[0] != "null") {
+                            s01 = true;
+                        }
+                    } else if (splitR.length >= 1) {
+                        if (splitR[0] != null && splitR[0].length > 0 && splitR[0] != "null") {
+                            s01 = true;
+                        }
+                        if (splitR[1] != null && splitR[1].length > 0 && splitR[1] != "null") {
+                            s02 = true;
+                        }
+                    }
+                    datai.SizeDisplay = s01 || s02 ? "block" : "none";
+                    if (s01) {
+                        //sizeText += "颜色：" + splitR[0];
+                        sizeText += splitR[0];
+                    }
+                    if (s02) {
+                        if (sizeText.length > 0) {
+                            sizeText += "&nbsp;&nbsp;";
+                        }
+                        //sizeText += "尺寸：" + splitR[1];
+                        sizeText += splitR[1];
+                    }
+                    datai.SizeText = sizeText;
+                } else {
+                    datai.SizeText = "";
+                    datai.SizeDisplay = "none";
+                }
+                datai.OperateBtnHtml = obhtml;
+                datai.SelfTakeDisplay = orderInfo.SelfTakeFlag == 1 ? "block" : "none";
+                datai.selfTakeFlag = orderInfo.SelfTakeFlag;
+                datai.srckey = "src";
+                //==========================测试使用=============================
+                //datai.OperateBtnHtml = "";
+                //==============================================================
+                html += _commodityItemTemplate.format(datai);
+            }
+            return html;
+        }
+
+//所有订单详情页要显示的按钮。
+        var _allDisplayBtns = "";
+        //生成一个订单所能显示的button按钮的html.
+
+        function getOrderButtonHtml(data, hasReview, realPrice, commodityId) {
+            var btnArr = getButtonByState(data, data.State, data.Payment);
+            if (btnArr.length == 0) {
+                return "";
+            }
+            _allDisplayBtns = btnArr.join(",");
+            var isReview = false;
+            //如果已评价，则不再评价。
+            if (hasReview) {
+                var ind = btnArr.indexOf(7);
+                if (ind > -1) {
+                    btnArr.splice(ind, 1);
+                    isReview = true;
+                }
+            }
+            //如果是服务订单，则也不需要评价
+            if (data.OrderType == 1) {
+                //服务订单不需要评价，如果数据有问题也不需要显示已评价
+                hasReview = false;
+                var ind = btnArr.indexOf(7);
+                if (ind > -1) {
+                    btnArr.splice(ind, 1);
+                }
+            }
+            //订单总价为0或当前商品支付价格为0，则不显示 2、退款;3、申请退款/退货;5、撤销退款申请;6、撤销退款/退货申请;;8、查看退款详情;10、退货方式；12、查看退款方式
+            if (data.Price + data.ScorePrice == 0) {
+                var indDel1 = btnArr.indexOf(2);
+                if (indDel1 > -1) {
+                    btnArr.splice(indDel1, 1);
+                }
+                var indDel2 = btnArr.indexOf(3);
+                if (indDel2 > -1) {
+                    btnArr.splice(indDel2, 1);
+                }
+                var indDel3 = btnArr.indexOf(5);
+                if (indDel3 > -1) {
+                    btnArr.splice(indDel3, 1);
+                }
+                var indDel4 = btnArr.indexOf(6);
+                if (indDel4 > -1) {
+                    btnArr.splice(indDel4, 1);
+                }
+                var indDel5 = btnArr.indexOf(8);
+                if (indDel5 > -1) {
+                    btnArr.splice(indDel5, 1);
+                }
+                var indDel6 = btnArr.indexOf(10);
+                if (indDel6 > -1) {
+                    btnArr.splice(indDel6, 1);
+                }
+                var indDel7 = btnArr.indexOf(12);
+                if (indDel7 > -1) {
+                    btnArr.splice(indDel7, 1);
+                }
+            }
+
+            var reviewHtml = '<span class="f-heightlight" style="margin-left:{0}px;">已评价</span>';
+            //“继续支付”、“取消订单”、“确认收货”、“删除订单”不在单个商品中显示。
+            var ind2 = btnArr.indexOf(0);
+            if (ind2 > -1) {
+                btnArr.splice(ind2, 1);
+            }
+            var ind3 = btnArr.indexOf(1);
+            if (ind3 > -1) {
+                btnArr.splice(ind3, 1);
+            }
+            var ind4 = btnArr.indexOf(4);
+            if (ind4 > -1) {
+                btnArr.splice(ind4, 1);
+            }
+            var ind5 = btnArr.indexOf(9);
+            if (ind5 > -1) {
+                btnArr.splice(ind5, 1);
+            }
+
+            //售后的 “撤销退款/退货申请”、“退货方式”、“查看退货方式” 移动到 退款详情页显示。
+            var ind6 = btnArr.indexOf(24);
+            if (ind6 > -1) {
+                btnArr.splice(ind6, 1);
+            }
+            var ind7 = btnArr.indexOf(26);
+            if (ind7 > -1) {
+                btnArr.splice(ind7, 1);
+            }
+            var ind8 = btnArr.indexOf(27);
+            if (ind8 > -1) {
+                btnArr.splice(ind8, 1);
+            }
+            //售中的 “撤销退款/退货申请”、“退货方式”、“查看退货方式” 移动到 退款详情页显示。
+            var ind9 = btnArr.indexOf(30);
+            if (ind9 > -1) {
+                btnArr.splice(ind9, 1);
+            }
+            var ind10 = btnArr.indexOf(32);
+            if (ind10 > -1) {
+                btnArr.splice(ind10, 1);
+            }
+            var ind11 = btnArr.indexOf(33);
+            if (ind11 > -1) {
+                btnArr.splice(ind11, 1);
+            }
+
+            if (btnArr.length == 0) {
+                if (isReview) {
+                    return reviewHtml.format("0");
+                } else {
+                    return "";
+                }
+            }
+            var btnHtml = "";
+            for (var i = 0; i < btnArr.length; i++) {
+                btnHtml += getOneCommodityButtonHtml(btnArr[i], data);
+            }
+            if (isReview) {
+                btnHtml += reviewHtml.format("10");
+            }
+            return btnHtml;
+        }
+
+        //生成一个操作按钮的html.
+
+        function getOneCommodityButtonHtml(btnType, data) {
+            //可显示的操作按钮：0、支付;1、取消订单;2、退款;3、申请退款/退货;4、确认收货;5、撤销退款申请;6、撤销退款/退货申请;7评价;
+            //23、售后-申请退款/退货;24、售后-撤销退款/退货申请; 25、售后-查看退款详情； 26、售后-退货方式；  27、售后-查看退款方式；
+            var btnTempHtml01 = '<button class="btn btn-primary"  orderId="{orderId}" otag="{otag}" appId="{appId}" selfTakeFlag="{selfTakeFlag}">{btnText}</button>';
+            var btpTempHtml02 = '<a href="javascript:void(0)" class="f-heightlight" orderId="{orderId}" otag="{otag}" appId="{appId}" selfTakeFlag="{selfTakeFlag}" style="margin-right:10px;" >{btnText}</a>';
+
+            var btnText = "";
+            var btnHtml = "";
+
+            switch (btnType) {
+            case 0:
+                btnText = "继续支付";
+                break;
+            case 1:
+                btnText = "取消订单";
+                break;
+            case 2:
+                btnText = "退款";
+                break;
+            case 3:
+                btnText = "申请退款/退货";
+                break;
+            case 4:
+                btnText = "确认收货";
+                break;
+            case 5:
+                btnText = "撤销退款申请";
+                break;
+            case 6:
+                btnText = "撤销退款/退货申请";
+                break;
+            case 7:
+                btnText = "评价";
+                break;
+            case 8:
+                btnText = "退款详情";
+                break;
+            case 9:
+                btnText = "删除";
+                break;
+            case 10:
+                btnText = "退货方式";
+                break;
+            case 11:
+                btnText = "延长收货时间(3天)";
+                break;
+            case 12:
+                btnText = "查看退货方式";
+                break;
+            case 23:
+                btnText = "申请售后";
+                break;
+            case 24:
+                btnText = "撤销退款/退货申请";
+                break;
+            case 25:
+                btnText = "退款详情";
+                break;
+            case 26:
+                btnText = "退货方式";
+                break;
+            case 27:
+                btnText = "查看退货方式";
+                break;
+            case 30:
+                btnText = "撤销退款/退货申请";
+                break;
+            case 31:
+                btnText = "退款详情";
+                break;
+            case 32:
+                btnText = "退货方式";
+                break;
+            case 33:
+                btnText = "查看退货方式";
+                break;
+            }
+
+
+            var fparam = new Object();
+            fparam.btnText = btnText;
+            fparam.orderId = data.CommodityOrderId;
+            fparam.otag = btnType;
+            fparam.appId = data.AppId;
+            fparam.selfTakeFlag = data.SelfTakeFlag;
+            // orderId="{orderId}" otag="{otag}" appId="{appId}"
+            //var btnTempHtml = (btnType == 2 || btnType == 3) ? btnTempHtml01 : btpTempHtml02;
+            var btnTempHtml = btnTempHtml01;
+            btnHtml = btnTempHtml.format(fparam);
+
+            return btnHtml;
+        }
+
+        //注册事件。
+
+        function regeditEvents() {
+            $("#ulCommodityList li .status-list a,#ulCommodityList li .status-list button").on("click", function() {
+                var otag = $(this).attr("otag");
+                var selfTakeFlag = $(this).attr("selfTakeFlag");
+                //var orderId = $(this).attr("orderId");
+                //var appId = $(this).attr("appId");
+                //可显示的操作按钮：0、支付;1、取消订单;2、退款;3、申请退款/退货;4、确认收货;5、撤销退款申请;6、撤销退款/退货申请;7、评价;8、查看退款详情; 9、删除; 10、查看退货方式；11、延长收货时间(3天)
+                //23、售后-申请售后;24、售后-撤销退款/退货申请; 25、售后-查看退款详情； 26、售后-退货方式；  27、售后-查看退货方式；
+                if (otag == 0) {
+                    $("#zhifu").click();
+                } else if (otag == 1) {
+                    JsRefund();
+                } else if (otag == 2) {
+                    JsRefund();
+                } else if (otag == 3) {
+                    JsRefund();
+                } else if (otag == 4) {
+                    $("#zhifu").click();
+                } else if (otag == 5) {
+                    JsRefund();
+                } else if (otag == 6) {
+                    JsRefund();
+                } else if (otag == 7) {
+                    var orderItemId = $(this).parents("li[class*='table-view-cell']").attr("orderItemId");
+                    orderComReview(orderItemId);
+                }
+                    //查看退款详情
+                else if (otag == 8) {
+                    //document.location.href = viewRefundDetailUrl + "&isAfterSale=0";
+                    document.location.href = viewRefundDetailUrl + "&isAfterSale=0&allDisplayBtns=" + _allDisplayBtns + "&RefundExpCo=" + escape(_orderDetail.data.RefundExpCo) + "&RefundExpNo=" + escape(_orderDetail.data.RefundExpOrderNo);
+                }
+                    //删除
+                else if (otag == 9) {
+                    deleteOrder();
+                } else if (otag == 10) {
+                    viewRefundType();
+                } else if (otag == 11) {
+                    delayShip();
+                } else if (otag == 12) {
+                    viewRefundType();
+                }
+                    ////23、售后-申请售后;24、售后-撤销退款/退货申请; 25、售后-查看退款详情； 26、售后-退货方式；  27、售后-查看退货方式；
+                else if (otag == 23) {
+                    //todo:传参数来区分是售后的退款、退货申请。 
+                    //todo:高清楚_showtype。
+                    var _showtype = 23;
+                    if (confirm('建议先与商家进行沟通，协商一致后再申请退款。确定继续申请？')) {
+                        window.location.href = urlAppendCommonParams("/Mobile/RefundOrder?" + "shopId=" + appId + "&orderId=" + getQueryString('orderId') + "&pri=" + $("#hidPrice").val() + "&state=" + $("#hidState").val() + "&pay=" + $("#hidPayState").val() + "&type=" + _showtype + "&isAfterSale=1&spendScoreMoney=" + _orderDetail.data.ScorePrice + "&spendYJBMoney=" + _orderDetail.data.YJBPrice);
+                    }
+                } else if (otag == 25) {
+                    document.location.href = viewRefundDetailUrl + "&isAfterSale=1&allDisplayBtns=" + _allDisplayBtns + "&RefundExpCo=" + escape(_orderDetail.data.RefundExpCo) + "&RefundExpNo=" + escape(_orderDetail.data.RefundExpOrderNo);
+                } else if (otag == 31) {
+                    document.location.href = viewRefundDetailUrl + "&isAfterSale=0&allDisplayBtns=" + _allDisplayBtns + "&RefundExpCo=" + escape(_orderDetail.data.RefundExpCo) + "&RefundExpNo=" + escape(_orderDetail.data.RefundExpOrderNo);
+                }
+                //else if (otag == 24) {
+                //    if (confirm('确定撤销退款/退货申请？')) {
+                //        CancelOrderRefundAfterSale();
+                //    }
+                //}
+                //else if (otag == 26) {
+                //    //type=23表示售后
+                //    window.location.href = "/Mobile/RefundType?appId=" + appId + "&userId=" + sessionStorage.userId + "&orderId=" + orderId + "&isAfterSale=1" + psource;
+                //}
+                //else if (otag == 27) {
+                //    //todo:区分售后
+                //    //搞清楚RefundExpCo、refundExpNo；
+                //    //var RefundExpCo = $("#refundExpCo").val();
+                //    //var refundExpNo = $("#refundExpNo").val();
+                //    var refundExpCo = _orderDetail.data.RefundExpCo;
+                //    var refundExpNo = _orderDetail.data.RefundExpOrderNo;
+                //    window.location.href = "/Mobile/RefundTypeInfo?RefundExpCo=" + escape(refundExpCo) + "&RefundExpNo=" + escape(refundExpNo) + "&orderId=" + orderId + "&isAfterSale=1" + psource;
+                //}
+
+            });
+        }
+
+        function CancelOrderRefundAfterSale() {
+            //  $("#hidState").val()
+            getDataAjax2({
+                url: '/Mobile/CancelOrderRefundAfterSales',
+                type: 'post',
+                data: {
+                    orderId: getQueryString('orderId'),
+                    state: _orderDetail.data.StateAfterSales
+                },
+                callback: function (data) {
+                    if (data.ResultCode == 0) {
+                        toast("操作成功！");
+                        location.reload();
+                        return false;
+                    } else {
+                        toast("不好意思，操作失败，请您重试！");
+                        return false;
+                    }
+                },
+                error: function() {
+
+                }
+            })
+        }
+
+//延长收货时间
+
+        function delayShip() {
+            //行为记录->延长收货时间操作
+            logBTP(sessionStorage.SrcType, service_type, "0x000d", '', logOrderId);
+
+            if (confirm("确定要延长收货时间吗？")) {
+                getDataAjax({
+                    url: '/Mobile/DelayShip',
+                    data: { orderId: orderId },
+                    callback: function(data) {
+                        if (data.ResultCode == 0) {
+                            $("#spanStateTipContent").html("发货12天后，如果用户未确认，系统将自动确认收货。");
+                            $("button[otag='11']").hide();
+                        } else {
+                            toast(data.Message);
+                        }
+                    },
+                    beforeSend: function() {
+
+                    },
+                    error: function() {
+
+                    }
+                });
+            }
+        }
+
+        //查看退货方式
+
+        function viewRefundType() {
+            var RefundExpCo = $("#refundExpCo").val();
+            if (RefundExpCo == "") {
+                window.location.href = urlAppendCommonParams("/Mobile/RefundType?shopId=" + appId + "&orderId=" + orderId + "&isAfterSale=0");
+            } else {
+                var refundExpNo = $("#refundExpNo").val();
+                window.location.href = urlAppendCommonParams("/Mobile/RefundTypeInfo?RefundExpCo=" + escape(RefundExpCo) + "&RefundExpNo=" + escape(refundExpNo) + "&orderId=" + orderId + "&isAfterSale=0");
+            }
+        }
+
+        function showBigImg(obj) {
+            $(".mask").show();
+            var src = $(obj).children("img").attr("src");
+            $("#bigImg img").attr("src", src);
+            $("#bigImgDiv").show();
+            //            $("#bigImgDivDownload a").attr("href", src);
+            //            $("#bigImgDivDownload").show();
+        }
+
+        function closeBigImg() {
+            $(".mask").hide();
+            $("#bigImg img").attr("src", "");
+            $("#bigImgDiv").hide();
+            //            $("#bigImgDivDownload a").attr("href", "");
+            //            $("#bigImgDivDownload").hide();
+        }
+
+//附件图片
+
+        function SetImgGhc(imgList) {
+            if (imgList && imgList != "") {
+                var im = "<div><label style=\"display: inline-block;\"><span>已上传APP LOGO</span></label></div><div>";
+                for (var i = 0; i < imgList.split(',').length; i++) {
+                    if (imgList.split(',')[i]) {
+                        im += "<div style=\"margin-right: 14px;  width:55px; height:55px; float:left;\"><img  height=\"55px\" width=\"55px\" alt=\"\" src=\"" + imgList.split(',')[i] + "\" /></div>";
+                    }
+                }
+                im += "</div>";
+                $("#PicturesPathDiv").html("<li class=\"table-view-cell full-cell\">" + im + "</li>");
+                return im;
+            }
+            return "";
+        } 
+        function setReducationValue(itemId, val) {
+            val = eval(val);
+            var $obj = $("#" + itemId);
+            $obj.text(val.toFixed(2));
+            if (val > 0) {
+                $obj.prev().show();
+            }
+            else {
+                $obj.prev().hide();
+            }
+        }
+    </script>
+}
+    <!--头部标题-->
+    @*<header class="bar bar-nav">
+        <a class="icon icon-left-nav pull-left"></a>
+        <button class="btn pull-right">
+            分享有分成
+        </button>
+        <h1 class="title" id="fstate"></h1>
+    </header>
+    *@
+    <!--底部支付按钮-->
+    <nav class="bar bar-tab" style="z-index: 999;">
+    <div class="tab-item pay-cancal" style="width: 2%">
+        <div class="h4">实付款:<span id="payprice"></span> <small class="f-m-l10">共<span id="spanCommodityNum"></span>件</small> </div>
+    </div>
+    <!--按钮其他状态:确认收货 删除订单 去支付-->
+    <a class="tab-item pay-submit" href="javascript:void(0);" id="zhifu"  style="display:none;"> 
+        继续支付
+    </a>
+     <a class="tab-item pay-submit" href="javascript:void(0);" id="delOrder"  style="display:none;"> 
+        删除订单
+    </a>
+</nav>
+    <!--内容-->
+    <div class="content">
+        <ul class="table-view">
+            <li class="table-view-cell full-cell" style="height: 50px;">订单状态:
+                <!--<span class="f-heightlight">出库中</span>
+            <span class="f-heightlight">待发货</span>
+            <span class="f-heightlight">交易成功</span>
+            <span class="f-heightlight">交易失败</span>
+            <span class="f-heightlight">退款/退货中</span>
+            <span class="f-heightlight">退款中</span>
+            <span class="f-heightlight">已发货</span><span>（第一天）</span>
+            <span class="f-heightlight">等待付尾款</span>-->
+                <span class="f-heightlight" id="fstate"></span><span class="f-heightlight">
+                    <button id="btnCancelOrder" class="btn pull-right" style="margin-top: 0px; display: none;"
+                        onclick="JsRefund();">
+                        取消订单</button>
+                </span></li>
+            <li id="liStateTip" class="table-view-cell full-cell" style="display: none;"><span
+                class="f-heightlight">提示：</span> <span id="spanStateTipContent">发货后9天,若未确认收货,订单状态会自动变为已收货。</span>
+                <!--尾款支付时间： 2015-3-23 10:00 ~ 2015-4-15 10:00-->
+            </li>
+        </ul>
+        <ul class="table-view" id="liExp">
+            <li class="table-view-cell full-cell" style="border-bottom: 0px; padding-bottom: 0px;">
+                物流公司：<span id="ShipExpCo"></span> </li>
+            <li class="table-view-cell" style="padding-top: 6px;">物流单号：<span id="ExpOrderNo"></span>
+                <button id="btnExpressRoute" class="btn btn-primary" style="float: right; right: 10px;
+                    top: 5px;">
+                    物流详情</button>
+                <span style="clear: both"></span></li>
+        </ul>
+        <ul class="table-view" id="PickUp" style="display: none">
+            <li class="table-view-cell" style="width: 100%; padding-right: 30px; position: relative;">
+                <div style="float: left;">
+                    <a href="javascript:" onclick="showBigImg(this)">
+                        <img id="PickUpCodeUrl" style="width: 80px;" src="" alt="取货二维码" /><br />
+                        <span style="margin-left: 8px; color: #ccc;">取货二维码</span> </a>
+                </div>
+                <div style="float: left; margin-top: 30px;">
+                    <span style="margin-left: 30px;">提货码</span><span id="PickUpCode" style="margin-left: 10px;"></span>
+                </div>
+            </li>
+        </ul>
+        <ul class="table-view">
+            <li class="table-view-cell media" style="width: 100%; padding-right: 30px;"><a class="f-mail">
+                <div class="media-body">
+                    <span id="ReceiptUserName"></span>&nbsp;&nbsp;<span id="ReceiptPhone"></span>
+                    <p id="ReceiptAddress">
+                    </p>
+                </div>
+            </a></li>
+        </ul>
+        <ul class="table-view" id="selfTakeAddressInfo">
+            <li class="table-view-cell f-b-nb" id="selftakeli">上门自提 </li>
+            <li class="table-view-cell" id="selftakedesc"><span style="word-break: break-all;"></span>
+            </li>
+        </ul>
+        <div class="table-view" style="margin-bottom: 0px; over-flow: hidden;">
+            <div style="margin-top: 10px; margin-bottom: 10px; margin-left: 10px; margin-right: 10px;">
+                <span><span id="spanShopName"></span><span class="pull-right icon-comments-alt contactOwner"
+                    id="contactOwner">联系卖家</span> </span>
+            </div>
+        </div>
+        <ul id="ulCommodityList" class="table-view" style="border-top: 0px;">
+        </ul>
+        <ul class="table-view">
+            <li class="table-view-cell full-cell" id="payTypeLi"><span class="pull-right" id="payType">
+            </span>支付方式 </li>
+            <li class="table-view-cell full-cell"><span id="spanReceiptInfo" class="pull-right"
+                style="max-width: 80%;"></span>发票信息 </li>
+        </ul>
+        <ul class="table-view" id="PicturesPathDiv" style="display: none; clear: both;">
+        </ul>
+        <ul style="height:0; clear: both;"><li></li></ul>
+        <ul class="table-view" id="ulPayGoldAndVoucher" style="display: none;clear: both;">
+            <li class="table-view-cell" id="payCouponLi"><a class="navigate-right" onclick="usePayCoupon();">
+                <span class="badge badge-inverted" id="couponInfo">未使用</span> 代金券 <span class="badge2 badge-negative">
+                    <span id="paycouponCount">0</span>张可用</span> </a></li>
+            <li id="goldpayli" class="table-view-cell">金币 <span class="f-m-l10 badge2 badge-inverted">
+                可抵用金额 <span class="f-heightlight" id="goldbalance"></span></span>
+                <div class="toggle" id="goldpay">
+                    <div class="toggle-handle">
+                    </div>
+                </div>
+            </li>
+            <li class="table-view-cell full-cell" id="goldpw" style="display: none">
+                <div class="f-border-dashed f-radius-2 f-border-1 f-b-color1 f-p-a10 f-txt-ac">
+                    <div class="h5 f-m-a0">
+                        为了您的虚拟资产安全，请先设置账户交易密码</div>
+                    <input type="password" class="btn btn-block h5" placeholder="请输入账户交易密码" />
+                    <button class="btn btn-block" style="zoom: .8">
+                        设置密码</button>
+                </div>
+            </li>
+        </ul>
+        <ul class="table-view">
+            <li class="table-view-cell full-cell" style="border-bottom: 0px; padding-bottom: 0px;">
+                下单时间： <span id="SubTime"></span></li>
+            <li class="table-view-cell" style="padding-top: 0px;">订单编号： <span id="Code"></span>
+            </li>
+            <li class="table-view-cell media  full-cell">
+                <div class="media-body info-view">
+                    <div class="serve1">
+                        <span>订单金额（含优惠、积分、运费）</span><span class="pull-right f-heightlight">@Currency()<span id="Price">0.00</span></span>
+                    </div>
+                    <div class="serve2">
+                        <span>优惠券抵用</span><span class="pull-right f-heightlight"><span style="display: none">-</span>@Currency()<span id="couponValue">0.00</span></span></div>
+                    <div class="serve6">
+                        <span>积分&nbsp;抵现</span><span class="pull-right f-heightlight"><span style="display: none">-</span>@Currency()<span id="scoreValue">0.00</span></span></div>
+                    <div class="serve3">
+                        <span>金币抵用</span><span class="pull-right f-heightlight"><span style="display: none">-</span>@Currency()<span id="goldValue">0.00</span></span></div>
+                    <div class="serve4">
+                        <span>代金券抵用</span><span class="pull-right f-heightlight"><span style="display: none">-</span>@Currency()<span id="payCouponValue">0.00</span></span></div>
+                    <div class="serveYJB" style="display:none">
+                        <span>易捷币抵用</span><span class="pull-right f-heightlight"><span style="display: none">-</span>@Currency()<span id="yjbValue">0.00</span></span></div>
+                    <div class="serve5">
+                        <span>运费</span><span class="pull-right f-heightlight">@Currency()<span id="Freight" style="width: auto;">0.00</span></span></div>
+                </div>
+            </li>
+        </ul>
+        <input type="hidden" id="showType" />
+        <input type="hidden" id="hidPrice" />
+        <input type="hidden" id="hidState" />
+        <input type="hidden" id="hidPayState" />
+        <input type="hidden" id="refundExpCo" />
+        <input type="hidden" id="refundExpNo" />
+        <input type="hidden" id="Name" />
+    </div>
+    <div class="mask">
+    </div>
+    <div id="divCommodityItemTemplate" style="display: none;">
+        <li class="table-view-cell media full-cell" orderItemId="{Id}" selftakeflag="{selfTakeFlag}">
+            <a>
+                <div class="media-object pull-left " style="position: relative; width: 70px; height: 70px;">
+                    <img class="img" {srckey}="{Pic}" style="width: 70px; height: 70px;" />
+                    <div class="selfTake" style="display: {SelfTakeDisplay}">
+                        <img class="selfTakeImg" style="display: block; width: 70px;" src="/Images/selftake.png"
+                             alt="自提" />
+                    </div>
+                </div>
+                <div class="media-body">
+                    <b class="product f-double-row f-double-row">{Name}</b>
+                    <p class="summary" style="font-size: .8rem;">
+                        <span style="overflow: hidden; max-height: 1.2rem; display: {SizeDisplay};">{SizeText}</span>
+                        <span>数量:{CommodityNumber}</span>
+                    </p>
+                    <p class="price">
+                        <span>@Currency() {Price}</span></p>
+                </div>
+            </a>
+            <div class="status-list" style="margin-top: 10px; margin-left: 80px;">
+                {OperateBtnHtml} @*  <button class="btn btn-primary">
+                    退款</button>
+                <button class="btn btn-primary">
+                    评价</button>
+                <a href="javascript:void(0)" class="f-heightlight">查看退款详情</a> <a href="javascript:void(0)"
+                    class="f-heightlight">退货</a> <a href="javascript:void(0)" class="f-heightlight">撤销退款申请</a>*@
+            </div>
+        </li>
+    </div>
+    <div class="dialog" id="confirmDialog" style="z-index: 1101">
+        <div style="font-size: 1.2em; line-height: 2.6em; border: 0; outline: 0; background-color: #fff; margin-bottom: 15px; padding: 0 15px; height: 45px; border-bottom: 1px solid; color: #ccc;">您是否收到该订单商品？</div>
+        <div style="text-align: center; height: 35px;">
+            <a href="javascript:void(0)" class="btn btn-large" style="line-height: 1.4em; width: 30%;"
+                onclick="hideDialog('#confirmDialog');">取消</a> <a id="confirmlog" href="javascript:void(0)"
+                    class="btn btn-danger btn-large" style="line-height: 1.4em; width: 30%;">确认</a></div>
+    </div>
+
+    <div class="dialog" id="payDialog" style="z-index: 1101">
+        <div style="color: #666; font-size: 1em;">
+            支付密码<div class="clawpwd" style="float: right; margin-top: 5px;">
+                <a id="wangpwd" style="text-decoration: underline; margin-top: 4px; color: #a9a9a9;">
+                    忘记密码？</a>
+            </div>
+        </div>
+        <div style="padding: 10px 0;">
+            <input id="txtpwd" name="" type="password" placeholder="请输入账户交易密码" style="width: 100%;
+                line-height: 2em; font-size: 1.2em;" />
+        </div>
+        <div style="text-align: center">
+            <a href="javascript:void(0)" class="btn btn-large" style="line-height: 1.4em; width: 30%;"
+                onclick="hideDialog('#payDialog');">取消</a> <a id="btnsure" href="javascript:void(0)"
+                    class="btn btn-danger btn-large" style="line-height: 1.4em; width: 30%;">确认</a></div>
+    </div>
+    <div class="dialog" id="setPwdDialog" style="z-index: 1101">
+        <div style="color: #666; font-size: 1em;">
+            初次交易请设置交易密码</div>
+        <div style="padding: 10px 0;">
+            <input id="txtSetPwd" name="" type="password" placeholder="请设置账户交易密码" style="width: 100%;
+                line-height: 2em; font-size: 1em;" />
+            <input id="txtNextPwd" name="" type="password" placeholder="请再次输入交易密码" style="width: 100%;
+                line-height: 2em; font-size: 1em;" />
+        </div>
+        <div style="text-align: center">
+            <a href="javascript:void(0)" class="btn btn-large" style="line-height: 1.4em; width: 30%;"
+                onclick="hideDialog('#setPwdDialog');">取消</a> <a id="btnSetPwd" href="javascript:void(0)"
+                    class="btn btn-danger btn-large" style="line-height: 1.4em; width: 30%;">设置</a></div>
+    </div>
+    @*    <div class="yin" style="display: none; padding-top: 10px;">
+        <div class="box_1">
+            <ul>
+                <li><span class="span_5">支付密码</span> <span class="span_6">
+                    <input class="search" type="password" /></span> </li>
+            </ul>
+        </div>
+        <a id="btnsure" href="#" class="btn btn-danger btn-large btn-block" style="line-height: 1.4em;">
+            确定 </a>
+    </div>*@
+    <div style="display: none; max-width: 331px; min-width: 331px;" id="bigImgDiv">
+        <div id="bigImg" style="max-width: 331px; min-width: 331px;">
+            <img src="" alt="取货二维码" onclick="closeBigImg()" style="max-width: 331px; min-width: 331px;" />
+        </div>
+    </div>
+    @* <div style="display:none;position:fixed; z-index:1101;bottom:10px; right:10px;" id="bigImgDivDownload">
+        <div>
+            <a href="" download="selfTakeCode">下载</a>
+        </div>
+    </div>*@
+   
+       

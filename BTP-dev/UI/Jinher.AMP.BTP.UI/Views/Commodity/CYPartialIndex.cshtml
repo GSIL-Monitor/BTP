@@ -1,0 +1,318 @@
+﻿@using System.Collections.Generic
+@using System.Web
+@{
+    Layout = null;
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.CommodityVM> comcalist = ViewBag.CommodityList;
+    bool isCustomES = ViewBag.isCustomES;
+    @*List<Jinher.AMP.BTP.Deploy.CustomDTO.CategorySDTO> categorylist = ViewBag.CategoryList;*@
+}
+<input type="hidden" id="rowcounts" value="@ViewBag.Count"/>
+<table id="dataTable" border="0" cellspacing="5" cellpadding="0" class="m_talbe m_talbe3">
+   <thead>
+    <tr class="t_tr1">
+        <td width="30">
+            <input type="checkbox" id="selecetall" />
+        </td>
+        <td width="80">
+            全选
+        </td>
+        <td style="text-align: left; padding-left: 50px; width: 80px;">
+            商品名称
+        </td>
+        <td width="150">
+            商品类目
+        </td>
+        <td width="100">
+            价格
+        </td>
+        <td width="100" style="display:none">
+            市场价
+        </td>
+        <td width="100">
+            商品数量
+        </td>
+        <td width="100">
+            总销量
+        </td>
+        <td width="100">
+            添加时间
+        </td>
+        <td width="100">
+            操作
+        </td>
+    </tr>
+    </thead>
+    <script type="text/javascript">
+        var commodityName = $("#commodityname").val();
+        if ($.trim($("#commoditycategory").val()) == "") {
+            searchcateogryIdList = "";
+        }
+        var commodityCategory = searchcateogryIdList; //searchcateogryIdList;
+        var sSalesvolume = $("#ssalesvolume").val();
+        var eSalesvolume = $("#esalesvolume").val();
+        var sPrice = $("#scommodityprice").val();
+        var ePrice = $("#ecommodityprice").val();
+
+        _searchEntity = { commodityName: commodityName, commodityCategory: commodityCategory, sSalesvolume: sSalesvolume, eSalesvolume: eSalesvolume, sPrice: sPrice, ePrice: ePrice };
+        _searchEntity.categoryNameList = searchcategoryNameList;
+
+        //将查询条件保存到cookie中。
+        var json = CommLib.ObjToString(_searchEntity);
+        //json = Encoder.encode(json);
+        $.cookie('Commodity.SearchEntityJson.@ViewBag.AppId', json, { path: '/', expires: 7 });
+        //上移一页下移一页
+        function mouseOver(tr) {
+            var page = $.trim($(".ui-jhpager-pager").html()).substring(0, 1);
+            var cd = $.trim($(".ui-jhpager-pager").html()).length;
+            var page1 = $.trim($(".ui-jhpager-pager").html()).substring(cd, cd - 1);
+            if (page != 1)
+                $(tr).find("#upPut").show();
+            if (page != page1)
+                $(tr).find("#downPut").show();
+        }
+        function mouseOut(tr) {
+            $(tr).find("#upPut").hide();
+            $(tr).find("#downPut").hide();
+        }
+        $("#selecetall").on('click', function () {
+            var s = document.getElementsByName("itemCheckBox");
+            if ($(this).prop('checked')) {
+                for (var i = 0; i < s.length; i += 1)
+                    s[i].checked = "checked";
+            } else {
+                for (var i = 0; i < s.length; i += 1)
+                    s[i].checked = "";
+            }
+        });
+        _rowCount = "@ViewBag.Count";
+        function upPutCom(id) {
+
+            var page = parseInt(($.trim($(".ui-jhpager-pager").html()).substring(0, 1)), 10);
+            var sz = "";
+            $(".wysort").each(function () {
+                var comid = $(this).attr("data-items-id");
+                sz = sz + ',' + comid;
+            });
+            if (sz.length > 0) {
+                sz = sz.substring(1, sz.length);
+                $.ajax({
+                    url: '/Commodity/SaveUpCommoditySort',
+                    type: 'post',
+                    data: { Id: id, comIds: sz },
+                    success: function () {
+                        $.ajax({
+                            url: '/Commodity/CYPartialIndex?currentPage=' + page,
+                            type: 'post',
+                            data: _searchEntity,
+                            error: function () {
+                                window.location.href = "/Commodity/CYSaleIndex?appId=" + getQueryString('appId');
+                            },
+                            beforeSend: beforeSends,
+                            complete: function () {
+                                //		                    ajaxLoading(1, '#content_makes');
+                            },
+                            success: function (msg) {
+                                sendSuccess(msg);
+                                var rowCount = $("#rowcounts").val();
+                                if (rowCount == 0 || rowCount == "0") {
+                                    alert("当前没有查到相匹配的数据！");
+                                }
+                                $("#pager").jhpager("refresh", page, _rowCount);
+                            }
+                        });
+                    },
+                    error: function () {
+                        alert("请稍候再试");
+                    }
+                });
+            }
+        }
+
+        function downPutCom(id) {
+            var page = parseInt(($.trim($(".ui-jhpager-pager").html()).substring(0, 1)), 10);
+            var sz = "";
+            $(".wysort").each(function () {
+                var comid = $(this).attr("data-items-id");
+                sz = sz + ',' + comid;
+            });
+            if (sz.length > 0) {
+                sz = sz.substring(1, sz.length);
+                $.ajax({
+                    url: '/Commodity/SaveDownCommoditySort',
+                    type: 'post',
+                    data: { Id: id, comIds: sz },
+                    success: function () {
+                        $.ajax({
+                            url: '/Commodity/CYPartialIndex?currentPage=' + page,
+                            type: 'post',
+                            data: _searchEntity,
+                            error: function () {
+                                window.location.href = "/Commodity/CYSaleIndex?appId=" + getQueryString('appId');
+                            },
+                            beforeSend: beforeSends,
+                            complete: function () {
+                                //		                    ajaxLoading(1, '#content_makes');
+                            },
+                            success: function (msg) {
+                                sendSuccess(msg);
+                                var rowCount = $("#rowcounts").val();
+                                if (rowCount == 0 || rowCount == "0") {
+                                    alert("当前没有查到相匹配的数据！");
+                                }
+                                $("#pager").jhpager("refresh", page, _rowCount);
+                            }
+                        });
+                    },
+                    error: function () {
+                        alert("请稍候再试");
+                    }
+                });
+            }
+
+        }
+       
+    </script>
+    <tbody id="sortables">
+        @foreach (var items in comcalist)
+        {
+            string isST = items.IsEnableSelfTake == 1 ? "block" : "none";
+                                    
+            <tr class="t_tr2 t_tr2_bg wysort" data-items-id="@items.Id" onmouseover="mouseOver(this);" onmouseout="mouseOut(this);">
+                <td>
+                    <input name="itemCheckBox" value="@items.Id" type="checkbox"/>
+                </td>
+                <td>
+                    <div style="position: relative; width: 86px; height: 85px">
+                        <img src="@items.Pic" alt="" width="86" height="85" />
+                        <div class="selfTake" style="display:@isST">
+                            <img class="selfTakeImg" style="display: block; width: 86px;" src="/Images/selftake.png"
+                                alt="自提" />
+                        </div>
+                    </div>
+                </td>
+                <td style="text-align: left; padding-left: 50px;" class="parentElement">
+                    <p class="setElementText1">
+                        @items.Code
+                    </p>
+                    <p class="setElementText">@items.Name</p>
+                    @if (isCustomES)
+                    {
+                        <input name="nameText" type="text" class="showElement"
+                               style="border: 1px solid #ccc; height: 30px; display: none;"
+                               value="@items.Name" maxlength="60"/>
+                        <span><a href="javascript:void(0)" class="clickElement" data-key="Commodityname" data-type="1">修改</a> <a href="javascript:void(0)" class="upDataClick" style="display: none" data-key="Commodityname" data-action="/Commodity/UpdateName" data-type="1">确定</a></span>
+                    }
+                    else
+                    {
+                        <input name="nameText" type="text" class="showElement"
+                               style="border: 1px solid #ccc; height: 30px; display: none;"
+                               value="@items.Name" maxlength="30"/>
+                        <span><a href="javascript:void(0)" class="clickElement" data-key="Commodityname" data-type="1">修改</a> <a href="javascript:void(0)" class="upDataClick" style="display: none" data-key="Commodityname" data-action="/Commodity/UpdateName" data-type="1">确定</a></span>
+                    }
+                    
+                </td>
+                <td>
+                    <ul>
+                        @{
+                    string categoryListString = "";
+                    foreach (var fl in items.Categorys)
+                    {
+                        categoryListString = categoryListString + fl.Id + ",";
+                            <li>@fl.Name</li>
+                    }
+                    categoryListString = categoryListString.Length > 0 ? categoryListString.Substring(0, categoryListString.Length - 1) : categoryListString;
+                        }
+                    </ul>
+                    @if (ViewBag.IsShowCategoryTree == true)
+                    {
+                        <span><a href="javascript:void(0)" id="updatecategory" onclick="toUpdateCategory(event,this,'@items.Id','@categoryListString')">
+                            修改</a></span>
+                    }
+                    <input type="hidden" name="categoryIdHidden" value="@categoryListString"  />
+                </td>
+                <td class="editable_cell parentElement">
+                    <span name="oldPrice" class="setElementText" style="color: Orange">@Jinher.AMP.BTP.UI.Util.WebUtil.GetCurrency()@items.Price</span>
+                    <input onblur="CheckInputFloat(this)" name="priceText" class="showElement" type="text" style="display:none" value="@items.Price"  maxlength="12"/>
+                    <br />
+                    <span><a href="@(items.HaveAttr == 1 ? ("/Commodity/CYUpdateCommodity?commodityId=" + items.Id + "&state=0") : "javascript:void(0)")" class="@(items.HaveAttr == 1 ? "" : "clickElement")" data-key="Price">
+                        修改</a> <a href="javascript:void(0)" class="upDataClick" style="display: none" data-key="Price"
+                            data-action="/Commodity/UpdatePrice" data-type="2">确定</a> </span>
+                </td>
+                <td class="editable_cell parentElement" style="display:none">
+                    <span name="oldMarketPrice" class="setElementText" style="color: Orange">@(items.MarketPrice.HasValue ? @Jinher.AMP.BTP.UI.Util.WebUtil.GetCurrency() + items.MarketPrice.ToString() : "")</span>
+                    <input onblur="CheckInputFloatKk(this)" name="marketPriceText" class="showElement" type="text" style="display:none" value="@(items.MarketPrice.HasValue ? items.MarketPrice.ToString() : "")" maxlength="12"/>
+                    <br />
+                    <span><a href="@(items.HaveAttr == 1 ? ("/Commodity/CYUpdateCommodity?commodityId=" + items.Id + "&state=0") : "javascript:void(0)")" class="@(items.HaveAttr == 1 ? "" : "clickElement")" data-key="MarketPrice">
+                        修改</a> <a href="javascript:void(0)" class="upDataClick" style="display: none" data-key="MarketPrice"
+                            data-action="/Commodity/UpdateMarketPrice" data-type="4">确定</a> </span>
+                </td>
+                <td class="editable_cell parentElement">
+                    <span id="pstock" class="setElementText">@(items.Stock >=int.MaxValue ? "不限" : items.Stock.ToString())</span>
+                    <input name="stockText" type="text" class="showElement stockFlagElement" style="display:none" value="@(items.Stock >= int.MaxValue ? "不限" : items.Stock.ToString())" maxlength="11"/>
+                    <br />
+                    <span><a href="@(items.HaveAttr == 1 ? ("/Commodity/CYUpdateCommodity?commodityId=" + items.Id + "&state=0") : "javascript:void(0)")" class="@(items.HaveAttr == 1 ? "" : "clickElement")" data-key="Commoditystock"
+                        data-type="3">修改</a> <a href="javascript:void(0)" class="upDataClick" style="display: none"
+                            data-key="Commoditystock" data-action="/Commodity/UpdateStock" data-type="3">确定</a></span>
+                </td>
+                <td style="color: Orange">
+                    @items.Total
+                </td>
+                <td style="color: Orange">
+                    @items.Subtime.ToString("yyyy/MM/dd HH:mm")
+                </td>
+                <td>
+                    <span><a class="btn90S up" valign="bottom"  id="upPut" style="margin-left: 10px; display: none; cursor:pointer "   onclick="upPutCom('@items.Id')">
+                              上移一页</a></span>
+                              <span><a class="btn90 down" valign="bottom"  id="downPut" style="margin-left: 10px; display: none; cursor: pointer "   onclick="downPutCom('@items.Id')">
+                        下移一页</a></span>
+                    @if ((ViewBag.IsOrg == null) || (ViewBag.IsOrg != null && ViewBag.BTPUpdSaleCom != null && ViewBag.IsOrg && ViewBag.BTPUpdSaleCom))
+                    {
+                        <span><a href="/Commodity/CYUpdateCommodity?commodityId=@items.Id&state=0">编辑</a></span>
+                    }
+                    <span><a href="javascript:void(0)" id="zdid" comId="@items.Id">置顶</a></span>
+                    @{
+                    string SetAsDistribution = "none";
+                    string UpdateDistribution = "none";
+                    string AddDistribution = "none";
+                    string CancelDistribution = "none";
+
+                    if (items.IsDistribute == 0)
+                    {
+                        if ((ViewBag.IsOrg != null && ViewBag.BTPDistributeCom != null && ViewBag.IsOrg && ViewBag.BTPDistributeCom))
+                        {
+                            SetAsDistribution = "block";
+                        }
+                    }
+                    else if (items.L1Percent > 0 || items.L2Percent > 0 || items.L3Percent > 0)
+                    {
+                        if ((ViewBag.IsOrg != null && ViewBag.BTPDistributeDivi != null && ViewBag.IsOrg && ViewBag.BTPDistributeDivi))
+                        {
+                            UpdateDistribution = "block";
+                        }
+                    }
+                    else
+                    {
+                        if ((ViewBag.IsOrg != null && ViewBag.BTPDistributeDivi != null && ViewBag.IsOrg && ViewBag.BTPDistributeDivi))
+                        {
+                            AddDistribution = "block";
+                        }
+                    }
+                    if (items.IsDistribute == 1)
+                    {
+                        if ((ViewBag.IsOrg != null && ViewBag.BTPDistributeCom != null && ViewBag.IsOrg && ViewBag.BTPDistributeCom))
+                        {
+                            CancelDistribution = "block";
+                        }
+                    }
+                  }
+                   <div class="SetDistributeList">
+                        <div class="SetAsDistribution" style="display:@SetAsDistribution;"><span><a href="javascript:void(0)" comId="@items.Id">设为分销商品</a></span></div>
+                         <div class="UpdateDistribution" style="display:@UpdateDistribution;"><span><a href="javascript:void(0)" comId="@items.Id" L1Percent ="@items.L1Percent" L2Percent ="@items.L2Percent" L3Percent ="@items.L3Percent" >修改佣金</a></span></div> 
+                         <div class="AddDistribution" style="display:@AddDistribution;"><span><a href="javascript:void(0)" comId="@items.Id">设置佣金</a></span></div>
+                         <div class="CancelDistribution" style="display:@CancelDistribution;"><span><a href="javascript:void(0)" comId="@items.Id">取消分销</a></span></div>
+                   </div>                    
+                </td>
+            </tr>     
+        }
+    </tbody>
+</table>

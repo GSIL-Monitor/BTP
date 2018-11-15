@@ -1,0 +1,353 @@
+﻿@{
+    ViewBag.Title = "供应商管理";
+    Layout = "~/Views/Shared/_Vue2Layout.cshtml";
+}
+<div class="content">
+    <div id="listWithFiltersPage">
+        <div class="content-inner">
+            <!-- filters start -->
+            <div class="filters">
+                <el-form :inline="true" :model="searchForm" :rules="searchFormRules" ref="searchForm">
+                    <el-form-item label="供应商名称：" prop="Name">
+                        <el-input v-model="searchForm.Name" :maxlength="30"></el-input>
+                    </el-form-item>
+                    <el-form-item label="供应商编码：" prop="Code">
+                        <el-input v-model="searchForm.Code" :maxlength="30"></el-input>
+                    </el-form-item>
+                    <el-form-item label="供应商类型：" prop="Type">
+                        <el-select v-model="searchForm.Type">
+                            <el-option label="全部" value=""></el-option>
+                            <el-option v-for="item in mallTypeOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @@click="handleSearch">查询</el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
+            <div class="operations">
+                <el-button size="small" type="primary" @@click="handleCreating">添加供应商</el-button>  
+            </div>
+            <el-table :data="tableData" style="width: 100%;" class="scrollbar" max-height="860" element-loading-text="拼命加载中" v-loading="loading" border stripe>
+                <el-table-column type="index" lable="序号" width="60"></el-table-column>
+                <el-table-column prop="Name" label="供应商名称" min-width="120"></el-table-column>
+                <el-table-column prop="Code" label="供应商编码" min-width="100"></el-table-column>
+                <el-table-column prop="Type" label="供应商类型" min-width="100">
+                    <template scope="scope">
+                        {{RN.getMallType(scope.row.Type)}}
+                    </template>
+                </el-table-column>
+                <el-table-column prop="ShipperType" label="发货方" min-width="100">
+                    <template scope="scope">
+                        {{RN.getShipperType(scope.row.ShipperType)}}
+                    </template>
+                </el-table-column>
+                <el-table-column prop="AppNames" label="APP名称" min-width="100"></el-table-column>
+                <el-table-column label="操作" width="195" align="center">
+                    <template scope="scope">
+                        <el-button type="primary" plain size="mini" @@click="handleUpdating(scope.row)">编辑</el-button>
+                        <el-button type="danger" plain size="mini" @@click="handleDelete(scope.row)">删除</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <div class="pagination-wrapper" v-show="!loading">
+                <el-pagination layout="total, sizes, prev, pager, next, jumper" @@size-change="handleSizeChange" @@current-change="handleCurrentChange" :total="total" :current-page="page" :page-sizes="[10, 20, 50, 100]" :page-size="pageSize" >
+                </el-pagination>
+            </div>
+        </div>
+    </div>
+</div>
+
+<template>
+    <el-dialog title="添加供应商" :visible.sync="createDialogVisible">
+        <el-form ref="createForm" :model="createForm" :rules="createFormRules" label-width="150px">
+            <el-form-item label="供应商编码：" prop="Code">
+                <el-input v-model="createForm.Code" style="max-width: 198px;" :maxlength="30"></el-input>
+            </el-form-item>
+            <el-form-item label="供应商名称：" prop="Name">
+                <el-input v-model="createForm.Name" style="max-width: 198px;" :maxlength="30"></el-input>
+            </el-form-item>
+            <el-form-item label="供应商类型：" prop="Type">
+                <el-select v-model="createForm.Type" placeholder="请选择">
+                    <el-option v-for="item in mallTypeOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="发货方" prop="ShipperType">
+                <el-select v-model="createForm.ShipperType" placeholder="请选择">
+                    <el-option v-for="item in shipperTypeOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="APP名称：" prop="AppIds">
+                <el-select v-model="createForm.AppIds" multiple filterable placeholder="请选择">
+                    <el-option v-for="item in appOptions" :key="item.value" :label="item.label" :value="item.value">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+            <el-button @@click="createDialogVisible=false">取 消</el-button>
+            <el-button type="primary" @@click="handleCreate" :loading="createSubimtLoading">保 存</el-button>
+        </span>
+    </el-dialog>
+</template>
+
+<template>
+    <el-dialog title="修改供应商信息" :visible.sync="updateDialogVisible">
+        <el-form ref="updateForm" :model="updateForm" :rules="createFormRules" label-width="150px">
+            <el-form-item label="供应商编码：" prop="Code">
+                <el-input v-model="updateForm.Code" style="max-width: 198px;" :maxlength="30"></el-input>
+            </el-form-item>
+            <el-form-item label="供应商名称：" prop="Name">
+                <el-input v-model="updateForm.Name" style="max-width: 198px;" :maxlength="30"></el-input>
+            </el-form-item>
+            <el-form-item label="供应商类型：" prop="Type">
+                <el-select v-model="updateForm.Type" placeholder="请选择">
+                    <el-option v-for="item in mallTypeOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="发货方" prop="ShipperType">
+                <el-select v-model="updateForm.ShipperType" placeholder="请选择">
+                    <el-option v-for="item in shipperTypeOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="APP名称：" prop="AppIds">
+                <el-select v-model="updateForm.AppIds" multiple filterable placeholder="请选择">
+                    <el-option v-for="item in appOptions" :key="item.value" :label="item.label" :value="item.value">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+            <el-button @@click="updateDialogVisible=false">取 消</el-button>
+            <el-button type="primary" @@click="handleUpdate" :loading="createSubimtLoading">保 存</el-button>
+        </span>
+    </el-dialog>
+</template>
+
+
+@section Script{
+<script>
+var checkSupplerCode = function (rule, value, callback) {
+    if (!value) {
+        return callback(new Error('供应商编码不能为空'));
+    }
+    if(defaultVue.currentRow && value === defaultVue.currentRow.Code){
+        return callback();
+    }
+    defaultVue.$http.get('@Url.Action("checkSupplerCode")?code='+value)
+    .then(function (res) {
+        if (!res.body.isSuccess) {
+            callback(new Error(res.body.Message));
+        }
+        callback();
+    });
+};
+
+var defaultVue = new Vue({
+    el: '#app',
+    data: {
+        searchForm: {
+            Name: '',
+            Code: '',
+            Type: '',
+            ShipperType: ''
+        },
+        searchFormRules: {
+          Name: [
+            { max: 30, message: '最多输入30个字符', trigger: 'blur' }
+          ],
+          Code: [
+            { max: 30, message: '最多输入30个字符', trigger: 'blur' },
+          ],
+        },
+        appOptions:@Html.Raw(ViewBag.Apps),
+        createDialogVisible:false,
+        createSubimtLoading:false,
+        createForm:{
+            Name: '',
+            Code: '',
+            Type: '',
+            ShipperType: '',
+            AppIds:''
+        },
+        createFormRules:{
+          Name: [
+            { required: true, message: '请输入供应商名称', trigger: 'blur' },
+            { max: 30, message: '最多输入30个字符', trigger: 'blur' }
+          ],
+          Code: [
+            { required: true, message: '请输入供应商编码', trigger: 'blur' },
+            { max: 30, message: '最多输入30个字符', trigger: 'blur' },
+            { validator: checkSupplerCode, trigger: 'blur' }
+          ],
+          Type: [
+            { required: true, message: '请选择供应商类型', trigger: 'change' }
+          ],
+          ShipperType: [
+            { required: true, message: '请选择发货商', trigger: 'change' }
+          ],
+          AppIds: [
+            { required: true, type:'array', message: '请选择APP名称', trigger: 'change' }
+          ]
+        },
+        updateDialogVisible:false,
+        updateForm:{
+            Id:'',
+            Name: '',
+            Code: '',
+            Type: '',
+            ShipperType: '',
+            AppIds:''
+        },
+        loading: true,
+        tableData: [],
+        total: 0,
+        page: 1,
+        pageSize: 20,
+        showUpdateStatusConfirm: false,
+        currentRow: {},
+        mallTypeOptions: RN.mallTypeOptions,
+        shipperTypeOptions: RN.shipperTypeOptions
+    },
+    methods: {
+        handleSearch: function () {
+            this.$refs['searchForm'].validate(function (valid) {
+                if (valid) {
+                    defaultVue.page = 1;
+                    defaultVue.fetchData();
+                } else {
+                    console.log('error submit!!');
+                }
+            });
+        },
+        handleSizeChange: function (val) {
+            this.pageSize = val;
+            this.handleCurrentChange(1);
+        },
+        handleCurrentChange: function (page) {
+            this.page = page || this.page;
+            this.fetchData();
+        },
+        fetchData: function () {
+            this.loading = true;
+            this.$http.post('@Url.Action("GetData")', {
+                PageSize: this.pageSize,
+                PageIndex: this.page,
+                Name: this.searchForm.Name,
+                Code: this.searchForm.Code,
+                Type: this.searchForm.Type
+            }).
+            then(function (res) {
+                defaultVue.loading = false;
+                if (res.body.isSuccess) {
+                    defaultVue.tableData = res.body.Data.List;
+                    defaultVue.total = res.body.Data.Count;
+                } else {
+                    defaultVue.$message.error(res.body.Message);
+                }
+            });
+        },
+        dateFormat: function (row, column) {
+            return moment(row.AmountDate).format("YYYY-MM-DD");
+        },
+        handleCreating: function() {
+            this.createDialogVisible = true;
+        },
+        handleCreate: function() {
+            this.$refs["createForm"].validate((valid) => {
+                if (valid) {
+                    this.createSubimtLoading = true;
+                    this.$http.post('@Url.Action("Add")', {
+                        AppIds: this.createForm.AppIds,
+                        SupplierName: this.createForm.Name,
+                        SupplierCode: this.createForm.Code,
+                        SupplierType: this.createForm.Type,
+                        ShipperType: this.createForm.ShipperType
+                    }).
+                    then(function (res) {
+                        defaultVue.createSubimtLoading = false;
+                        if (res.body.isSuccess) {
+                            defaultVue.fetchData();
+                            defaultVue.createDialogVisible = false;
+                            defaultVue.$message.success('添加成功');
+                            defaultVue.$refs["createForm"].resetFields();
+                        } else {
+                            defaultVue.$message.error(res.body.Message);
+                        }
+                    });
+                } else {
+                    return false;
+                }
+            });
+        },
+        handleUpdating: function(row){
+            this.currentRow = row;
+            this.updateForm.Id = row.Id;
+            this.updateForm.Name = row.Name;
+            this.updateForm.Code = row.Code;
+            this.updateForm.Type = row.Type.toString();
+            this.updateForm.ShipperType = row.ShipperType.toString();
+            this.updateForm.AppIds = row.AppIds;
+            this.updateDialogVisible = true;
+        },
+        handleUpdate: function() {
+            this.$refs["updateForm"].validate((valid) => {
+                if (valid) {
+                    this.createSubimtLoading = true;
+                    this.$http.post('@Url.Action("Update")', {
+                        Id:this.updateForm.Id,
+                        AppIds: this.updateForm.AppIds,
+                        SupplierName: this.updateForm.Name,
+                        SupplierCode: this.updateForm.Code,
+                        SupplierType: this.updateForm.Type,
+                        ShipperType: this.updateForm.ShipperType
+                    }).
+                    then(function (res) {
+                        defaultVue.createSubimtLoading = false;
+                        if (res.body.isSuccess) {
+                            defaultVue.fetchData();
+                            defaultVue.$message.success('修改成功');
+                            defaultVue.updateDialogVisible = false;
+                            defaultVue.currentRow = undefined;
+                        } else {
+                            defaultVue.$message.error(res.body.Message);
+                        }
+                    });
+                } else {
+                    return false;
+                }
+            });
+        },
+        handleDelete: function(row) {
+            this.$confirm('此操作将永久删除该供应商, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                modalAppendToBody: false
+            }).then(() => {
+                    this.$http.post('@Url.Action("Delete")', {
+                        Id: row.Id
+                    }).
+                    then(function (res) {
+                        if (res.body.isSuccess) {
+                            defaultVue.fetchData();
+                            defaultVue.$message.success('删除成功');
+                        } else {
+                            defaultVue.$message.error(res.body.Message);
+                        }
+                    });
+            }).catch(() => {
+
+            });        
+        }
+    },
+    mounted: function () {
+        this.fetchData();
+        // newSetIframeHeight(0);
+    },
+    updated: function(){
+        // newSetIframeHeight(0);
+    }
+})
+</script>
+}

@@ -1,0 +1,158 @@
+﻿@using System.Web
+@{
+    Layout = null;
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.CommodityVM> comcalist = ViewBag.CommodityList;
+    bool isCustomES = ViewBag.isCustomES;
+@*List<Jinher.AMP.BTP.Deploy.CustomDTO.CategorySDTO> categorylist = ViewBag.CategoryList;*@
+}
+<script type="text/javascript">
+
+    $("input[name=itemCheckBox]").bind("click", function () {
+        if ($("input[name=itemCheckBox]").length == $("input[name=itemCheckBox]:checked").length) {
+            $("#selecetall").attr("checked", 'true')
+        }
+        else {
+            $("#selecetall").removeAttr("checked");
+        }
+
+    });
+
+    $("#selecetall").click(function () {
+        var f = document.getElementById("selecetall").checked;
+        var s = document.getElementsByName("itemCheckBox");
+        if (f) {
+            for (var i = 0; i < s.length; i += 1)
+                s[i].checked = "checked";
+        }
+        else {
+            for (var i = 0; i < s.length; i += 1)
+                s[i].checked = "";
+        }
+    });
+    _rowCount = "@ViewBag.Count";
+</script>
+<input type="hidden" id="rowcounts" value="@ViewBag.Count"/>
+<table id="dataTable" border="0" cellspacing="5" cellpadding="0" class="m_talbe m_talbe3">
+    <tr class="t_tr1">
+        <td width="30">
+            <input type="checkbox" id="selecetall" />
+        </td>
+        <td width="80">
+            全选
+        </td>
+        <td style="text-align: left; padding-left: 50px; width: 80px;">
+            商品名称
+        </td>
+        <td width="150">
+            商品类别
+        </td>
+        <td width="100">
+            现价
+        </td>
+        <td width="100">
+            市场价
+        </td>
+        <td width="100">
+            数量
+        </td>
+        <td width="100">
+            总销量
+        </td>
+        <td width="100">
+            添加时间
+        </td>
+        <td width="100">
+            操作
+        </td>
+    </tr>
+    @foreach (var items in comcalist)
+    {
+        string isST = items.IsEnableSelfTake == 1 ? "block" : "none";
+           
+        <tr class="t_tr2 t_tr2_bg" data-items-id="@items.Id">
+            <td>
+                <input name="itemCheckBox" value="@items.Id" type="checkbox"/>
+            </td>
+            <td>
+                <div style="position: relative; width: 86px; height: 85px">
+                    <img src="@items.Pic" alt="" width="86" height="85" />
+                    <div class="selfTake" style="display:@isST">
+                        <img class="selfTakeImg" style="display: block; width: 86px;" src="/Images/selftake.png"
+                            alt="自提" />
+                    </div>
+                </div>
+            </td>
+            <td style="text-align: left; padding-left: 50px;" class="parentElement">
+                <p class="setElementText">@items.Name</p>
+               @if (isCustomES)
+               {
+                   <input name="nameText" type="text" class="showElement"
+                          style="border: 1px solid #ccc; height: 30px; display: none;" maxlength="60" value="@items.Name" />
+                   <span><a href="javascript:void(0)" class="clickElement" data-key="Commodityname" data-type="1">修改</a> <a href="javascript:void(0)" class="upDataClick" style="display: none"  data-key="Commodityname" data-action="/Commodity/UpdateName" data-type="1">确定</a></span>
+               }
+               else
+               {
+                   <input name="nameText" type="text" class="showElement" style="border: 1px solid #ccc; height: 30px; display: none;" maxlength="30" value="@items.Name" />
+                    <span><a href="javascript:void(0)" class="clickElement" data-key="Commodityname" data-type="1">修改</a> <a href="javascript:void(0)" class="upDataClick" style="display: none"  data-key="Commodityname" data-action="/Commodity/UpdateName" data-type="1">确定</a></span>
+               }
+               
+                
+            </td>
+            <td>
+                <ul>
+                    @{
+               string categoryListString = "";
+               foreach (var fl in items.Categorys)
+               {
+                   categoryListString = categoryListString + fl.Id + ",";
+                        <li>@fl.Name</li>
+               }
+               categoryListString = categoryListString.Length > 0 ? categoryListString.Substring(0, categoryListString.Length - 1) : categoryListString;
+                    }
+                </ul>
+                @if (ViewBag.IsShowCategoryTree == true)
+                {
+                    <span><a href="javascript:void(0)" id="updatecategory" onclick="toUpdateCategory(event,this,'@items.Id','@categoryListString')">
+                        修改</a></span>
+                }
+                <input type="hidden" name="categoryIdHidden" value="@categoryListString"  />
+            </td>
+            <td class="editable_cell parentElement">
+                <span name="oldPrice" class="setElementText" style="color: Orange">@Jinher.AMP.BTP.UI.Util.WebUtil.GetCurrency()@items.Price</span>
+                <input onblur="CheckInputFloat(this)" name="priceText" class="showElement" type="text" style="display:none" value="@items.Price"  maxlength="12"/>
+                <br />
+                <span><a href="@(items.HaveAttr == 1 ? ("/Commodity/UpdateCommodity?commodityId=" + items.Id + "&state=" + items.State) : "javascript:void(0)")" class="@(items.HaveAttr == 1 ? "" : "clickElement")" data-key="Price">
+                    修改</a> <a href="javascript:void(0)" class="upDataClick" style="display: none" data-key="Price"
+                        data-action="/Commodity/UpdatePrice" data-type="2">确定</a> </span>
+            </td>
+            <td class="editable_cell parentElement">
+                <span name="oldMarketPrice" class="setElementText" style="color: Orange">@(items.MarketPrice.HasValue ? @Jinher.AMP.BTP.UI.Util.WebUtil.GetCurrency() + items.MarketPrice.ToString() : "")</span>
+                <input onblur="CheckInputFloatKk(this)" name="marketPriceText" class="showElement" type="text" style="display:none" value="@(items.MarketPrice.HasValue ? items.MarketPrice.ToString() : "")"  maxlength="12"/>
+                <br />
+                <span><a href="@(items.HaveAttr == 1 ? ("/Commodity/UpdateCommodity?commodityId=" + items.Id + "&state=" + items.State) : "javascript:void(0)")" class="@(items.HaveAttr == 1 ? "" : "clickElement")" data-key="MarketPrice">
+                    修改</a> <a href="javascript:void(0)" class="upDataClick" style="display: none" data-key="MarketPrice"
+                        data-action="/Commodity/UpdateMarketPrice" data-type="4">确定</a> </span>
+            </td>
+            <td class="editable_cell parentElement">
+                <span class="setElementText">@items.Stock</span>
+                <input name="stockText" type="text" class="showElement" style="display:none" value="@items.Stock" maxlength="11"/>
+                <br />
+                <span><a href="@(items.HaveAttr == 1 ? ("/Commodity/UpdateCommodity?commodityId=" + items.Id + "&state=" + items.State) : "javascript:void(0)")" class="@(items.HaveAttr == 1 ? "" : "clickElement")" data-key="Commoditystock"
+                    data-type="3">修改</a> <a href="javascript:void(0)" class="upDataClick" style="display: none"
+                        data-key="Commoditystock" data-action="/Commodity/UpdateStock" data-type="3">确定</a></span>
+            </td>
+            <td style="color: Orange">
+                @items.Total
+            </td>
+            <td style="color: Orange">
+                @items.Subtime.ToString("yyyy/MM/dd HH:mm")
+            </td>
+            <td>
+                @if ((ViewBag.IsOrg == null) || (ViewBag.IsOrg != null && ViewBag.BTPUpdStockCom != null && ViewBag.IsOrg && ViewBag.BTPUpdStockCom))
+                {
+                    <span><a href="/Commodity/UpdateCommodity?commodityId=@items.Id&appId=@ViewBag.appId&userId=@ViewBag.userId&state=@items.State">编辑</a></span>
+                }
+            </td>
+        </tr>
+    }
+</table>

@@ -1,0 +1,407 @@
+﻿/*
+ * jQuery UI jhtablebox 
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ */
+
+.ui-jhtablebox { position: absolute; width: 300px; overflow: hidden; font-size:12px; }
+.ui-jhtablebox button { width: 80px; }
+.ui-jhtablebox-shadow{-webkit-box-shadow: #999 3px 3px 3px;-moz-box-shadow: #999 3px 3px 3px;box-shadow: #999 3px 3px 3px;}
+.ui-jhtablebox .ui-jhsingletablebox-titlebar  
+{
+    margin-left:5px;
+    margin-right:5px;
+    padding: 6px 5px 3px 5px; 
+    position: relative; 
+    font:bold 14px; 
+    color:#5292b8;    
+    background:url(images/tablebox.png) 0 -440px repeat-x;    
+    height:21px;
+}
+.ui-jhtablebox-top .ui-jhsingletablebox-titlebar  
+{
+    margin-left:5px;
+    margin-right:5px;
+    padding: 6px 5px 3px 5px; 
+    position: relative;     
+    font-weight:bold;
+    font-size:14px; 
+    color:#5292b8;    
+    background:url(images/tablebox.png) 0 -210px repeat-x;    
+    height:21px;
+}
+
+.ui-jhsingletablebox-leftcorner
+{
+    width:5px;
+    height:30px;
+    float:left;
+    background:url(images/tablebox.png) -150px -260px no-repeat;    
+}
+
+.ui-jhtablebox-top .ui-jhsingletablebox-leftcorner
+{
+    width:5px;
+    height:30px;
+    float:left;
+    background:url(images/tablebox.png) -150px 0 no-repeat;    
+}
+
+.ui-jhsingletablebox-rightcorner
+{
+    width:5px;
+    height:30px;
+    float:right;
+    background:url(images/tablebox.png) -160px -260px no-repeat;    
+}
+
+
+.ui-jhtablebox-top .ui-jhsingletablebox-rightcorner
+{
+    width:5px;
+    height:30px;
+    float:right;
+    background:url(images/tablebox.png) -160px 0 no-repeat;    
+}
+
+.ui-jhtablebox .ui-dialog-title { float: left; margin: 1px 16px 5px 0; font-weight:bold;} 
+/*.ui-jhsingletablebox .ui-dialog-titlebar-close { position: absolute; right: 7px; top: 50%; width: 21px; margin: -10px 0 0 0; height: 19px; }*/
+.ui-jhtablebox .ui-dialog-titlebar-button { float:right; width: 21px; margin: 0; height: 20px; }
+.ui-jhtablebox .ui-dialog-titlebar-button span { display: block; }
+.ui-jhtablebox-content { position: relative; border: 0; overflow: hidden; background:#fdfdfd;clear:both;}
+.ui-jhtablebox-top .ui-jhtablebox-content { position: relative; border: 0; overflow: hidden;border-left:1px solid #aad3eb;border-right:1px solid #aad3eb;border-bottom:1px solid #aad3eb;background:#fdfdfd;}
+.ui-jhtablebox .ui-dialog-buttonpane { text-align: left; /*background:#f1fbfe;*/ margin: 0; padding: 0 0 12px 0;border-left:1px solid #aad3eb;border-right:1px solid #aad3eb;border-bottom:1px solid #aad3eb;border-top:0;text-align:center; }
+/*.ui-jhsingletablebox .ui-dialog-buttonpane .ui-dialog-buttonset { float: right; }*/
+.ui-jhtablebox .ui-dialog-buttonpane button { margin:0 4px; cursor: pointer; }
+.ui-jhtablebox .ui-resizable-se { width: 14px; height: 14px; right: 3px; bottom: 3px; }
+.ui-draggable .ui-jhsingletablebox-titlebar { cursor: move; }
+
+.ui-jhtablebox-button-content{position: relative; border: 0; padding: 10px; overflow: auto; zoom: 1;border-left:1px solid #aad3eb;border-right:1px solid #aad3eb;border-bottom:0;background:white;}
+/*.ui-jhtablebox .ui-widget-content{border-top:0;}*/
+
+.ui-tabs-header
+{
+	height:50px;	
+}
+.ui-draggable .ui-tabs-header { cursor: move; }
+.ui-tabs-title
+{
+	background:url(images/tablebox.png) no-repeat 0px -260px;
+	height:50px;
+	width:125px;
+	float:left;
+}
+.ui-jhtablebox-top .ui-tabs-title
+{
+	background:url(images/tablebox.png) no-repeat 0px 0px;
+	height:50px;
+	width:125px;
+	float:left;
+}
+.ui-tabs-title-pic
+{
+	
+	width:24px;
+	height:24px;
+	margin-top:12px;
+	margin-left:14px;
+	float:left;
+	
+}
+.ui-tabs-title-name
+{
+	font-weight:bold;
+	font-size:14px;
+	float:left;
+	margin-top:16px;
+	margin-left:8px;
+	color:#5292b8;
+	display:inline;
+}
+.ui-jhtablebox-top .ui-jhtablebox-tabs
+{
+	height:50px;
+	background-image:url(images/tablebox.png);
+	background-repeat:repeat-x;
+	background-position:0px -120px;
+	margin-left:115px;
+	margin-right:5px;
+	padding-left:6px;
+}
+.ui-jhtablebox-tabs
+{
+	height:50px;
+	background-image:url(images/tablebox.png);
+	background-repeat:repeat-x;
+	background-position:0px -380px;
+	margin-left:115px;
+	margin-right:5px;
+	padding-left:6px;
+}
+.ui-tabs-minbtn
+{
+	float:right;
+	margin-top:5px;
+	margin-right:2px;	
+}
+.ui-tabs-minbtnhover
+{
+	float:right;
+	margin-top:5px;
+	margin-right:2px;
+	display:inline;
+	
+}
+.ui-tabs-closebtn
+{
+	float:right;
+	margin-top:5px;
+}
+.ui-tabs-closebtnhover
+{
+	float:right;
+	margin-top:5px;
+	
+}
+.span
+{
+	float:right;
+}
+
+.ui-jhtablebox-tabs-container
+{
+	height:50px;
+	overflow:hidden;	
+	position:relative;
+}
+.ui-jhtablebox-tabs-content
+{
+    height: 50px; margin-top: 0; padding: 0; overflow: hidden;border-left:1px solid #99CCCC;position:relative;
+}
+.ui-tabs-content-inside
+{
+    padding:10px 20px;
+    margin:0 auto;
+    text-align:center;
+    line-height:25px;
+}
+.ui-jhtablebox-tabs-content-border
+{
+    border-right:1px solid #99CCCC;
+}
+.ui-jhtablebox-tabs-next
+{
+	float:right;
+	background:url(images/tablebox.png) no-repeat -80px -180px;
+	width:12px;
+	height:20px;
+    margin:14px 6px 0 4px;
+    cursor:pointer;
+}
+.ui-jhtablebox-tabs-next-hover
+{
+	background:url(images/tablebox.png) no-repeat -100px -180px;
+}
+.ui-jhtablebox-tabs-next-click
+{
+   background:url(images/tablebox.png) no-repeat -120px -180px;	
+}
+.ui-jhtablebox-tabs-next-disabled
+{
+    background:url(images/tablebox.png) no-repeat -140px -180px;
+}
+.ui-jhtablebox-tabs-prev
+{
+	float:left;
+	background:url(images/tablebox.png) no-repeat 0px -180px;
+	width:12px;
+	height:20px;
+	margin-top:14px;	
+	padding:0 3px;
+	cursor:pointer;
+}
+.ui-jhtablebox-tabs-prev-hover
+{
+	background:url(images/tablebox.png) no-repeat -20px -180px;
+}
+.ui-jhtablebox-tabs-prev-click
+{
+	background:url(images/tablebox.png) no-repeat -40px -180px;
+}
+.ui-jhtablebox-tabs-prev-disabled
+{
+    background:url(images/tablebox.png) no-repeat -60px -180px;
+}
+
+
+.ul-li-bg-common
+{
+	background:url(images/tablebox.png) no-repeat -200px -320px;
+	height:50px; 
+	width:100px;
+	
+}
+.ul-li-bg-current
+{
+	background:url(images/tablebox.png) no-repeat 0px -320px;
+	height:50px; 
+	width:99px;
+	font-weight:bold;
+}
+
+.ul-li-bg-hover
+{
+	background:url(images/tablebox.png) no-repeat -100px -320px;
+	height:50px; 
+	width:99px;
+}
+
+.ui-jhtablebox-top .ul-li-bg-common
+{
+	background:url(images/tablebox.png) no-repeat -200px -60px;
+	height:50px; 
+	width:100px;
+	
+}
+.ui-jhtablebox-top .ul-li-bg-current
+{
+	background:url(images/tablebox.png) no-repeat 0px -60px;
+	height:50px; 
+	width:99px;
+	font-weight:bold;
+}
+
+.ui-jhtablebox-top .ul-li-bg-hover
+{
+	background:url(images/tablebox.png) no-repeat -100px -60px;
+	height:50px; 
+	width:99px;
+}
+
+.ui-jhtablebox-tabs-content ul
+{
+	list-style:none;
+	margin:0px;
+	padding:0px;
+	overflow:hidden;
+	position:relative;
+}
+.ui-jhtablebox-top .ui-jhtablebox-tab-li
+{
+	float:left;
+	border-right:1px solid #99CCCC;
+	height:50px; 
+	width:99px;
+	cursor:pointer;
+}
+.ui-jhtablebox-tab-li
+{
+	float:left;
+	border-right:1px solid #b8d5e1;
+	height:50px; 
+	width:99px;
+	cursor:pointer;
+}
+.ui-jhtablebox-tab-li-icon
+{
+	margin-top:13px;
+	display:block;
+	margin-left:5px;
+	vertical-align:middle;
+	float:left;
+	width:24px;
+	height:24px;
+}
+.ui-jhtablebox-tab-li-text
+{
+	margin-top:19px;
+	display:inline;
+	float:left;
+	width:auto;
+	font-size:12px;
+	color:#5292b8;
+	max-width:60px;
+	overflow: hidden;  
+	white-space:nowrap;
+}
+.ui-jhtablebox-tab-li-icon-default
+{
+    background: url("../base/images/ico_24.png") no-repeat 0 -30px;
+}
+.ui-jhtablebox-tab-li-icon-default-on
+{
+    background: url("../base/images/ico_24.png") no-repeat 0 -60px;
+}
+.ui-jhtablebox-top .ui-tabs-right
+{
+	background:url(images/tablebox.png) no-repeat -135px 0px;
+	height:50px;
+	width:5px;
+	float:right;
+}
+
+.ui-tabs-right
+{
+	background:url(images/tablebox.png) no-repeat -135px -260px;
+	height:50px;
+	width:5px;
+	float:right;
+}
+
+.ui-jhtablebox-top .ui-tabs-content
+{
+	clear:both;
+	margin-left:3px;
+	border-left:1px solid #aad3eb;
+	border-right:1px solid #aad3eb;
+	border-bottom:1px solid #aad3eb;
+}
+
+.ui-tabs-content
+{
+	clear:both;
+	margin-left:3px;
+	border-left:1px solid #b8d5e1;
+	border-right:1px solid #b8d5e1;
+	border-bottom:1px solid #b8d5e1;
+}
+
+.frame
+{
+    margin:0px;    
+}
+
+.ui-jhtablebox-title-button-area{float:right;padding-top:5px;height:45px;
+	background-image:url(images/tablebox.png);
+	background-repeat:repeat-x;
+	background-position:0px -380px;
+	margin-left:0;
+}
+
+.ui-jhtablebox-top .ui-jhtablebox-title-button-area{float:right;padding-top:5px;height:45px;
+	background-image:url(images/tablebox.png);
+	background-repeat:repeat-x;
+	background-position:0px -120px;
+	padding-left:0;
+	/**margin-left:0;*/
+}
+.ui-jhtablebox-tab-button-hide
+{
+    background:none;
+}
+
+.ui-jhtablebox-tabs-next.ui-jhtablebox-tab-button-hide
+{
+    display:none;
+}
+
+.ui-jhtablebox-mask
+{
+    z-index:1;
+    position:absolute;
+    background:#98d5ff;
+    opacity: .0;filter:Alpha(Opacity=0);
+}

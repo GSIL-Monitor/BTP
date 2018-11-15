@@ -1,0 +1,210 @@
+﻿@{
+  Layout = null;
+  string content = ViewBag.Content as string;
+  string techSpecs = ViewBag.TechSpecs as string;
+  string saleService = ViewBag.SaleService as string;
+  if (content != null)
+  {
+      //找出所有的图片
+      var regex = new System.Text.RegularExpressions.Regex("\\<[^\\>]*?img[^\\>]*?src[\\s\\S]*?\\>");
+      var matches = regex.Matches(content);
+      var urlRegex = new System.Text.RegularExpressions.Regex("src[\\s]*?=[\\s]*?[\\\"\\\'](?<url>[\\s\\S]*?)[\\\"\\\']");
+
+      content = regex.Replace(content, (match) =>
+      {
+          return urlRegex.Replace(match.Value, (match2) =>
+          {
+              var url = match2.Groups[1].Value;
+              url = "   data-src=\"" + url + "\"";
+              return url;
+          });
+      });
+  }
+  if (techSpecs != null)
+  {
+      //找出所有的图片
+      var regex = new System.Text.RegularExpressions.Regex("\\<[^\\>]*?img[^\\>]*?src[\\s\\S]*?\\>");
+      var matches = regex.Matches(techSpecs);
+      var urlRegex = new System.Text.RegularExpressions.Regex("src[\\s]*?=[\\s]*?[\\\"\\\'](?<url>[\\s\\S]*?)[\\\"\\\']");
+
+      techSpecs = regex.Replace(techSpecs, (match) =>
+      {
+          return urlRegex.Replace(match.Value, (match2) =>
+          {
+              var url = match2.Groups[1].Value;
+              url = "   data-src=\"" + url + "\"";
+              return url;
+          });
+      });
+  }
+  if (saleService != null)
+  {
+      //找出所有的图片
+      var regex = new System.Text.RegularExpressions.Regex("\\<[^\\>]*?img[^\\>]*?src[\\s\\S]*?\\>");
+      var matches = regex.Matches(saleService);
+      var urlRegex = new System.Text.RegularExpressions.Regex("src[\\s]*?=[\\s]*?[\\\"\\\'](?<url>[\\s\\S]*?)[\\\"\\\']");
+
+      saleService = regex.Replace(saleService, (match) =>
+      {
+          return urlRegex.Replace(match.Value, (match2) =>
+          {
+              var url = match2.Groups[1].Value;
+              url = "   data-src=\"" + url + "\"";
+              return url;
+          });
+      });
+  }
+}
+<!DOCTYPE>
+<html>
+<head>
+    <title>商品详情</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0,user-scalable=no" />
+    <style type="text/css"> *{padding:0;margin:0;} body{max-width: 500px;margin:0 auto;background: #eee;}img{border:none;max-width:100%;}ol,ol li,ul,ul li{margin:auto;}ol,ul{padding-left:20px;}
+    .title{text-align:left;font-size:20px;color:#1F1F1F;}.mid{padding:5px 0;margin:5px 0;font-size:13px;color:#999999;}.mid table td{width:33%;}.mid span{padding-right:20px;}.left{text-align:left;}.right{text-align:right}.center{text-align:center;}.content{padding:10px;font-family:微软雅黑;font-size:18px;line-height:1.4;text-align:justify;-webkit-text-align-last:justify;color:#5A5A5A;background:#fff;}.attachFile{font-family:微软雅黑;font-size:18px;text-align:justify;-webkit-text-align-last:justify;color:#5A5A5A;}
+    .attach{text-align:justify;-webkit-text-align-last:justify;}.attachFile{padding:5px auto; text-align:center;}.attachName{font-family:微软雅黑;font-size:16px;text-align:center;padding:5px auto;}
+    .audio{font-weight:bold;padding:5px auto;display:block;clear:both;}.audioLink{color:#0099ff;margin:0 5px;}.audioLinkDiv{clear:none;padding:5px;}.audioFlag{width:40px;height:20px;color:white;background-color:#0099ff;clear:none;padding:2px 2px 0 2px;valign:middle;text-align:center;float:left;}
+    span{white-space:normal}
+    audio,video{width:100%;}
+    .tempImg{display:block;clear:both;width:100%;min-height:130px;text-align:center;}.tempImgBg{background-image:url(/Content/images/tupian.png);background-repeat:no-repeat;background-position:center;}
+    @Html.Raw("@media screen and (-webkit-min-device-pixel-ratio:0){/* chrome*/.content:after{display: inline-block;width:100%;overflow:hidden;height:0;}}");
+    img{border:0}
+    .imgnoborder{border:0!important}
+    .hide{
+        display: none!important;
+    }
+    /*第二页面 nav*/
+    .page2-nav{
+        position: fixed;
+        top:0;
+        left: 0;
+        right: 0;
+        max-width: 500px;
+        height: 35px;
+        line-height: 35px;
+        margin: 0 auto;
+        display: -webkit-box;
+        -webkit-box-flex: 1;
+        -webkit-box-align: center;
+        -webkit-box-orient: horizontal;
+        background: #fff;
+        font-family: 'Microsoft Yahei';
+        z-index:1;
+    }
+    .page2-nav .nav-list{
+        -webkit-box-flex: 1;
+        font-size: 11px;
+        color: #333;
+        text-align: center;
+        background: #fff;
+    }
+    .page2-nav .nav-list:nth-child(1){
+        padding-left: 15px;
+        text-align: left;
+    }
+    .page2-nav .nav-list:nth-child(3){
+        padding-right: 15px;
+        text-align: right;
+    }
+    .page2-nav .nav-list.selected{
+        color: #e4393c;
+        background: #fff;
+    }
+    .shoppingInfo{
+        width: 100%;
+        max-width: 500px;
+        margin-top: 45px;
+        background-color: #fff;
+    }
+    .shoppingInfo img{
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+    .shoppingInfo p{
+        font-size: 14px;
+        color: #000;
+    }
+    </style>
+</head>
+<body>
+    <nav class="page2-nav">
+        <div class="nav-list" tag="info">商品介绍</div>
+        <div class="nav-list" tag="specs">参数规格</div>
+        <div class="nav-list" tag="service">包装售后</div>
+    </nav>
+
+  
+	
+   <div class="shoppingInfo">
+        <div id="shoppingInfo" class="content hide">@Html.Raw(content)</div>
+        <div id="techSpecs" class="content hide">@Html.Raw(techSpecs)</div>
+        <div id="saleService" class="content hide">@Html.Raw(saleService)</div>
+    </div>
+
+    <script type="text/javascript" src="/Scripts/jquery.js"></script>
+    <script type="text/javascript">
+        
+         
+        var curPage = window.location.href.indexOf('&page=') !== -1 ? window.location.href.split('&page=')[1] : 'info';
+        setCss(curPage);
+        function setUrl(page){
+            var url = window.location.href;
+            if(url.indexOf('&page=') !== -1){
+                url = url.split('&page=')[0];
+            }
+            return url + "&page=" + page
+        }
+        function setCss(tag){
+            if(tag == 'specs'){
+                $('.nav-list').eq(1).addClass('selected');
+                $('#techSpecs').removeClass('hide')
+            }else if(tag == 'service'){
+                $('.nav-list').eq(2).addClass('selected');
+                $('#saleService').removeClass('hide')
+            }else{
+                $('.nav-list').eq(0).addClass('selected');
+                $('#shoppingInfo').removeClass('hide')
+            }
+        }
+        $(function(){
+            $("img[data-src]").each(function (i, n) {
+                var obj = $(this);
+                obj.addClass("imgnoborder");
+                var imgSrc = obj.attr("data-src");
+                var img = new Image();
+                img.onload=function(){
+                    obj.removeClass("imgnoborder");
+                    obj.attr("src",imgSrc);
+                    img = null;
+        //                obj.replaceWith($(img));
+
+                };
+                img.onerror = function(){
+                    // img load failed
+                }
+                img.src = imgSrc;
+                obj.removeAttr("width");
+                obj.removeAttr("height");
+                obj.removeAttr("style");
+            });
+            $('.page2-nav').on('click','.nav-list',function(){
+                if(!$(this).hasClass('selected')){
+                    var page = $(this).attr('tag');
+                    window.location.href = setUrl(page);
+                }
+            });
+        });
+        $("span").css("white-space","normal");
+        var deviceWidth = document.documentElement.clientWidth > 500 ? 500 : document.documentElement.clientWidth;
+                var scale = (deviceWidth - 20)/ 640;
+                
+                    $('.JD-goods').css({
+                        'transform': 'scale(' + scale + ')',
+                        'width': '640px',
+                        'transform-origin': '0 0 0'
+                    })
+               
+    </script>
+</body>
+</html>

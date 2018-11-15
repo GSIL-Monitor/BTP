@@ -1,0 +1,160 @@
+﻿@using Jinher.JAP.Common.Loging
+@{
+    var couponTemplateList = @ViewBag.Coupons as List<Jinher.AMP.Coupon.Deploy.CustomDTO.CouponTemplatDetailDTO>
+    ;
+
+    string _ShopUrl      = "/Mobile/CommodityList?appId={0}&userId={1}&sessionId={2}&shopId={3}&changeOrg=00000000-0000-0000-0000-000000000000";
+    string _ShopUrl1     = "/Mobile/CommodityList?appId={0}&userId={1}&sessionId={2}&shopId={3}&changeOrg=00000000-0000-0000-0000-000000000000&couponTemplateId={4}";
+    string _CommodityUrl = "/Mobile/CommodityDetail?commodityId={0}&appId={1}&userId={2}&sessionId={3}&changeOrg=00000000-0000-0000-0000-00000000000&isshowsharebenefitbtn=1";
+    }
+    @if (couponTemplateList != null && couponTemplateList.Count > 0)
+    {
+        foreach (var item in couponTemplateList)
+        {
+
+            string strCouponType = string.Empty;
+            string strShowName = string.Empty;
+            bool isDraw = item.IsDraw;
+            string hisDraw = string.Empty;
+            if (isDraw)
+            {
+                hisDraw = "used";
+            }
+            strShowName = item.CouponName;
+            if (item.CouponType == (int)Jinher.AMP.Coupon.Deploy.Enum.CouponType.BeInCommon)
+            {
+                strCouponType = "店铺优惠券";
+            }
+            else
+            {
+                if (item.CouponGoodsCount > 1)
+                {
+                    strCouponType = "店铺优惠券";
+
+                }
+                else
+                {
+                    strCouponType = "商品优惠券";
+
+                }
+            }
+
+            <div class="list_bg">
+                <div class="list_item">
+                    <div class="list_item_left @hisDraw">
+                        <div class="list_top">
+                            <span class="list_name">@strShowName</span>
+                        </div>
+                        <div>
+                            @{
+                                string strLimitCondition = "无限制";
+                                if (item.LimitCondition != 0)
+                                {
+                                    strLimitCondition = string.Format("满{0}元可用", item.LimitCondition);
+                                }
+                            }
+                            <span class="list_coupon">@strLimitCondition</span>
+                        </div>
+                        <div>
+                            <span class="list_date text_overflow">有效期至@(item.EndTime.ToString("yyyy年MM月dd日"))</span>
+                        </div>
+                    </div>
+                    <div class="list_item_right">
+                        <div class="">
+                            <span class="list_name shop_coupon">@strCouponType</span>
+                        </div>
+                        <div>
+                            <span class="list_yuan">
+                                &yen; <span class="list_yuan_num">@(item.Cash.ToString().Split('.')[0])</span><span>@(item.Cash.ToString().Split('.').Length == 2 ? "." + item.Cash.ToString().Split('.')[1] : "")</span>
+                            </span>
+                        </div>
+                        <div>
+                            @if (!item.IsDraw)
+                            {
+                                <a href="javascript:void(0)" style="line-height: inherit;" class="btn btn_coupon" couponTemplateId="@item.Id" onclick="bindCoupon(this)">
+                                    点击领取
+                                </a>
+                                if (item.CouponType == (int)Jinher.AMP.Coupon.Deploy.Enum.CouponType.BeInCommon)
+                                {
+                                    <a href="javascript:void(0)" onclick="goShopOrCommodity(this);return false;" temphref="@string.Format(_ShopUrl, ViewBag.AppId, ViewBag.LoginUserId, ViewBag.SessionId, item.AppId)" class="btn btn_coupon active" style="display: none;background-color: #fff; color: #e4393c; line-height: inherit;" id="goShop@(item.Id)">
+                                        点击使用
+                                    </a>
+                                }
+                                else
+                                {
+                                    if (item.CouponGoodsCount > 1)
+                                    {
+                                        <a href="javascript:void(0)" onclick="goShopOrCommodity(this);return false;" temphref="@string.Format(_ShopUrl1, ViewBag.AppId, ViewBag.LoginUserId, ViewBag.SessionId, item.AppId, item.Id)" class="btn btn_coupon active" style="display: none;background-color: #fff; color: #e4393c; line-height: inherit;" id="goShop@(item.Id)">
+                                            点击使用
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        if (item.CouponGoodsCount != null && item.CouponGoodsCount == 1)
+                                        {
+                                            <a href="javascript:void(0)" onclick="goShopOrCommodity(this);return false;" temphref="@string.Format(_CommodityUrl, item.CouponGoodsList.First().GoodsId, item.AppId, ViewBag.LoginUserId, ViewBag.SessionId)" class="btn btn_coupon active" style="display: none;background-color: #fff; color: #e4393c; line-height: inherit;" id="goShop@(item.Id)">
+                                                点击使用
+                                            </a>
+                                        }
+
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (item.CouponType == (int)Jinher.AMP.Coupon.Deploy.Enum.CouponType.BeInCommon)
+                                {
+                                    <a href="javascript:void(0)" onclick="goShopOrCommodity(this);return false;" temphref="@string.Format(_ShopUrl, ViewBag.AppId, ViewBag.LoginUserId, ViewBag.SessionId, item.AppId)" class="btn btn_coupon active" style="background-color: #fff; color: #e4393c; line-height: inherit;" id="goShop@(item.Id)">
+                                        点击使用
+                                    </a>
+                                }
+                                else
+                                {
+                                    if (item.CouponGoodsCount > 1)
+                                    {
+                                        <a href="javascript:void(0)" onclick="goShopOrCommodity(this);return false;" temphref="@string.Format(_ShopUrl1, ViewBag.AppId, ViewBag.LoginUserId, ViewBag.SessionId, item.AppId, item.Id)" class="btn btn_coupon active" style="background-color: #fff; color: #e4393c; line-height: inherit;" id="goShop@(item.Id)">
+                                            点击使用
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        if (item.CouponGoodsCount != null && item.CouponGoodsCount == 1)
+                                        {
+                                            <a href="javascript:void(0)" onclick="goShopOrCommodity(this);return false;" temphref="@string.Format(_CommodityUrl, item.CouponGoodsList.First().GoodsId, item.AppId, ViewBag.LoginUserId, ViewBag.SessionId)" class="btn btn_coupon active" style="background-color: #fff; color: #e4393c; line-height: inherit;" id="goShop@(item.Id)">
+                                                点击使用
+                                            </a>
+                                        }
+
+                                    }
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        if (ViewBag.PageNumber == 1)
+        {
+            <!-- 没有商品去逛逛 -->
+            <div class="gift">
+                <img style="height: 70px; width: 70px;" src="/Content/PaySuccess/img/drawable-xhdpi/libao.png">
+                <div class="title1">
+                    <span>优惠礼包已经抢光了</span>
+                </div>
+                <div class="title2">
+                    <span>敬请关注其他优惠活动</span>
+                </div>
+                <div class="goShop_btn">
+                    <a href="javascript:void(0)" onclick="goShoping();return false;" class="btn">去逛逛</a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div>
+            </div>
+        }
+    }

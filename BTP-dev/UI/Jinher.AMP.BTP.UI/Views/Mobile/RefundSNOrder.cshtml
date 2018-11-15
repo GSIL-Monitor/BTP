@@ -1,0 +1,682 @@
+﻿@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+    string tempPic = ViewBag.pic;
+    string tempAppId = ViewBag.appId;
+    string tempOrderId = ViewBag.orderId;
+    string tempState = ViewBag.state;
+    string tempUserId = ViewBag.userId;
+    string tempPay = ViewBag.pay;
+    string supplier = ViewBag.supplier;
+}
+@section TitleHtml
+{
+    <title>退款/退货申请</title>
+    <header class="mobile-header" style="display: none">
+	    <h1 class="page-name" id="h1PageName">退款/退货申请</h1>
+    </header>
+}
+@section CssStyles{
+    <link href="/Content/Mobile/mobileKit-min.css" rel="stylesheet" type="text/css" />
+    <link href="/dist/css/RefundOrder.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="/dist/css/addDeliveryAddress.css" type="text/css" />
+    <style type="text/css">
+           .hide
+        {
+            display: none !important;
+        }
+        .border-bottom
+        {
+            border-bottom: 1px solid #e8e8e8;
+        }
+        .refund-header
+        {
+            background: #fff;
+        }
+        .refund-header-hd
+        {
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            min-height: 100px;
+            padding: 0 15px;
+            background-color: #e4393c;
+        }
+        .refund-header-hd .state
+        {
+            padding-top: 27px;
+            font-size: 15px;
+            color: #fff;
+        }
+        .refund-header-hd .info
+        {
+            margin-top: 12px;
+            font-size: 11px;
+            color: #fff;
+            text-align: left;
+        }
+        .refund-header-bd
+        {
+            padding: 10px 0;
+            line-height: 14px;
+            margin-left: 15px;
+            color: #333;
+            font-size: 12px;
+        }
+        .refund-header-fd
+        {
+            padding-left: 15px;
+            padding-bottom: 8px;
+        }
+        .refund-header-fd > div
+        {
+            padding-top: 8px;
+            color: #999;
+            font-size: 12px;
+        }
+        .content
+        {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 0;
+            background: #eee;
+        }
+        .refund-info
+        {
+            padding-bottom: 10px;
+            background: #fff;
+        }
+        .refund-info .refund-info-title
+        {
+            height: 40px;
+            line-height: 40px;
+            padding-left: 15px;
+            color: #333;
+            font-size: 13px;
+        }
+        .list
+        {
+            max-width: 500px;
+            margin-left: 15px;
+        }
+        .list li
+        {
+            border: 0;
+            border-radius: 0;
+            background-color: #fff;
+        }
+        .list .item
+        {
+            height: 40px;
+            line-height: 40px;
+            font-size: 13px;
+            color: #999;
+        }
+        .list .item > span:first-child, .list .item > span:last-child
+        {
+            padding: 0;
+        }
+        .list li:active
+        {
+            background-color: #fff;
+        }
+      
+        
+        .preview
+        {
+            width: 100%;
+        }
+        .preview div
+        {
+            width: 60px;
+            height: 60px;
+            float: left;
+            position: relative;
+            margin: 10px;
+            margin-bottom: 20px;
+            border: solid 1px #CCCCCC;
+        }
+        .preview div a
+        {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 5px;
+            height: 5px;
+            border-radius: 15px;
+            padding: 8px;
+            font-size: .8em;
+            line-height: .4em;
+            background-color: #000;
+            color: #FFF;
+        }
+        .preview div img
+        {
+            width: 100%;
+            height: 100%;
+        }
+        .preview div span
+        {
+            font-size: .6em;
+            width: 60px;
+            text-align: center;
+            color: #06F;
+        }
+        .list li
+        {
+            padding: 0;
+            margin: 0;
+        }
+        .picture-list > li:nth-child(1), .picture-list > li:nth-child(2), .picture-list > li:nth-child(3), .picture-list > li:nth-child(4), .picture-list > li:nth-child(5)
+        {
+            margin-left: 0;
+            margin-right: 0;
+        }
+        .list .picture-list li
+        {
+            position: relative;
+            top: 0;
+            left: 0;
+            float: left;
+            width: 25%;
+            padding-top: 25%;
+            height: 0;
+            min-height: 0;
+            margin-bottom: 1px;
+            overflow: hidden;
+        }
+        .list .picture-list li img
+        {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 90%;
+            height: 90%;
+        }
+        .btn
+        {
+            position: relative;
+            display: inline-block;
+            padding: 6px 8px 7px;
+            margin-bottom: 0;
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 1;
+            color: #333;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: top;
+            cursor: pointer;
+            background-color: white;
+            border: 1px solid #333;
+            border-radius: 3px;
+            background-image: none;
+            font-family: 'Microsoft Yahei';
+            text-shadow: none;
+        }
+        .btn:active, .btn.active
+        {
+            color: inherit;
+        }
+        .btn:disabled, .btn.disabled
+        {
+            opacity: .6;
+        }
+        .btn-primary
+        {
+            color: #d92b2f;
+            border-color: #d92b2f;
+        }
+        
+        /* 退款申请信息*/
+        .refund-detail-list
+        {
+            position: relative;
+            display: -webkit-box;
+            -webkit-box-flex: 1;
+            padding: 13px 15px;
+            line-height: 14px;
+            border-bottom: 1px solid #e8e8e8;
+            font-size: 14px;
+            color: #999;
+            background: #fff;
+        }
+        .refund-detail-list .name
+        {
+            padding-right: 10px;
+        }
+        .refund-detail-list .text
+        {
+            display: -webkit-box;
+            -webkit-box-flex: 1;
+        }
+        .refund-detail-list .btn
+        {
+            background: #fff;
+            font-size: 11px;
+        }
+        .refund-detail-list .btn.active
+        {
+            border-color: #d92b2f;
+            color: #d92b2f;
+        }
+        .goods-info
+        {
+            display: -webkit-box;
+            -webkit-box-flex: 1;
+            margin-left: 15px;
+            padding-bottom: 10px;
+        }
+        .goods-info .pic
+        {
+            width: 90px;
+            height: 90px;
+            border: 1px solid #e3e3e3;
+            -webkit-border-radius: 4px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .goods-info .info
+        {
+            -webkit-box-flex: 1;
+            padding: 0 10px;
+            text-align: left;
+        }
+        .goods-info .info .goods-info-title
+        {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            font-size: 13px;
+            color: #333;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .goods-info .info .goods-info-size
+        {
+            margin-top: 5px;
+            font-size: 11px;
+            color: #999;
+        }
+        .goods-info .info .goods-info-size span
+        {
+            padding-right: 5px;
+            font-family: 'Microsoft Yahei';
+            color: #555;
+        }
+        
+          .btnConter
+        {
+            position: relative;
+            -webkit-box-flex: 1;
+            padding: 13px 15px;
+            line-height: 14px;
+            border-bottom: 1px solid #e8e8e8;
+            font-size: 14px;
+            color: #999;
+            background: #fff;
+        }
+    </style>
+}
+<div class="page" id="app">
+    <!--温馨提示-->
+    <section id="tips" class="tips">
+        <span class="tips-title">温馨提示：请与卖家协商后，在进行填写售后服务内容</span>
+        <img class="tips-close" src="/Content/Mobile/guanbi-bai.png">
+    </section>
+    <!--服务类型-->
+    <section class="type">
+        <div class="type-title">服务类型</div>
+        <div class="refund-btns">
+        @foreach (var ce in ViewBag.CustomerExpects)
+        {
+            <a id="customerExpect_@ce.Code" href="javascript:void(0)" class="btns active" val="@ce.Code" tag="2">@ce.Name</a>
+            @*if (ce.Code == "10")
+            {
+                <a href="javascript:void(0)" class="btns active" tag="1">仅退款</a>
+            }
+            <a href="javascript:void(0)" class="btns @(ViewBag.CanOnlyRefund ? "" : "active")" tag="2" id="radioType2">退款退货</a>*@
+        }
+        </div>
+    </section>
+    <input type="hidden" id="hidoptionsType" value="2" />
+    <!--订单类表-->
+    @if (ViewBag.orderItemList != null)
+    {
+        foreach (var item in ViewBag.orderItemList)
+        {
+            var strSize = item.Size.Replace(",", " ");
+           <div class="order-list">
+            <img class="pic" src="@item.Pic">
+            <div class="detail">
+                <div class="title">
+                    @item.Name</div>
+                <div class="size">
+                    @strSize</div>
+                <div class="price-wrap">
+                    <div class="price">
+                        ￥<span class="num">@item.Price</span></div>
+                    <div class="count">
+                        @("x" + item.CommodityNumber)</div>
+                </div>
+            </div></div>
+        }
+    }
+    <!--退货原因-->
+    <div class="reason">
+        <span class="reason-title">退货原因</span> <span id="reason-text" class="reason-text">请选择</span>
+        <img class="reason-pic" src="/Content/Mobile/yj-angle-right.png">
+    </div>
+    <!--退货金额-->
+    <section class="refund-price-wrap">
+        <div class="price-wrap">
+            <span class="title">退款金额<label id="freightPrompt" style="color:Red;display:none">(含运费5元)</label>：</span>
+            <em>￥</em>
+            <input class="price" type="number"  value="@tempPic" id="RefundMoneyPic" placeholder="订单支付金额，可修改">
+        </div>
+        <div class="price-tips">若申请成功，退款金额将全部按照支付方式原路返回，若全部不符，请与卖家联系进行协调解决。</div>
+    </section>
+    <section class="refund-dec-wrap">
+        <div class="title">问题描述</div>
+        <textarea class="dec" placeholder="请您再次描述问题"></textarea>
+        <div id="uploadpicli">
+        <form id="picForm" method="post" on enctype="multipart/form-data" target="uploadframe"
+            action='/Handler/PhoneUploadHandler.ashx'>
+            <ul id="upload-wrap" class="upload-wrap">
+                @*<li class="upload-pic">
+                    <img class="img" src="http://placehold.it/118x118">
+                    <a href="javascript:void(0);" class="cancel"></a>
+                </li>
+                <li class="upload-pic">
+                    <img class="img" src="http://placehold.it/118x118">
+                    <a href="javascript:void(0);" class="cancel"></a>
+                </li>*@
+                <li id="addPicli" class="upload-pic add-pic-wrap">
+                    <img class="add-pic" src="/Content/Mobile/icon_add.png" >
+                    <span class="add-text">最多五张</span>
+                </li>
+            </ul>
+            <input type="file" id="add" name="add" accept="image/jpg, image/jpeg, image/png, image/gif" class="upload-input" onchange="uploadfun()" onclick="PreClickOnPic('add')" />
+        </form>
+        </div>
+    </section>
+    <section class="refund-method" id="pickwareType_Li">
+        <div class="title">商品退回方式</div>
+        <div class="refund-btns">
+            <a href="javascript:void(0)" class="btns active">上门取件</a>
+          @*  <a href="javascript:void(0)" class="btns active">自选物流</a>*@
+        </div>
+    </section>
+    <section class="address-wrap">
+        <div class="address-info" id="customerContactName_Li">
+            <span class="address-title">收货人:</span>
+            <input class="address-text" placeholder="请填写收货人姓名" id="customerContactName" value="@ViewBag.OrderInfo.ReceiptUserName" >
+        </div>
+        <div class="address-info" id="customerTel_Li">
+            <span class="address-title">联系电话:</span>
+            <input class="address-text" placeholder="请填写联系电话" id="customerTel" value="@ViewBag.OrderInfo.ReceiptPhone" >
+        </div>
+        <div class="address-info" id="takePartAddressSn_Li">
+            <span class="address-title">所在地区</span>
+            <input readonly class="address-text cursor" placeholder="请填选择所在地区" v-on:click="chooseAddress(selectProvinceCode,selectCityCode,selectDistrictCode,selectStreetCode)" v-model="addressLabel" id="takePartAddressSn">
+            <img class="address-pic" src="/Content/Mobile/yj-angle-right.png">
+        </div>
+        <div class="address-info" id="pickwareAddress_Li">
+            <span class="address-title">详细地址</span>
+            <input class="address-text" placeholder="请输入街道、楼盘号等" id="pickwareAddress" value="@ViewBag.OrderInfo.ReceiptAddress">
+        </div>
+    </section>
+    <div class="bottom-tips" id="notic" style="display:none">
+        提交服务订单后，售后专员可能会与您电话沟通，请保持电话畅通</div>
+    <div class="bottom-btn" onclick="btnSubmit()">
+        提交</div>
+
+    <div class="choose-address-wrap" style="display:none" :class="{animate: chooseOpen}" v-on:click="chooseOpen= false">
+        <div class="choose-address-content" v-on:click.stop="">
+            <a class="choose-address-close" v-on:click="chooseOpen= false"></a>
+            <div class="choose-address-hd">所在地区</div>
+            <div class="choose-address-bd">
+                <div class="address-fix border-line">
+                    <ul class="address-select-ul clearfix">
+                        <li><a href="javascript:void(0)" v-bind:class="{selected: selectedIndex == 0}" v-on:click="addressClick(0)">{{selectProvince}}</a></li>
+                        <li><a href="javascript:void(0)" v-bind:class="{selected: selectedIndex == 1}" v-on:click="addressClick(1)">{{selectCity}}</a></li>
+                        <li><a href="javascript:void(0)" v-bind:class="{selected: selectedIndex == 2}" v-on:click="addressClick(2)">{{selectDistrict}}</a></li>
+                        <li><a href="javascript:void(0)" v-bind:class="{selected: selectedIndex == 3}" v-on:click="addressClick(3)">{{selectStreet}}</a></li>
+                    </ul>
+                </div>
+                <div class="address-container" v-bind:style="{'-webkit-transform':'translateX(' + transformX +')'}" style="-webkit-transition: transform .3s;">
+                    <ul class="address-ul">
+                        <li v-for="province in provinces" v-bind:class="{selected: selectProvinceCode == province.AreaCode}" v-on:click="provinceChange(province.AreaCode,province.Name)">{{province.Name}}</li>
+                    </ul>
+                    <ul class="address-ul">
+                        <li v-for="city in cityLists" v-bind:class="{selected: selectCityCode == city.AreaCode}" v-on:click="cityChange(city.AreaCode,city.Name)">{{city.Name}}</li>
+                    </ul>
+                    <ul class="address-ul">
+                        <li v-for="list in districtList" v-bind:class="{selected: selectDistrictCode == list.AreaCode}" v-on:click="districtChange(list.AreaCode,list.Name)">{{list.Name}}</li>
+                    </ul>
+                    <ul class="address-ul">
+                        <li v-for="list in streetList" v-bind:class="{selected: selectStreetCode == list.AreaCode}" v-on:click="selectedStreet(list.AreaCode,list.Name)">{{list.Name}}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modal" class="logistics-modal hide">
+    <div class="logistics-modal-content">
+        <div class="modal-hd">
+            <span class="title">退款原因</span>
+            <img class="close" src="/Content/Mobile/guanbi.png">
+        </div>
+        <div id="lists" class="modal-bd">
+        </div>
+    </div>
+</div>
+
+
+<div class="content" id="message" style="display:none">
+    <div class="refund-header">
+        <div class="refund-header-hd">
+            <div id="state" class="state">
+                商品退回方式：联系客服</div>
+        </div>
+        <div id="refund-header-bd" class="refund-header-bd border-bottom hide">
+        </div>
+        <div id="refund-header-fd" class="refund-header-fd hide">
+        </div>
+    </div>
+    <div class="refund-info">
+        <div id="commodityInfo" class="goods-info">
+            <div class="info">
+                <div id="Name" class="goods-info-title">
+                </div>
+                <div class="goods-info-size">
+                    <span id="CommodityAttributes">由于您购买的商品为厂家直接配送，需要您通过线下沟通完成售后！请您联系官方客服：<a href="tel:4008516516">4008516516</a> 进行解决，给您带来不便敬请谅解！</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="hidAppId" value="@tempAppId" />
+<input type="hidden" id="hidOrderId" value="@tempOrderId" />
+<input type="hidden" id="hidState" value="@tempState" />
+<input type="hidden" id="hidPay" value="@tempPay" />
+<input type="hidden" id="hidPic" value="@tempPic" />
+<iframe id="uploadframe" name="uploadframe" style="display: none"></iframe>
+<input type="hidden" id="isEditM" value="" />
+<input type="hidden" id="supplier" value="@supplier" />
+@section ClientScript
+{
+    <script src="/Scripts/md5.js" type="text/javascript"></script>
+    <script src="/Scripts/zepto.min.js" type="text/javascript"></script>
+    <script src="/Scripts/mobileKit.min.js" type="text/javascript"></script>
+
+    <script src="/dist/lib/AreaFirst.js" type="text/javascript"></script>
+    <script src="/dist/lib/AreaSecond.js" type="text/javascript"></script>
+    <script src="/dist/lib/AreaThree.js" type="text/javascript"></script>
+    <script src="/dist/lib/Area.js" type="text/javascript"></script>
+
+    <script src="/dist/lib/vue.min.js" type="text/javascript"></script>
+    <script src="/dist/lib/vue-mobileKit.js" type="text/javascript"></script>
+
+    <script src="/dist/js/RefundSNOrder.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+    var defaultVue = new Vue({
+        el: '#app',
+        mounted: function () {
+            this.$nextTick(function () {
+                this.provinces = getAllProvinces();
+                let province = getAllProvinces().filter(_=>_.Name == '@ViewBag.OrderInfo.Province')[0];
+                if(province){
+                    this.selectProvince = province.Name;
+                    this.selectProvinceCode = province.AreaCode;
+                    this.cityLists = getAddressInfo(this.selectProvinceCode, 2);
+                    let city = this.cityLists.filter(_=>_.Name == '@ViewBag.OrderInfo.City')[0];
+                    if(city){
+                        this.selectCity = city.Name;
+                        this.selectCityCode = city.AreaCode;
+                        this.districtList = getAddressInfo(this.selectCityCode, 3);
+                        let district = this.districtList.filter(_=>_.Name == '@ViewBag.OrderInfo.District')[0];
+                        if(district){
+                            hasData = true;
+                            this.selectDistrict = district.Name;
+                            this.selectDistrictCode = district.AreaCode;
+                            this.streetList = getAddressInfo(this.selectDistric, 4);
+                            let street = this.streetList.filter(_=>_.Name == '@ViewBag.OrderInfo.Street')[0];
+                            if(street){
+                                this.selectStreet = street.Name;
+                                this.selectStreetCode = street.AreaCode;
+                            }
+                        }
+                    }
+                    this.addressLabel = this.selectProvince + this.selectCity + this.selectDistrict + this.selectStreet;
+                }
+            });
+        },
+        data: function () {
+            return {
+                addressInfo: {}, //地址的所有信息（编辑状态需要获取之前的信息）
+                chooseOpen: false,
+                provinces: [], //省
+                cityLists: [], //市
+                districtList: [], //区
+                streetList: [], //街道
+                selectProvince: '请选择', //选择的省
+                selectProvinceCode: null,
+                selectCity: '', //选择的市
+                selectCityCode: null,
+                selectDistrict: '', //选择的区
+                selectDistrictCode: null,
+                selectStreet: '', //选择的街道
+                selectStreetCode: null,
+                selectedIndex: 0,
+                userName: '', //收货人姓名
+                phone: '', //手机号码
+                zipCode: '', //邮政编码
+                addressLabel: '', //地址
+                addressWhere: '', //详细地址
+                transformX: '0px',
+                protype: '',
+                isedit: true
+            }
+        },
+        methods: {
+            initAddressLabel: function () {
+                this.addressLabel = this.selectProvince + this.selectCity + this.selectDistrict + this.selectStreet;
+            },
+            /**
+            * 点击已经选择的地址页签title
+            */
+            addressClick: function (index) {
+                this.transformX = (index * -25 + '%');
+                this.selectedIndex = index;
+            },
+            /**
+            * 切换了省份
+            */
+            provinceChange: function (code, name) {
+                this.cityLists = getAddressInfo(code, 2);
+                this.transformX = '-25%';
+                this.selectedIndex = 1;
+                this.selectCity = '请选择';
+                this.selectCityCode = null;
+                this.selectDistrict = '';
+                this.selectDistrictCode = null;
+                this.selectStreet = '';
+                this.selectStreetCode = null;
+                this.selectProvince = name;
+                this.selectProvinceCode = code;
+            },
+            /**
+            * 切换了市，获取所在的区
+            */
+            cityChange: function (code, name) {
+                this.selectCity = name;
+                this.selectCityCode = code;
+                this.selectDistrict = '';
+                this.selectDistrictCode = null;
+                this.selectStreet = '';
+                this.selectStreetCode = null;
+                this.districtList = getAddressInfo(code, 3);
+                this.transformX = '-50%';
+            },
+            /**
+            * 切换了区,获取所在的街道
+            */
+            districtChange: function (code, name) {
+                this.streetList = getAddressInfo(code, 4);
+                this.selectedIndex = 3;
+                this.selectDistrict = name;
+                this.selectDistrictCode = code;
+                this.selectStreet = '';
+                this.selectStreetCode = null;
+                if (this.streetList.length) {
+                    this.transformX = '-75%';
+                } else {
+                    this.chooseOpen = false;
+                    this.initAddressLabel();
+                }
+            },
+            /**
+            * 点击街道列表元素
+            */
+            selectedStreet: function (code, name) {
+                this.streetChange(code, name);
+                this.chooseOpen = false;
+            },
+            /**
+            * 切换了街道
+            */
+            streetChange: function (code, name) {
+                this.selectStreet = name;
+                this.selectStreetCode = code;
+                this.selectedIndex = 3;
+                this.initAddressLabel();
+            },
+            chooseAddress: function (provinceCode, CityCode, DistrictCode) {
+                this.$loading.open();
+                if (this.provinces.length) {
+                    if (this.addressLabel) {//已选择
+                        this.cityLists = getAddressInfo(provinceCode, 2);
+                        this.districtList = getAddressInfo(CityCode, 3);
+                        this.streetList = getAddressInfo(DistrictCode, 4);
+                        this.$loading.close();
+                        this.chooseOpen = true;
+                    } else { //未选择
+                        this.$loading.close();
+                        this.selectProvince = '请选择';
+                        this.selectedIndex = 0;
+                        this.transformX = '0%';
+                        this.selectCity = this.selectDistrict = this.selectStreet = '';
+                        this.selectProvinceCode = this.selectCityCode = this.selectDistrictCode = this.selectStreetCode = null;
+                        this.cityLists = this.districtList = this.streetList = [];
+                        var _this = this;
+                        setTimeout(function () {
+                            _this.chooseOpen = true;
+                        }, 100);
+                    }
+                }
+            }
+        }
+    });
+    </script>
+}

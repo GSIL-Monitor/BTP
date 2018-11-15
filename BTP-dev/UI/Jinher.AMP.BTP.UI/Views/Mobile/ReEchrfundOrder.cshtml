@@ -1,0 +1,935 @@
+﻿@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+    string tempPic = ViewBag.pic;
+    string tempAppId = ViewBag.appId;
+    string tempOrderId = ViewBag.orderId;
+    string tempState = ViewBag.state;
+    string tempUserId = ViewBag.userId;
+    string tempPay = ViewBag.pay;
+}
+@section TitleHtml
+{
+    <title>退款/退货申请</title>
+    <header class="mobile-header" style="display: none">
+	<h1 class="page-name" id="h1PageName">退款/退货申请</h1>
+    </header>
+}
+@section CssStyles{
+    <link rel="stylesheet" href="../../Content/style/style.css" />
+    <link rel="stylesheet" href="../../Content/style/iCheck.css">
+    <link rel="stylesheet" href="/dist/css/common.css">
+    <link rel="stylesheet" href="/dist/css/addDeliveryAddress.css">
+    <style>
+        .main{
+            padding:0;
+            margin-top:0;
+        }
+        .list li
+        {
+            border: 1px solid #e3e3e3;
+            background-color: #f5f5f5;
+        }
+        .list li:active
+        {
+            background-color: #f5f5f5;
+        }
+        .btn_addPic
+        {
+            width: 100%;
+            height: 100%;
+            float: left;
+            position: relative;
+            overflow: hidden;
+            color: #7b7b7b;
+            font-size: 14px;
+            line-height: 48px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .picture-list .btn_addPic>img{
+            width: 22px;
+            display: block;
+            padding-top: 12px;
+            margin-left: 19px;
+            height: auto;
+            -webkit-border-radius: 5px;
+            border-radius: 5px;
+        }
+        .btn_addPic .title{
+            display: block;
+            font-size: 11px;
+            color: #999;
+            line-height: 28px;
+            text-align: center;
+        }
+        .filePrew
+        {
+            display: block;
+            position: absolute;
+            top: 0px;
+            left: 0;
+            width: 60px;
+            height: 100%;
+            cursor: pointer;
+            opacity: 0;
+            filter: alpha(opacity:1);
+        }
+        .preview
+        {
+            width: 100%;
+        }
+        .preview div
+        {
+            width: 60px;
+            height: 60px;
+            float: left;
+            position: relative;
+            margin: 10px;
+            margin-bottom: 20px;
+            border: solid 1px #CCCCCC;
+        }
+        .preview div a
+        {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 5px;
+            height: 5px;
+            border-radius: 15px;
+            padding: 8px;
+            font-size: .8em;
+            line-height: .4em;
+            background-color: #000;
+            color: #FFF;
+        }
+        .preview div img
+        {
+            width: 100%;
+            height: 100%;
+        }
+        .preview div span
+        {
+            font-size: .6em;
+            width: 60px;
+            text-align: center;
+            color: #06F;
+        }
+        
+        
+        .footer_4
+        {
+            border-radius: 4px;
+            background-color: #e0e0e0;
+            text-align: center;
+            color: #505050;
+            font-size: 1em;
+            letter-spacing: 3px;
+            padding: 3% 12%;
+            display: inline-block;
+            margin-left: 30px;
+        }
+    </style>
+}
+<div id="app" class="main">
+    <ul class="groups">
+        <li>
+            <label>退款方式：</label>
+                <span class="money-type">
+                <input id="x" type="radio" name="refund" checked="checked" onclick="radioType('1')" value="1"/>
+                <label class="text" for="x">仅退款</label></span> <span class="money-type" id="radioType2">
+                        <input id="q" type="radio" name="refund" onclick="radioType('2')" value="2"/>
+                        <label class="text" for="q">退款/退货</label></span>
+            <input type="hidden" id="hidoptionsType" value="1" />
+        </li>
+        <li>
+            <label>退款原因：</label>
+            <select name="RefundRemark" id="RefundRemark" class="reason-type">
+                <option value="0">请选择退款/退货原因</option>
+                <option value="缺货">缺货</option>
+                <option value="协商一致退款">协商一致退款</option>
+                <option value="未按约定时间发货">未按约定时间发货</option>
+                <option value="其他">其他</option>
+            </select>
+            <select name="RefundGoodsRemark" id="RefundGoodsRemark" class="reason-type" style="display: none;">
+                <option value="0">请选择退款/退货原因</option>
+                <option value="商品有破损、有污渍">商品有破损、有污渍</option>
+                <option value="效果不好/不喜欢">效果不好/不喜欢</option>
+                <option value="使用后过敏">使用后过敏</option>
+                <option value="商品与描述不符">商品与描述不符</option>
+                <option value="其他">其他</option>
+            </select>
+        </li>
+        <li>
+            <label>退款金额：</label>
+            <input type="number" class="money" placeholder="订单支付金额，可修改" value="@tempPic" id="RefundMoneyPic"/>
+        </li>
+        <li id="RefundContent">
+            <label>退款说明：</label>
+            <textarea name="" placeholder="请填写退款/退货原因" id="txtContent" class="editReason"></textarea>
+            <div class="word-count tips">140字</div>
+        </li>
+        <li id="uploadpicli"><label>退款凭证:</label>
+            <form id="picForm" method="post" enctype="multipart/form-data" target="uploadframe"
+            action='/Handler/PhoneUploadHandler.ashx'>
+            <ul class="picture-list fn-clear" id="preview">
+                <li id="addPicli">
+                    <a href="javascript:void(0);" class="btn_addPic">
+                        <img src="/Content/Mobile/paizhao.png">
+                        <span class="title">添加照片</span>
+                        <span style="display: none;">上传</span>
+                        <input type="file" id="add" name="add" accept="image/jpg, image/jpeg, image/png, image/gif" class="filePrew" onchange="uploadfun()" onclick="PreClickOnPic('add')" />
+                    </a>
+                </li>
+            </ul>
+            </form>
+        </li>
+        <li id="liType1" style="display:none">
+            <label>商品退回方式：</label>
+            <span class="money-type">
+                <input id="pickwareType_1" type="radio" name="pickwareType" checked="checked" value="1" onclick="pickwareType('1',this)"/>
+                <label class="text" for="pickwareType_1">上门取件</label>
+            </span>
+            <span class="money-type">
+                <input id="pickwareType_2" type="radio" name="pickwareType" value="2" onclick="pickwareType('2',this)"/>
+                <label class="text" for="pickwareType_2"> 快递寄回商家 </label>
+            </span>
+
+            <input type="hidden" name="hidpickwareType" value="1" id="hidpickwareType"/>
+        </li>
+        <li style="display:none">
+            <label>联系人：</label>
+            <input type="text" class="money" style="width:250px;" id="customerContactName" value="@ViewBag.OrderInfo.ReceiptUserName" />
+        </li>
+        <li style="display:none">
+            <label>联系电话：</label>
+            <input type="text" class="money" style="width:250px;" id="customerTel" value="@ViewBag.OrderInfo.ReceiptPhone" />
+        </li>
+       <li style="display :-webkit-box;display:-webkit-flex;display:flex;display:none;">
+           <label>取件地址：</label>
+           <input class="money" style="-webkit-flex:1;flex:1;" v-on:click="chooseAddress(selectProvinceCode,selectCityCode,selectDistrictCode,selectStreetCode)" v-model="addressLabel" readonly placeholder="所在地区" class="pointer">
+           <img src="/Content/Mobile/angle-right2.png" style="width: 22px; height: 22px;">
+        </li>
+        <li style="display:none">
+            <textarea class="editReason" placeholder="详细地址" style="height:40px;" id="pickwareAddress">@ViewBag.OrderInfo.ReceiptAddress</textarea>
+        </li>
+        <li>
+            <div style="text-align: right;">
+                <span class="footer_4" id="btnCancel">取消</span> <span class="footer_2" id="btnOk">提交</span>
+            </div>
+        </li>
+    </ul>
+    <input type="hidden" id="hidAppId" value="@tempAppId" />
+    <input type="hidden" id="hidOrderId" value="@tempOrderId" />
+    <input type="hidden" id="hidState" value="@tempState" />
+    <input type="hidden" id="hidPay" value="@tempPay" />
+    <iframe id="uploadframe" name="uploadframe" style="display: none"></iframe>
+    <input type="hidden" id="isEditM" value="" />
+
+    <div class="choose-address-wrap" :class="{animate: chooseOpen}" v-on:click="chooseOpen= false">
+        <div class="choose-address-content" v-on:click.stop="">
+            <a class="choose-address-close" v-on:click="chooseOpen= false"></a>
+            <div class="choose-address-hd">所在地区</div>
+            <div class="choose-address-bd">
+                <div class="address-fix border-line">
+                    <ul class="address-select-ul clearfix">
+                        <li><a href="javascript:void(0)" v-bind:class="{selected: selectedIndex == 0}" v-on:click="addressClick(0)">{{selectProvince}}</a></li>
+                        <li><a href="javascript:void(0)" v-bind:class="{selected: selectedIndex == 1}" v-on:click="addressClick(1)">{{selectCity}}</a></li>
+                        <li><a href="javascript:void(0)" v-bind:class="{selected: selectedIndex == 2}" v-on:click="addressClick(2)">{{selectDistrict}}</a></li>
+                        <li><a href="javascript:void(0)" v-bind:class="{selected: selectedIndex == 3}" v-on:click="addressClick(3)">{{selectStreet}}</a></li>
+                    </ul>
+                </div>
+                <div class="address-container" v-bind:style="{'-webkit-transform':'translateX(' + transformX +')'}" style="-webkit-transition: transform .3s;">
+                    <ul class="address-ul">
+                        <li v-for="province in provinces" v-bind:class="{selected: selectProvinceCode == province.AreaCode}" v-on:click="provinceChange(province.AreaCode,province.Name)">{{province.Name}}</li>
+                    </ul>
+                    <ul class="address-ul">
+                        <li v-for="city in cityLists" v-bind:class="{selected: selectCityCode == city.AreaCode}" v-on:click="cityChange(city.AreaCode,city.Name)">{{city.Name}}</li>
+                    </ul>
+                    <ul class="address-ul">
+                        <li v-for="list in districtList" v-bind:class="{selected: selectDistrictCode == list.AreaCode}" v-on:click="districtChange(list.AreaCode,list.Name)">{{list.Name}}</li>
+                    </ul>
+                    <ul class="address-ul">
+                        <li v-for="list in streetList" v-bind:class="{selected: selectStreetCode == list.AreaCode}" v-on:click="selectedStreet(list.AreaCode,list.Name)">{{list.Name}}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section ClientScript
+{
+    <script src="/Scripts/md5.js" type="text/javascript"></script>
+    <script src="../../Content/js/icheck.min.js"></script>
+    <script src="../../dist/lib/AreaFirst.js" type="text/javascript"></script>
+    <script src="../../dist/lib/AreaSecond.js" type="text/javascript"></script>
+    <script src="../../dist/lib/AreaThree.js" type="text/javascript"></script>
+    <script src="../../dist/lib/Area.js" type="text/javascript"></script>
+
+    <script src="../../dist/lib/vue.min.js"></script>
+    <script src="../../dist/lib/vue-mobileKit.js"></script>
+
+    <script>
+        $(function () {
+            saveContextDTOByUrl();
+            if (!isWeiXin() && sessionStorage.source == "share") {
+                $("#h1PageName").show();
+            } else {
+                $("#h1PageName").hide();
+            }
+            $('input').icheck();
+            var limitNum = 140;
+            var pattern = limitNum + '字';
+            $('.word-count').html(pattern);
+            $('#txtContent').on('keydown keyup keypress submit focus blur copy cut paste change input', function (event) {
+
+                var value = $.trim($(this).val());
+                var remain = value.length;
+
+                if (remain > limitNum) {
+                    $(this).val(value.substring(0, limitNum));
+                    pattern = '0字';
+
+                } else {
+                    var result = limitNum - remain;
+                    pattern = result + '字';
+                }
+
+                $('.word-count').html(pattern);
+            });
+
+        });
+        var tempType = "";
+        //是否是是售后：0不是 1是。
+        var _isAfterSale = 0;
+
+        function JsVilaDataNull(obj) {
+            if (obj != undefined && obj != "" && obj != "null" && obj != null && obj != "undefined" && obj) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        $(function () {
+
+            if (!isWeiXin() && sessionStorage.source == "share") {
+                $(".mobile-header").show();
+            } else {
+                $(".mobile-header").hide();
+            }
+
+            $("#RefundMoneyGoods").hide();
+            $("#elseContent").hide();
+            $("#elseContentGoods").hide();
+            $("#ExpElseContent").hide();
+
+            tempType = getQueryString("type");
+            _isAfterSale = getQueryString("isAfterSale");
+            _isAfterSale = parseInt(_isAfterSale);
+            //目前同tempType == "3".
+            if (_isAfterSale == 1) {
+                $("#RefundMoneyGoods").hide();
+                $("#RefundMoney").show();
+                $("#RefundContent").show();
+                $("#optionsType").show();
+                $("#radioType2").show();
+                $("#RefundMoneyPic").removeAttr("disabled");
+                $("#uploadpicli").show();
+            } else if (tempType == "1") {
+                $("#RefundMoneyGoods").hide();
+                $("#RefundMoney").hide();
+                $("#RefundContent").show();
+                $("#optionsType").hide();
+                $("#radioType2").hide();
+                $("#uploadpicli").hide();
+
+            } else if (tempType == "2") {
+                $("#RefundMoneyGoods").hide();
+                $("#RefundMoney").show();
+                $("#RefundContent").show();
+                $("#optionsType").show();
+                $("#radioType2").hide();
+                $("#RefundMoneyPic").attr("disabled", "");
+                $("#uploadpicli").show();
+            } else if (tempType == "3") {
+                $("#RefundMoneyGoods").hide();
+                $("#RefundMoney").show();
+                $("#RefundContent").show();
+                $("#optionsType").show();
+                $("#radioType2").show();
+                $("#RefundMoneyPic").removeAttr("disabled");
+                $("#uploadpicli").show();
+            } else if (tempType == "4") {
+                $("#RefundMoneyGoods").hide();
+                $("#RefundMoney").hide();
+                $("#RefundContent").hide();
+                $("#optionsType").hide();
+                $("#radioType2").hide();
+                $("#RefundMoneyPic").removeAttr("disabled");
+                $("#RefundExpOrder").show();
+            }
+            //上传完成
+            document.getElementById('uploadframe').onload = function () {
+                //if (document.readyState == 'complete') {
+                try {
+                    var doc;
+                    if (navigator.userAgent.indexOf("MSIE") > 0) {
+                        doc = document.getElementById('uploadframe').contentWindow.document;
+                    } else {
+                        doc = (document.getElementById('uploadframe').contentDocument || window.frames["uploadframe"].document);
+                    }
+                    if (doc && doc.body) {
+                        if (doc.body.innerHTML.split('^')[0] == "0") {
+                            toast(doc.body.innerHTML.split('^')[1]);
+                        } else if (doc.body.innerHTML) {
+                            preview(doc.body.innerHTML);
+                        }
+                    }
+                } catch (err) {
+                }
+                loadingFrame.hide();
+                // }
+            };
+            $("#btnCancel").click(function () {
+                CancelSubmit();
+            });
+            $("#btnOk").click(function () {
+                btnSubmit();
+            });
+        });
+
+        function radioType(value) {
+            if (value == '1') {
+                $("#RefundRemark").show();
+                $("#RefundGoodsRemark").hide();
+                $("#liType1").hide();
+                $("#liType1").next().hide();
+                $("#liType1").next().next().hide();
+                $("#liType1").next().next().next().hide();
+                $("#liType1").next().next().next().next().hide();
+                document.title = "退款申请";
+            } else if (value == "2") {
+                $("#RefundGoodsRemark").show();
+                $("#RefundRemark").hide();
+                $("#liType1").show();
+                document.title = "退款/退货申请";
+
+                $("#liType1").show();
+                $("#liType1").next().show();
+                $("#liType1").next().next().show();
+                $("#liType1").next().next().next().show();
+                $("#liType1").next().next().next().next().show();
+            }
+            $("#hidoptionsType").val(value);
+        }
+        
+        function pickwareType(radValue,obj){
+                if(radValue == "1"){
+                    $(obj).parent().parent().parent().next().show();
+                    $(obj).parent().parent().parent().next().next().show();
+                    $(obj).parent().parent().parent().next().next().next().show();
+                    $(obj).parent().parent().parent().next().next().next().next().show();
+                }
+                else{
+                    $(obj).parent().parent().parent().next().hide();
+                    $(obj).parent().parent().parent().next().next().hide();
+                    $(obj).parent().parent().parent().next().next().next().hide();
+                    $(obj).parent().parent().parent().next().next().next().next().hide();
+                }
+                $("#hidpickwareType").val(radValue);
+        }
+
+        function btnSubmit() {
+//            if (!isLogin()) {
+//                //toast("请先登录再保存退款/退货信息！");
+//                return;
+//            }
+
+            var type = false;
+
+            if ($("#hidoptionsType").val() == "2") {
+                    type = true;
+            }
+
+            if($("#hidpickwareType").val() == "2") {
+                type = false;
+            }
+
+
+
+            var refundType = $("#hidoptionsType").val();
+
+
+//            if (refundType != "10") {
+//                toast("抱歉该商品现在不能退货，支持换货或维修，请联系客服处理~");
+//                return false;
+//            }
+
+            if (type && (!defaultVue.selectProvinceCode || !defaultVue.selectCityCode || !defaultVue.selectDistrictCode)) {
+                toast("请选择取件地址~");
+                return false;
+            }
+            if (type && !$("#pickwareAddress").val()) {
+                toast("请输入取件地址~");
+                return false;
+            }
+            if (type && !$("#customerContactName").val()) {
+                toast("请输入联系人~");
+                return false;
+            }
+            if (type && !$("#customerTel").val()) {
+                toast("请输入联系电话~");
+                return false;
+            }
+
+            $("#confirm").html("正在提交...");
+            $("#confirm").attr("disabled", "");
+
+            var _TempMoney = "";
+            var _TempDec = "";
+            var reg = /^\s*$/;
+            var _content = $.trim($("#txtContent").val());
+            if (_content == "") {
+                toast("请填写退款/退货原因！");
+                $("#confirm").html("确定");
+                $("#confirm").removeAttr("disabled");
+                return false;
+            }
+            if (reg.test(_content)) {
+                toast("请填写内容！");
+                $("#confirm").html("确定");
+                $("#confirm").removeAttr("disabled");
+                return false;
+            }
+            _TempDec = _content;
+
+            var _money = $("#RefundMoneyPic").val();
+            if (reg.test(_money) || (eval(_money) == 0 && eval(getQueryString('pri')) > 0) || eval(_money) < 0) {
+
+                toast("请填写退款金额！");
+                $("#confirm").html("确定");
+                $("#confirm").removeAttr("disabled");
+                return false;
+            }
+            //付款金额（含积分 和 易捷币）
+            var payMoney = (parseFloat(getQueryString('pri')) + parseFloat(getQueryString('spendScoreMoney')) + parseFloat(getQueryString('spendYJBMoney'))).toFixed(2);
+            if (eval(_money) > payMoney) {
+                toast("退款金额不能超过订单金额！");
+                $("#confirm").html("确定");
+                $("#confirm").removeAttr("disabled");
+                return false;
+            }
+            _TempMoney = _money;
+            var _remark = "";
+            var _refund = $("#hidoptionsType").val();
+            if (_refund == "1") {
+                _remark = $("#RefundRemark").val();
+                if (_remark == "0") {
+                    toast("请选择退款/退货原因！");
+                    $("#confirm").html("确定");
+                    $("#confirm").removeAttr("disabled");
+                    return false;
+                }
+
+            } else if (_refund == "2") {
+                _remark = $("#RefundGoodsRemark").val();
+                if (_remark == "0") {
+                    toast("请选择退款/退货原因！");
+                    $("#confirm").html("确定");
+                    $("#confirm").removeAttr("disabled");
+                    return false;
+                }
+            }
+            //           if (tempType == "3" && document.getElementById('preview').childElementCount == 1) {
+            //                toast("请上传凭证！");
+            //                $("#confirm").html("确定");
+            //                $("#confirm").removeAttr("disabled");
+            //                return false;
+            //            }
+            if (tempType == "4") {
+
+                var _remark = $("#RefundExpCo").val();
+                if (_remark == "其他") {
+                    var tempContent = $("#txtExpElseContent").val();
+                    if (reg.test(tempContent)) {
+                        toast("请填写快递公司名称！");
+                        $("#confirm").html("确定");
+                        $("#confirm").removeAttr("disabled");
+                        return false;
+                    }
+                }
+
+                var _content = $("#RefundExpNo").val();
+                if (reg.test(_content)) {
+                    toast("请填写快递单号！");
+                    $("#confirm").html("确定");
+                    $("#confirm").removeAttr("disabled");
+                    return false;
+                }
+            }
+
+
+            var refundImgs = "";
+            var rImgs = $('#preview >li input');
+            for (var i = 0; i < rImgs.length; i++) {
+                if (rImgs[i].value != "") {
+                    refundImgs += rImgs[i].value + ",";
+                }
+            }
+            refundImgs = refundImgs.substring(0, refundImgs.length - 1);
+
+
+            var a = tempType;
+            if (_isAfterSale == 1) {
+                var tvv = $("#hidoptionsType").val();
+                if (tvv == 1) {
+                    a = 2;
+                } else if (tvv == 2) {
+                    a = 3;
+                }
+            }
+
+            //提交url.售后再处理先提交到后台生成退款订单
+            var purl = '/Mobile/SaveJdeclpRefundOrderAfterSales/';//_isAfterSale == 1 ? '/Mobile/SaveJdeclpRefundOrderAfterSales' : '/Mobile/SaveRefundOrder/';
+
+            getDataAjax2({
+                url: purl,
+                type: 'post',
+                data: {
+                    type: a,
+                    //RefundExpCo: $("#RefundExpCo").val() == "其他" ? $("#txtExpElseContent").val() : $("#RefundExpCo").val(),
+                    //RefundExpOrderNo: $("#RefundExpNo").val(),
+                    appId: $("#hidAppId").val(),
+                    state: $("#hidState").val(),
+                    orderId: $("#hidOrderId").val(),
+                    money: _TempMoney,
+                    dec: _TempDec,
+                    refundReason: _remark,
+                    userId: getUserId(),
+                    pay: $("#hidPay").val(),
+                    refundType: $("#hidoptionsType").val(),
+                    pic: refundImgs,
+                    orderItemId: getQueryString("orderItemId"),
+                    address: {
+                        customerContactName: $("#customerContactName").val(),
+                        customerTel: $("#customerTel").val(),
+                        pickwareProvince: defaultVue.selectProvinceCode,
+                        pickwareCity: defaultVue.selectCityCode,
+                        pickwareCounty: defaultVue.selectDistrictCode,
+                        pickwareVillage: defaultVue.selectStreetCode,
+                        pickwareAddress: $("#pickwareAddress").val(),
+                        proviceCityStr: defaultVue.addressLabel
+                    },
+                    pickwareType: $("#hidpickwareType").val(),   //取件类型：1、上门取件；2、客户发货
+                },
+                callback: function (data) {
+                    $("#ajaxLoadBlind").remove();
+                    if (data.ResultCode == 0) {
+                        toast("操作成功！");
+                        window.location.href = urlAppendCommonParams("/Mobile/MyOrderDetail?orderId=" + $("#hidOrderId").val() + "&shopId=" + $("#hidAppId").val());
+                        // location.reload();
+                    } else {
+                        toast(data.Message);
+                    }
+                },
+                beforeSend: function () {
+                    ajaxLoading('22', '');
+                },
+                error: function () {
+                    $("#ajaxLoadBlind").remove();
+                }
+            })
+            $("#confirm").html("确定");
+            $("#confirm").removeAttr("disabled");
+        }
+
+        //上传图片
+        function uploadfun() {
+            var _file = document.getElementById('add').value;
+            if (_file) {
+                var fileExt = _file.substr(_file.lastIndexOf(".")).toLowerCase();
+                if (fileExt == '.jpg' || fileExt == '.jpeg' || fileExt == '.png' || fileExt == '.gif') {
+                    loadingFrame.show();
+                    setTimeout("loadingFrame.hide()", 30000);
+                    //提交数据
+                    document.getElementById('picForm').submit();
+                } else {
+                    toast("只能上传 jpg、jpeg、png、gif 类型的文件");
+                    $("#add").val("");
+                }
+            }
+        }
+
+        //document.getElementById('picForm').action = "http://" + window.location.host + "/Handler/ImgHandler.ashx";
+
+        function deluploadpic(delspan) {
+
+            $(delspan).parent().remove();
+
+            if ($("#preview").childElementCount == 6) {
+                $("#addPicli").hide();
+            } else {
+                $("#addPicli").show();
+            }
+        }
+
+        //上传成功后显示预览函数
+        function preview(source) {
+            try {
+                if (source) {
+                    var data = $.parseJSON(source); //{ url = fileUrl, name = fileName }
+
+                    if (data.Url) {
+                        var pic = document.createElement("li");
+
+                        var url = data.Url;
+                        pic.innerHTML = "<img src='" + url + "' /><span class='icon-close' onclick='deluploadpic(this);'></span><input type='hidden' value='" + url + "'/>";
+                        var box_view = document.getElementById('preview');
+                        box_view.insertBefore(pic, document.getElementById('addPicli'));
+                        //清除上传控件设置的文件
+                        if (box_view.childElementCount == 6) {
+                            $("#addPicli").hide();
+                        } else {
+                            $("#addPicli").show();
+                        }
+                        $("#add").val("");
+                        $("#isEditM").val("1");
+
+                    }
+                }
+            } catch (err) {
+            }
+        }
+
+        var loadingFrame = {
+            //显示信息框：loading.show();
+            //隐藏信息框：loading.hide();
+            show: function (msg) {
+                if (document.getElementById('loading') == null) {
+                    var _body = $('.main')[0],
+                        _dom = document.createElement('div'),
+                        h = document.body.scrollHeight;
+                    _dom.innerHTML = "<span class='msg' style='top:" + (h - 200) + "px'>正在上传，请稍候</span>";
+                    _dom.id = "loading";
+                    _dom.className = "loading";
+                    _dom.style.height = (h + 30) + "px";
+                    _body.appendChild(_dom);
+                } else {
+                    document.getElementById('loading').style.display = "block";
+                }
+            },
+            hide: function () {
+                document.getElementById('loading').style.display = "none";
+            }
+        };
+
+        function uploadPic(source) {
+
+            try {
+                if (source) {
+                    var data = $.parseJSON(source); //{ url = fileUrl, name = fileName }
+
+                    if (data.url) {
+                        var pic = document.createElement("li");
+
+                        var url = data.url + "\\" + data.name;
+
+                        pic.innerHTML = "<img src='" + url + "' /><span class='icon-close' onclick='deluploadpic(this);'></span><input type='hidden' value='" + url + "'/>";
+                        var box_view = document.getElementById('preview');
+                        box_view.insertBefore(pic, document.getElementById('addPicli'));
+                        //清除上传控件设置的文件
+                        if (box_view.childElementCount == 6) {
+                            $("#addPicli").hide();
+                        } else {
+                            $("#addPicli").show();
+                        }
+                        $("#add").val("");
+                        $("#isEditM").val("1");
+
+                    }
+                }
+            } catch (err) {
+
+            }
+        }
+
+        function PreClickOnPic(id) {
+
+            if (window.uploadPicand) {
+
+                window.uploadPicand.addPicand();
+
+
+            }
+            //            if (window.tw && window.tw.clickOnPic) {
+            //                window.tw.clickOnPic("只能上传 jpg、jpeg、png、gif 类型的文件");
+            //            }
+        }
+
+        function CancelSubmit() {
+            window.location.href = urlAppendCommonParams("/Mobile/MyOrderDetail?orderId=" + $("#hidOrderId").val() + "&shopId=" + $("#hidAppId").val());
+        }
+
+    </script>
+
+    <script>
+    var defaultVue = new Vue({
+        el: '#app',
+        mounted: function () {
+            this.$nextTick(function () {
+                this.provinces = getAllProvinces();
+                let province = getAllProvinces().filter(_=>_.Name == '@ViewBag.OrderInfo.Province')[0];
+                if(province){
+                    this.selectProvince = province.Name;
+                    this.selectProvinceCode = province.AreaCode;
+                    this.cityLists = getAddressInfo(this.selectProvinceCode, 2);
+                    let city = this.cityLists.filter(_=>_.Name == '@ViewBag.OrderInfo.City')[0];
+                    if(city){
+                        this.selectCity = city.Name;
+                        this.selectCityCode = city.AreaCode;
+                        this.districtList = getAddressInfo(this.selectCityCode, 3);
+                        let district = this.districtList.filter(_=>_.Name == '@ViewBag.OrderInfo.District')[0];
+                        if(district){
+                            hasData = true;
+                            this.selectDistrict = district.Name;
+                            this.selectDistrictCode = district.AreaCode;
+                            this.streetList = getAddressInfo(this.selectDistric, 4);
+                            let street = this.streetList.filter(_=>_.Name == '@ViewBag.OrderInfo.Street')[0];
+                            if(street){
+                                this.selectStreet = street.Name;
+                                this.selectStreetCode = street.AreaCode;
+                            }
+                        }
+                    }
+                    this.addressLabel = this.selectProvince + this.selectCity + this.selectDistrict + this.selectStreet;
+                }
+            });
+        },
+        data: function () {
+            return {
+                addressInfo: {}, //地址的所有信息（编辑状态需要获取之前的信息）
+                chooseOpen: false,
+                provinces: [], //省
+                cityLists: [], //市
+                districtList: [], //区
+                streetList: [], //街道
+                selectProvince: '请选择', //选择的省
+                selectProvinceCode: null,
+                selectCity: '', //选择的市
+                selectCityCode: null,
+                selectDistrict: '', //选择的区
+                selectDistrictCode: null,
+                selectStreet: '', //选择的街道
+                selectStreetCode: null,
+                selectedIndex: 0,
+                userName: '', //收货人姓名
+                phone: '', //手机号码
+                zipCode: '', //邮政编码
+                addressLabel: '', //地址
+                addressWhere: '', //详细地址
+                transformX: '0px',
+                protype: '',
+                isedit: true
+            }
+        },
+        methods: {
+            initAddressLabel: function () {
+                this.addressLabel = this.selectProvince + this.selectCity + this.selectDistrict + this.selectStreet;
+            },
+            /**
+            * 点击已经选择的地址页签title
+            */
+            addressClick: function (index) {
+                this.transformX = (index * -25 + '%');
+                this.selectedIndex = index;
+            },
+            /**
+            * 切换了省份
+            */
+            provinceChange: function (code, name) {
+                this.cityLists = getAddressInfo(code, 2);
+                this.transformX = '-25%';
+                this.selectedIndex = 1;
+                this.selectCity = '请选择';
+                this.selectCityCode = null;
+                this.selectDistrict = '';
+                this.selectDistrictCode = null;
+                this.selectStreet = '';
+                this.selectStreetCode = null;
+                this.selectProvince = name;
+                this.selectProvinceCode = code;
+            },
+            /**
+            * 切换了市，获取所在的区
+            */
+            cityChange: function (code, name) {
+                this.selectCity = name;
+                this.selectCityCode = code;
+                this.selectDistrict = '';
+                this.selectDistrictCode = null;
+                this.selectStreet = '';
+                this.selectStreetCode = null;
+                this.districtList = getAddressInfo(code, 3);
+                this.transformX = '-50%';
+            },
+            /**
+            * 切换了区,获取所在的街道
+            */
+            districtChange: function (code, name) {
+                this.streetList = getAddressInfo(code, 4);
+                this.selectedIndex = 3;
+                this.selectDistrict = name;
+                this.selectDistrictCode = code;
+                this.selectStreet = '';
+                this.selectStreetCode = null;
+                if (this.streetList.length) {
+                    this.transformX = '-75%';
+                } else {
+                    this.chooseOpen = false;
+                    this.initAddressLabel();
+                }
+            },
+            /**
+            * 点击街道列表元素
+            */
+            selectedStreet: function (code, name) {
+                this.streetChange(code, name);
+                this.chooseOpen = false;
+            },
+            /**
+            * 切换了街道
+            */
+            streetChange: function (code, name) {
+                this.selectStreet = name;
+                this.selectStreetCode = code;
+                this.selectedIndex = 3;
+                this.initAddressLabel();
+            },
+            chooseAddress: function (provinceCode, CityCode, DistrictCode) {
+                this.$loading.open();
+                if (this.provinces.length) {
+                    if (this.addressLabel) {//已选择
+                        this.cityLists = getAddressInfo(provinceCode, 2);
+                        this.districtList = getAddressInfo(CityCode, 3);
+                        this.streetList = getAddressInfo(DistrictCode, 4);
+                        this.$loading.close();
+                        this.chooseOpen = true;
+                    } else { //未选择
+                        this.$loading.close();
+                        this.selectProvince = '请选择';
+                        this.selectedIndex = 0;
+                        this.transformX = '0%';
+                        this.selectCity = this.selectDistrict = this.selectStreet = '';
+                        this.selectProvinceCode = this.selectCityCode = this.selectDistrictCode = this.selectStreetCode = null;
+                        this.cityLists = this.districtList = this.streetList = [];
+                        var _this = this;
+                        setTimeout(function () {
+                            _this.chooseOpen = true;
+                        }, 100);
+                    }
+                }
+            }
+        }
+    });
+    </script>
+}

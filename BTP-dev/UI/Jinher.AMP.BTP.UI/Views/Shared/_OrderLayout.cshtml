@@ -1,0 +1,319 @@
+﻿<!doctype html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta content="width=device-width,minimum-scale=1.0,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"
+        name="viewport">
+    <link rel="stylesheet" href="/Content/Mobile/css.css" />
+    @RenderSection("Css", required: false)
+    <style type="text/css">
+        .fix-footer a
+        {
+            text-decoration: none;
+        }
+        .fix-footer li
+        {
+            list-style: none;
+        }
+        .topval
+        {
+            height: 45px;
+            line-height: 45px;
+            background-color: #fafbfc;
+            text-indent: 20px;
+            color: #717070;
+        }
+        .fix-footer
+        {
+            width: 100%;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            font-size: 0.9em;
+            background: #eaeaea;
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            border-top: 1px solid #e4e4e4;
+        }
+        .fix-footer ul
+        {
+            width: 100%;
+            height: 100%;
+        }
+        .fix-footer ul li
+        {
+            float: left;
+            width: 22%;
+            position: relative;
+        }
+        .fix-footer ul li span
+        {
+            display: block;
+            margin-top: 15px;
+        }
+        .fix-footer ul li a
+        {
+            display: block;
+            color: #8a8a8a;
+        }
+        .footer-common
+        {
+            display: block;
+            width: 100%;
+            height: 24px;
+            position: absolute;
+            top: 5px;
+        }
+        .footer-itemIco-promotion
+        {
+            background: url(/Content/Mobile/footmenu/promotion.png) center no-repeat;
+            background-size: contain;
+        }
+        .footer-itemIco-promotion-on
+        {
+            background: url(/Content/Mobile/footmenu/promotion_.png) center no-repeat;
+            background-size: contain;
+        }
+        .footer-itemIco-guang
+        {
+            background: url(/Content/Mobile/footmenu/stroll.png) center no-repeat;
+            background-size: contain;
+        }
+        .footer-itemIco-guang-on
+        {
+            background: url(/Content/Mobile/footmenu/stroll_pressed.png) center no-repeat;
+            background-size: contain;
+        }
+        
+        .footer-itemIco-search
+        {
+            height: 39px;
+            background: url(/Content/Mobile/footmenu/search1.png) center no-repeat;
+            background-size: contain;
+        }
+        .footer-itemIco-search-on
+        {
+            height: 39px;
+            background: url(/Content/Mobile/footmenu/search1_.png) center no-repeat;
+            background-size: contain;
+        }
+        
+        .footer-itemIco-shop
+        {
+            background: url(/Content/Mobile/footmenu/shoppoingcart_normal.png) center no-repeat;
+            background-size: contain;
+        }
+        .footer-itemIco-shop-on
+        {
+            background: url(/Content/Mobile/footmenu/shoppoingcart_pressed.png) center no-repeat;
+            background-size: contain;
+        }
+        
+        .footer-itemIco-order
+        {
+            background: url(/Content/Mobile/footmenu/indent.png) center no-repeat;
+            background-size: contain;
+        }
+        .footer-itemIco-order-on
+        {
+            background: url(/Content/Mobile/footmenu/indent_.png) center no-repeat;
+            background-size: contain;
+        }
+        .fix-footer ul li.on a
+        {
+            color: #b41617;
+        }
+        .fix-footer ul li.on i
+        {
+            background: url(/Content/Mobile/homeIconed.png) center no-repeat;
+        }
+        #box
+        {
+            margin-bottom: 50px !important;
+        }
+    </style>
+    @RenderSection("CssStyles", required: false)
+    <script src="/Content/Mobile/Common.js" type="text/javascript"></script>
+    <script src="/Content/Mobile/zepto.min.js"></script>
+    <script src="/Content/Mobile/allEvent.js"></script> 
+    <script src="../../Scripts/base64.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var baurl = window.location.href;
+        $(function () {
+            var psource = sessionStorage.source == "share" ? "&source=share" : "";
+            if (sessionStorage.appId && sessionStorage.appId != "undefined" && sessionStorage.appId != "null") {
+            }
+            else {
+                sessionStorage.appId = getQueryString('appId');
+            }
+            if (!sessionStorage.appId || sessionStorage.appId == "null" || sessionStorage.appId == "undefined") {
+                sessionStorage.appId = sessionStorage.appIdCong;
+            }
+            if (!sessionStorage.sessionId || sessionStorage.sessionId == "null" || sessionStorage.sessionId == "undefined") {
+                sessionStorage.sessionId = getQueryString('sessionId');
+
+            }
+            if (getQueryString('type') == "tuwen") {
+                sessionStorage.AppType = "tuwen";
+                $(".footdi").show();
+                if (sessionStorage.appId.toUpperCase() == "bb545ae5-d3ac-47ca-96a5-a8bf002bfd08".toUpperCase()) {
+                    $("#promotion").hide();
+                    $("#guang span").text("报刊订阅");
+                    $("#footul li").css("width", "27%");
+                    $("#search").parent().css("width", "11%");
+                }
+                else {
+
+                }
+                if (sessionStorage.appName == "" || sessionStorage.appName == undefined) {
+                    $.ajax({
+                        type: "POST",
+                        async: false,
+                        url: "/mobile/GetAppName",
+                        data: { appId: sessionStorage.appId },
+                        dataType: "json",
+                        success: function (data) {
+                            if (data != null && data != undefined) {
+                                sessionStorage.appName = data;
+                            }
+                        }
+                    });
+                }
+                if (sessionStorage.appName != undefined && sessionStorage.appName != "") {
+                    document.title = sessionStorage.appName;
+                }
+                $.ajax({
+                    type: "POST",
+                    async: true,
+                    url: "/Mobile/GetAppMenuChangeInfo",
+                    data: { appId: sessionStorage.appId },
+                    dataType: "json",
+                    success: function (result) {
+                        if (result != null && result != undefined) {
+                            var data = result.GetAppMenuChangeInfoResult;
+                            if (data != null && data != undefined && data.length > 0) {
+                                for (var i = 0; i < data.length; i++) {
+                                    if (data[i].MenuCode == "promotions") {
+                                        if (!data[i].IsDisPlay) {
+                                            $("#promotion").hide();
+                                            $("#footul li").css("width", "27%");
+                                            $("#search").parent().css("width", "11%");
+                                        }
+                                        else {
+                                            if (data[i].IsChanged) {
+                                                $("#promotion span").text(data[i].CurrentName);
+                                            }
+                                        }
+                                    }
+                                    else if (data[i].MenuCode == "stroll" && data[i].IsChanged) {
+                                        $("#guang span").text(data[i].CurrentName);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+            }
+            //
+            $("#dwangpwd").bind("click", function () {
+                window.location.href = "@ViewBag.UrlPrefix" + "portal.iuoooo.com/Phone/WebRetrievePwd.html?url=" + baurl;
+            })
+            //
+            //		$('body').css('width', $(window).width());
+            //alert(sessionStorage.appId);
+
+            $("#guang").attr("href", "/SetMobile/Index?setCategoryId=C9F33B9D-D90A-4634-B882-42CB8BC8B131&pageIndex=1&pageSize=10&fieldSort=0&order=1" + psource);
+            //兼容在图文应用下 需要调两次 本地登录方法才能获取 到userid
+
+            if (sessionStorage.source == "share") {
+                $("#myor").attr("href", "/SetMobile/MyOrderList");
+                $("#shopcart").attr("href", "/SetMobile/ShoppongCartList");
+            }
+            else {
+                if ($.os.ios) {
+                    $("#myor").attr("href", "/SetMobile/MyOrderList");
+                    $("#shopcart").attr("href", "/SetMobile/ShoppongCartList");
+                }
+                else {
+                    $("#myor").bind("click", function () {
+                        try {
+                            sessionStorage.userId = window.userLogin.getUserId();
+                            if (sessionStorage.userId) {
+                                window.location.href = "/SetMobile/MyOrderList";
+                            }
+                        }
+                        catch (e) {
+                            window.location.href = "/SetMobile/MyOrderList";
+                        }
+                    });
+                    $("#shopcart").bind("click", function () {
+                        try {
+                            sessionStorage.userId = window.userLogin.getUserId();
+                            if (sessionStorage.userId) {
+                                window.location.href = "/SetMobile/ShoppongCartList";
+                            }
+                        }
+                        catch (e) {
+                            window.location.href = "/SetMobile/ShoppongCartList";
+                        }
+                    });
+                }
+            }
+
+
+            $("#search").attr("href", "/SetMobile/CommodityList?appId=" + sessionStorage.appId + "&type=tuwen&opa=search" + psource);
+            $("#promotion").attr("href", "/Mobile/PromotionList?appId=" + sessionStorage.appId + "&type=tuwen" + psource);
+
+            //		showLazyLoadImg();
+
+        });
+
+        function footmenu(obj) {
+            //            $("#footul li").each(function (i) {
+            //                $(this).removeClass("on");
+            //            });
+            var type = obj.attr("id");
+            switch (type) {
+                case "promotion":
+                    obj.find("i").removeClass("footer-itemIco-promotion");
+                    obj.find("i").addClass("footer-itemIco-promotion-on");
+                    break;
+                case "guang":
+                    obj.find("i").removeClass("footer-itemIco-guang");
+                    obj.find("i").addClass("footer-itemIco-guang-on");
+                    break;
+                case "search":
+                    obj.find("i").removeClass("footer-itemIco-search");
+                    obj.find("i").addClass("footer-itemIco-search-on");
+                    break;
+                case "shopcart":
+                    obj.find("i").removeClass("footer-itemIco-shop");
+                    obj.find("i").addClass("footer-itemIco-shop-on");
+                    break;
+                case "myor":
+                    obj.find("i").removeClass("footer-itemIco-order");
+                    obj.find("i").addClass("footer-itemIco-order-on");
+                    break;
+            }
+            //sobj.parent().addClass("on");
+        }
+    </script>
+    @RenderSection("ClientScript", required: false)
+    @RenderSection("Scripts", false)
+</head>
+<body>
+    @RenderBody()
+    <div class="fix-footer footdi" style="z-index: 999; display: none;">
+        <ul id="footul">
+            <!--<li style="width: 11%;"><a href="###" id="search"><span></span><i class="footer-itemIco-search footer-common">
+            </i></a></li>
+            <li><a href="###" id="promotion"><span>促销优惠</span><i class="footer-itemIco-promotion footer-common"></i></a></li>-->
+            <li style="width: 33%"><a href="###" id="guang"><span>首页</span><i class="footer-itemIco-guang footer-common"></i></a></li>
+            <li style="width: 33%"><a href="###" id="shopcart"><span>购物车</span><i class="footer-itemIco-shop footer-common"></i></a></li>
+            <li style="width: 33%"><a href="###" id="myor"><span>我</span><i class="footer-itemIco-order footer-common"></i></a></li>
+        </ul>
+    </div>
+</body>
+</html>

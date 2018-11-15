@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:ns2="http://schemas.xmlsoap.org/soap/http" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://impl.service.ejinshui.com/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns1="http://service.ejinshui.com/" name="EInvoiceServiceService" targetNamespace="http://impl.service.ejinshui.com/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:import namespace="http://service.ejinshui.com/" location="http://218.249.166.23:10001/eisp/ws/eInvoService?wsdl=IEInvoiceService.wsdl" />
+  <wsdl:types />
+  <wsdl:binding name="EInvoiceServiceServiceSoapBinding" type="ns1:IEInvoiceService">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="downloadEInvoiceInfo">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="downloadEInvoiceInfo">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="downloadEInvoiceInfoResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="submitEInvoiceInfo">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="submitEInvoiceInfo">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="submitEInvoiceInfoResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="EInvoiceServiceService">
+    <wsdl:port name="EInvoiceServicePort" binding="tns:EInvoiceServiceServiceSoapBinding">
+      <soap:address location="http://218.249.166.23:10001/eisp/ws/eInvoService" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

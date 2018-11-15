@@ -1,0 +1,98 @@
+﻿@{Layout = null;}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0,user-scalable=no" />
+    <title></title>
+    <style type="text/css">
+        html,body{background:transparent}h2{font-size:22px;text-align:center;padding:5px 5px 0 5px;margin:5px}.marginc{margin:20px 0px 20px 0px}#ParentDiv{position:absolute;text-align:center;display:none;top:25%;left:2%;width:350px;height:250px;background-color:#EBEBEB;z-index:1002;overflow:auto}img{border:none}.top{font-size:14px;text-align:center;padding:5px 5px 10px 5px;zoom:1;margin:10px 0px 10px 0px}.content{font-size:16px;line-height:1.5;text-align:justify;-webkit-text-align-last:justify}.down{text-align:center}.down img{width:213px;height:40px}.colorc{color:#A4A4A4;font-weight:bold}.left{float:left}.right{float:right}.black_overlay{display:none;position:absolute;top:0%;left:0%;width:100%;height:155%;background-color:black;z-index:1001;-moz-opacity:0.8;opacity:.80;filter:alpha(opacity=80)}.white_content{display:none;position:absolute;top:0%;left:0%;width:310px;height:230px;background-color:#EBEBEB;z-index:1002;overflow:auto}
+        .attach{text-align:justify;-webkit-text-align-last:justify;clear:both;padding:5px 0;}.attachFile{padding:0 auto; text-align:center;}.attachName{font-family:微软雅黑;font-size:16px;text-align:center;margin:10px 0;}
+        .audio{font-weight:bold;}.audioLink{color:#0099ff;margin:0 5px;}.audioLinkDiv{clear:none;padding:5px;}.audioFlag{width:40px;height:20px;color:white;background-color:#0099ff;clear:none;padding:2px 2px 0 2px;valign:middle;text-align:center;float:left;}
+    </style>
+</head>
+<body style="background-color: #F5F5F5;">
+    <div id="PageDiv">
+        <div style="height: 70px; background-color: #F0F0F0; border: 3px solid #F0F0F0;">
+            <div style="float: left; margin-top: 5px;">
+                <img alt="" src="@ViewBag.Icon"  style=" width:55px; height:55px;"/>
+            </div>
+            <div style="float: left; width: 110px; margin-left: 10px;">
+                <p style="float: left; line-height: 20px;">
+                    <span style="font-weight: bold; font-family: 新宋体;">@ViewBag.AppPackageName</span> <span
+                        style="font-size: 12px; float: left;">@ViewBag.CommentCount 人下载</span>
+                </p>
+            </div>
+            <div style="float: left; margin-top: 8px;">
+                <img alt="" src="@ViewBag.QRCodeUrl"" style=" width:55px; height:55px;" />
+            </div>
+            <div style="float: right; margin-top: 25px;">
+                <a href="http://appres.iuoooo.com/app/GetAppDetail?appId=@ViewBag.AppId" target="_blank">
+                    <img alt="下载" src="/Content/images/xiazai.jpg" style="width: 68px; height: 27px;" /></a>
+            </div>
+        </div>
+        <h2 style="margin-top: 10px;">@Html.Raw(ViewBag.Title)</h2>
+        <div class="top">
+            <div class="left colorc">
+                来源:@ViewBag.AppPackageName</div>
+            <span class="colorc">@(ViewBag.ViewCount == null ? 0 : ViewBag.ViewCount)次阅读</span>
+            <div class="right colorc">
+                发布时间：@ViewBag.CreatedDate.ToString("yyyy-MM-dd")
+            </div>
+        </div>
+        <div class="attach">@Html.Raw(ViewBag.Attachments)</div>
+        <div class="content">@Html.Raw(ViewBag.Content)</div>
+    </div>
+    <div id="backgroundcolor" class="black_overlay">
+    </div>
+    <div id="ParentDiv">
+        <div id="UpLoadDiv" class="white_content">
+            <div id="light" style="text-align: right;">
+                <a href="javascript:void(0)" onclick="document.getElementById('ParentDiv').style.display='none';document.getElementById('light').style.display='none';document.getElementById('UpLoadDiv').style.display='none';document.getElementById('backgroundcolor').style.display='none'">
+                    <img src="/ContentApp/images/x.jpg" /></a>
+            </div>
+            <div class="down marginc">
+                <a href="@ViewBag.iPhoneUrl">
+                    <img alt="下载" src="/Content/images/iphoneUpload.jpg" /></a></div>
+            <div class="down marginc">
+                <a href="@ViewBag.AppUrl">
+                    <img alt="下载" src="/Content/images/Ardroidupload.jpg" /></a></div>
+            <div class="down marginc">
+                <a href="@ViewBag.QRCodeUrl">
+                    <img alt="下载" src="/Content/images/Eerweima.jpg" /></a></div>
+        </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript" src="/Scripts/jquery.js"></script>
+<script type="text/javascript">
+    function GetWidth() {
+        var width = 320;
+        if (window.innerWidth) {
+            width = window.innerWidth;
+        }
+        else if (document.body && document.body.clientWidth) {
+            width = document.body.clientWidth;
+        }
+        else if (document.documentElement && document.documentElement.clientWidth) {
+            width = document.documentElement.clientWidth;
+        }
+        return width - 20;
+    }
+
+    var winWidth = GetWidth();
+    // 等比缩放图片
+    function DrawImg(img, boxWidth) {
+        var imgWidth = img.width;
+        var imgHeight = img.height;
+        if (imgWidth > boxWidth) {
+            var imgObj = $(img);
+            //重新设置img的width和height
+            imgObj.css("width", boxWidth);
+            imgObj.css("height", (imgHeight / imgWidth) * boxWidth);
+        }
+    }
+    var images = document.getElementsByTagName('img');
+    for (var i = 0; i < images.length; i++) {
+        images[i].onload = DrawImg(images[i], winWidth);
+    }
+</script>

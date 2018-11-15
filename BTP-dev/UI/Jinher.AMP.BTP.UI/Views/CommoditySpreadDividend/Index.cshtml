@@ -1,0 +1,243 @@
+﻿@{
+    ViewBag.Title = "商品佣金设置";
+    int isDividendAll = ViewBag.IsDividendAll;
+    Jinher.AMP.BTP.Deploy.CustomDTO.AppExtensionDTO appExtension = ViewBag.AppExtensionDTO;
+}
+<head>
+    <link rel="stylesheet" type="text/css" href="/Content/css/common.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.all.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/ui.jqgrid.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.jhtablebox.css" />
+    <script src="/Scripts/CommLib.js" type="text/javascript"></script>
+    <script src="/Scripts/i18n/jquery.ui-zh.js" type="text/javascript"></script>
+    <script src="/Scripts/jquery.ui.base.js" type="text/javascript"></script>
+    <script src="/Scripts/Grid/jquery.grid.base.js" type="text/javascript"></script>
+    <script src="/Scripts/TableBox/jquery.ui.jhtablebox.js" type="text/javascript"></script>
+    <script src="/Scripts/Pager/jquery.ui.jhpager.js" type="text/javascript"></script>
+    <script type="text/javascript" src="/Scripts/TableBox/jquery.ui.jhtablebox.js"></script>
+    <script type="text/javascript" src="/Scripts/jquery.watermark.js"></script>
+
+    <style type="text/css">
+        .disabled
+        {
+            pointer-events: none;
+        }
+        *
+        {
+            font-size: 14px;
+        }
+        .btn120
+        {
+            display: inline-block;
+            width: 120px;
+            height: 28px;
+            line-height: 28px;
+            background: url(/Content/default/images/btn120.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+        }
+    </style>
+    <script type="text/javascript">
+        function Fixed100(callvalue) {
+            if (!callvalue) {
+                return "";
+            }
+            var tmp = (parseFloat(callvalue) * 100).toFixed(2);
+            var result = tmp.replace(/(((?!0*$)\d)*)0*$/g, "$1");
+            result = result.replace(/\.$/, "");
+            return result;
+        }
+    </script>
+</head>
+<div style="padding: 10px 0 0 30px;">
+    <table style="font-size: 14px;">
+        <tr>
+            <td>
+                分享范围：
+            </td>
+            <td>
+                <input type="radio" id="radioAll" name="divedType" value="1" class="disabled" />全部商品
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="height: 10px;">
+            </td>
+        </tr>
+        <tr>
+            <td>
+            </td>
+            <td>
+                <input type="radio" id="radioPatal" name="divedType" value="0" class="disabled" />部分商品
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="box" style="padding: 10px 0 10px 0px;">
+    <div id="shareCommodity" style="margin-right: 50px; margin-top: 15px; margin-left: 22px">
+        <table id="commodityDividendTable">
+        </table>
+        <div id="pager">
+        </div>
+    </div>
+    <div id="shareAll" style="margin-left: 20px;">
+        <table style="font-size: 14px;">
+            <tr>
+                <td>
+                    分享佣金：
+                </td>
+                <td>
+                    商品金额的<input type="text" class="disabled" id="shareAllPercent" style="width: 80px;
+                        text-align: center; border-bottom: 1px solid #ccc;" />%（订单金额不包含运费)
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div style="margin-left: 20px; font-size: 14px; margin-top: 20px; color: Red;">
+        注：分享商品或订单，好友通过分享的链接购买，售后完毕后给分享者发放佣金，佣金以积分发放</div>
+    <div style="width: 100%; margin-top: 26px;">
+        <div style="text-align: center;">
+            <a class="btn120" style="cursor: pointer;" id="btnEdit">编辑</a>
+        </div>
+    </div>
+    <div style="clear: both">
+    </div>
+</div>
+<div id="ScoreSettingDiv" style="display: none;">
+    <div style="margin-bottom: 10px;">
+        <div style="font-size: 14px; line-height: 20px; margin: 2px 12px; margin-top: 20px;
+            margin-bottom: 0">
+            佣金会以积分的形式计入分销商的积分账户，故请先进行积分兑换汇率设置，再设置佣金比例</div>
+        <div class="bbtn" style="text-align: center; margin-top: 20px;">
+            <a href="javascript:;" id="ScoreSetting" class="btn120" style="margin-top: 6px;">确定</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    //加载完成时，若没有设置积分，则弹出提示并跳到积分设置页
+    var setScoreUrl = "/Payment/AddPayment" + window.location.search + "&&callBack=" + encodeURIComponent(window.location.href);
+    function closeScoreSetting() {
+        $("#ScoreSettingDiv").CloseDiv();
+    }
+    $(function () {
+        if ('@appExtension.IsCashForScore'.toLowerCase() == 'false') {
+            $("#ScoreSetting").attr("href", setScoreUrl);
+            $("#ScoreSettingDiv").OpenDiv();
+        } else {
+            //                if ($("#ScoreSetting").attr("display") != "none") {
+            //                    closeScoreSetting();  
+            //                }
+        }
+    });
+</script>
+<script type="text/javascript">
+   var editUrl= "@Url.Action("Edit")" +location.search;
+   var appId=getQueryString('appId');
+
+    //页面变量
+    var _pageSize = 10;
+    var _currentPage = 1;
+    var disabledArr = [];
+  
+    $(function () {        
+        //初始显示
+        if (@isDividendAll==-1) {
+            window.location.href="Edit"+window.location.search;
+        }
+        else if (@isDividendAll==0) {
+            $("#shareCommodity").show();
+            $("#shareAll").hide();
+            $("#radioPatal")[0].checked=true;
+        } else {
+            $("#shareCommodity").hide();
+            $("#shareAll").show();            
+            $("#radioAll")[0].checked=true;
+            $("#shareAllPercent").val(Fixed100('@ViewBag.SpreadPercent'));
+        }
+        //页面表格加载数据
+        initJqueryGrid();
+        $("#commodityDividendTable").setGridHeight(511);
+       // $("#commodityDividendTable").setGridWidth($(window).width() - 300);
+        $("#commodityDividendTable").setGridWidth($(window).width() - 200);
+
+     
+     
+     
+//       $("table.ui-jqgrid-htable").css("width","900px");
+//       $("#commodityDividendTable").css("width","900px");
+     
+        if ($.browser.msie) {
+              $("#load_commodityDividendTable th").css({"height":"22px"});
+              $(".ui-jqgrid .ui-th-div-ie").css({"height":"22px"});
+        } else {
+              $("table.ui-jqgrid-htable").css("width","100%");
+              $("#commodityDividendTable").css("width","100%");
+              $(".ui-jqgrid .ui-jqgrid-hbox").css("padding-right","0");
+        }
+        $("#btnEdit").click(function () {
+            window.location.href = editUrl;
+        });
+    });
+
+    //初始化JqueryGrid
+    function initJqueryGrid() {
+        var data = { "appId": appId, "OnlyShareMoney": true, "PageSize": _pageSize, "PageNumber": 1 };
+
+        $("#commodityDividendTable").jqGrid({
+            url: "@Url.Action("GetGridData")",
+            mtype: "post",
+            datatype: "json",
+            postData: data,
+            colNames: ["商品图片", "商品名称", "商品价格", "分享佣金（%）"],
+            colModel: [          
+            { name: 'Pic', index: 'Pic', width: 200, align: "center", sortable: false, title: false, formatter: FormatterPic },
+            { name: 'Name', index: 'Name', width: 200, align: "center", sortable: false, title: false },
+            { name: 'Price', index: 'Price', width: 200, align: "center", sortable: false, title: false,formatter:FormatterPrice  },
+            { name: 'SpreadPercent', index: 'SpreadPercent', width: 200, align: "center", sortable: false, title: false, formatter: FormatterSharePercent }
+            ],
+            rowNum: _pageSize,
+            pager: "pager",
+            height: "100%",
+            rownumbers: true,
+            autowidth: true,
+            forceFit: true,
+            scroll: false,
+            shrinkToFit: true,
+            jsonReader: { repeatitems: true },          
+            gridComplete: function () { 
+                reRegGridEvents();
+                newSetIframeHeight();
+
+            },
+            onCellSelect: function (rowid, iCol, cellcontent, e) {
+              
+            },
+            beforeSelectRow: function (rowid, e) {
+
+            }
+        });
+         function FormatterPrice(callvalue, opts, rowdata) {
+            if(callvalue>0){
+                return getCurrency()+(parseFloat(callvalue)).toFixed(2);
+            }
+            else{
+                return "0";
+            }
+        }
+
+        function FormatterPic(callvalue, opts, rowdata) {
+            return '<img class="img" src="' + callvalue + '" width="50" height="50" />'
+        }
+
+        function FormatterSharePercent(callvalue, opts, rowdata) {
+            if (callvalue == 0) {
+                callvalue = '';
+            }
+            return "" +Fixed100(callvalue) + "%";
+        }
+        function reRegGridEvents() {
+
+        }
+    }
+</script>

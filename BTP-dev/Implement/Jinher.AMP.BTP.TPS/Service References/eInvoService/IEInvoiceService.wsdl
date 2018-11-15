@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://service.ejinshui.com/" name="IEInvoiceService" targetNamespace="http://service.ejinshui.com/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xs:schema xmlns:tns="http://service.ejinshui.com/" elementFormDefault="unqualified" targetNamespace="http://service.ejinshui.com/" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:element name="downloadEInvoiceInfo" type="tns:downloadEInvoiceInfo" />
+      <xs:element name="downloadEInvoiceInfoResponse" type="tns:downloadEInvoiceInfoResponse" />
+      <xs:element name="submitEInvoiceInfo" type="tns:submitEInvoiceInfo" />
+      <xs:element name="submitEInvoiceInfoResponse" type="tns:submitEInvoiceInfoResponse" />
+      <xs:complexType name="downloadEInvoiceInfo">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="arg0" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="downloadEInvoiceInfoResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="return" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="submitEInvoiceInfo">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="arg0" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="submitEInvoiceInfoResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="return" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="submitEInvoiceInfo">
+    <wsdl:part name="parameters" element="ns1:submitEInvoiceInfo" />
+  </wsdl:message>
+  <wsdl:message name="downloadEInvoiceInfoResponse">
+    <wsdl:part name="parameters" element="ns1:downloadEInvoiceInfoResponse" />
+  </wsdl:message>
+  <wsdl:message name="submitEInvoiceInfoResponse">
+    <wsdl:part name="parameters" element="ns1:submitEInvoiceInfoResponse" />
+  </wsdl:message>
+  <wsdl:message name="downloadEInvoiceInfo">
+    <wsdl:part name="parameters" element="ns1:downloadEInvoiceInfo" />
+  </wsdl:message>
+  <wsdl:portType name="IEInvoiceService">
+    <wsdl:operation name="downloadEInvoiceInfo">
+      <wsdl:input name="downloadEInvoiceInfo" message="ns1:downloadEInvoiceInfo" />
+      <wsdl:output name="downloadEInvoiceInfoResponse" message="ns1:downloadEInvoiceInfoResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="submitEInvoiceInfo">
+      <wsdl:input name="submitEInvoiceInfo" message="ns1:submitEInvoiceInfo" />
+      <wsdl:output name="submitEInvoiceInfoResponse" message="ns1:submitEInvoiceInfoResponse" />
+    </wsdl:operation>
+  </wsdl:portType>
+</wsdl:definitions>

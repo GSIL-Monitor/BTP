@@ -1,0 +1,344 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{EDF3387C-EF7F-4A8A-BA24-AD7F919E7882}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Jinher.AMP.BTP.BE</RootNamespace>
+    <AssemblyName>Jinher.AMP.BTP.BE</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>obj\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>obj\Debug\Jinher.AMP.BTP.BE.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\..\Lib\BizApp\Implement\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Jinher.AMP.BabyStory.BE">
+      <HintPath>..\..\..\..\..\Lib\BizApp\Implement\Jinher.AMP.BabyStory.BE.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.AMP.BTP.Deploy, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\BizApp\Interface\Jinher.AMP.BTP.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.BaseApp.MessageCenter.Deploy">
+      <HintPath>..\..\..\..\..\Lib\JAP\Interface\Jinher.JAP.BaseApp.MessageCenter.Deploy.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.BaseApp.MessageCenter.ISV">
+      <HintPath>..\..\..\..\..\Lib\JAP\Interface\Jinher.JAP.BaseApp.MessageCenter.ISV.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.BF.BE">
+      <HintPath>..\..\..\..\..\Lib\JAP\Implement\Jinher.JAP.BF.BE.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.BF.BE.Deploy">
+      <HintPath>..\..\..\..\..\Lib\JAP\Interface\Jinher.JAP.BF.BE.Deploy.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Jinher.JAP.BF.IBP">
+      <HintPath>..\..\..\..\..\Lib\JAP\Interface\Jinher.JAP.BF.IBP.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.Cache.CacheWrapper">
+      <HintPath>..\..\..\..\..\Lib\JAP\Implement\Jinher.JAP.Cache.CacheWrapper.dll</HintPath>
+    </Reference>
+    <Reference Include="Jinher.JAP.Common">
+      <HintPath>..\..\..\..\..\Lib\JAP\Implement\Jinher.JAP.Common.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Jinher.JAP.Metadata">
+      <HintPath>..\..\..\..\..\Lib\JAP\Implement\Jinher.JAP.Metadata.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Jinher.JAP.PL">
+      <HintPath>..\..\..\..\..\Lib\JAP\Implement\Jinher.JAP.PL.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MongoDB.Bson, Version=1.8.1.20, Culture=neutral, PublicKeyToken=f686731cfb9cc103, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Lib\TP\MongoDB.Bson.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Driver">
+      <HintPath>..\..\..\..\..\Lib\TP\MongoDB.Driver.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BELogic\AddMessage.cs" />
+    <Compile Include="BELogic\AllPayment.cs" />
+    <Compile Include="BELogic\AppExtension.cs" />
+    <Compile Include="BELogic\APPManage.cs" />
+    <Compile Include="BELogic\AppMetaData.cs" />
+    <Compile Include="BELogic\AppOrderPickUp.cs" />
+    <Compile Include="BELogic\AppSelfTakeStation.cs" />
+    <Compile Include="BELogic\AppSet.cs" />
+    <Compile Include="BELogic\AppStsManager.cs" />
+    <Compile Include="BELogic\AppStsOfficeTime.cs" />
+    <Compile Include="BELogic\Attribute.cs" />
+    <Compile Include="BELogic\AuditCommodity.cs" />
+    <Compile Include="BELogic\AuditCommodityStock.cs" />
+    <Compile Include="BELogic\AuditManage.cs" />
+    <Compile Include="BELogic\AuditMode.cs" />
+    <Compile Include="BELogic\BaseCommission.cs" />
+    <Compile Include="BELogic\BehaviorRecord.cs" />
+    <Compile Include="BELogic\Brandwall.cs" />
+    <Compile Include="BELogic\Category.cs" />
+    <Compile Include="BELogic\CategoryAdvertise.cs" />
+    <Compile Include="BELogic\CategoryCommission.cs" />
+    <Compile Include="BELogic\CategoryInnerBrand.cs" />
+    <Compile Include="BELogic\CateringBusinessHours.cs" />
+    <Compile Include="BELogic\CateringComdtyXData.cs" />
+    <Compile Include="BELogic\CateringSetting.cs" />
+    <Compile Include="BELogic\CateringShiftTime.cs" />
+    <Compile Include="BELogic\CfDividend.cs" />
+    <Compile Include="BELogic\CfOrderDividend.cs" />
+    <Compile Include="BELogic\CfOrderDividendDetail.cs" />
+    <Compile Include="BELogic\Collection.cs" />
+    <Compile Include="BELogic\ComAttibute.cs" />
+    <Compile Include="BELogic\Commodity.cs" />
+    <Compile Include="BELogic\CommodityCategory.cs" />
+    <Compile Include="BELogic\CommodityChange.cs" />
+    <Compile Include="BELogic\CommodityCodeSeq.cs" />
+    <Compile Include="BELogic\CommodityCommission.cs" />
+    <Compile Include="BELogic\CommodityDistribution.cs" />
+    <Compile Include="BELogic\CommodityDistributionJounal.cs" />
+    <Compile Include="BELogic\CommodityInnerBrand.cs" />
+    <Compile Include="BELogic\CommodityInnerCategory.cs" />
+    <Compile Include="BELogic\CommodityJournal.cs" />
+    <Compile Include="BELogic\CommodityOrder.cs" />
+    <Compile Include="BELogic\CommodityOrderException.cs" />
+    <Compile Include="BELogic\CommodityOrderRefund.cs" />
+    <Compile Include="BELogic\CommodityOrderService.cs" />
+    <Compile Include="BELogic\CommodityPriceFloat.cs" />
+    <Compile Include="BELogic\CommoditySettleAmount.cs" />
+    <Compile Include="BELogic\CommoditySpecifications.cs" />
+    <Compile Include="BELogic\CommodityStock.cs" />
+    <Compile Include="BELogic\CommodityTaxRate.cs" />
+    <Compile Include="BELogic\CommodityUser.cs" />
+    <Compile Include="BELogic\CouponRefundDetail.cs" />
+    <Compile Include="BELogic\Crowdfunding.cs" />
+    <Compile Include="BELogic\CrowdfundingCount.cs" />
+    <Compile Include="BELogic\CrowdfundingDaily.cs" />
+    <Compile Include="BELogic\CrowdfundingStatistics.cs" />
+    <Compile Include="BELogic\DeliveryAddress.cs" />
+    <Compile Include="BELogic\DistributionApply.cs" />
+    <Compile Include="BELogic\DistributionApplyAudit.cs" />
+    <Compile Include="BELogic\DistributionIdentity.cs" />
+    <Compile Include="BELogic\DistributionIdentitySet.cs" />
+    <Compile Include="BELogic\DistributionRule.cs" />
+    <Compile Include="BELogic\Distributor.cs" />
+    <Compile Include="BELogic\DiyGroup.cs" />
+    <Compile Include="BELogic\DiyGroupOrder.cs" />
+    <Compile Include="BELogic\ErrorCommodityOrder.cs" />
+    <Compile Include="BELogic\ExpressCode.cs" />
+    <Compile Include="BELogic\ExpressCollection.cs" />
+    <Compile Include="BELogic\ExpressOrderTemplate.cs" />
+    <Compile Include="BELogic\ExpressOrderTemplateProperty.cs" />
+    <Compile Include="BELogic\ExpressTemplateCollection.cs" />
+    <Compile Include="BELogic\ExpressTrace.cs" />
+    <Compile Include="BELogic\FangZhengLogistics.cs" />
+    <Compile Include="BELogic\FangZhengOrder.cs" />
+    <Compile Include="BELogic\FreightPartialFree.cs" />
+    <Compile Include="BELogic\FreightRangeDetails.cs" />
+    <Compile Include="BELogic\FreightTemplate.cs" />
+    <Compile Include="BELogic\FreightTemplateDetail.cs" />
+    <Compile Include="BELogic\GenUserPrizeRecord.cs" />
+    <Compile Include="BELogic\HaiXinMqJournal.cs" />
+    <Compile Include="BELogic\HotCommodity.cs" />
+    <Compile Include="BELogic\HTJSInvoice.cs" />
+    <Compile Include="BELogic\InnerCategory.cs" />
+    <Compile Include="BELogic\InsuranceCompany.cs" />
+    <Compile Include="BELogic\InsuranceCompanyActivity.cs" />
+    <Compile Include="BELogic\Invoice.cs" />
+    <Compile Include="BELogic\InvoiceJounal.cs" />
+    <Compile Include="BELogic\JdAuditCommodity.cs" />
+    <Compile Include="BELogic\JdAuditCommodityStock.cs" />
+    <Compile Include="BELogic\JDAuditMode.cs" />
+    <Compile Include="BELogic\JdCommodity.cs" />
+    <Compile Include="BELogic\JDEclpOrder.cs" />
+    <Compile Include="BELogic\JDEclpOrderJournal.cs" />
+    <Compile Include="BELogic\JDEclpOrderRefundAfterSales.cs" />
+    <Compile Include="BELogic\JDEclpOrderRefundAfterSalesItem.cs" />
+    <Compile Include="BELogic\JDEclpOrderRefundAfterSalesJournal.cs" />
+    <Compile Include="BELogic\JdExpressTrace.cs" />
+    <Compile Include="BELogic\JdJournal.cs" />
+    <Compile Include="BELogic\Jdlogs.cs" />
+    <Compile Include="BELogic\JdOrderItem.cs" />
+    <Compile Include="BELogic\JdOrderRefundAfterSales.cs" />
+    <Compile Include="BELogic\JDStockJournal.cs" />
+    <Compile Include="BELogic\Journal.cs" />
+    <Compile Include="BELogic\LongisticsTrack.cs" />
+    <Compile Include="BELogic\MainOrder.cs" />
+    <Compile Include="BELogic\MallApply.cs" />
+    <Compile Include="BELogic\Message.cs" />
+    <Compile Include="BELogic\Microshop.cs" />
+    <Compile Include="BELogic\MicroshopCom.cs" />
+    <Compile Include="BELogic\OrderExpirePay.cs" />
+    <Compile Include="BELogic\OrderExpressRoute.cs" />
+    <Compile Include="BELogic\OrderField.cs" />
+    <Compile Include="BELogic\OrderItem.cs" />
+    <Compile Include="BELogic\OrderItemPresent.cs" />
+    <Compile Include="BELogic\OrderItemShare.cs" />
+    <Compile Include="BELogic\OrderPayDetail.cs" />
+    <Compile Include="BELogic\OrderPayee.cs" />
+    <Compile Include="BELogic\OrderPickUp.cs" />
+    <Compile Include="BELogic\OrderPrintDetailLog.cs" />
+    <Compile Include="BELogic\OrderPrintLog.cs" />
+    <Compile Include="BELogic\OrderRefund.cs" />
+    <Compile Include="BELogic\OrderRefundAfterSales.cs" />
+    <Compile Include="BELogic\OrderRefundInfo.cs" />
+    <Compile Include="BELogic\OrderShare.cs" />
+    <Compile Include="BELogic\OrderShareMess.cs" />
+    <Compile Include="BELogic\OrderShipping.cs" />
+    <Compile Include="BELogic\OrderStatistics.cs" />
+    <Compile Include="BELogic\Payments.cs" />
+    <Compile Include="BELogic\PaySource.cs" />
+    <Compile Include="BELogic\PresentPromotion.cs" />
+    <Compile Include="BELogic\PresentPromotionCommodity.cs" />
+    <Compile Include="BELogic\PresentPromotionGift.cs" />
+    <Compile Include="BELogic\ProductDetailsPicture.cs" />
+    <Compile Include="BELogic\Promotion.cs" />
+    <Compile Include="BELogic\PromotionItems.cs" />
+    <Compile Include="BELogic\RefundExpressTrace.cs" />
+    <Compile Include="BELogic\RelationCommodity.cs" />
+    <Compile Include="BELogic\Reply.cs" />
+    <Compile Include="BELogic\Review.cs" />
+    <Compile Include="BELogic\RuleDescription.cs" />
+    <Compile Include="BELogic\ScoreSetting.cs" />
+    <Compile Include="BELogic\SecondAttribute.cs" />
+    <Compile Include="BELogic\SelfTakeStation.cs" />
+    <Compile Include="BELogic\SelfTakeStationManager.cs" />
+    <Compile Include="BELogic\ServiceSettings.cs" />
+    <Compile Include="BELogic\SetCategory.cs" />
+    <Compile Include="BELogic\SetCollection.cs" />
+    <Compile Include="BELogic\SetCommodityCategory.cs" />
+    <Compile Include="BELogic\SettleAccounts.cs" />
+    <Compile Include="BELogic\SettleAccountsDetails.cs" />
+    <Compile Include="BELogic\SettleAccountsException.cs" />
+    <Compile Include="BELogic\SettleAccountsOrderItem.cs" />
+    <Compile Include="BELogic\SettleAccountsPeriod.cs" />
+    <Compile Include="BELogic\SettlingAccount.cs" />
+    <Compile Include="BELogic\ShareDividend.cs" />
+    <Compile Include="BELogic\ShareDividendDetail.cs" />
+    <Compile Include="BELogic\ShiftTimeLog.cs" />
+    <Compile Include="BELogic\ShoppingCartItems.cs" />
+    <Compile Include="BELogic\SNBill.cs" />
+    <Compile Include="BELogic\SNExpressTrace.cs" />
+    <Compile Include="BELogic\SNOrder.cs" />
+    <Compile Include="BELogic\SNOrderItem.cs" />
+    <Compile Include="BELogic\SNOrderRefundAfterSales.cs" />
+    <Compile Include="BELogic\SNPackageTrace.cs" />
+    <Compile Include="BELogic\Specifications.cs" />
+    <Compile Include="BELogic\SpreadCategory.cs" />
+    <Compile Include="BELogic\SpreadInfo.cs" />
+    <Compile Include="BELogic\Store.cs" />
+    <Compile Include="BELogic\Supplier.cs" />
+    <Compile Include="BELogic\SupplierMain.cs" />
+    <Compile Include="BELogic\ThirdECExpressTrace.cs" />
+    <Compile Include="BELogic\ThirdECommerce.cs" />
+    <Compile Include="BELogic\ThirdECOrder.cs" />
+    <Compile Include="BELogic\ThirdECOrderErrorLog.cs" />
+    <Compile Include="BELogic\ThirdECOrderJournal.cs" />
+    <Compile Include="BELogic\ThirdECOrderPackage.cs" />
+    <Compile Include="BELogic\ThirdECOrderPackageSku.cs" />
+    <Compile Include="BELogic\ThirdECService.cs" />
+    <Compile Include="BELogic\ThirdECServiceJournal.cs" />
+    <Compile Include="BELogic\ThirdECStockJournal.cs" />
+    <Compile Include="BELogic\ThirdMapStatus.cs" />
+    <Compile Include="BELogic\ThirdMerchant.cs" />
+    <Compile Include="BELogic\TodayPromotion.cs" />
+    <Compile Include="BELogic\UserCodeForHaiXin.cs" />
+    <Compile Include="BELogic\UserCrowdfunding.cs" />
+    <Compile Include="BELogic\UserCrowdfundingDaily.cs" />
+    <Compile Include="BELogic\UserLimited.cs" />
+    <Compile Include="BELogic\UserRedEnvelope.cs" />
+    <Compile Include="BELogic\UserSpreader.cs" />
+    <Compile Include="BELogic\VatInvoiceProof.cs" />
+    <Compile Include="BELogic\WeChatQRCode.cs" />
+    <Compile Include="BELogic\WeChatQrCodeType.cs" />
+    <Compile Include="BELogic\YJBCarInsReportDetail.cs" />
+    <Compile Include="BELogic\YJBCarInsuranceRebate.cs" />
+    <Compile Include="BELogic\YJBCarInsuranceReport.cs" />
+    <Compile Include="BELogic\YJBDSFOrderInfo.cs" />
+    <Compile Include="BELogic\YJBJCard.cs" />
+    <Compile Include="BELogic\YJBJOrderItem.cs" />
+    <Compile Include="BELogic\YJEmployee.cs" />
+    <Compile Include="BELogic\YJEmTemp.cs" />
+    <Compile Include="BELogic\YKBigDataMqJournal.cs" />
+    <Compile Include="BELogic\YXComInfo.cs" />
+    <Compile Include="BELogic\YXExpressDetailInfo.cs" />
+    <Compile Include="BELogic\YXExpressDetailInfoSku.cs" />
+    <Compile Include="BELogic\YXExpressTrace.cs" />
+    <Compile Include="BELogic\YXOrder.cs" />
+    <Compile Include="BELogic\YXOrderErrorLog.cs" />
+    <Compile Include="BELogic\YXOrderJournal.cs" />
+    <Compile Include="BELogic\YXOrderPackage.cs" />
+    <Compile Include="BELogic\YXOrderPackageJournal.cs" />
+    <Compile Include="BELogic\YXOrderSku.cs" />
+    <Compile Include="Custom\Util.cs" />
+    <Compile Include="MongoCollection\MongoCollections.cs" />
+    <Compile Include="POCO\POCO.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\..\Interface\Jinher.AMP.BTP.Deploy\Jinher.AMP.BTP.Deploy.csproj">
+      <Project>{77DC4033-3DB5-4A90-B490-A6180CC64E44}</Project>
+      <Name>Jinher.AMP.BTP.Deploy</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jinher.AMP.BTP.Common\Jinher.AMP.BTP.Common.csproj">
+      <Project>{4D40B31E-3239-4671-8017-9CDA7E98C227}</Project>
+      <Name>Jinher.AMP.BTP.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy $(TargetDir)$(TargetName).dll $(TargetDir)..\..\..\..\..\..\..\Lib\BizApp\Implement\ /y
+xcopy $(TargetDir)$(TargetName).pdb $(TargetDir)..\..\..\..\..\..\..\Lib\BizApp\Implement\ /y
+xcopy $(TargetDir)$(TargetName).xml $(TargetDir)..\..\..\..\..\..\..\Lib\BizApp\Implement\ /y
+xcopy $(TargetDir)$(TargetName).dll $(TargetDir)..\..\..\..\..\..\..\Product\Portal\BizApp\Implement\ /y
+xcopy $(TargetDir)$(TargetName).pdb $(TargetDir)..\..\..\..\..\..\..\Product\Portal\BizApp\Implement\ /y
+xcopy $(TargetDir)$(TargetName).xml $(TargetDir)..\..\..\..\..\..\..\Product\Portal\BizApp\Implement\ /y
+</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

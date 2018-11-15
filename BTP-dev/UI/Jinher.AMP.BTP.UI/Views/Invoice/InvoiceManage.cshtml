@@ -1,0 +1,1204 @@
+﻿@{
+    ViewBag.Title = "InvoiceManage";
+    int InvoiceDefault = ViewBag.InvoiceDefault;
+    int InvoiceValues = ViewBag.InvoiceValues;
+
+    Jinher.AMP.BTP.Deploy.OrderFieldDTO orderset = ViewBag.OrderSet;
+    List<string> appids = new List<string>();
+    if (orderset.AppId !=Guid.Empty)
+    {
+        appids.Add(orderset.AppId.ToString());
+    }
+   
+    // 阳光餐饮
+    //appids.Add("88bceeff-22fc-4b96-b5b8-54b0658f4ade");
+    ////昌平阳光餐饮
+    //appids.Add("5b93adfe-5066-403f-a6b1-1c3f209c7b40");
+    ////海淀阳光餐饮
+    //appids.Add("b3ad5aba-ae1e-4f4b-ba55-c5fb0375de3c");
+    ////门头沟阳光餐饮
+    //appids.Add("2cf7c57a-b537-4198-95cd-19e975a9a0ed");
+    
+    var appid = ViewBag.appid;
+}
+
+    <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>发票管理</title>
+    <script type="text/javascript" src="/Scripts/jquery.js"></script>
+    <script type="text/javascript" src="/Scripts/jquery.extend.js"></script>
+    <script type="text/javascript" src="/Scripts/jquery.ui.base.js"></script>
+    <script type="text/javascript" src="/Scripts/i18n/jquery.ui-zh.js"></script>
+    <script type="text/javascript" src="/Scripts/TableBox/jquery.ui.jhtablebox.js"></script>
+    <link type="text/css" href="/Content/default/jquery.ui.all.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.jhtablebox.css" />
+    <script src="/Scripts/Pager/jquery.ui.jhpager.js" type="text/javascript"></script>
+    <script src="/Scripts/jquery.cookie.js" type="text/javascript"></script>
+    <script src="/Content/Business/BusinessAllEvent.js" type="text/javascript"></script>
+    <link href="/Content/css/style.css" rel="stylesheet" type="text/css" />
+    <script src="/Scripts/CommLib.js" type="text/javascript"></script>
+    <script type="text/javascript" src="/Scripts/jquery.watermark.js"></script>
+    <script src="/Scripts/pic/jquery.imgbox.pack.js" type="text/javascript"></script>
+    <script src="/Scripts/TableBox/jquery.ui.jhtablebox.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.datepicker.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhdatetime.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhstartandenddate.js" type="text/javascript"></script>
+    <script src="/Scripts/Validator/JValidator.js" type="text/javascript"></script>
+    <link href="/Content/style/font-min.css" rel="stylesheet" type="text/css" />
+    <script src="/Scripts/jquery.dotdotdot.min.js" type="text/javascript"></script>
+    <style type="text/css">
+        input.inp-txt
+        {
+            height: 18px;
+            line-height: 18px;
+            border: 1px solid #B6C0CD;
+            padding: 4px 5px;
+            vertical-align: middle;
+            border-radius: 3px;
+            box-shadow: inset 1px 1px 2px #DBDBDB;
+        }
+        body
+        {
+            width: 99%;
+        }
+        .invoiceCategory, .selectList
+        {
+            margin: 0 auto;
+            color: #8C94A9;
+            overflow: hidden;
+            padding: 0 0 0 6px;
+            margin: 0 0;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+        .invoiceList
+        {
+            margin-left: 10px;
+            padding-left: 6px;
+        }
+        .invoiceCategory
+        {
+            margin-top: 10px;
+            line-height: 2;
+            padding-bottom: 6px;
+        }
+        .selectList
+        {
+            margin-top: 0;
+            padding-top: 0;
+        }
+        .mouseOverArea .categoryText, .mouseOverArea .setAsDefault, .mouseOverArea .defaultText
+        {
+            vertical-align: middle;
+        }
+        input[type=checkbox]
+        {
+            vertical-align: text-bottom;
+        }
+        .search
+        {
+            line-height: 2;
+        }
+        .search li span
+        {
+            margin-right: 26px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .active
+        {
+            color: #ABC762;
+        }
+        .invoiceCategory ul
+        {
+            height: 2em;
+        }
+        .invoiceCategory ul li
+        {
+            width: 190px;
+            height: 2em;
+            display: inline-block;
+        }
+        .setAsDefault
+        {
+            padding-left: 10px;
+            display: none;
+        }
+        .categoryText
+        {
+            cursor: default;
+        }
+        .defaultText
+        {
+            padding-left: 10px;
+        }
+        .mouseOverArea
+        {
+            width: 170px;
+            display: inline-block;
+        }
+        button
+        {
+            width: 120px;
+            height: 26px;
+            border: 1px solid #c0d0da;
+            background: #f6f8fa;
+            border-radius: 3px;
+            margin-top: 16px;
+            cursor: pointer;
+        }
+        .btn120
+        {
+            display: inline-block;
+            width: 120px;
+            height: 28px;
+            line-height: 28px;
+            background: url(/Content/default/images/btn120.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+            font-size: 12px;
+        }
+        .ui-state-hover
+        {
+            background: url(/Content/default/images/normaltable.png) 0 -120px no-repeat;
+        }
+    </style>
+    <style type="text/css">
+        .invoiceTable
+        {
+            border-collapse: collapse;
+            table-layout: fixed;
+            width: 100%;
+        }
+        .invoiceTable th, .invoiceTable td
+        {
+            border-collapse: collapse;
+            line-height: 1.7em;
+            border: 1px solid #ccc;
+            padding: 0.1em;
+            word-break: break-all;
+            overflow: hidden;
+            font-size: 12px;
+        }
+        .invoiceTable th
+        {
+            background: #f6f6f6;
+        }
+        .invoiceTable th span, .invoiceTable th input
+        {
+            vertical-align: middle;
+        }
+        .invoiceTable .xuHao span, .invoiceTable .xuHao input
+        {
+            vertical-align: middle;
+        }
+        .invoiceTable .xuHao span, .invoiceTable th span
+        {
+            margin-left: 2px;
+        }
+        #InvoiceList
+        {
+            font-size: 12px;
+        }
+        .text-overflow-multi
+        {
+        }
+        .remark
+        {
+            height: 5.1em;
+        }
+    </style>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('#EndTime').datepicker({
+                changeMonth: true,
+                changeYear: true,
+                showOtherMonths: true,
+                selectOtherMonths: true
+            }).change(function () {
+                if ($(this).val() != "") {
+                    if ($('#StartTime').val() != "") {
+                        $("#btnExportData").attr("disabled", "");
+                        $("#btnExportData").removeAttr("disabled");
+                    }
+                }
+                else {
+                    $("#btnExportData").attr("disabled", "disabled");
+                }
+            });
+            $('#StartTime').datepicker({
+                changeMonth: true,
+                changeYear: true,
+                showOtherMonths: true,
+                selectOtherMonths: true
+            }).change(function () {
+                if ($(this).val() != "") {
+                    if ($('#EndTime').val() != "") {
+                        $("#btnExportData").attr("disabled", "");
+                        $("#btnExportData").removeAttr("disabled");
+                    }
+                }
+                else {
+                    $("#btnExportData").attr("disabled", "disabled");
+                }
+            });
+
+        })
+
+
+      
+    </script>
+    <script type="text/javascript">
+        var _appId = getQueryString("appId");
+        if (_appId) {
+
+        }
+        var SeacrhContent = "";
+        var _category = -1;
+        var _state = -1;
+        var _commodityOrderState = "-1";
+        var _pageIndex = 1;
+        var _pageSize = 10;
+        var _rowCount = 0;
+        var _categoryArry = [];
+        var _InvoiceDefault = Number('@InvoiceDefault');
+        var _InvoiceValues = Number('@InvoiceValues');
+        var _limitNum = 500;
+        var _nodeShowMax = 25;
+        var _searchEntity = {};
+        var _subData = {};
+
+        _subData.AppId = _appId;
+        _subData.Category = _category;
+        _subData.State = _state;
+        _subData.PageIndex = _pageIndex;
+        _subData.PageSize = _pageSize;
+
+        $(function () {
+            ghcSetHeight();
+            //newSetIframeWidth();
+            //ajaxWidth();
+            //内容页
+            $("#pager").jhpager({
+                requestData: function () { return _subData; },
+                dataType: 'html',
+                requestType: 'post',
+                dataSource: '/Invoice/PartialInvoiceList',
+                async: true,
+                totalCount: _rowCount,
+                rowNum: _pageSize,
+                requestSuccess: showContent,
+                beforeRequest: function () {
+                    $("#content_makes").empty();
+                    ajaxLoading('1', '#content_makes');
+                },
+                requestFailure: function () {
+                }
+            });
+            initInvoiceCategory();
+            initJqueryGrid();
+            $("input[name=CategorySet]").live("click", function () {
+                var type = 1;
+                var selectItem = $(this);
+                var checkList = $("input[name=CategorySet]:checked");
+                var ghc = 0;
+                checkList.each(function () {
+                    var item = $(this);
+                    ghc += Number(item.val());
+                });
+                var subData = {};
+                subData.Id = _appId;
+                subData.InvoiceValues = ghc;
+                if (selectItem.val() == _InvoiceDefault) {
+                    type = 2;
+                    _InvoiceDefault = 1;
+
+                }
+                subData.InvoiceDefault = _InvoiceDefault;
+                setDefaultInvoiceCategory(subData, selectItem, type);
+            });
+            $(".mouseOverArea").live("mouseover", function () {
+                var selectItem = $(this);
+                $(".setAsDefault").hide();
+                if (selectItem.children(".defaultText").html() == "") {
+                    selectItem.children(".setAsDefault").show();
+                }
+            }).live("mouseout", function () {
+                $(".setAsDefault").hide();
+            });
+            $(".setAsDefault").live("click", function () {
+                var type = 2;
+                var thisItem = $(this);
+                var checkList = $("input[name=CategorySet]:checked");
+                var selectItem = thisItem.parents("li").children("input[name=CategorySet]");
+                var ghc = _InvoiceValues;
+                if (selectItem.attr("checked") == "checked") {
+                    type = 11;
+                } else {
+                    type = 12;
+                    ghc += Number(selectItem.val());
+                }
+                var subData = {};
+                subData.Id = _appId;
+                subData.InvoiceValues = ghc;
+                subData.InvoiceDefault = Number(selectItem.val());
+                setDefaultInvoiceCategory(subData, selectItem, type);
+            });
+
+            $("#CategoryLi span").live("click", function () {
+                var selectTap = $(this);
+                selectTap.addClass("active").siblings().removeClass("active");
+                _category = selectTap.attr("data");
+                _subData.AppId = _appId;
+                _subData.Category = _category;
+                _subData.State = _state;
+                _subData.PageIndex = _pageIndex;
+                _subData.PageSize = _pageSize;
+                _subData.CommodityOrderState = _commodityOrderState;
+                toSearch();
+            });
+            $("#StateLi span").live("click", function () {
+                var selectTap = $(this);
+                selectTap.addClass("active").siblings().removeClass("active");
+                _state = selectTap.attr("data");
+                _subData.AppId = _appId;
+                _subData.Category = _category;
+                _subData.State = _state;
+                _subData.PageIndex = _pageIndex;
+                _subData.PageSize = _pageSize;
+                _subData.CommodityOrderState = _commodityOrderState;
+                toSearch();
+            });
+            $("#OrderStateLi span").live("click", function () {
+                var selectTap = $(this);
+                selectTap.addClass("active").siblings().removeClass("active");
+            });
+
+            //以下部分
+            $("#selectAll").live("click", function () {
+                var selectItem = $(this);
+                if (selectItem.attr("checked") == "checked") {
+                    $("input[name=dataRow]").attr("checked", "checked");
+                } else {
+                    $("input[name=dataRow]").removeAttr("checked");
+                }
+            });
+            $("#setState2").live("click", function () {
+                var checkList = $("input[name=dataRow]:checked");
+                var ilength = checkList.length;
+                if (ilength < 1) {
+                    alert("请至少选择一条记录");
+                    return;
+                }
+                var type = 2;
+                var updateItems = [];
+                var subDataList = [];
+                for (var i = 0; i < ilength; i++) {
+                    if ($(checkList[i]).attr("data-state") == 1) {
+                        var checkItem = $(checkList[i]);
+                        var model = {};
+                        model.Id = checkItem.attr("data-id");
+                        model.State = 2;
+                        model.ModifyType = 1;
+                        subDataList.push(model);
+                        updateItems.push(checkItem.parents("tr"));
+                    }
+                }
+                if (updateItems.length < 1) {
+                    alert("没有要更新的记录");
+                    return;
+                }
+                var subData = CommLib.ObjToStringWithQuot(subDataList);
+                UpdateState(subData, type, updateItems);
+            });
+            $("#setState3").live("click", function () {
+                var checkList = $("input[name=dataRow]:checked");
+                var ilength = checkList.length;
+                if (ilength < 1) {
+                    alert("请至少选择一条记录");
+                    return;
+                }
+                var type = 3;
+                var updateItems = [];
+                var subDataList = [];
+                for (var i = 0; i < ilength; i++) {
+                    if ($(checkList[i]).attr("data-state") == 2) {
+                        var checkItem = $(checkList[i]);
+                        var model = {};
+                        model.Id = checkItem.attr("data-id");
+                        model.State = 3;
+                        model.ModifyType = 1;
+                        subDataList.push(model);
+                        updateItems.push(checkItem.parents("tr"));
+                    }
+                }
+                if (updateItems.length < 1) {
+                    alert("没有要更新的记录");
+                    return;
+                }
+                var subData = CommLib.ObjToStringWithQuot(subDataList);
+                UpdateState(subData, type, updateItems);
+            });
+            $(".setState2").live("click", function () {
+                var selectItem = $(this);
+                var type = 2;
+                var updateItems = [];
+                var id = selectItem.attr("data-id");
+                var subDataList = [];
+                var model = {};
+                model.Id = selectItem.attr("data-id");
+                model.State = 2;
+                model.ModifyType = 1;
+                subDataList.push(model);
+                updateItems.push(selectItem.parents("tr"));
+                var subData = CommLib.ObjToStringWithQuot(subDataList);
+                UpdateState(subData, type, updateItems);
+            });
+            $(".setState3").live("click", function () {
+                var selectItem = $(this);
+                var type = 3;
+                var updateItems = [];
+                var id = selectItem.attr("data-id");
+                var subDataList = [];
+                var model = {};
+                model.Id = selectItem.attr("data-id");
+                model.State = 3;
+                model.ModifyType = 1;
+                subDataList.push(model);
+                updateItems.push(selectItem.parents("tr"));
+                var subData = CommLib.ObjToStringWithQuot(subDataList);
+                UpdateState(subData, type, updateItems);
+            });
+            $(".setState4").live("click", function () {
+                var selectItem = $(this);
+                var type = 4;
+                var updateItems = [];
+                var id = selectItem.attr("data-id");
+                var subDataList = [];
+                var model = {};
+                model.Id = selectItem.attr("data-id");
+                model.State = 4;
+                model.ModifyType = 1;
+                subDataList.push(model);
+                updateItems.push(selectItem.parents("tr"));
+                var subData = CommLib.ObjToStringWithQuot(subDataList);
+                UpdateState(subData, type, updateItems);
+            });
+            $(".addNote").live("click", function () {
+                var id = $(this).attr("data-id");
+                $("#noteId").val(id);
+                $("#RemarkContent").val("");
+                var result = _limitNum;
+                $('.Remarkcontentwordage').html('还可以输入' + result + '字符');
+                showNote();
+            });
+            $(".editNote").live("click", function () {
+                var id = $(this).attr("data-id");
+                var text = $(this).parents("td").find(".remark").attr("title");
+                $("#noteId").val(id);
+                var decodeText = decodeURI(text);
+                $("#RemarkContent").val(decodeText);
+                var result = _limitNum - decodeText.length;
+                $('.Remarkcontentwordage').html('还可以输入' + result + '字符');
+                showNote();
+            });
+            $('#RemarkContent').live("keyup", function () {
+                var remain = $.trim($(this).val()).length;
+                var pattern = "";
+                if (remain > _limitNum) {
+                    pattern = "字数超过限制！";
+
+                } else {
+                    var result = _limitNum - remain;
+                    pattern = '还可以输入' + result + '字符';
+                }
+                $('.Remarkcontentwordage').html(pattern);
+            });
+            //            $(".invoiceTable th").mouseover(function () {
+            //                $(this).css({ "background": "url(/Content/default/images/normaltable.png) 0 -120px no-repeat" });
+            //            }).mouseout(function () {
+            //                $(this).css({ "background": "#f6f6f6" });
+            //                //$(this).addClass("ui-state-hover");
+            //                // $(this).removeClass("ui-state-hover");
+            //            });
+            $("#tzinfor").live("click", function () {
+                var hre = $(this).attr("tzinfors");
+                //                win(hre, null, 1124, 768);
+
+                ShowOrderDetail();
+                $("#orderdetailurl").attr("src", hre + "&r=" + Math.random());
+                if (window.parent) { //在iframe页面打开时，纠正top
+
+                    $(".ui-jhtablebox-top").css("top", 50 + $(window.parent.document).scrollTop());
+                }
+            });
+        });
+
+        
+
+    </script>
+    <script type="text/javascript">
+        function initJqueryGrid() {
+
+            //            var subData = {};
+            //            subData.AppId = _appId;
+            //            subData.Category = _category;
+            //            subData.State = _state;
+            //            subData.PageIndex = _pageIndex;
+            _subData.PageSize = _pageSize;
+            _subData.AppId = _appId;
+            _subData.Category = _category;
+            _subData.State = _state;
+            _subData.PageIndex = _pageIndex;
+            _subData.PageSize = _pageSize;
+            _subData.CommodityOrderState = _commodityOrderState;
+
+            $.ajax({
+                url: '/Invoice/PartialInvoiceList',
+                type: 'post',
+                async: true,
+                dataType: "html",
+                data: _subData,
+                error: function () {
+
+                },
+                success: function (msg) {
+                    $('#content_makes').html(msg);
+                    //newSetIframeHeight();
+                    var rowCount = $("#rowcounts").val();
+                    $("#pager").jhpager("refresh", 1, rowCount);
+                    $(".remark").dotdotdot();
+                },
+                beforeSend: function () {
+                    ajaxLoading('1', '#content_makes');
+                }
+            });
+        }
+        function toSearch() {
+            $.ajax({
+                url: '/Invoice/PartialInvoiceList',
+                type: 'post',
+                async: true,
+                dataType: "html",
+                data: _subData,
+                error: function () {
+
+                },
+                success: function (msg) {
+                    $('#content_makes').html(msg);
+                    var rowCount = $("#rowcounts").val();
+                    $("#pager").jhpager("refresh", 1, rowCount);
+                    //newSetIframeHeight();
+                },
+                beforeSend: function () {
+                    ajaxLoading('1', '#content_makes');
+                }
+            });
+        }
+        function showContent(event, data) {
+            $("#content_makes").html(data);
+            $(".remark").dotdotdot();
+            //newSetIframeHeight();
+        }
+        function ajaxWidth() {
+            var _width = $(".invoiceTable").css("width");
+            //            $("#content").css("width", _width + 2);
+            //            $("#content div").css("width", _width + 2);
+            //$("#setButtons").css("width", _width + 2);
+        }
+        function switchHideShow() {
+            //invoiceCategory invoiceCategorySet
+            $("#invoiceCategorySet").toggle();
+            if ($("#lineHide").hasClass("fa-chevron-down")) {
+                $("#lineHide").removeClass("fa-chevron-down").addClass("fa-chevron-up");
+            } else {
+                $("#lineHide").removeClass("fa-chevron-up").addClass("fa-chevron-down");
+            }
+        }
+        function ShowOrderDetail() {
+            $("#OrderDetail").jhtablebox({
+                title: "订单详情",
+                width: 1200,
+                height: 800,
+                draggable: true,
+                modal: true,
+                resizable: false,
+                beforeClose: function (e) {
+                }
+            });
+            //$(".ui-jhsingletablebox-titlebar").css("height", "30px");
+        }
+        function toSelectByState(obj, s) {
+            _commodityOrderState = s;
+            _subData.AppId = _appId;
+            _subData.Category = _category;
+            _subData.State = _state;
+            _subData.PageIndex = _pageIndex;
+            _subData.PageSize = _pageSize;
+            _subData.CommodityOrderState = _commodityOrderState;
+            toSearch();
+        }
+        //根据查询条件就行查询
+        function SearchInvoice() {
+            SeacrhContent = $.trim($("#se").val());
+            if (SeacrhContent == '可输入订单编号、发票抬头、收票人姓名、手机号查询') {
+                SeacrhContent = "";
+            }
+            _subData.AppId = _appId;
+            _subData.Category = _category;
+            _subData.State = _state;
+            _subData.PageIndex = _pageIndex;
+            _subData.PageSize = _pageSize;
+            _subData.CommodityOrderState = _commodityOrderState;
+            _subData.SeacrhContent = SeacrhContent;
+            toSearch();
+        }
+    </script>
+    <script type="text/javascript">
+        function UpdateState(data, type, updateItems) {
+            $.ajax({
+                url: '/Invoice/UpdateInvoice',
+                type: 'post',
+                async: true,
+                dataType: "json",
+                contentType: "application/json",
+                data: data,
+                error: function () {
+
+                },
+                success: function (msg) {
+                    $("#ajaxLoading_2").remove();
+                    if (msg.ResultCode != 0) {
+                        alert(msg.Message);
+                        return;
+                    }
+                    if (type == 2) {
+                        setListF(updateItems, 2);
+                    }
+                    else if (type == 3) {
+                        setListF(updateItems, 3);
+                    }
+                    else if (type == 4) {
+                        setListF(updateItems, 4);
+                    }
+                    else {
+
+                    }
+                },
+                beforeSend: function () {
+                    ajaxLoading('2', '#content_makes');
+                }
+            });
+        }
+        function setListF(updateItems, state) {
+            var tlength = updateItems.length;
+            if (state == 2) {
+                for (var i = 0; i < tlength; i++) {
+                    updateItems[i].find("input[name=dataRow]").attr("data-state", "2");
+                    updateItems[i].find(".zhuangTai").html("已开票");
+                    updateItems[i].find(".setState2").hide();
+                    updateItems[i].find(".setState4").hide();
+                    updateItems[i].find(".setState3").show();
+                }
+            }
+            else if (state == 3) {
+                for (var i = 0; i < tlength; i++) {
+                    updateItems[i].find("input[name=dataRow]").attr("data-state", "3");
+                    updateItems[i].find(".zhuangTai").html("已发出");
+                    updateItems[i].find(".setState2").hide();
+                    updateItems[i].find(".setState4").hide();
+                    updateItems[i].find(".setState3").hide();
+                }
+            }
+            else if (state == 4) {
+                for (var i = 0; i < tlength; i++) {
+                    updateItems[i].find("input[name=dataRow]").attr("data-state", "4");
+                    updateItems[i].find(".zhuangTai").html("已作废");
+                    updateItems[i].find(".setState2").hide();
+                    updateItems[i].find(".setState4").hide();
+                    updateItems[i].find(".setState3").hide();
+                }
+            } else {
+
+            }
+        }
+        function showNote() {
+            $("#divRemark").jhtablebox({
+                title: "备注",
+                width: 450,
+                height: 300,
+                draggable: true,
+                modal: true,
+                resizable: false,
+                zIndex: 10005,
+                beforeClose: function (e) {
+                },
+                close: function () {
+
+                }
+            });
+            //$(".ui-jhsingletablebox-titlebar").css("height", "30px");
+        }
+        function RemarkOK() {
+            var note = $("#RemarkContent").val();
+            var id = $("#noteId").val();
+            if (note.length > _limitNum) {
+                return false;
+            }
+            var subDataList = [];
+            var model = {};
+            model.Id = id;
+            model.Remark = encodeURI(note);
+            model.ModifyType = 2;
+            subDataList.push(model);
+            var subData = CommLib.ObjToStringWithQuot(subDataList);
+            UpdateNote(subData);
+        }
+        function closeRemarkTip() {
+            $("#divRemark").jhtablebox("close");
+        }
+        function UpdateNote(data) {
+            $.ajax({
+                url: '/Invoice/UpdateInvoice',
+                type: 'post',
+                async: true,
+                dataType: "json",
+                contentType: "application/json",
+                data: data,
+                error: function () {
+
+                },
+                success: function (msg) {
+                    $("#ajaxLoading_3").remove();
+                    $("#divRemark").jhtablebox("close");
+                    if (msg.ResultCode != 0) {
+                        alert(msg.Message);
+                        return;
+                    }
+                    var dataJson = $.parseJSON(data);
+                    var th = $("tr[id='" + dataJson[0].Id + "'").find(".beiZhu");
+                    var editRemark = th.find(".remark");
+                    editRemark.html(decodeURI(dataJson[0].Remark));
+                    editRemark.attr("title", decodeURI(dataJson[0].Remark));
+                    th.find(".addNote").hide();
+                    th.find(".editNote").show();
+                    //newSetIframeHeight();
+                },
+                beforeSend: function () {
+                    ajaxLoading('3', '#content_makes');
+                }
+            });
+        }
+        function showVatInvoiceProofDetailShow(obj) {
+            $("#VatInvoiceProofDetailShow").attr("src", "/Invoice/VatInvoiceProofDetailShow?uid=" + obj + "&r=" + Math.random());
+            $("#VatInvoiceProofDetailShowDiv").jhtablebox({
+                title: "增票资质",
+                width: 814,
+                height: 624,
+                modal: true,
+                draggable: true,
+                resizable: false,
+                close: function () { $("#VatInvoiceProofDetailShow").attr("src", ""); }
+            });
+            //$(".ui-jhsingletablebox-titlebar").css("height", "30px");
+        }
+    </script>
+    <script type="text/javascript">
+        function initInvoiceCategory() {
+            var sbInvoiceValues = _InvoiceValues;
+
+            if (1 & sbInvoiceValues) {
+                $("#Category1").children("input[name=CategorySet]").attr("checked", "checked");
+            }
+            if (2 & sbInvoiceValues) {
+                $("#Category2").children("input[name=CategorySet]").attr("checked", "checked");
+            }
+            if (4 & sbInvoiceValues) {
+                $("#Category3").children("input[name=CategorySet]").attr("checked", "checked");
+            }
+        }
+        function setDefaultInvoiceCategory(data, selectItem, type) {
+            $.ajax({
+                url: '/Invoice/SetInvoiceCategory',
+                type: 'post',
+                async: true,
+                dataType: "json",
+                data: data,
+                error: function () {
+
+                },
+                success: function (msg) {
+                    $("#ajaxLoadBlind").remove();
+                    if (msg.ResultCode != 0) {
+                        alert(msg.Message);
+                        return;
+                    }
+                    if (type == 1) {
+                        if (selectItem.attr("checked") == "checked") {
+                            _InvoiceValues += Number(selectItem.val());
+                        } else {
+                            _InvoiceValues -= Number(selectItem.val());
+                            var defaultText = selectItem.siblings(".defaultText");
+                            defaultText.html("");
+                        }
+                    } else if (type == 2) {
+                        _InvoiceValues -= Number(selectItem.val());
+                        _InvoiceDefault = 1;
+                    }
+                    else if (type == 11) {
+                        _InvoiceDefault = Number(selectItem.val());
+                    } else if (type == 12) {
+                        _InvoiceDefault = Number(selectItem.val());
+                        _InvoiceValues += Number(selectItem.val());
+                    }
+                },
+                beforeSend: function () {
+                    ajaxLoading('11');
+                }
+            });
+        }
+    </script>
+    <script type="text/javascript">
+
+        //初始化
+        $(function () {
+            SelectfpState();
+        })
+
+        function ghcSetHeight() {
+            var parentWindow = $(window.parent.document);
+            parentWindow.find('#mainframe').removeAttr('style');
+            var body = $("body").removeAttr('style');
+            parentWindow.find('#mainframe').height("1200px");
+            body.height("1200px");
+        }
+        //状态发生改变时
+        function SelectfpState() {
+            var state = $("#fpState").val();
+            if (state == 2 || state == 3) {
+                $("#TimeShow").show();
+            }
+            else if (state == "" || state == null || state == undefined) {
+                $("#TimeShow").hide();
+                //开票开始时间
+                var StartTime = $("#StartTime").val("");
+                //开票结束时间
+                var EndTime = $("#EndTime").val("");
+            }
+            else {
+                $("#TimeShow").hide();
+                //开票开始时间
+                var StartTime = $("#StartTime").val("");
+                //开票结束时间
+                var EndTime = $("#EndTime").val("");
+            }
+        }
+
+        //导出详细
+        function ExportDataDetail() {
+            //var appid = getQueryString('appId');
+            $.ajax({
+                url: '/Invoice/ExportDataDetail',
+                type: 'post',
+                data: _subData,
+                success: function (res) {
+                    $("#dataDetail").val(JSON.stringify(res.data));
+                    $("#FormExcelDetail").submit();
+                },
+                error: function () { }
+            });
+
+        }
+
+        //弹出导出    
+        function ShowExportData() {
+            $("#popupExportData").OpenDiv();
+        }
+
+        //关闭导出    
+        function closeExport() {
+            $("#popupExportData").CloseDiv();
+        }
+
+        //确定导出数据
+        function ExportData() {
+            var appid = getQueryString('appId');
+            //发票状态
+            var InvoiceState = $("#fpState").val();
+            //发票类型
+            var InvoiceType = $("#fpleixing").val();
+            //开票开始时间
+            var StartTime = $("#StartTime").val();
+            //开票结束时间
+            var EndTime = $("#EndTime").val();
+            if (InvoiceState == "2" || InvoiceState == "3") {
+                if (StartTime == "" || EndTime == "") {
+                    // alert("开始时间,结束时间不能为空！");
+                    $("#ExportError").html("开始时间,结束时间不能为空！");
+                    return false;
+                }
+                else if (StartTime > EndTime) {
+                    $("#ExportError").html("开始时间不能大于结束时间！");
+                    return false;
+                }
+                else {
+                    DownExcel(StartTime, EndTime, InvoiceState, InvoiceType, appid);
+                }
+            }
+            else {
+                DownExcel(StartTime, EndTime, InvoiceState, InvoiceType, appid);
+            }
+        }
+
+
+        function DownExcel(StartTime, EndTime, InvoiceState, InvoiceType, appid) {
+            $.ajax({
+                url: '/Invoice/ExportData',
+                type: 'post',
+                data: { StartTime: StartTime,
+                    EndTime: EndTime,
+                    InvoiceState: InvoiceState,
+                    InvoiceType: InvoiceType,
+                    AppId: appid
+                },
+                success: function (res) {
+
+                    if (res.data.length > 0) {
+                        var jsondata = JSON.stringify(res.data);
+                        $("#datas").val(jsondata);
+                        $("#FormExcel").submit();
+                        $("#ExportError").html("");
+                        $("#btnExportData").removeAttr("disabled");
+                        closeExport();
+                    }
+                    else {
+                        $("#ExportError").html("没有找到要导出的数据");
+                        $("#btnExportData").removeAttr("disabled");
+                    }
+                },
+                error: function () {
+                    $("#ExportError").html("");
+                    $("#btnExportData").removeAttr("disabled");
+                }
+            });
+        }
+
+    </script>
+</head>
+
+    <form id="FormExcel" action="/Invoice/DownExportData" method="post">
+      <input type="hidden" name="datas" id="datas" />
+    </form>
+
+
+    <form id="FormExcelDetail" action="/Invoice/DownExportDataDetail" method="post">
+      <input type="hidden" name="dataDetail" id="dataDetail" />
+    </form>
+    
+
+
+    <div class="invoiceCategory" id="invoiceCategory">
+        <div>
+            请设置所支持的发票类型：
+        </div>
+        <div id="invoiceCategorySet">
+            <ul>
+                <li id="Category1">
+                    <input type="checkbox" value="1" name="CategorySet" />
+                    <div class="mouseOverArea">
+                        <span class="categoryText">增值税普通发票</span> <a href="javascript:;" class="setAsDefault">
+                            设为默认</a> <span class="defaultText"></span>
+                    </div>
+                </li>
+                <li id="Category2">
+                    <input type="checkbox" value="2" name="CategorySet" />
+                    <div class="mouseOverArea">
+                        <span class="categoryText">电子发票</span> <a href="javascript:;" class="setAsDefault">设为默认</a>
+                        <span class="defaultText"></span>
+                    </div>
+                </li>
+                <li id="Category3">
+                    <input type="checkbox" value="4" name="CategorySet" />
+                    <div class="mouseOverArea">
+                        <span class="categoryText">增值税专用发票</span> <a href="javascript:;" class="setAsDefault">
+                            设为默认</a> <span class="defaultText"></span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="showLines" style="width: 100%; position: relative;">
+        <div style="padding-bottom: 5px; border-bottom: 1px solid #cccccc; text-align: center;
+            color: #ccc; margin-bottom: 8px;">
+            <i class="fa fa-chevron-up" aria-hidden="true" id="lineHide" style="cursor: pointer;"
+                onclick="switchHideShow()"></i>
+        </div>
+    </div>
+    <div class="selectList">
+        <ul class="search">
+            <li class="cx"><span>订单查询</span>
+                <input type="text" id="se" value="可输入订单编号、发票抬头、收票人姓名、手机号查询" onfocus="if(this.value==defaultValue) {this.value='';this.type='text';}"
+                    onblur="if(!value) {value=defaultValue; this.type='text';}" class="inp-txt" style="width: 400px;
+                    color: #8c94a9;" />
+                <a class="btn120" href="#" onclick="SearchInvoice()">查询</a> </li>
+            <li id="CategoryLi"><span style="pointer-events: none;">发票类型：</span><span class="active"
+                data="-1">全部</span><span data="1">增值税普通发票</span><span data="2">电子发票</span><span data="4">增值税专用发票</span>
+            </li>
+            <li id="StateLi"><span style="pointer-events: none;">发票状态：</span><span class="active"
+                data="-1">全部</span><span data="1">待开票</span><span data="2">已开票</span><span data="3">已发出</span><span
+                    data="4">已作废</span> </li>
+            <li id="OrderStateLi"><span style="pointer-events: none;">订单状态：</span><span class="active"
+                onclick="toSelectByState(this,-1)">全部</span><span onclick="toSelectByState(this,'1,11')">待发货</span><span
+                    onclick="toSelectByState(this,'13')">出库中</span><span onclick="toSelectByState(this,'2')">已发货</span><span
+                        onclick="toSelectByState(this,'8,9,10,12,14')">退款中</span><span onclick="toSelectByState(this,'7')">已退款</span><span
+                            onclick="toSelectByState(this,'3')">交易成功</span></li>
+        </ul>
+    </div>
+    <div class="setButtons" id="setButtons" style="width: 100%; margin-right: 20px; margin-bottom: 8px;
+        clear: both;">
+        <div style="text-align: right;">
+@*            @if(appids.Contains(appid))
+            {*@
+                <a href="javascript:" class="btn120" onclick="ExportDataDetail()">导出发票明细</a>
+@*            }*@
+            <a href="javascript:" id="setState1" class="btn120" onclick="ShowExportData()">导出</a>
+            <a href="javascript:" id="setState2" class="btn120">置为已开票</a> <a href="javascript:"
+                id="setState3" class="btn120">置为已发出</a>
+        </div>
+    </div>
+    <div class="invoiceList" style="clear: both;">
+        <div class="content" id="content" style="min-height: 22em; border: 1px solid #ccc;
+            border-top: 0; padding: 0; width: auto; display: table; border-collapse: collapse;
+            margin-bottom: 10px; padding-bottom: 0.1em; width: 100%;">
+            <div style="display: table-row; height: 24px;">
+                <table class="invoiceTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 2em;">
+                                <input type="checkbox" id="selectAll" />
+                            </th>
+                            <th style="width: 3em;">
+                                序号
+                            </th>
+                            <th style="width: 6em;">
+                                发票类型
+                            </th>
+                            <th style="width: 10em;">
+                                发票抬头
+                            </th>
+                            <th style="width: 10em;">
+                                纳税人识别号
+                            </th>
+                            <th style="width: 9em;">
+                                发票内容
+                            </th>
+                            <th style="width: 12em;">
+                                收票人信息
+                            </th>
+                            <th style="width: 12em;">
+                                收票人地址
+                            </th>
+                            <th style="width: 5em;">
+                                开票金额
+                            </th>
+                            <th style="width: 12em;">
+                                对应订单
+                            </th>
+                            <th style="width: 5em;">
+                                状态
+                            </th>
+                            <th style="width: 6em;">
+                                操作
+                            </th>
+                            <th style="width: 7em;">
+                                备注
+                            </th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div id="content_makes" style="display: table-row; min-height: 20em">
+            </div>
+        </div>
+        <div id="pager">
+        </div>
+    </div>
+    <div style="clear: both; height: 1px;">
+    </div>
+    <div id="divRemark" style="display: none; position: relative; top: 0; left: 0;">
+        <input type="hidden" id="noteId" />
+        <div>
+            <div style="margin-top: 20px; margin-left: 10px; margin-right: 10px; width: 422px;
+                text-align: center;">
+                <textarea rows="5" cols="10" id="RemarkContent" style="border: 1px solid #B8BFCF;
+                    width: 100%; height: 160px;"></textarea>
+                <div class="Remarkcontentwordage" style="text-align: right; font-size: 10px; color: red;
+                    margin-right: 10px;">
+                    还可以输入140个字</div>
+                <div style="text-align: center;">
+                    <button id="btnSellersRemarkOk" onclick="RemarkOK()">
+                        确定</button>
+                    <button onclick="closeRemarkTip()">
+                        取消</button></div>
+            </div>
+        </div>
+    </div>
+    <div style="display: none;" id="VatInvoiceProofDetailShowDiv">
+        <div style="margin: 0 auto;">
+            <iframe id="VatInvoiceProofDetailShow" src="" width="808px;" height="604px" style="margin-bottom: 1px;
+                border: 0px;" scrolling="auto"></iframe>
+        </div>
+    </div>
+    <div style="display: none;">
+        <div id="OrderDetail" style="margin: 0 auto;">
+            <iframe id="orderdetailurl" src="" width="1193px;" height="690px" style="margin-bottom: 20px;
+                border: 0px;"></iframe>
+        </div>
+    </div>
+    <div class="tanchu" id="popupExportData">
+        <div class="tanchu_r">
+            <div style="padding: 20px 0 0 10px">
+                <span>开票状态：</span>
+                <select id="fpState" onchange="SelectfpState()" style="width: 130px; height: 27px;
+                    line-height: 27px; color: #8c94a9">
+                    <option value="">全部</option>
+                    <option value="0">待付款</option>
+                    <option value="1">待开票</option>
+                    <option value="2">已开票</option>
+                    <option value="3">已发出</option>
+                    <option value="4">已作废</option>
+                </select>
+            </div>
+            <br />
+            <div style="padding: 20px 0 0 10px">
+                <span>发票类型：</span>
+                <select id="fpleixing" style="width: 130px; height: 27px; line-height: 27px; color: #8c94a9">
+                    <option value="">全部</option>
+                    <option value="1">增值税普通发票</option>
+                    <option value="2">电子发票</option>
+                    <option value="4">增值税专用发票</option>
+                </select>
+            </div>
+            <br />
+            <div id="TimeShow" style="padding: 20px 0 0 10px">
+                <span>开票时间:</span>
+                <input type="text" id="StartTime" class="inp-txt" style="width: 120px;" />
+                <strong style="font-weight: normal;">-</strong>
+                <input type="text" id="EndTime" class="inp-txt" style="width: 120px;" />
+            </div>
+            <br />
+            <div style="text-align: center;">
+                <button onclick="closeExport()">
+                    取消</button>
+                &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;
+                <button onclick="ExportData()" id="btnExportData">
+                    确定</button>
+            </div>
+            <p id="ExportError" style="color: Red;">
+            </p>
+        </div>
+    </div>
+

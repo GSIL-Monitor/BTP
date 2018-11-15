@@ -1,0 +1,1380 @@
+﻿@using Jinher.JAP.MVC
+@using Jinher.JAP.MVC.UIJquery
+@using Jinher.JAP.MVC.UIJquery.Validate
+@using Jinher.JAP.Common.TypeDefine
+@using Jinher.AMP.BTP.Deploy.CustomDTO;
+@{
+   
+    Layout = "~/Views/Shared/_btpLayout.cshtml";
+    Jinher.AMP.BTP.Deploy.CustomDTO.ZPHECDTO proxyContent = ViewBag.ProxyContent;  
+}
+@section Css{
+    <link href="/Content/css/style.css" rel="stylesheet" type="text/css" />
+    @{Html.jQuery().StyleSheetRegistrar().DefaultGroup(group =>
+          group.Add("default/jquery.ui.all.css")
+          .Add("default/ui.jqgrid.css"));}
+}
+<style type="text/css">
+    *
+    {
+        margin: 0;
+        padding: 0;
+    }
+    .item
+    {
+        line-height: 28px;
+        margin-bottom: 10px;
+        min-height: 28px;
+        padding-left: 10px;
+    }
+    
+    .lable
+    {
+        display: block;
+        float: left;
+        width: 125px;
+        line-height: 28px;
+        padding-right: 5px;
+        margin-left: -130px;
+        _display: inline;
+        text-align: right;
+    }
+    input.inp-txt
+    {
+        height: 18px;
+        line-height: 18px;
+        border: 1px solid #B6C0CD;
+        padding: 4px 5px;
+        vertical-align: middle;
+        border-radius: 3px;
+        box-shadow: inset 1px 1px 2px #DBDBDB;
+    }
+    .btn120
+    {
+        display: inline-block;
+        width: 120px;
+        height: 28px;
+        line-height: 28px;
+        background: url(/Content/default/images/btn120.png) no-repeat;
+        text-align: center;
+        vertical-align: middle;
+        color: #5F7392;
+        box-shadow: 1px 1px 2px #DBDBDB;
+    }
+    
+    select
+    {
+        width: 70px;
+        height: 27px;
+        line-height: 27px;
+        padding: 3px;
+        border: 1px solid #B8BFCF;
+        border-radius: 3px;
+        text-align: center;
+        color: #4F4F4F;
+    }
+    td.five a, td.eight a
+    {
+        color: #409FFF;
+    }
+    td.five a:hover, td.eight a:hover
+    {
+        color: #80BDE3;
+    }
+    
+    .btn60
+    {
+        display: inline-block;
+        width: 60px;
+        height: 28px;
+        line-height: 28px;
+        background: url(/Content/default/images/btn60.png) no-repeat;
+        text-align: center;
+        vertical-align: middle;
+        color: #5F7392;
+        box-shadow: 1px 1px 2px #DBDBDB;
+    }
+    
+    .red
+    {
+        color: Red;
+    }
+    .col1
+    {
+        margin-top: 5px;
+        float: left;
+        width: 80px;
+        text-align: right;
+    }
+    .col2
+    {
+        float: left;
+    }
+    
+    #editUl > li
+    {
+        clear: both;
+        display: block;
+        margin-bottom: 10px;
+        float: left;
+    }
+    #addManagerList div
+    {
+        margin-bottom: 10px;
+    }
+    #addManagerList div img
+    {
+        margin-left: 10px;
+    }
+    .time
+    {
+        display: inline-block;
+    }
+    .init
+    {
+        display: inline-block;
+    }
+    .weekList
+    {
+        display: inline-block;
+    }
+    .weekList > li
+    {
+        display: inline-block;
+        width: 30px;
+        text-align: center;
+        margin-right: 5px;
+    }
+    .weekList > li > div
+    {
+        width: 30px;
+        display: block;
+        border: 1px solid #ccc;
+        height: 24px;
+        text-align: center;
+        line-height: 24px;
+    }
+    .weekList li div.selected
+    {
+        border-color: green;
+        @*background: url(/Content/images/CheckMark.png) no-repeat right top;*@
+        background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+Cjxzdmcgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHZpZXdQb3J0PSIwIDAgMTIwIDEyMCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogICAgPHBvbHlnb24gcG9pbnRzPSIwLDAgMTIwLDAgMTIwLDEyMCIgc3R5bGU9ImZpbGw6cmdiKDM4LDIxMSwxMDYpIi8+CiAgICA8cG9seWxpbmUgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3R5bGU9InN0cm9rZS13aWR0aDoyMCIgcG9pbnRzPSI2MCwzMCA4MCw1MCAxMTAsMjAiLz4KPC9zdmc+) right top no-repeat;
+        background-size: 14px 14px;
+    }
+    #timeListUl
+    {
+        display: block;
+    }
+    #timeListUl > li
+    {
+        margin-bottom: 10px;
+    }
+    #timeListUl > li > div
+    {
+        display: inline-block;
+    }
+    .weekList
+    {
+        display: inline-block;
+    }
+    .weekList > li
+    {
+        cursor: pointer;
+    }
+    .operateButton
+    {
+        display: inline-block;
+    }
+    .time
+    {
+        margin-right: 10px;
+    }
+    .time select
+    {
+        width: 50px;
+    }
+    .timeListLi
+    {
+    }
+    .disableInput
+    {
+        pointer-events: none;
+        background: #dbdbdb;
+    }
+    .btn120 {
+        display: inline-block;
+        width: 120px;
+        height: 28px;
+        line-height: 28px;
+        background: url(../../Content/default/images/btn120.png) no-repeat;
+        text-align: center;
+        vertical-align: middle;
+        color: #5F7392;
+        box-shadow: 1px 1px 2px #DBDBDB;
+   }
+   #addNewTimeLine {
+       color: #007FFF;
+       cursor: pointer;
+   }
+    #addNewTimeLine:hover {
+       color: #80BDE3;
+       cursor: pointer;
+   }
+</style>
+<div class="box" style="padding: 10px 0 10px 0px;">
+    <div class="content" style="display: none;">
+        <div style="margin-top: 10px; height: 45px; margin-left: 22px">
+            <span>自提点名称：</span>
+            <input type="text" id="txtName" class="inp-txt" style="width: 70px; height: 19px;
+                margin-top: -7px;" maxlength="30" />
+            <select id="selectProvince">
+            </select><select id="selectCity"></select><select id="selectDistrict"></select>
+            <a class="btn60" id="search" href="javascript:void(0);" style="margin-left: 12px;
+                margin-top: -7px;">查询</a>
+        </div>
+        <div>
+            <a class="btn60" id="add" href="javascript:void(0);" style="margin-left: 12px; margin-top: -7px;">
+                添加</a>
+        </div>
+    </div>
+    <div id="clsContent" style="margin-right: 50px; margin-top: 15px; margin-left: 22px">
+        <table id="selfTakeStationTable">
+        </table>
+        <div id="pager">
+        </div>
+    </div>
+    <div style="display: block;">
+        <div id="divEditDialog" style="margin-top: 30px;">
+            <div style="margin-top: -20px;">
+                <input type="hidden" id="Id" />
+                <ul id="editUl">
+                    <li>
+                        <div class="col1">
+                            <span class="red">*</span><span>自提点名称：</span></div>
+                        <input type="text" id="Name" class="inp-txt" style="width: 360px;" maxlength="20" /></li>
+                    <li style="height: 60px;">
+                        <div class="col1">
+                            <span class="red">*</span><span>自提点地址：</span></div>
+                        <select id="Province" onchange="toSelectCity(this)" style="width: 124px;">
+                            <option value="">请选择</option>
+                        </select>
+                        <select id="City" onchange="toSelectZone(this)" style="width: 120px;">
+                            <option value="">请选择</option>
+                        </select>
+                        <select id="District" style="width: 120px;">
+                            <option value="">请选择</option>
+                        </select>
+                        <div style="margin-left: 80px; margin-top: 5px;">
+                            <input type="text" id="Address" class="inp-txt" style="width: 360px;" maxlength="512" /></div>
+                    </li>
+                    <li>
+                        <div class="col1">
+                            <span>联系电话：</span>
+                        </div>
+                        <input type="text" id="Phone" class="inp-txt" style="width: 200px;" />
+                    </li>
+                    <li>
+                        <div class="col1">
+                            <span>接待时间：</span></div>
+                        <div style="display: inline-block;">
+                            <ul id="timeListUl">
+                                <li class="timeListLi">
+                                    <div class="time">
+                                        <select class="timeStartH">
+                                        </select>时<select class="timeStartM"></select>分<span>——</span><select class="timeEndH"></select>时<select
+                                                                                                                                             class="timeEndM"></select>分
+                                    </div>
+                                    <div class="init">
+                                        <ul class="weekList">
+                                            <li>
+                                                <div data-week="1">
+                                                    周一</div>
+                                            </li>
+                                            <li>
+                                                <div data-week="2">
+                                                    周二</div>
+                                            </li>
+                                            <li>
+                                                <div data-week="4">
+                                                    周三</div>
+                                            </li>
+                                            <li>
+                                                <div data-week="8">
+                                                    周四</div>
+                                            </li>
+                                            <li>
+                                                <div data-week="16">
+                                                    周五</div>
+                                            </li>
+                                            <li>
+                                                <div data-week="32">
+                                                    周六</div>
+                                            </li>
+                                            <li>
+                                                <div data-week="64">
+                                                    周日</div>
+                                            </li>
+                                        </ul>
+                                        <div class="operateButton">
+                                            <a class="sure" href="javascript:void(0)">确认</a>|<a class="delete" href="javascript:void(0)">取消</a>
+                                        </div>
+                                    </div>
+                                    <div class="afterSure" style="display: none;">
+                                        <div class="weekList">
+                                            <span></span>
+                                            <input type="hidden" name="startTime" />
+                                            <input type="hidden" name="endTime" />
+                                            <input type="hidden" name="weekValue" value="" /></div>
+                                        <div class="operateButton">
+                                            <a class="edit" href="javascript:void(0)">编辑</a>|<a class="delete" href="javascript:void(0)">删除</a>
+                                        </div>
+                                    </div>
+                                    <div class="afterEdit" style="display: none;">
+                                        <ul class="weekList">
+                                            <li>
+                                                <div data-week="1">
+                                                    周一</div>
+                                            </li>
+                                            <li>
+                                                <div data-week="2">
+                                                    周二</div>
+                                            </li>
+                                            <li>
+                                                <div data-week="4">
+                                                    周三</div>
+                                            </li>
+                                            <li>
+                                                <div data-week="8">
+                                                    周四</div>
+                                            </li>
+                                            <li>
+                                                <div data-week="16">
+                                                    周五</div>
+                                            </li>
+                                            <li>
+                                                <div data-week="32">
+                                                    周六</div>
+                                            </li>
+                                            <li>
+                                                <div data-week="64">
+                                                    周日</div>
+                                            </li>
+                                        </ul>
+                                        <div class="operateButton">
+                                            <a class="editSure" href="javascript:void(0)">确认</a>|<a class="cancel" href="javascript:void(0)">取消</a>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                            <span id="addNewTimeLine" style="display: none;"><span style="display: inline-block;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           width: auto; height: auto; margin-top: 5px;">新增时间段</span> </span>
+                        </div>
+                    </li>
+                    <li style="margin-bottom: 0;">
+                        <div class="col1" style="margin-top: 3px;">
+                            <span>负责人：</span>
+                        </div>
+                        <div id="addManagerList" style="float: left;">
+                            <div id="firstManager">
+                                <input type="text" name="userCodeManager" class="inp-txt" style="width: 200px;" placeholder="请输入负责人IU平台登录账号" /><input
+                                                                                                                                                   type="hidden" name="userIdManager" /><input type="hidden" name="id" /><a href="javascript:void(0);"
+                                                                                                                                                                                                                            class="add_userCode"><img src="/Images/jia.png" alt="添加" /></a><a href="javascript:void(0);"
+                                                                                                                                                                                                                                                                                              class="del_userCodeFirst" style="display: none;"><img src="/Images/jian.png" alt="删除" /></a></div>
+                        </div>
+                    </li>
+                </ul>
+                <div style="clear: both">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="text-align:left;margin-top:35px;margin-left:125px;">
+        <div style="text-align: left;">
+            <a class="btn120" style="cursor: pointer;" id="btnSave">保存</a> <a class="btn120" style="cursor: pointer; margin-left: 15px;"
+                id="btnCancel">取消</a>
+        </div>
+    </div>
+    <div id="divuserCodeItemTemplate" style="display: none; clear: both;">
+        <div>
+            <input type="text" name="userCodeManager" class="inp-txt" style="width: 200px;" placeholder="请输入负责人IU平台登录账号" /><input
+                type="hidden" name="userIdManager" /><input type="hidden" name="id" /><a href="javascript:void(0);"
+                    class="del_userCode"><img src="/Images/jian.png" alt="删除" /></a></div>
+    </div>
+    <div id="divuserCodeItemEditTemplate" style="display: none; clear: both;">
+        <div>
+            <input type="text" name="userCodeManager" style="width: 200px; "
+                class="inp-txt" value="{UserCode}" placeholder="请输入负责人IU平台登录账号" /><input
+                    type="hidden" name="userIdManager" value="{UserId}" /><input
+                        type="hidden" name="id" value="{Id}" /><a href="javascript:void(0);"
+                            class="del_userCode"><img src="/Images/jian.png" alt="删除" /></a></div>
+    </div>
+    <div id="divReceiveTimeTmplate" style="display: none; clear: both;">
+        <ul class="timeListUl">
+            <li class="timeListLi">
+                <div class="time">
+                    <select class="timeStartH">
+                    </select>时<select class="timeStartM"></select>分<span>——</span><select class="timeEndH"></select>时<select
+                        class="timeEndM"></select>分
+                </div>
+                <div class="init">
+                    <ul class="weekList">
+                        <li>
+                            <div data-week="1">
+                                周一</div>
+                        </li>
+                        <li>
+                            <div data-week="2">
+                                周二</div>
+                        </li>
+                        <li>
+                            <div data-week="4">
+                                周三</div>
+                        </li>
+                        <li>
+                            <div data-week="8">
+                                周四</div>
+                        </li>
+                        <li>
+                            <div data-week="16">
+                                周五</div>
+                        </li>
+                        <li>
+                            <div data-week="32">
+                                周六</div>
+                        </li>
+                        <li>
+                            <div data-week="64">
+                                周日</div>
+                        </li>
+                    </ul>
+                    <div class="operateButton">
+                        <a class="sure" href="javascript:void(0)">确认</a>|<a class="delete" href="javascript:void(0)">取消</a>
+                    </div>
+                </div>
+                <div class="afterSure" style="display: none;">
+                    <div class="weekList">
+                        <span></span>
+                        <input type="hidden" name="startTime" />
+                        <input type="hidden" name="endTime" />
+                        <input type="hidden" name="weekValue" value="" /></div>
+                    <div class="operateButton">
+                        <a class="edit" href="javascript:void(0)">编辑</a>|<a class="delete" href="javascript:void(0)">删除</a>
+                    </div>
+                </div>
+                <div class="afterEdit" style="display: none;">
+                    <ul class="weekList">
+                        <li>
+                            <div data-week="1">
+                                周一</div>
+                        </li>
+                        <li>
+                            <div data-week="2">
+                                周二</div>
+                        </li>
+                        <li>
+                            <div data-week="4">
+                                周三</div>
+                        </li>
+                        <li>
+                            <div data-week="8">
+                                周四</div>
+                        </li>
+                        <li>
+                            <div data-week="16">
+                                周五</div>
+                        </li>
+                        <li>
+                            <div data-week="32">
+                                周六</div>
+                        </li>
+                        <li>
+                            <div data-week="64">
+                                周日</div>
+                        </li>
+                    </ul>
+                    <div class="operateButton">
+                        <a class="editSure" href="javascript:void(0)">确认</a>|<a class="cancel" href="javascript:void(0)">取消</a>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div id="divReceiveTimeEditTmplate" style="display: none; clear: both;">
+        <ul class="timeListUl">
+            <li class="timeListLi" id="{AppStsOfficeTimeId}">
+                <div class="time">
+                    <select class="timeStartH disableInput">
+                    </select>时<select class="timeStartM disableInput"></select>分<span>——</span><select
+                        class="timeEndH disableInput"></select>时<select class="timeEndM disableInput"></select>分
+                </div>
+                <div class="init" style="display: none;">
+                    <ul class="weekList">
+                        <li>
+                            <div data-week="1">
+                                周一</div>
+                        </li>
+                        <li>
+                            <div data-week="2">
+                                周二</div>
+                        </li>
+                        <li>
+                            <div data-week="4">
+                                周三</div>
+                        </li>
+                        <li>
+                            <div data-week="8">
+                                周四</div>
+                        </li>
+                        <li>
+                            <div data-week="16">
+                                周五</div>
+                        </li>
+                        <li>
+                            <div data-week="32">
+                                周六</div>
+                        </li>
+                        <li>
+                            <div data-week="64">
+                                周日</div>
+                        </li>
+                    </ul>
+                    <div class="operateButton">
+                        <a class="sure" href="javascript:void(0)">确认</a>|<a class="delete" href="javascript:void(0)">取消</a>
+                    </div>
+                </div>
+                <div class="afterSure">
+                    <div class="weekList">
+                        <span>{WeekDaysText}</span>
+                        <input type="hidden" name="startTime" value="" />
+                        <input type="hidden" name="endTime" value="" />
+                        <input type="hidden" name="weekValue" value="{WeekDays}" /></div>
+                    <div class="operateButton">
+                        <a class="edit" href="javascript:void(0)">编辑</a>|<a class="delete" href="javascript:void(0)">删除</a>
+                    </div>
+                </div>
+                <div class="afterEdit" style="display: none;">
+                    <ul class="weekList">
+                        <li>
+                            <div data-week="1">
+                                周一</div>
+                        </li>
+                        <li>
+                            <div data-week="2">
+                                周二</div>
+                        </li>
+                        <li>
+                            <div data-week="4">
+                                周三</div>
+                        </li>
+                        <li>
+                            <div data-week="8">
+                                周四</div>
+                        </li>
+                        <li>
+                            <div data-week="16">
+                                周五</div>
+                        </li>
+                        <li>
+                            <div data-week="32">
+                                周六</div>
+                        </li>
+                        <li>
+                            <div data-week="64">
+                                周日</div>
+                        </li>
+                    </ul>
+                    <div class="operateButton">
+                        <a class="editSure" href="javascript:void(0)">确认</a>|<a class="cancel" href="javascript:void(0)">取消</a>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+@section Script{
+    @{Html.jQuery().ScriptRegistrar().DefaultGroup(group => group.Add("jquery.extend.js")
+        .Add("i18n/jquery.ui-zh.js")
+        .Add("jquery.ui.base.js")
+        .Add("Grid/jquery.grid.base.js")
+        .Add("TableBox/jquery.ui.jhtablebox.js")
+        .Add("Pager/jquery.ui.jhpager.js")
+        );}
+}
+@section ClientScript{
+    <script src="/Scripts/CommLib.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.datepicker.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhdatetime.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhstartandenddate.js" type="text/javascript"></script>
+    <script src="/Content/Business/BusinessAllEvent.js" type="text/javascript"></script>
+    <script src="/Scripts/pcProvinceCity.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        String.prototype.format = function (args) {
+            var result = this;
+            if (arguments.length > 0) {
+                if (arguments.length == 1 && typeof (args) == "object") {
+                    for (var key in args) {
+                        if (args[key] != undefined) {
+                            var reg = new RegExp("({" + key + "})", "g");
+                            result = result.replace(reg, args[key]);
+                        }
+                    }
+                } else {
+                    for (var i = 0; i < arguments.length; i++) {
+                        if (arguments[i] != undefined) {
+                            var reg = new RegExp("({[" + i + "]})", "g");
+                            result = result.replace(reg, arguments[i]);
+                        }
+                    }
+                }
+            }
+            return result;
+        };
+        var _id = getQueryString("id");
+        var _status = getQueryString("status");
+        var _pageSize = 20;
+        var _currentPage = 1;
+        var _appId = getQueryString("appId");
+        var _delArry = [];
+        var timeStartHArry = new Array("00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23");
+        var timeStartMArry = new Array("00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59");
+        var quSelect = "<select id=\"District\" style=\"width: 120px;\"><option value=\"\">请选择</option></select>";
+        var shiSelect = "<select id=\"City\" onchange=\"toSelectZone(this)\" style=\"width: 120px;\"><option value=\"\">请选择</option></select>";
+        var divReceiveTimeTmplate = '';
+        var _listUrl = "/SelfTakeStation/SelfTakeList?appId=" + _appId;
+
+        $(function () {
+            SetProvince();
+            for (var i = 0; i < timeStartHArry.length; i++) {
+                $(".timeStartH").append("<option value='" + timeStartHArry[i] + "'>" + timeStartHArry[i] + "</option>");
+                $(".timeEndH").append("<option value='" + timeStartHArry[i] + "'>" + timeStartHArry[i] + "</option>");
+            }
+            for (var i = 0; i < timeStartMArry.length; i++) {
+                $(".timeStartM").append("<option value='" + timeStartMArry[i] + "'>" + timeStartMArry[i] + "</option>");
+                $(".timeEndM").append("<option value='" + timeStartMArry[i] + "'>" + timeStartMArry[i] + "</option>");
+            }
+            divReceiveTimeTmplate = $("#divReceiveTimeTmplate>ul").html();
+            $(".weekList>li>div").live("click", function () {
+                var item = $(this);
+                item.toggleClass("selected");
+            });
+            $(".delete").live("click", function () {
+                $(this).parents(".timeListLi").remove();
+                var ul = $("#timeListUl");
+                if (ul.children("li").length == 0) {
+                    $("#addNewTimeLine").show();
+                } else {
+                    var isAllSure = true;
+                    $("#timeListUl>li").each(function () {
+                        if ($(this).find(".afterSure").is(":hidden")) {
+                            isAllSure = false;
+                        }
+                    });
+                    if (isAllSure) {
+                        $("#addNewTimeLine").show();
+                    }
+                }
+            });
+            $(".sure").live("click", function () {
+                var itemLi = $(this).parents(".timeListLi");
+                var selectedItem = new Array();
+                var seletedValue = 0;
+                itemLi.find(".init>.weekList>li>div.selected").each(function () {
+                    selectedItem.push($(this).text());
+                    seletedValue += Number($(this).attr("data-week"));
+                });
+                if (selectedItem.length == 0) {
+                    alert("必需选择一个日期");
+                    return;
+                }
+                var a = itemLi.find(".timeStartH").val();
+                var b = itemLi.find(".timeStartM").val();
+                var a1 = itemLi.find(".timeEndH").val();
+                var b1 = itemLi.find(".timeEndM").val();
+                if (Number(a) > Number(a1) || Number(a) == Number(a1) && Number(b) > Number(b1)) {
+                    alert("开始时间不能大于结束时间");
+                    return;
+                }
+                if (Number(a) == Number(a1) && Number(b) == Number(b1)) {
+                    alert("开始时间不能等于结束时间");
+                    return;
+                }
+                var startTime = a + ":" + b;
+                var endTime = a1 + ":" + b1;
+                var haveMixed = false;
+                itemLi.siblings("li").each(function () {
+                    var itemTmp = $(this);
+                    if (itemTmp.find("input[name=weekValue]").val() != "") {
+                        var startTimeOldTmp = itemTmp.find("input[name=startTime]").val();
+                        var endTimeOldTmp = itemTmp.find("input[name=endTime]").val();
+                        var weekValueOldTmp = itemTmp.find("input[name=weekValue]").val();
+                        var cpWeek = Number(weekValueOldTmp) & Number(seletedValue);
+                        if (Number(cpWeek) > 0) {
+                            if (compareTime(startTime, startTimeOldTmp) >= 0 && compareTime(startTime, endTimeOldTmp) < 0 ||
+                                compareTime(startTime, startTimeOldTmp) <= 0 && compareTime(endTime, endTimeOldTmp) >= 0 ||
+                                compareTime(endTime, startTimeOldTmp) > 0 && compareTime(endTime, endTimeOldTmp) <= 0) {
+                                haveMixed = true;
+                            }
+                        }
+                    }
+                });
+                if (haveMixed) {
+                    alert("时间不能有交集");
+                    return;
+                }
+                itemLi.find(".afterSure>.weekList>span").html(selectedItem.join("，"));
+                itemLi.find("input[name=startTime]").val(startTime);
+                itemLi.find("input[name=endTime]").val(endTime);
+                itemLi.find("input[name=weekValue]").val(seletedValue);
+                itemLi.find(".time>select").addClass("disableInput");
+                itemLi.find(".time>select").attr("disabled", "disabled");
+                itemLi.find(".init").hide();
+                itemLi.find(".afterSure").show();
+
+                var isAllSure = true;
+                $("#timeListUl>li").each(function () {
+                    if ($(this).find(".afterSure").is(":hidden")) {
+                        isAllSure = false;
+                    }
+                });
+                if (isAllSure) {
+                    $("#addNewTimeLine").show();
+                }
+            });
+            $(".editSure").live("click", function () {
+                var itemLi = $(this).parents(".timeListLi");
+                var selectedItem = new Array();
+                var seletedValue = 0;
+                itemLi.find(".afterEdit>.weekList>li>div.selected").each(function () {
+                    selectedItem.push($(this).text());
+                    seletedValue += Number($(this).attr("data-week"));
+                });
+                if (selectedItem.length == 0) {
+                    alert("必需选择一个日期");
+                    return;
+                }
+                var a = Number(itemLi.find(".timeStartH").val());
+                var b = Number(itemLi.find(".timeStartM").val());
+                var a1 = Number(itemLi.find(".timeEndH").val());
+                var b1 = Number(itemLi.find(".timeEndM").val());
+                if (a > a1 || a == a1 && b > b1) {
+                    alert("开始时间不能大于结束时间");
+                    return;
+                }
+                var startTime = a + ":" + b;
+                var endTime = a1 + ":" + b1;
+                var haveMixed = false;
+                itemLi.siblings("li").each(function () {
+                    var itemTmp = $(this);
+                    if (itemTmp.find("input[name=weekValue]").val() != "") {
+                        var startTimeOldTmp = itemTmp.find("input[name=startTime]").val();
+                        var endTimeOldTmp = itemTmp.find("input[name=endTime]").val();
+                        var weekValueOldTmp = itemTmp.find("input[name=weekValue]").val();
+                        var cpWeek = Number(weekValueOldTmp) & Number(seletedValue);
+                        if (Number(cpWeek) > 0) {
+                            if (compareTime(startTime, startTimeOldTmp) >= 0 && compareTime(startTime, endTimeOldTmp) < 0 ||
+                                compareTime(startTime, startTimeOldTmp) <= 0 && compareTime(endTime, endTimeOldTmp) >= 0 ||
+                                compareTime(endTime, startTimeOldTmp) > 0 && compareTime(endTime, endTimeOldTmp) <= 0) {
+                                haveMixed = true;
+                            }
+                        }
+                    }
+                });
+                if (haveMixed) {
+                    alert("时间不能有交集");
+                    return;
+                }
+                itemLi.find(".afterSure>.weekList>span").html(selectedItem.join("，"));
+                itemLi.find("input[name=startTime]").val(startTime);
+                itemLi.find("input[name=endTime]").val(endTime);
+                itemLi.find("input[name=weekValue]").val(seletedValue);
+                itemLi.find(".time>select").addClass("disableInput");
+                itemLi.find(".time>select").attr("disabled", "disabled");
+                itemLi.find(".afterEdit").hide();
+                itemLi.find(".afterSure").show();
+
+                var isAllSure = true;
+                $("#timeListUl>li").each(function () {
+                    if ($(this).find(".afterSure").is(":hidden")) {
+                        isAllSure = false;
+                    }
+                });
+                if (isAllSure) {
+                    $("#addNewTimeLine").show();
+                }
+            });
+            $(".edit").live("click", function () {
+                var itemLi = $(this).parents(".timeListLi");
+                var seletedItem = new Array();
+                var selectedText = Number(itemLi.find("input[name=weekValue]").val());
+                itemLi.find(".afterEdit>.weekList>li>div").each(function () {
+                    var item = $(this);
+                    var itemValue = Number(item.attr("data-week"));
+                    if ((selectedText & itemValue) == itemValue) {
+                        item.addClass("selected");
+                    }
+                });
+                itemLi.find(".time>select").removeClass("disableInput");
+                itemLi.find(".time>select").removeAttr("disabled");
+                itemLi.find(".afterSure").hide();
+                itemLi.find(".afterEdit").show();
+                $("#addNewTimeLine").hide();
+            });
+            $("#addNewTimeLine").live("click", function () {
+                $("#timeListUl").append(divReceiveTimeTmplate);
+                $(this).hide();
+            });
+            $(".cancel").live("click", function () {
+                var itemLi = $(this).parents(".timeListLi");
+                itemLi.find(".time>select").addClass("disableInput");
+                itemLi.find(".time>select").attr("disabled", "disabled");
+                var startTime = itemLi.find("input[name=startTime]").val();
+                var endTime = itemLi.find("input[name=endTime]").val();
+                itemLi.find(".timeStartH").val(startTime.split(":")[0]);
+                itemLi.find(".timeStartM").val(startTime.split(":")[1]);
+                itemLi.find(".timeEndH").val(endTime.split(":")[0]);
+                itemLi.find(".timeEndM").val(endTime.split(":")[1]);
+                itemLi.find(".afterEdit").hide();
+                itemLi.find(".afterSure").show();
+
+                var isAllSure = true;
+                $("#timeListUl>li").each(function () {
+                    if ($(this).find(".afterSure").is(":hidden")) {
+                        isAllSure = false;
+                    }
+                });
+                if (isAllSure) {
+                    $("#addNewTimeLine").show();
+                }
+            });
+            $(".add_userCode").live("click", function () {
+                $("#addManagerList").append($("#divuserCodeItemTemplate").html());
+            });
+            $(".del_userCode").live("click", function () {
+                var focus = $(this);
+                focus.parent("div").remove();
+            });
+            $("#addManagerList input[name=userCodeManager]").live("blur", function () {
+                var focus = $(this);
+                if (focus.val() == "") {
+                    return;
+                }
+                var count = 0;
+                $("#addManagerList input[name=userCodeManager]").each(function () {
+                    if ($(this).val() == focus.val()) {
+                        count = count + 1;
+                    }
+                });
+                if (count > 1) {
+                    alert("不能输入重复的项");
+                    focus.focus();
+                    focus.val("");
+                    return;
+                }
+                var isExit = 0;
+                if (_status == 1 || _status == 0) {
+                    if (isDelUserCode(focus.val())) {
+                        for (var m = 0; m < _delArry.length; m++) {
+                            if (_delArry[m].UserCode == focus.val()) {
+                                focus.siblings("input[name=userIdManager]").val(_delArry[m].UserId);
+                            }
+                        }
+                        isExit = 1;
+                    }
+                }
+                if (isExit == 1) {
+                    return;
+                }
+                $("#btnSave").css("pointer-events", "none");
+                $.ajax({
+                    url: '/SelfTakeStation/CheckUserIdExists',
+                    type: 'post',
+                    async: true,
+                    data: { userCode: focus.val(), appId: _appId },
+                    dataType: "json",
+                    beforeSend: function () {
+                        ajaxLoading(1, '');
+                    },
+                    success: function (data) {
+                        $("#ajaxLoadBlind").remove();
+                        $("#btnSave").css("pointer-events", "auto");
+                        if (data.ResultCode == 1) {
+                            alert("[" + focus.val() + "]" + data.Message, "28px");
+                            focus.focus();
+                            focus.val("");
+                            return;
+                        }
+                        var hasRequest = {};
+                        hasRequest.UserCode = focus.val();
+                        hasRequest.UserId = data.UserId;
+                        _delArry.push(hasRequest);
+                        $("#addManagerList input[name=userIdManager]").each(function () {
+                            if ($(this).val() == data.UserId) {
+                                alert("已输入了该负责人信息");
+                                focus.focus();
+                                focus.val("");
+                                return;
+                            }
+                        });
+                        focus.siblings("input[name=userIdManager]").val(data.UserId);
+                    },
+                    error: function () {
+                        $("#ajaxLoadBlind").remove();
+                        $("#btnSave").css("pointer-events", "auto");
+                    }
+                });
+            });
+            $("#btnSave").live("click", function () {
+                if (!valid())
+                    return;
+                //添加 
+                if (_status == 0) {
+                    Add();
+                }
+                //修改
+                else if (_status == 1) {
+                    Update();
+                }
+            });
+            $("#btnCancel").live("click", function () {
+                window.location.href = _listUrl;
+            });
+            if (_status == 1) {
+                showEdit();
+            } else {
+                showAdd();
+            }
+        });
+        //完成
+
+        function valid() {
+            if ($("#Name").val() == "") {
+                alert("自提点名称不能为空");
+                return false;
+            }
+            if ($("#Province").val() == '' || $("#City").val() == '' || $("#District>option").length >1 && $("#District").val() == "") {
+                alert("请选择自提点地址");
+                return false;
+            }
+            if ($("#Address").val() == "") {
+                alert("自提点地址不能为空");
+                return false;
+            }
+            return true;
+        }
+
+        function SetProvince() {
+            //显示省份。
+            var pall = getAllProvinces();
+            if (pall.length > 0) {
+                var pHtml = "";
+                pHtml = "<option value=\"\">请选择</option>";
+                for (var i = 0; i < pall.length; i++) {
+                    pHtml += '<option value="' + pall[i].AreaCode + '">' + pall[i].Name + '</option>';
+                }
+                $("#Province").html(pHtml);
+            }
+        }
+
+        function toSelectCity(obj) {
+            var province = $("#Province").val();
+            if (province != "" && province != "000000") {
+                var pCitys = getProvinceCities(province);
+                var chtml = "";
+                chtml = "<option value=\"\">请选择</option>";
+                if (pCitys.length > 0) {
+                    for (var i = 0; i < pCitys.length; i++) {
+                        chtml += ' <option value="' + pCitys[i].AreaCode + '">' + pCitys[i].Name + '</option>';
+                    }
+                }
+                $("#City").html(chtml);
+                $("#District").replaceWith(quSelect);
+            } else {
+                $("#District").replaceWith(quSelect);
+                $("#City").replaceWith(shiSelect);
+                $("#District").replaceWith(quSelect);
+            }
+        }
+
+        function toSelectZone(obj) {
+            var city = $("#City").val();
+            if (city != "" && city != "000000") {
+                var districts = getCityDistricts(city);
+                var dhtml = "";
+                dhtml = "<option value=\"\">请选择</option>";
+                for (var i = 0; i < districts.length; i++) {
+                    dhtml += '<option value="' + districts[i].AreaCode + '">' + districts[i].Name + '</option>';
+                }
+                $("#District").html(dhtml);
+            } else {
+                $("#District").replaceWith(quSelect);
+            }
+        }
+
+        function initJqueryGrid() {
+            var name = $("#txtName").val();
+            var province = $("#selectProvince").val();
+            var city = $("#selectCity").val();
+            var district = $("#selectDistrict").val();
+
+            var data = { "Name": name, "PageSize": _pageSize, "PageIndex": 1, "Province": province, "City": city, 'District': district };
+
+            $("#selfTakeStationTable").jqGrid({
+                url: "/SelfTakeStation/GetAppSelfTakeStationGrid",
+                mtype: "post",
+                datatype: "json",
+                postData: data,
+                colNames: ["自提点名称", "地址", "联系电话", "操作"],
+                colModel: [
+                    { name: 'Name', index: 'Name', width: 220, align: "center", sortable: false, title: false },
+                    { name: 'AddressDetail', index: 'AddressDetail', width: 200, align: "center", sortable: false, title: false },
+                    { name: 'Phone', index: 'Phone', width: 200, align: "center", sortable: false, title: false },
+                    { name: '操作', index: '操作', width: 200, align: "center", sortable: false, title: false, formatter: FormatterShowOperation }
+                ],
+                rowNum: _pageSize,
+                pager: "pager",
+                height: "100%",
+                rownumbers: true,
+                autowidth: true,
+                forceFit: true,
+                scroll: false,
+                shrinkToFit: true,
+                jsonReader: { repeatitems: true },
+                gridComplete: function () {
+                    reRegGridEvents();
+                    newSetIframeHeight();
+                }
+            });
+
+            function FormatterShowOperation(callvalue, opts, rowdata) {
+                return "<div style='padding-top:4px;padding-bottom:4px;' oe-tag='noteRoot'><a href='javascript:void(0);' class='edit' onclick='showEdit(this)'>编辑</a>&nbsp;&nbsp;&nbsp;"
+                    + "<a href='javascript:void(0);' class='delete' onclick='showDelete(this)' >删除</a></div>";
+            }
+
+            function reRegGridEvents() {
+
+            }
+        }
+
+        function isDelUserCode(item) {
+            for (var i in _delArry) {
+                if (_delArry[i].UserCode == item) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        function isDelUserId(item) {
+            for (var i in _delArry) {
+                if (_delArry[i].UserId == item) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        function AddDelUserCode(userCode, userId) {
+            for (var i in _delArry) {
+                if (_delArry[i].UserCode == userCode) {
+                    return;
+                }
+            }
+            var tmp = {};
+            tmp.UserCode = userCode;
+            tmp.UserId = userId;
+            _delArry.push(tmp);
+        }
+
+        function Add() {
+            var model = new Object();
+            model.Name = $("#Name").val();
+            model.AppId = _appId;
+            model.Province = $("#Province").val();
+            model.City = $("#City").val();
+            model.District = $("#District").val();
+            model.Address = $("#Address").val();
+            model.Phone = $("#Phone").val();
+            model.DelayDay = 1;
+            model.MaxBookDay = 14;
+            model.AppStsManagerList = new Array();
+            model.AppStsOfficeTimeList = new Array();
+
+            var count = $("#addManagerList input[name=userCodeManager]").length;
+            for (var i = 0; i < count; i++) {
+                if ($("#addManagerList input[name=userIdManager]")[i].value != "" && $("#addManagerList input[name=userCodeManager]")[i].value != "") {
+                    var tmpModel = {};
+                    tmpModel.UserCode = $("#addManagerList input[name=userCodeManager]")[i].value;
+                    tmpModel.UserId = $("#addManagerList input[name=userIdManager]")[i].value;
+                    model.AppStsManagerList.push(tmpModel);
+                }
+            }
+            var count2 = 0;
+            $("#timeListUl>.timeListLi").each(function () {
+                var item = $(this);
+                if (item.find("input[name=weekValue]").val() != "") {
+                    var tmpModel = {};
+                    tmpModel.StartTime = item.find("input[name=startTime]").val();
+                    tmpModel.EndTime = item.find("input[name=endTime]").val();
+                    tmpModel.WeekDays = item.find("input[name=weekValue]").val();
+                    model.AppStsOfficeTimeList.push(tmpModel);
+                }
+            });
+
+            var subData = CommLib.ObjToStringWithQuot(model);
+
+            $.ajax({
+                url: '/SelfTakeStation/SaveAppSelfTakeStation',
+                type: 'post',
+                async: true,
+                dataType: "json",
+                contentType: "application/json",
+                data: subData,
+                beforeSend: function () {
+                    ajaxLoading(1, '');
+                },
+                success: function (data) {
+                    $("#ajaxLoadBlind").remove();
+                    if (data.ResultCode != 0) {
+                        alert(data.Message, "28px");
+                        return;
+                    }
+                    close();
+                    alert("保存成功");
+                    window.location.href = _listUrl;
+                },
+                error: function () {
+                    $("#ajaxLoadBlind").remove();
+                }
+            });
+        }
+
+        function Update() {
+            var model = new Object();
+            model.Id = _id;
+            model.Name = $("#Name").val();
+            model.AppId = _appId;
+            model.Province = $("#Province").val();
+            model.City = $("#City").val();
+            model.District = $("#District").val();
+            model.Address = $("#Address").val();
+            model.Phone = $("#Phone").val();
+            model.DelayDay = 1;
+            model.MaxBookDay = 14;
+            model.AppStsManagerList = new Array();
+            model.AppStsOfficeTimeList = new Array();
+
+            var count = $("#addManagerList input[name=userCodeManager]").length;
+            for (var i = 0; i < count; i++) {
+                if ($("#addManagerList input[name=userIdManager]")[i].value != "" && $("#addManagerList input[name=userCodeManager]")[i].value != "") {
+                    var tmpModel = {};
+                    tmpModel.UserCode = $("#addManagerList input[name=userCodeManager]")[i].value;
+                    tmpModel.UserId = $("#addManagerList input[name=userIdManager]")[i].value;
+                    model.AppStsManagerList.push(tmpModel);
+                }
+            }
+            var count2 = 0;
+            $("#timeListUl>.timeListLi").each(function () {
+                var item = $(this);
+                if (item.find("input[name=weekValue]").val() != "") {
+                    var tmpModel = {};
+                    tmpModel.StartTime = item.find("input[name=startTime]").val();
+                    tmpModel.EndTime = item.find("input[name=endTime]").val();
+                    tmpModel.WeekDays = item.find("input[name=weekValue]").val();
+                    model.AppStsOfficeTimeList.push(tmpModel);
+                }
+            });
+
+            var subData = CommLib.ObjToStringWithQuot(model);
+
+            $.ajax({
+                url: '/SelfTakeStation/UpdateAppSelfTakeStation',
+                type: 'post',
+                async: true,
+                dataType: "json",
+                contentType: "application/json",
+                data: subData,
+                beforeSend: function () {
+                    ajaxLoading(1, '');
+                },
+                success: function (data) {
+                    $("#ajaxLoadBlind").remove();
+                    if (data.ResultCode != 0) {
+                        alert(data.Message, "28px");
+                        return;
+                    }
+                    close();
+                    alert("保存成功");
+                    window.location.href = _listUrl;
+                },
+                error: function () {
+                    $("#ajaxLoadBlind").remove();
+                }
+            });
+        }
+
+        function compareTime(time1, time2) {
+            var time1Array = time1.split(":");
+            var time2Array = time2.split(":");
+            var time1H = Number(time1Array[0]);
+            var time1M = Number(time1Array[1]);
+            var time2H = Number(time2Array[0]);
+            var time2M = Number(time2Array[1]);
+            if (time1H < time2H) {
+                return -1;
+            } else if (time1H == time2H) {
+                if (time1M < time2M) {
+                    return -1;
+                } else if (time1M == time2M) {
+                    return 0;
+                } else {
+                    return 1;
+                }
+            } else {
+                return 1;
+            }
+        }
+
+        function showAdd() {
+            clear();
+        }
+
+        function showEdit(obj) {
+            clear();
+            _status = 1;
+            //var id = $(obj).parents("tr", $("#selfTakeStationTable")).attr("id");
+            // var id = "F434BCF8-C8A1-4FD1-9020-84991266ED7D";
+            var id = _id;
+            $.ajax({
+                url: '/SelfTakeStation/GetAppSelfTakeStationById',
+                type: 'post',
+                async: true,
+                dataType: "json",
+                data: { id: id },
+                beforeSend: function () {
+                    ajaxLoading(1, '');
+                },
+                success: function (data) {
+                    $("#ajaxLoadBlind").remove();
+                    $("#Id").val(data.Id);
+                    $("#Name ").val(data.Name);
+                    $("#Province").val(data.Province);
+                    toSelectCity();
+                    $("#City").val(data.City);
+                    toSelectZone();
+                    $("#District ").val(data.District);
+                    $("#Address").val(data.Address);
+                    $("#Phone").val(data.Phone);
+                    $('#DelayDay').val(data.DelayDay);
+
+                    if (data.AppStsManagerList != undefined && data.AppStsManagerList != null && data.AppStsManagerList.length > 0) {
+                        var magagerCount = data.AppStsManagerList.length;
+                        $("#firstManager input[name=userCodeManager]").val(data.AppStsManagerList[0].UserCode);
+                        $("#firstManager input[name=userIdManager]").val(data.AppStsManagerList[0].UserId);
+                        $("#firstManager input[name=id]").val(data.AppStsManagerList[0].Id);
+                        for (var i = 1; i < magagerCount; i++) {
+                            var tmpHtml = $("#divuserCodeItemEditTemplate").html().format(data.AppStsManagerList[i]);
+                            $("#addManagerList").append(tmpHtml);
+                        }
+                        for (var i = 0; i < magagerCount; i++) {
+                            var hasRequest = {};
+                            hasRequest.UserCode = data.AppStsManagerList[i].UserCode;
+                            hasRequest.UserId = data.AppStsManagerList[0].UserId;
+                            _delArry.push(hasRequest);
+                        }
+                    }
+                    if (data.AppStsOfficeTimeList != undefined && data.AppStsOfficeTimeList != null && data.AppStsOfficeTimeList.length > 0) {
+                        var timeCount = data.AppStsOfficeTimeList.length;
+                        $("#timeListUl").empty();
+                        for (var i = 0; i < timeCount; i++) {
+                            data.AppStsOfficeTimeList[i].WeekDaysText = getWeekDaysText(data.AppStsOfficeTimeList[i].WeekDays);
+                            data.AppStsOfficeTimeList[i].AppStsOfficeTimeId = data.AppStsOfficeTimeList[i].Id;
+                            var tmpHtml = $("#divReceiveTimeEditTmplate>ul").html().format(data.AppStsOfficeTimeList[i]);
+                            var startHT = data.AppStsOfficeTimeList[i].StartTime.Hours;
+                            if (Number(startHT) < 10) {
+                                startHT = "0" + startHT;
+                            }
+                            var startMT = data.AppStsOfficeTimeList[i].StartTime.Minutes;
+                            if (Number(startMT) < 10) {
+                                startMT = "0" + startMT;
+                            }
+                            var endHT = data.AppStsOfficeTimeList[i].EndTime.Hours;
+                            if (Number(endHT) < 10) {
+                                endHT = "0" + endHT;
+                            }
+                            var endMT = data.AppStsOfficeTimeList[i].EndTime.Minutes;
+                            if (Number(endMT) < 10) {
+                                endMT = "0" + endMT;
+                            }
+                            $("#timeListUl").append(tmpHtml);
+                            var deal1 = $("#" + data.AppStsOfficeTimeList[i].Id);
+                            deal1.find(".timeStartH").val(startHT);
+                            deal1.find(".timeStartM").val(startMT);
+                            deal1.find(".timeEndH").val(endHT);
+                            deal1.find(".timeEndM").val(endMT);
+                            deal1.find("input[name=startTime]").val(startHT + ":" + startMT);
+                            deal1.find("input[name=endTime]").val(endHT + ":" + endMT);
+                        }
+                        $("#addNewTimeLine").show();
+                    }
+                    //                    $("#divEditDialog").jhtablebox({
+                    //                        height: 500,
+                    //                        width: 500,
+                    //                        resizable: false,
+                    //                        title: "编辑体验柜信息",
+                    //                        modal: true,
+                    //                        buttons: {},
+                    //                        autoOpen: true,
+                    //                        closedByHide: true
+                    //                    });
+                },
+                error: function () {
+                    $("#ajaxLoadBlind").remove();
+                }
+            });
+
+        }
+
+        function getWeekDaysText(weekDays) {
+            var resultArray = [];
+            if ((weekDays & 1) == 1) {
+                resultArray.push("周一");
+            }
+            if ((weekDays & 2) == 2) {
+                resultArray.push("周二");
+            }
+            if ((weekDays & 4) == 4) {
+                resultArray.push("周三");
+            }
+            if ((weekDays & 8) == 8) {
+                resultArray.push("周四");
+            }
+            if ((weekDays & 16) == 16) {
+                resultArray.push("周五");
+            }
+            if ((weekDays & 32) == 32) {
+                resultArray.push("周六");
+            }
+            if ((weekDays & 64) == 64) {
+                resultArray.push("周日");
+            }
+            return resultArray.join("，");
+        }
+        function close() {
+            
+        }
+        function clear() {
+            
+        }
+        function clear2() {
+            $("#Name ").val("");
+            $("#District ").val("");
+            $("#City").val("");
+            $("#Province").val("");
+            $("#Address").val("");
+            $("#Phone").val("");
+            $("#timeListUl").empty();
+            $("#timeListUl").append(divReceiveTimeTmplate);
+            $("#addNewTimeLine").hide();
+            $("#firstManager").siblings("div").remove();
+            $("#addManagerList input").val("");
+        }
+    </script>
+}

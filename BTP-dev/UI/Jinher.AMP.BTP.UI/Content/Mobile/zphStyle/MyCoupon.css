@@ -1,0 +1,346 @@
+.f30{
+    font-size: 30px;
+}
+.lock{
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    max-width: 500px;
+    margin: 0 auto;
+}
+.pointer{
+    cursor: pointer;
+    max-width: 500px;
+    margin: 0 auto;
+    z-index: 1;
+}
+.page-fixed{
+    position: fixed;
+    left: 0;
+    right: 0;
+    max-width: 500px;
+    margin: 0 auto;
+    background-color: #e7e6ec;
+    z-index: 2;
+}
+.coupon-wrap{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    max-width: 500px;
+    margin: 0 auto;
+    background: rgba(0,0,0,.5);
+    font-family: 'Microsoft Yahei';
+    z-index: 1000;
+}
+.coupon-wrap-content{
+    position: absolute;
+    width: 100%;
+    height: 90%;
+    background: #e7e6ec;
+    bottom: 0;
+    border-radius: 0;
+    border: 0;
+    overflow-y: auto;
+    -webkit-animation: fade .3s;
+}
+@-webkit-keyframes fade{
+    0%{
+        -webkit-transform: translateY(100%);
+    }
+    100%{
+        -webkit-transform: translateY(0);
+    }
+}
+@keyframes fade{
+    0%{
+        transform: translateY(100%);
+    }
+    100%{
+        transform: translateY(0);
+    }
+}
+.coupon-wrap-content .content-tips{
+    display: -webkit-box;
+    -webkit-box-flex: 1;
+    height: 40px;
+    line-height: 40px;
+    margin-top: 74px;
+}
+.coupon-wrap-content .content-tips .line{
+    display: -webkit-box;
+    -webkit-box-flex: 1;
+    height: 1px;
+    margin-top: 20px;
+    background:url('/Content/Mobile/line1.png') no-repeat;
+    background-size: 100% 100%;
+}
+.coupon-wrap-content .content-tips .line.line2{
+    background:url('/Content/Mobile/line2.png') no-repeat;
+}
+.coupon-wrap-content .content-tips .text{
+    display: -webkit-box;
+    padding: 0 15px;
+    color: #999;
+    font-size: 10px;
+}
+/*顶部header*/
+.mk-header{
+    height: 44px;
+    line-height: 44px;
+    font-size: 17px;
+    font-weight: 500;
+    color: #4b4b4b;
+    font-family: 'Microsoft Yahei';
+    text-align: center;
+}
+.mk-header .coupon-close{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 22px;
+    height: 22px;
+    float: right;
+    background: url(/Content/Mobile/quxiao.png) no-repeat;
+    background-size: 100%;
+}
+/*nav*/
+.mk-navbar{
+    display: -webkit-box;
+    -webkit-box-flex: 1;
+    height: 30px;
+    background-color: #fff;
+}
+.mk-navbar .mk-navbar-list{
+    -webkit-box-flex: 1;
+    text-align: center;
+    cursor: pointer;
+}
+.mk-navbar .mk-navbar-list a{
+    display: inline-block;
+    height: 100%;
+    line-height: 30px;
+    font-size: 11px;
+    color: #333;
+}
+.mk-navbar .mk-navbar-list.active a{
+    border-bottom: 1px solid #e4393c;
+    color: #000;
+}
+/*优惠列表*/
+.coupon-lists-wrap, .yj-coupon-lists-wrap{
+    padding-bottom: 10px;
+    margin: 0 15px;
+}
+.coupon-lists-wrap .coupon-lists,.yj-coupon-lists-wrap .coupon-lists{
+    padding: 5px;
+    margin-bottom: 5px;
+    background: #fff;
+}
+.coupon-lists-wrap .coupon-lists .coupon-list,.yj-coupon-lists-wrap .coupon-lists .coupon-list{
+    display: -webkit-box;
+    -webkit-box-flex: 1;
+    border: 1px solid #eee;
+}
+.coupon-lists-wrap .coupon-lists .coupon-list .coupon-list-left,.yj-coupon-lists-wrap .coupon-lists .coupon-list .coupon-list-left{
+    display: -webkit-box;
+    -webkit-box-flex: 1;
+    -webkit-box-orient: horizontal;
+    -webkit-box-align: center;
+    padding-left: 10px;
+}
+.coupon-list-left .icon,.no-use-coupon .icon{
+    width: 22px;
+    height: 22px;
+    margin-right: 10px;
+    background: url('/Content/Mobile/tuoyuan.png') no-repeat;
+    background-size: 100% 100%;
+}
+.coupon-list-left .icon.checked,.no-use-coupon .icon.checked{
+    width: 22px;
+    height: 22px;
+    margin-right: 10px;
+    background: url('/Content/Mobile/checkbox-active.png') no-repeat;
+    background-size: 100% 100%;
+}
+.coupon-list-left .context{
+    position: relative;
+    -webkit-box-flex: 1;
+    height: 90px;
+}
+.coupon-lists-wrap .coupon-lists .coupon-list .coupon-list-left .name,.yj-coupon-lists-wrap .coupon-lists .coupon-list .coupon-list-left .name{
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    padding-top: 10px;
+    padding-right: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #333;
+    font-size: 13px;
+}
+.coupon-lists-wrap .coupon-lists .coupon-list .coupon-list-left .bottom,.yj-coupon-lists-wrap .coupon-lists .coupon-list .coupon-list-left .bottom{
+    position: absolute;
+    bottom: 10px;
+}
+.coupon-lists-wrap .coupon-lists .coupon-list .coupon-list-left .text,.yjcoupon-lists-wrap .coupon-lists .coupon-list .coupon-list-left .text{
+    margin-bottom: 3px;
+    color: #999;
+    font-size: 11px;
+}
+.coupon-lists-wrap .coupon-lists .coupon-list .coupon-list-left .date,.yj-coupon-lists-wrap .coupon-lists .coupon-list .coupon-list-left .date{
+    color: #999;
+    font-size: 9px;
+}
+.coupon-lists-wrap .coupon-lists .coupon-list .coupon-list-right,.yj-coupon-lists-wrap .coupon-lists .coupon-list .coupon-list-right{
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 116px;
+    height: 80px;
+    margin: 5px 0;
+    border-left: 1px dashed #eee;
+}
+.coupon-lists-wrap .coupon-lists .coupon-list .coupon-list-right .title,.yj-coupon-lists-wrap .coupon-lists .coupon-list .coupon-list-right .title{
+    position: relative;
+    margin: 5px 0 0 0;
+    line-height: 22px;
+    color: #999;
+    font-size: 13px;
+    text-align: center;
+}
+.coupon-lists-wrap .coupon-lists .coupon-list .coupon-list-right .price,.yj-coupon-lists-wrap .coupon-lists .coupon-list .coupon-list-right .price{
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 13px;
+    color: #e4393c;
+}
+.no-use-coupon{
+    padding: 8px 16px;
+    line-height: 24px;
+    font-size: 13px;
+    background: #fff;
+    cursor: pointer;
+}
+.tips{
+    margin-top: 20px;
+    font-size: 14px;
+    color: #999;
+    text-align: center;
+}
+.yi-coupon-btn{
+    background: #e4393c;
+    color: #fff;
+    font-size: 17px;
+    line-height: 44px;
+    text-align: center;
+}
+.sold-out-wrap{
+    height: 60%;
+    background:#fff;
+}
+.sold-out-wrap .page-fixed{
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    font-size: 18px;
+    color: #333;
+    border-bottom: 1px solid #e8e8e8;
+    background:#fff;
+}
+.sold-out-lists{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom:0;
+    overflow-y: auto;
+    padding: 0 15px 50px;
+    margin-top: 40px;
+}
+.sold-out-lists .item{
+    display:-webkit-box;
+    display:-webkit-flex;
+    display: flex;
+    margin-bottom: 10px;
+}
+.sold-out-lists .item .pic{
+    position: relative;
+    top:0;
+    left:0;
+    width: 80px;
+    height: 80px;
+    border-radius: 3px;
+    border: 1px solid #d8d8d8;
+}
+.sold-out-lists .item .pic img{
+    width: 100%;
+    height: 100%;
+}
+.sold-out-lists .item .pic:after{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform:translate(-50%,-50%);
+    transform:translate(-50%,-50%);
+    width: 50px;
+    height: 50px;
+    background-image:url(/Content/Mobile/sold-out.png);
+    background-size: 100% 100%;
+    content: '';
+}
+.sold-out-lists .item .right{
+    margin-left: 10px;
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+    flex:1;
+    color:#999
+}
+.sold-out-lists .item .right .name{
+    display:-webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 14px;
+    line-height: 16px;
+}
+.sold-out-lists .item .right .size{
+    margin: 8px 0 5px 0;
+    font-size: 11px;
+    line-height: 11px;
+}
+.sold-out-lists .item .right .price{
+    font-size: 13px;
+}
+.sold-out-bottom{
+    position: absolute;
+    bottom:0;
+    left: 0;
+    right: 0;
+    max-width: 500px;
+    margin: 0 auto;
+    display:-webkit-box;
+    display:-webkit-flex;
+    display: flex;
+    height: 49px;
+    line-height: 49px;
+    text-align: center;
+    color: #fff;
+    font-size: 17px;
+    background-color:#e96163;
+}
+.sold-out-bottom .sold-out-btn{
+    -webkit-flex: 1;
+    flex: 1;
+    color: #fff;
+}
+.bg-red{
+    background-color:#e4393c;
+}

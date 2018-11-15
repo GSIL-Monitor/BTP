@@ -1,0 +1,30 @@
+﻿
+/***************
+功能描述: BTPIService
+作    者: 
+创建时间: 2018/6/12 18:42:55
+***************/
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.ServiceModel;
+using System.ServiceModel.Web;
+using Jinher.JAP.BF.IService.Interface;
+using Jinher.AMP.BTP.Deploy;
+
+namespace Jinher.AMP.BTP.IBP.IService
+{
+
+    [ServiceContract]
+    public interface IAppMetaData : ICommand
+    {
+        [WebInvoke(Method = "POST", UriTemplate = "/Do", BodyStyle = WebMessageBodyStyle.WrappedRequest, ResponseFormat = WebMessageFormat.Json, RequestFormat = WebMessageFormat.Json)]
+        [OperationContract]
+        void Do();
+
+        [WebInvoke(Method = "POST", UriTemplate = "/GetName", BodyStyle = WebMessageBodyStyle.WrappedRequest, ResponseFormat = WebMessageFormat.Json, RequestFormat = WebMessageFormat.Json)]
+        [OperationContract]
+        string GetName(string Code);
+    }
+}

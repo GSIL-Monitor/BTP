@@ -1,0 +1,143 @@
+*{	margin: 0;
+	padding: 0;
+}
+html{
+	font-size:62.5%;/*10/16*100%*/
+    background-color: #eee;
+	color: #000;
+} 
+a{
+	text-decoration: none;
+	color: #000000;
+	display: inline-block;
+} 
+.container{
+	width: 100%;
+	max-width: 500px;
+    margin: 0 auto;
+    
+}
+.discription{
+	text-align: center;
+    font-size: 1.5rem;
+    padding: 15px;
+}
+.discription a{
+	color: #4197ef;
+}
+.distribution_succ_info, .distribution_succ_way{
+	background: #fff;
+}
+.margB-10{
+	margin-bottom: 10px;
+}
+.succ_info{
+    padding-top: 15px;
+	text-align: center;
+    font-size: 2rem;
+    margin: 0 auto;
+    width: 60%;
+}
+/*.distribution_succ_way_one{
+	padding: 15px;
+}*/
+p.way_text{
+	line-height: 25px;
+}
+div .way_padding{
+    padding: 25px 15px;
+}
+.way_step{
+    padding: 15px;
+	border-bottom: 1px solid #e8e8e8; 
+}
+.way_step:last-child{
+	border-bottom: 0px;
+}
+.way_text{
+	font-size: 1.8rem;
+	color: #333;
+}
+.way_to{
+	font-size: 1.5rem;
+	color: #666;
+}
+.way_info{
+	color: #999;
+	font-size: 1.3rem;
+}
+.center{
+    text-align: center;
+}
+.btn {
+    text-decoration: none;
+    display: inline-block;
+    border: 1px solid #999;
+    border-radius: 10px;
+    padding: 0.6rem 2rem;
+    margin: 0 0.5rem;
+    font-size: 1.5rem;
+    color: #6b6a6a;
+}
+.active {
+    border: 1px solid #e4393c;
+    color: #e4393c;
+}
+.share{
+	display: inline-block;
+}
+.shop{
+    position: relative;
+    top: 4px;
+	float: right;
+    font-size: 1.5rem;
+    color: #4197ef;
+}
+.qrcode{
+    width: 50%;
+    margin: 0 auto;
+}
+.qrcode img{
+	width: 100%;
+}
+.qrcode_save{
+	text-align: center;
+}
+.qrcode_save_text{
+	font-size: 1.5rem;
+	color: #999;
+}
+
+@media screen and (max-width:478px){
+	.succ_info, .way_text{
+	    font-size: 1.7rem;
+	}
+	.way_to,.shop{
+		font-size: 1.4rem;
+	}
+}
+@media screen and (max-width:386px){
+	.succ_info, .way_text{
+	    font-size: 1.6rem;
+	}
+    .shop{
+        top: 5px;
+    }
+	.way_to,.shop{
+		font-size: 1.3rem;
+	}
+}
+@media screen and (max-width:370px){
+	.succ_info, .way_text{
+	    font-size: 1.3rem;
+	}
+	.shop{
+		top: 7px;
+	}
+	.way_to,.shop{
+		font-size: 1.1rem;
+	}
+	.way_info, .qrcode_save_text, .discription{
+		font-size: 1rem;
+	}
+}

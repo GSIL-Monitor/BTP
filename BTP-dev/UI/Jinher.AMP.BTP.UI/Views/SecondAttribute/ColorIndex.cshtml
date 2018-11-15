@@ -1,0 +1,180 @@
+﻿@{
+    Layout = null;
+    ViewBag.Title = "ColorIndex";
+    List<Jinher.AMP.BTP.Deploy.CustomDTO.ColorAndSizeAttributeVM> colorAndSizeAttributeList = ViewBag.ColorList;
+}
+@helper getUrlParam() { 
+    try
+    {
+    string url = Request.Url.PathAndQuery.Split('?')[1];
+        @url;
+    }
+    catch { }    
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>颜色设置</title>
+    <link rel="stylesheet" href="/Content/css/style.css" />
+    <script src="/Scripts/jquery.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        function getQueryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]); return null;
+        }
+        $(document).ready(function () {
+            var flag = getQueryString("flag");
+            if (flag == "add") {
+                $("#btnBack").click(function () {
+                    var cfrom = getQueryString("cfrom");
+                    var url = cfrom && cfrom == "cy" ? "/Commodity/CYAddCommodity" : "/Commodity/AddCommodity"
+                    if (getQueryString("state")) {
+                        url = url + "?state=" + getQueryString("state");
+                        if (getQueryString("appId")) {
+                        url = url + "&appId=" + getQueryString("appId");
+						}
+                    }
+                    else if (getQueryString("appId")) {
+                        url = url + "?appId=" + getQueryString("appId");
+                    }
+                    window.location.href = url;
+                });
+            }
+            else if (flag == "edit") {
+                $("#btnBack").click(function () {
+                    var cfrom = getQueryString("cfrom");
+                    var urlfrom = cfrom && cfrom == "cy" ? "/Commodity/CYUpdateCommodity" : "/Commodity/UpdateCommodity"
+                    var url = urlfrom+"?commodityId=" + getQueryString("commodityId");
+                    if (getQueryString("state")) {
+                        url = url + "&state=" + getQueryString("state");
+                    }
+                    window.location.href = url;
+                });
+            }
+            else {
+                $("#btnBack").css("display", "none");
+            }
+
+            $("#btnSubmit").bind("click", function () {
+                var colors = $.trim($("#ColorList").val());
+                if (colors != "" && colors != '可添加多个,以逗号分隔.例 红,黄,蓝') {
+                    $.ajax({
+                        url: '/SecondAttribute/AddColor',
+                        type: 'post',
+                        data: { colors: colors },
+                        success: function (data) {
+                            if (data.Result == true) {
+                                alert(data.Messages);
+
+                                var strings = '?flag=' + getQueryString("flag");
+                                if (getQueryString("state")) {
+                                    strings = strings + "&state=" + getQueryString("state");
+                                }
+                                if (getQueryString("commodityId")) {
+                                    strings = strings + "&commodityId=" + getQueryString("commodityId");
+                                }
+                                if (getQueryString("appId")) {
+									strings = strings + "&appId=" + getQueryString("appId");
+								}
+
+                                window.location.href = '/SecondAttribute/ColorIndex' + strings;
+                            } else {
+                                alert(data.Messages);
+                            }
+                        },
+                        error: function () {
+                            alert("请稍候再试");
+                        }
+                    })
+                }
+            });
+
+	        $("#ColorList").val('可添加多个,以逗号分隔.例 红,黄,蓝').css('color', '#ccc').focus(function () {
+		        if(this.value == '可添加多个,以逗号分隔.例 红,黄,蓝') {
+			        this.value = '';
+			        this.style.color = '#000';
+		        }
+	        }).blur(function () {
+				        if(this.value == '' || this.value == '可添加多个,以逗号分隔.例 红,黄,蓝') {
+					        this.value = '可添加多个,以逗号分隔.例 红,黄,蓝';
+					        this.style.color = '#ccc';
+				        }
+			        });
+
+
+
+            $("#listUL li").css("position", "relative");
+            $("#listUL li").hover(function () {
+                $(this).find("img").show();
+            }, function () {
+                $(this).find("img").hide();
+            });
+        });
+
+        function toDeleteColor(attrid) {
+            $.ajax({
+                url: '/SecondAttribute/DeleteAttribute',
+                type: 'post',
+                data: { attrid: attrid },
+                success: function (data) {
+                    if (data.Result == true) {
+                        alert(data.Messages);
+
+                        var strings = '?flag=' + getQueryString("flag");
+                        if (getQueryString("state")) {
+                            strings = strings + "&state=" + getQueryString("state");
+                        }
+                        if (getQueryString("commodityId")) {
+                            strings = strings + "&commodityId=" + getQueryString("commodityId");
+                        }
+                        if (getQueryString("appId")) {
+							strings = strings + "&appId=" + getQueryString("appId");
+						}
+
+                        window.location.href = '/SecondAttribute/ColorIndex' + strings;
+                    } else {
+                        alert(data.Messages);
+                    }
+                },
+                error: function () {
+                    alert("请稍候再试");
+                }
+            });
+        }
+        try { document.domain = "iuoooo.com" } catch (e) { }  
+    </script>
+</head>
+<body>
+    <div class="box">
+        <div class="content">
+            <div class="right">
+                <div class="set_top">
+                    <ul>
+                        <li><a href="/Category/Index?@getUrlParam()">类目设置</a></li>
+                        <li><a href="/SecondAttribute/SizeIndex?@getUrlParam()">尺寸设置</a></li>
+                        <li class="new"><a href="javascript:void(0)">颜色设置</a></li>
+                        <li><a href="#" id="btnBack">返回</a></li>
+                    </ul>
+                </div>
+                <div class="set_bot1">
+                    <h1>
+	                    请在下面文本框中输入颜色值</h1>
+                    <p>
+                        <input type="text" id="ColorList" placeholder="可添加多个,以逗号分隔.例 红,黄,蓝" style="width:600px;" />
+                        <span id="btnSubmit">保存</span>
+                    </p>
+                    <ul id="listUL">
+                        @foreach (Jinher.AMP.BTP.Deploy.CustomDTO.ColorAndSizeAttributeVM item in colorAndSizeAttributeList)
+                        {
+                            <li><span>@item.SecondAttributeName</span><span><a href="javascript:void(0)" onclick="toDeleteColor('@item.SecondAttributeId')" >
+                            <img src="/images/close.jpg" style="display:none"></a></span></li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

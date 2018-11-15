@@ -1,0 +1,180 @@
+html
+{
+    height: 100%;
+    margin: 0;
+    font-size: 62.5%;
+}
+
+body
+{
+    font-size: 1.4rem;
+    padding: 0;
+    margin: 0;
+    font-family: Helvetica Neue,Helvetica,PingFang SC,Hiragino Sans GB,Microsoft YaHei,SimSun,sans-serif;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+}
+
+a
+{
+    text-decoration: none;
+    color: inherit;
+}
+template
+{
+    display:none;
+}
+
+#app
+{
+    min-height: 1200px;
+}
+.content-wrapper
+{
+    width: 100%;
+    z-index: 97;
+    box-sizing: border-box;
+    padding: 60px 0px 0px 200px;
+}
+.content
+{
+    padding: 20px;
+}
+.content .content-inner
+{
+}
+
+#listWithFiltersPage .filters
+{
+    padding: 10px;
+}
+
+#listWithFiltersPage .operations
+{
+    margin: 0 0 10px 0;
+    border: 1px #efefef solid;
+    padding: 10px;
+    background: #f9f9f9;
+}
+
+#listWithFiltersPage .filters .el-form-item
+{
+    margin-bottom: 10px;
+}
+
+#listWithFiltersPage .filters .filter
+{
+    display: inline-block;
+    width: auto;
+    padding: 10px;
+    border-radius: 5px;
+}
+#listWithFiltersPage .filters .filter .el-select
+{
+    /*display: inline-block;*/
+}
+#listWithFiltersPage .filters .el-input
+{
+    /*width: 150px;
+    display: inline-block;*/
+}
+.pagination-wrapper
+{
+    text-align: center;
+    padding: 20px;
+}
+
+.avatar-uploader .el-upload
+{
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+.avatar-uploader .el-upload:hover
+{
+    border-color: #20a0ff;
+}
+.avatar-uploader-icon
+{
+    font-size: 28px;
+    color: #8c939d;
+    width: 80px;
+    height: 80px;
+    line-height: 80px;
+    text-align: center;
+}
+.avatar
+{
+    width: 80px;
+    height: 80px;
+    display: block;
+}
+
+.breadcrumb
+{
+    padding: 2px;
+    line-height: 20px;
+    font-size: 14px;
+    border-bottom: 1px solid #e8e8e8;
+}
+.breadcrumb > span + span
+{
+    padding-left: 5px;
+}
+.breadcrumb .back
+{
+    float: right;
+    color: #7e7e7e;
+}
+.breadcrumb .back img
+{    
+    height: 17px;
+    width:17px;
+    vertical-align: middle;
+    margin-bottom: 3px;
+    border:0px;
+}
+
+/******************preloader************************/
+.preloader {
+    padding: 200px;
+    background: url('images/preloader.gif') no-repeat 50% 50% transparent;
+}
+
+
+/******************override************************/
+[v-cloak] {
+  display: none;
+}
+.el-table
+{
+    font-size: 12px;
+}
+.el-loading-mask
+{
+    z-index: 1000;
+}
+.el-checkbox__inner {
+    border: 1px solid green
+}
+/******************scrollbar************************/
+/*定义滚动条宽高及背景，宽高分别对应横竖滚动条的尺寸*/
+.scrollbar .el-table__body-wrapper::-webkit-scrollbar{
+    width: 8px;  
+    height: 8px;  
+    background-color: #F5F5F5;
+}
+/*定义滚动条的轨道，内阴影及圆角*/
+.scrollbar .el-table__body-wrapper::-webkit-scrollbar-track{
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);  
+    border-radius: 10px;  
+    background-color: #F5F5F5; 
+}
+/*定义滑块，内阴影及圆角*/
+.scrollbar .el-table__body-wrapper::-webkit-scrollbar-thumb{
+    border-radius: 10px;  
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);  
+    background-color: #555; 
+}

@@ -1,0 +1,173 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>京东日志信息</title>
+    <link rel="stylesheet" type="text/css" href="/Content/css/common.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.all.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/ui.jqgrid.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.datepicker.css" />
+    <link rel="stylesheet" type="text/css" href="/Scripts/bigautocomplete/jquery.bigautocomplete.css" />
+    
+    <style>
+        .ui-jqgrid tr.jqgrow td
+        {
+            white-space: normal !important;
+            height: auto;
+            vertical-align: text-top;
+            padding-top: 2px;
+        }
+        
+        /* 半透明的遮罩层 */
+        #overlay
+        {
+            background: #000;
+            filter: alpha(opacity=50); /* IE的透明度 */
+            opacity: 0.5; /* 透明度 */
+            display: none;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 100%;
+            height: 100%;
+            z-index: 100; /* 此处的图层要大于页面 */
+            display: none;
+            _background-color: #a0a0a0; /* 解决IE6的不透明问题 */
+        }
+        
+        #divLayContent
+        {
+            background: #fff;
+            z-index: 105;
+            display: block;
+            position: absolute;
+            min-height: 300px;
+            min-width: 400px;
+        }
+        
+        #divLayContent span
+        {
+            cursor: pointer;
+            float: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="SearchArea ml10">
+        <div class="mt10">
+            <label class="w80" style="display: inline-block;">
+                开始时间
+            </label>
+            <input type="text" id="startUcDaily" class="inp-txt w300" />
+            <label class="w80" style="display: inline-block;">
+                结束时间
+            </label>
+            <input type="text" id="endUcDaily" class="inp-txt w300" />
+            <input type="button" id="btnSearch" value="查询" />
+        </div>
+        <div class="GridArea mt10 ml10">
+            <table id="jqGrid">
+            </table>
+            <div id="jqGridPager">
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript" src="/Scripts/jquery.js"></script>
+<script type="text/javascript" src="/Scripts/jquery.extend.js"></script>
+<script type="text/javascript" src="/Scripts/jquery.ui.base.js"></script>
+<script type="text/javascript" src="/Scripts/i18n/jquery.ui-zh.js"></script>
+<script type="text/javascript" src="/Scripts/Grid/jquery.grid.base.js"></script>
+<script type="text/javascript" src="/Scripts/Pager/jquery.ui.jhpager.js"></script>
+<script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.datepicker.js"></script>
+<script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.jhdatetime.js"></script>
+<script type="text/javascript" src="/Scripts/i18n/jquery.ui.datepicker-zh.js"></script>
+<script type="text/javascript" src="/Scripts/bigautocomplete/jquery.bigautocomplete.js"></script>
+<script type="text/javascript" src="/Scripts/CommLib.js"></script>
+<script src="/Scripts/DatePicker/jquery.ui.datepicker.js" type="text/javascript"></script>
+<script src="/Scripts/TableBox/jquery.ui.jhtablebox.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(function () {
+        $("#startUcDaily").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            showOtherMonths: true,
+            selectOtherMonths: true,
+            timer: false,
+            dateFormat: 'yy-mm-dd'
+        });
+        $("#endUcDaily").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            showOtherMonths: true,
+            selectOtherMonths: true,
+            timer: false,
+            dateFormat: 'yy-mm-dd'
+        });
+
+        $("#btnSearch").click(function () {
+            RefreshList();
+        });
+                
+        InitGrid();
+    });
+
+    function InitGrid() {
+            var data = {   //查询提交数据
+                "dtBeginDate": $("#startUcDaily").val(),
+                "dtEndDate": $("endUcDaily").val()
+            };
+
+            $("#jqGrid").jqGrid({
+                datatype: "json",
+                postData: data,
+                url: "GetStockJournalData",
+                mtype: 'POST',
+                colModel: [
+                    { sortable: false, label: 'ErQiCode', name: 'CommodityErQiCode', width: 70 },
+                    { sortable: false, label: 'OldStock', name: 'CommodityOldStock', width: 100 },
+                    { sortable: false, label: 'NewStock', name: 'CommodityNewStock', width: 70 },
+                    { sortable: false, label: 'StockOldStock', name: 'CommodityStockOldStock', width: 150 },
+                    { sortable: false, label: '详情', name: 'Json', width: 150 },
+                ],
+                rowNum: 20,
+                pager: '#jqGridPager',
+                height: 700,
+                autowidth: true,
+                multiselect: true,
+                forceFit: true,
+                rownumbers: true
+                });
+        }
+
+
+    function RefreshList(pageNo) {
+        var isPageNo = typeof (pageNo) == "number";
+        if (isPageNo) {
+            if (pageNo <= 0) pageNo = $("#jqGrid").getGridParam("page");
+        } else {
+            pageNo = $("#jqGrid").getGridParam("page");
+        }
+        var data = {   //查询提交数据
+                "dtBeginDate": $("#startUcDaily").val(),
+                "dtEndDate": $("endUcDaily").val()
+            };
+        $('#jqGrid').jqGrid('setGridParam', {
+            datatype: "json",
+            postData: data,
+            url: "GetStockJournalData",
+            mtype: 'POST'
+        });
+        $('#jqGrid').trigger("reloadGrid", [{
+            page: pageNo
+        }]);
+    }
+
+
+</script>

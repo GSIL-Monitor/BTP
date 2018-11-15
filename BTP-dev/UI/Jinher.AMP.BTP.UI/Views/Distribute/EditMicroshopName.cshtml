@@ -1,0 +1,84 @@
+﻿@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+}
+@{
+    ViewBag.Title = "ShowRuleDescription";
+}
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>修改昵称</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta content="telephone=no" name="format-detection"/>
+    <link href="/Content/Mobile/mobileKit-min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="/Content/Mobile/distribute/distribution_edit.css">
+
+    <script type="text/javascript">
+        /**
+        * 入口
+        */
+        $(document).ready(function () {
+            //获取昵称 ，将昵称显示到输入框红
+            //测试数据
+            var name = getQueryString('MsName');
+            $('#editor-input').val(name);
+            initEvent();
+        });
+        /**
+        * 初始化事件
+        */
+        function initEvent() {
+            /**
+            * 清空输入框
+            */
+            $('.editor-wrap').on('click', '.fa-times', function () {
+                $('#editor-input').val('');
+            });
+            /**
+            * 确定按钮事件绑定
+            */
+            $('.btnsave').on('click', function () {
+                var value = $.trim($('#editor-input').val());
+                var data = {
+                    "Id": getQueryString('MsId'),
+                    "Name": value
+                }
+                getDataAjax({
+                    url: '/Distribute/UpdateDistributionMicroShop',
+                    data: data,
+                    callback: function (data) {
+                        if (data.isSuccess === true) {
+                            document.location.href = "DistributeDetail?appId=" + getQueryString("appId") + "&source=share";
+                        } else {
+                            toast("修改名称失败");
+                        }
+                    },
+                    error: function () {
+                        toast("修改名称异常");
+                    }
+                });
+            });
+        }
+    </script>
+</head>
+<body>
+	<div class="page">
+@*		<header class="bar bar-nav">
+			<a href="javascript:window.history.back();" class="icon-back pull-left"><img src="/Content/Mobile/angle-left.png"></a>
+			<a id="submit" href="javascript:void(0);" class="btn btn-link pull-right">确定</a>
+			<h1 class="title">修改昵称</h1>
+		</header>*@
+		<div class="content">
+			<div class="editor-wrap">
+				<input id="editor-input" class="editor-input" placeholder="请输入昵称" type="text"/>
+				<li class="fa fa-times"></li>
+			</div>
+		    <div class="tips">4-20个字符，可由中文、数字、"_"、"-"组成</div>
+            <div class="btnsave">确定</div>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,140 @@
+﻿@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+}
+@section TitleHtml
+{
+    <title>评价</title>
+}
+@section CssStyles{
+    <link rel="stylesheet" href="../../Content/style/style.css" />
+    <style type="text/css">
+        .footer_4
+        {
+            border-radius: 4px;
+            background-color: #e0e0e0;
+            text-align: center;
+            color: #505050;
+            font-size: 1em;
+            letter-spacing: 3px;
+            padding: 3% 12%;
+            display: inline-block;
+            margin-left: 30px;
+        }
+        
+        .footer_2
+        {
+            border-radius: 4px;
+            background-color: rgb(255, 0, 84);
+            text-align: center;
+            color: #fff;
+            font-size: 1em;
+            letter-spacing: 3px;
+            padding: 3% 12%;
+            display: inline-block;
+            margin-left: 5px;
+        }
+    </style>
+}
+@section ClientScript
+{
+    <script type="text/javascript">
+        var ordeItemId = getQueryString('ordeItemId');
+        var orderId = getQueryString('orderId');
+        var appId = getQueryString('shopId');
+
+        $(function () {
+            saveContextDTOByUrl();
+            if (!isWeiXin() && sessionStorage.source == "share") {
+                $(".mobile-header").show();
+            }
+            else {
+                $(".mobile-header").hide();
+            }
+            var limitNum = 140;
+            var pattern = limitNum + '字';
+            $('.word-count').html(pattern);
+            $('#Content').on('keydown keyup keypress submit focus blur copy cut paste change input', function (event) {
+                var value = $.trim($(this).val());
+                var remain = value.length;
+
+                if (remain > limitNum) {
+                    $(this).val(value.substring(0, limitNum));
+                    pattern = '0字';
+
+                } else {
+                    var result = limitNum - remain;
+                    pattern = result + '字';
+                }
+
+                $('.word-count').html(pattern);
+            });
+
+            $("#btnOk").click(function () {
+                var mess = $("#Content").val();
+
+                if ($.trim(mess).length == 0) {
+                    $('.word-count').html("评价不能为空");
+                    return;
+                } else if ($.trim(mess).length > 140) {
+
+                    $('.word-count').html("评价字数超过限制");
+
+                    return;
+
+                }
+                else {
+                    //评价送积分
+                    var givePsource = sessionStorage.source == "share" ? "&source=share" : "";
+                    var giveUrl = window.location.protocol + "//" + window.location.host + "/Mobile/MyOrderDetail?shopId=" + appId + "&orderId=" + orderId + "&userId=" + getUserId() + givePsource;
+                    getDataAjax({
+                        url: '/Mobile/SavaeOrderReview',
+                        data: { ordeItemId: ordeItemId, appId: appId, userId: getUserId(), sessionId: getSessionId(), content: mess, giveUrl: giveUrl },
+                        callback: function (data) {
+                            $("#ajaxLoadBlind").remove();
+                            if (data.ResultCode == 0) {
+                                window.location.href = urlAppendCommonParams("/Mobile/MyOrderDetail?shopId=" + appId + "&orderId=" + orderId);
+                            } else {
+                                toast(data.Message);
+                            }
+
+                        },
+                        beforeSend: function () {
+                            ajaxLoading('22', '');
+                        },
+                        error: function (err) {
+                            $("#ajaxLoadBlind").remove();
+                        }
+                    });
+                }
+
+            });
+
+            $("#btnCancel").click(function () {
+                CancelSubmit();
+            });
+
+        });
+
+        function CancelSubmit() {
+            window.location.href = urlAppendCommonParams("/Mobile/MyOrderDetail?shopId=" + appId + "&orderId=" + orderId);
+        }
+    </script>}
+<header class="mobile-header" style="display: none">
+            <h1 class="page-name">评价</h1>
+        </header>
+<div class="main">
+    <ul class="groups">
+        <li>
+            <div class="reason-desc">
+                <textarea name="" placeholder="请填写评价" id="Content"></textarea>
+                <div class="word-count">
+                    140字</div>
+            </div>
+        </li>
+        <li>
+            <div style="text-align: right;">
+                <span class="footer_4" id="btnCancel">取消</span> <span class="footer_2" id="btnOk">提交</span>
+            </div>
+        </li>
+    </ul>
+</div>

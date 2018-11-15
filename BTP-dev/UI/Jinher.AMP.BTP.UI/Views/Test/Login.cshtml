@@ -1,0 +1,92 @@
+﻿@{
+    ViewBag.Title = "登录";
+    Layout = null;
+}
+<link href="../../Content/common.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+    body, html
+    {
+        border: 0;
+        font-size: 12px;
+        font-family: "宋体" ， Arial, Helvetica, sans-serif;
+        color: #333;
+        position: relative;
+    }
+    .coat
+    {
+        height: 280px;
+        width: 400px;
+        margin: 0 auto;
+        background-color: #1C86EE;
+        margin-top: 15%;
+    }
+    
+    .inp-txt
+    {
+        height: auto;
+    }
+</style>
+
+<div class="coat">
+    <div class="padding15">
+        <div class="padding10" style="font-size: 24px; font-family: 黑体; font-weight: bold;">
+            电商缓存</div>
+        <div class="padding10" style="font-size: 14px;">
+            BTP Cache</div>
+        <div class="padding10">
+            <div class="w60" style="display: inline-block">
+                账号:</div>
+            <input name="acnt" id="acnt" class="inp-txt w230" type="text" style="display: inline-block" /></div>
+        <div class="padding10">
+            <div class="w60" style="display: inline-block">
+                密码:
+            </div>
+            <input name="pwd" id="pwd" class="inp-txt w230" type="password" style="display: inline-block" /></div>
+        <div id="error_msg" style="color: Red; margin-left: 70px">
+        </div>
+        <div class="padding15" style="margin-left: 100px">
+            <a href="#" id="btn_login" onclick="login()" class="btn120">登录</a></div>
+    </div>
+</div>
+<script src="../../Scripts/jquery-1.7.2.min.js" type="text/javascript"></script>
+<script src="../../Content/Mobile/Common.js" type="text/javascript"></script>
+<script type="text/javascript">
+ 
+   $(function(){
+    
+       $("#acnt").focus();
+
+     $(document).keypress(function(event){  
+        var keycode = (event.keyCode ? event.keyCode : event.which);  
+        if(keycode == '13'){  
+        login();
+        }  
+      }); 
+   })
+    function login() {
+        var account = $("#acnt").val();
+        var pwd = $("#pwd").val();
+        var params = { "acnt": account, "pwd": pwd };
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("DoLogin", "Test")',
+            datatype: "json",
+            data: params,
+            success: function (result) {
+                if (result.ResultCode != "0") {
+                    $("#error_msg").html(result.Message);
+                }
+                else {
+                    var returnUrl = getQueryString("returnUrl");
+                    if (!JsVilaDataNull(returnUrl)) {
+                        returnUrl = "/Test/Index";
+                    }
+                    else {
+                        returnUrl = "/Test/" + returnUrl;
+                    }
+                    window.location.href = returnUrl;
+                }
+            }
+        });
+    }
+</script>

@@ -1,0 +1,444 @@
+﻿@{
+    //===============此页面已废弃不用。==================
+    Layout = null;
+    bool hasAlipay = ViewBag.hasAlipay;
+    bool hasPayDelivery = ViewBag.hasPayDelivery;
+    bool hasJinherAlipay = ViewBag.hasJinherAlipay;
+}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta content="width=device-width,minimum-scale=1.0,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"
+              name="viewport">
+        <link rel="stylesheet" href="/Content/Mobile/css.css" />
+        <title>金和</title>
+        <script src="/Scripts/first-js.js" type="text/javascript"></script>
+        <script src="/Content/Mobile/zepto.min.js"></script>
+        <script src="/Content/Mobile/allEvent.js"></script>
+        <script src="/Content/Mobile/Common.js" type="text/javascript"></script>
+    
+        <script>
+            var service_type = "0x0004";
+            $(function () {
+
+                if (sessionStorage.ProductType != "appcjzy" && sessionStorage.ProductType != "webcjzy") {
+                    if ($(".hdfk").length > 0) {
+                        $(".hdfk").show();
+                    }
+                }
+               
+                var orderInfo = JSON.parse(sessionStorage.orderInfo);
+                var info = JSON.parse(sessionStorage.commodityUpInfo);
+
+                if (info.name == undefined && sessionStorage.ShopCartDate != undefined && sessionStorage.ShopCartDate != "null" && sessionStorage.ShopCartDate != "") {
+                    var strCartInfo = "[" + sessionStorage.ShopCartDate.substr(0, sessionStorage.ShopCartDate.length - 1) + "]";
+                    var cartInfo = JSON.parse(strCartInfo);
+
+                    info.name = cartInfo[0].Name;
+
+                    if (info.name == undefined) {
+                        info.name = "";
+                    }
+                }
+
+                info.name = "电商" + info.name;
+                var zfreight = 0;
+                if (JsVilaDataNull(getQueryString('mainid'))) {
+                    for (var i = 0; i < orderInfo.length; i++) {
+                        zfreight += orderInfo[i].Freight;
+                    }
+                    $('#main_1').find('.price_1').text('(' + getCurrency() + info.priceAll + '元，含运费' + getCurrency() + zfreight + '元)');
+                }
+                else {
+                    $('#main_1').find('.price_1').text('(' + getCurrency() + info.priceAll + '元，含运费' + getCurrency() + orderInfo.Freight + '元)');
+                }
+
+                $('#addCommodity').height($(window).height()).find('.addCommodity_1').on("click", function () {
+                    $('#addCommodity').hide();
+                });
+                $('#buttonLogin').on("click", function (e) {
+                    var data = {};
+                    data.username = $('#username').val();
+                    data.password = $('#userPassword').val();
+
+                    $.get('/mobile/Login', data, function (data) {
+                        if (data.IsSuccess) {
+                            sessionStorage.loginUser = data.ContextDTO.LoginUserID;
+                        } else {
+                            alert(data.Message);
+                        }
+                    }, 'json');
+                });
+
+
+                $('#box_id_1').on("click", 'li', function (e) {
+                    var self = $(e);
+                    self.parents('#box_id_1').find('li').removeClass('li_pay_focus');
+                    self.addClass('li_pay_focus');
+
+                });
+
+                $('#upData').on("click", function () {
+                    //行为记录->点击确认支付操作
+                    logBTP(sessionStorage.SrcType, service_type, "0x0008", '');
+                    //$('#upData').hide();
+                    var qappId = '';
+                    var qorderId = '';
+                    var qmoney = 0;
+                    var upData = $('#box_id_1');
+
+
+                    if (JsVilaDataNull(getQueryString('mainid'))) {
+                        $.ajax({
+                            type: "post",
+                            url: '/SetMobile/MoreConfirmPayPrice',
+                            async: false,
+                            data: { "MainOrderId": getQueryString('mainid'), "Price": info.priceAll },
+                            dataType: "json",
+                            beforeSend: function () {
+                                setTimeout(function () {
+                                    ajaxLoading('22', '');
+                                }, 100);
+                            },
+                            success: function (data) {
+                                switch (data.ResultCode) {
+                                    case 0:
+                                        morePay();
+                                        break;
+                                    case 1:
+                                        alert(data.Message);
+                                        $("#ajaxLoadBlind").remove();
+                                        break;
+                                    case 2:
+                                        info.priceAll = data.Message;
+                                        $('.price_1').text('(' + getCurrency() + data.Message + '元，含运费' + getCurrency() + zfreight + '元)');
+                                        if (confirm('当前商品价格已发生变化,是否继续?\n最新订单价格为(' + getCurrency() + data.Message + '元)')) {
+                                            morePay();
+                                        }
+                                        break;
+                                }
+                                $("#ajaxLoadBlind").remove();
+                            },
+                            error: function () {
+                                $("#ajaxLoadBlind").remove();
+                            }
+
+                        });
+                    }
+                    else {
+                        var data = {
+                            orderId: orderInfo.OrderId || getQueryString('orderId'),
+                            userId: getUserId() || sessionStorage.loginUser,
+                            appId: sessionStorage.appId || getQueryString('appId')
+                        };
+                        getDataAjax2({
+                            url: '/Jinher.AMP.BTP.SV.CommodityOrderSV.svc/ConfirmPayPrice',
+                            data: JSON.stringify({ userId: getUserId(), commodityOrderId: orderInfo.OrderId }),
+                            callback: function (data) {
+                                switch (data.ResultCode) {
+                                    case 0:
+                                        info.priceAll = data.Message;
+                                        $('.price_1').text('(' + getCurrency() + data.Message + '元，含运费' + getCurrency() + data.Freight + '元)');
+
+                                        send();
+                                        break;
+                                    case 1:
+                                        alert(data.Message);
+
+                                        break;
+                                    case 2:
+                                        info.priceAll = data.Message;
+
+                                        $('.price_1').text('(' + getCurrency() + data.Message + '元，含运费' + getCurrency() + data.Freight + '元)');
+
+
+
+                                        if (confirm('当前商品价格已发生变化,是否继续?\n最新订单价格为(' + getCurrency()  + data.Message + '元)')) {
+                                            send();
+                                        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                        break;
+                                }
+                                $("#ajaxLoadBlind").remove();
+                            },
+                            beforeSend: function () {
+                                ajaxLoading('22', '');
+                            },
+                            error: function (datas) {
+                                $("#ajaxLoadBlind").remove();
+                                alert('请求失败!');
+
+                            }
+                        });
+                    }
+                    function jinherzfbWebPay() {
+                        var payeeId = '';
+                        var bappId = '';
+                        var borderId = '';
+                        var bmoney = 0;
+                        if (JsVilaDataNull(getQueryString('mainid'))) {
+                            bappId = qappId;
+                            borderId = getQueryString('mainid');
+                            bmoney = qmoney;
+                        }
+                        else {
+                            bappId = sessionStorage.appId;
+                            borderId = orderInfo.OrderId;
+                            bmoney = info.priceAll;
+                        }
+                        $.ajax({
+                            type: "POST",
+                            async: false,
+                            url: "/mobile/GetOwnerIdByAppId",
+                            data: { appId: bappId },
+                            dataType: "json",
+                            success: function (data) {
+                                if (data != null) {
+                                    payeeId = data.OwnerId;
+                                }
+                            }
+                        });
+                        if (JsVilaDataNull(getSessionId())) {
+                            var payUrl = "@ViewBag.UrlPrefix" + "fsp.iuoooo.com/Pay/PayOnline?ChangeOrg=00000000-0000-0000-0000-000000000000&userId="
+                                + getUserId() + "&sessionId=" + getSessionId() + "&outTradeId=" + borderId + "&money="
+                                + bmoney + "&subject=" + info.name + "&appId=" + bappId
+                                + "&notifyUrl=" + getBtpDomain() + "PaymentNotify/Goldpay" + "&payeeId=" + payeeId;
+
+
+
+                            $.ajax({
+                                type: "POST",
+                                async: false,
+                                url: "/PaymentNotify/SignUrl",
+                                data: { userId: getUserId(), payeeId: payeeId, outTradeId: borderId, money: bmoney },
+                                dataType: "json",
+                                success: function (data) {
+                                    payUrl = payUrl + "&sign=" + data.Result;
+                                    //start 转短地址
+                                    $.ajax({
+                                        type: "POST",
+                                        async: false,
+                                        url: "/Mobile/GenShortUrl?ChangeOrg=00000000-0000-0000-0000-000000000000&userId=" + getUserId() + "&sessionId=" + getSessionId(),
+                                        data: { longUrl: payUrl },
+                                        dataType: "json",
+                                        success: function (data) {
+                                            if (data != "" && data != undefined) {
+                                                window.location.href = data;
+                                            }
+                                            else {
+                                                window.location.href = payUrl;
+                                            }
+                                        }
+                                    });
+                                    //end  转短地址
+                                }
+                            });
+
+                        }
+                        else {
+                            window.location.href = "@ViewBag.UrlPrefix" + "portal.iuoooo.com/phone/webLogin.html?url=" + getBtpDomain() + "Mobile/Payment?appId=" + sessionStorage.appId;
+                        }
+                    }
+
+                    function huodaofukuanWebPay() {
+                        $.ajax({
+                            type: "POST",
+                            async: true,
+                            url: "/Mobile/UpdateCommodityOrder",
+                            data: { orderId: orderInfo.OrderId, userId: getUserId(), appId: sessionStorage.appId },
+                            dataType: "json",
+                            success: function (data) {
+                                var psource = sessionStorage.source == "share" ? "&source=share" : "";
+                                switch (data.ResultCode) {
+                                    case 0:
+                                        window.location.href = "/Mobile/MyOrderList?user=" + getUserId() + "&type=shuaxin" + psource;
+                                        break;
+                                    case 1:
+                                        alert(data.Message);
+                                        break;
+                                }
+                            },
+                            error: function (datas) {
+                                alert('请求失败!');
+                                $('#upData').show();
+                            }
+                        });
+
+                    }
+
+                    function send() {
+
+                        switch (upData.find('.li_pay_focus').data('key')) {
+                            case 1:
+                                huodaofukuanWebPay();
+                                break;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            case 4:
+                                if (sessionStorage.source == "share") {
+                                    jinherzfbWebPay();
+                                    return;
+                                }
+                                var payeeId = "";
+                                $.ajax({
+                                    type: "POST",
+                                    async: false,
+                                    url: "/mobile/GetOwnerIdByAppId",
+                                    data: { appId: sessionStorage.appId },
+                                    dataType: "json",
+                                    success: function (data) {
+
+                                        if (data != null) {
+                                            payeeId = data.OwnerId;
+                                            //alert(data.OwnerId);
+                                        }
+                                    }
+                                });
+                                var j_data = {
+                                    "payeeId": payeeId,
+                                    "money": info.priceAll,
+                                    "subject": info.name,
+                                    "outTradeId": orderInfo.OrderId,
+                                    "notifyUrl": '',
+                                    "storeAppId": sessionStorage.appId
+                                };
+                                jinherzfbWebPay();
+
+                                break;
+                        }
+                        $('#upData').show();
+                    }
+
+                    function morePay() {
+                        $.ajax({
+                            type: "post",
+                            url: '/SetMobile/MorePayPrice',
+                            async: false,
+                            data: { "MainOrderId": getQueryString('mainid'), "UserId": getUserId() },
+                            dataType: "json",
+                            success: function (data) {
+                                if (data.ResultCode == 0) {
+                                    qappId = data.AppId;
+                                    qmoney = data.Monery;
+                                    send();
+                                }
+                                else {
+                                    alert(data.Message);
+                                }
+                                $("#ajaxLoadBlind").remove();
+                            },
+                            beforeSend: function () {
+                                ajaxLoading('22', '');
+                            },
+                            error: function () {
+                                $("#ajaxLoadBlind").remove();
+                            }
+
+                        });
+                    }
+                });
+                //行为记录->进入选择支付方式页面
+                //            setTimeout(function () {
+                //                logBTP(sessionStorage.SrcType, service_type, "0x0001", '');
+                //            }, 1000);
+
+            });
+            //JS验证 不是有效的值
+            function JsVilaDataNull(obj) {
+                if (obj != undefined && obj != "" && obj != "null" && obj != null && obj != "undefined" && obj) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div class="noDisplay">
+            <form action="" id="up_zf">
+                <input type="text" id="orderId" name="orderId" />
+                <input type="text" id="userId" name="userId" />
+                <input type="text" id="appId" name="appId" />
+            </form>
+        </div>
+        <div id="header" style="display: block;">
+            <span class="header_span_1"></span><span class="header_span_2">选择支付方式</span>
+        </div>
+        <div id="main">
+            <div id="main_1" class="clearFloat" style="max-height: 400px; line-height: 20px;">
+                <div id="box_id_1" class="clearFloat margin_top_1">
+                    <ul>
+                        <li class="box_1 li_pay_focus" style="padding: 10px; margin-bottom: 20px;" data-key="4">
+                            <p>
+                                <span style="font-size: 1.4em;">在线支付</span><span class="price_1" style="font-size: 1em;">
+                                                                               ()</span></p>
+                            <p style="font-size: 1em;">
+                                在线支付采用担保交易方式,用金币、储蓄卡、信用卡或支付宝即可完成支付，确定收货后才会打款给卖家。</p>
+                        </li>
+                        @if (hasPayDelivery)
+                        {
+                            <li class="box_1 hdfk" style="padding: 10px; display: none;" data-key="1">
+                                <p>
+                                    <span style="font-size: 1.4em;">货到付款</span><span class="price_1" style="font-size: 1em;">
+                                                                                   ()</span></p>
+                                <p style="font-size: 1em;">
+                                    验货之后再付款，更安心。</p>
+                            </li>   
+                        }
+                    </ul>
+                </div>
+                <div id="addCommodity">
+                    <div class="addCommodity_1">
+                    </div>
+                    <div class="addCommodity_4">
+                        <ul>
+                            <li><span>用户名: </span>
+                                <input type="text" id="username" /></li>
+                            <li><span>密码: </span>
+                                <input type="password" id="userPassword" /></li>
+                            <li>
+                                <div class="footer_2" id="buttonLogin">
+                                    登陆</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="box_2" id="upData" style="margin-top: 30px;">
+                确定支付
+            </div>
+            <div style="text-align: center; margin-bottom: 5%; font-size: 0.85em; width: 96%;">
+                确定支付视为已同意<a href="/Payment/helper1.html">《金和担保交易服务协议》</a>
+            </div>
+        </div>
+    </body>
+</html>
+@Html.Raw(@Jinher.AMP.BTP.UI.Util.WebUtil.GetBehaviorRecordJs())

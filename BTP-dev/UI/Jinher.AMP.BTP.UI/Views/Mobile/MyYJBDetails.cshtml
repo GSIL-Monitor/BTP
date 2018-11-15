@@ -1,0 +1,255 @@
+﻿@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+}
+@section TitleHtml
+{
+    <title>我的易捷币</title>
+}
+@helper Currency()
+    {
+    @Jinher.AMP.BTP.UI.Util.MobileCookies.GetCurrency();
+}
+@section CssStyles{
+    <link rel="stylesheet" href="../../Content/style/css/mobileKit-min.css" />
+    <link href="../../Content/MyYJB/MyYJBDetail.css" rel="stylesheet" type="text/css" />
+}
+@section ClientScript
+{
+    <script src="/Scripts/moment.min.js"></script>
+    <script type="text/javascript">
+        var flex = function () {
+            var deviceWidth = document.documentElement.clientWidth > 500 ? 500 : document.documentElement.clientWidth;
+            document.documentElement.style.fontSize = deviceWidth / 7.5 + 'px';
+        };
+        flex();
+        window.onresize = function () {
+            flex();
+        };
+        var MYYJB = (function (mod, $, undefined) {
+            mod.loading = false;
+            mod.pageIndex = 1;
+            mod.lastPage = false;
+            mod.curSelectNav = 0; //0：全部 1：收入  2：支出
+            /**
+            * 初始化事件
+            */
+            mod.initEvent = function () {
+                
+                $('.header').on('click', '.text', function () {
+                    $('#modal-nav').toggleClass('hide');
+                });
+                $('#modal-nav').on('click', '.item', function () {
+                    $('#modal-nav').addClass('hide');
+                    mod.curSelectNav = $(this).data('tag');
+                    $('#nav-text').text($(this).text());
+                    mod.loadDate();
+                });
+                var _this = this;
+                $("#journalContent").html("");
+                $("#latestPage").hide();
+                _this.loadDate();
+                $(window).scroll(function () {
+                    var scrollTop = document.documentElement.scrollTop;
+                    var clientHeight = document.documentElement.clientHeight;
+                    var scrollHeight = document.body.scrollHeight;
+                    if (scrollHeight - scrollTop - clientHeight <= 10) {//滚动条滚动到底部10像素时加载下一页数据
+                        if (!mod.lastPage) {
+                            //加载下一页数据
+                            if (!mod.loading) {
+                                mod.pageIndex++;
+                                mod.loading = true;
+                                _this.loadDate();
+                            }
+                        }
+                    }
+                });
+            };
+            /**
+            * 获取数据
+            */
+            mod.loadDate = function () {
+                //调用接口
+                $.ajax({
+                    type: "Get",
+                    url: "/Mobile/GetYJBJournal",
+                    datatype: "json",
+                    data: { type: mod.curSelectNav, pageIndex: mod.pageIndex },
+                    success: function (result) {
+                        mod.loading = false;
+                        if (!result.IsSuccess) {
+                            toast(result.Message);
+                            return;
+                        }
+                        if (result.Data.length == 0) {
+                            mod.lastPage = true;
+                            if (mod.pageIndex == 1) {
+                                // 显示无数据
+                                var htmlContent = "";
+                                if (mod.curSelectNav == 1) {
+                                    htmlContent = "<div style=\"padding-top:80px;padding-bottom:30px\"><div style=\"width:60px;margin:0 auto;\"><img src=\"/Content/style/images/record_empty.png\"></div><div style=\"width:210px;margin:10px auto;color: #c4c4c4;\">您目前还没有易捷币充值记录</div></div>";
+                                } else if (mod.curSelectNav == 2) {
+                                    htmlContent = "<div style=\"padding-top:80px;padding-bottom:30px\"><div style=\"width:60px;margin:0 auto;\"><img src=\"/Content/style/images/record_empty.png\"></div><div style=\"width:210px;margin:10px auto;color: #c4c4c4;\">您目前还没有易捷币支出记录</div></div>";
+                                } else {
+                                    htmlContent = "<div style=\"padding-top:80px;padding-bottom:30px\"><div style=\"width:60px;margin:0 auto;\"><img src=\"/Content/style/images/record_empty.png\"></div><div style=\"width:210px;margin:10px auto;color: #c4c4c4;\">您目前还没有易捷币流水记录</div></div>";
+                                }
+                                $("#journalContent").html(htmlContent);
+                            } else {
+                                $("#latestPage").show();
+                            }
+                            return;
+                        }
+                        var htmlContent = "";
+                        result.Data.forEach(function (d) {
+                            if (d.Type === "赠送易捷币") {
+                                htmlContent += "<li class=\"list\"><div class=\"list-left\"><div class=\"title\">赠送易捷币</div><div class=\"time\">" + moment(d.CreationTime).format("YYYY-MM-DD") + "</div></div><span class=\"list-right yellow\">+" + d.Amount + "</span></li>";
+                                //htmlContent += "<div class=\"yjb-lists-wrap\"><div class=\"yjb-lists-left\"><img class=\"pic\" src=\"/Content/style/images/recharge_yjb.png\"></div><div class=\"yjb-lists-center\"><div class=\"title\">" + d.Name + "</div><span class=\"tips-btn orange\">" + d.Type + "</span></div><div class=\"yjb-lists-right\"><div class=\"date\">" + moment(d.CreationTime).format("YYYY-MM-DD") + "</div><div class=\"date\">" + moment(d.ValidUntil).format("YYYY-MM-DD") + "到期</div><div class=\"number\">+￥" + d.Amount + "</div></div></div>";
+                            } else if (d.Type === "新人大礼包") {
+                                htmlContent += "<li class=\"list\"><div class=\"list-left\"><div class=\"title\">新人大礼包</div><div class=\"time\">" + moment(d.CreationTime).format("YYYY-MM-DD") + "</div></div><span class=\"list-right yellow\">+" + d.Amount + "</span></li>";
+                                //htmlContent += "<div class=\"yjb-lists-wrap\"><div class=\"yjb-lists-left\"><img class=\"pic\" src=\"/Content/style/images/recharge_yjb.png\"></div><div class=\"yjb-lists-center\"><div class=\"title\">" + d.Name + "</div><span class=\"tips-btn red\">" + d.Type + "</span></div><div class=\"yjb-lists-right\"><div class=\"date\">" + moment(d.CreationTime).format("YYYY-MM-DD") + "</div><div class=\"date\">" + moment(d.ValidUntil).format("YYYY-MM-DD") + "到期</div><div class=\"number\">+￥" + d.Amount + "</div></div></div>";
+                            }
+                            else if (d.Type === "退货退易捷币") {
+                                htmlContent += "<li class=\"list\"><div class=\"list-left\"><div class=\"title\">退货退易捷币</div><div class=\"time\">" + moment(d.CreationTime).format("YYYY-MM-DD") + "</div></div><span class=\"list-right yellow\">+" + d.Amount + "</span></li>";
+                                //htmlContent += "<div class=\"yjb-lists-wrap\"><div class=\"yjb-lists-left\"><img class=\"pic\" src=\"" + d.ImgUrl + "\"></div><div class=\"yjb-lists-center\"><div class=\"title\">" + d.Name + "</div><span class=\"tips-btn gray\">" + d.Type + "</span></div><div class=\"yjb-lists-right\"><div class=\"date\">" + moment(d.CreationTime).format("YYYY-MM-DD") + "</div><div class=\"number\">+￥" + d.Amount + "</div></div></div>";
+                            } else {
+                                htmlContent += "<li class=\"list\"><div class=\"list-left\"><div class=\"title\">" + d.Name + "</div><div class=\"time\">" + moment(d.CreationTime).format("YYYY-MM-DD") + "</div></div><span class=\"list-right\">-" + d.Amount + "</span></li>";
+                                //htmlContent += "<div class=\"yjb-lists-wrap\"><div class=\"yjb-lists-left\"><img class=\"pic\" src=\"" + d.ImgUrl + "\"></div><div class=\"yjb-lists-center\"><div class=\"title\">" + d.Name + "</div><span class=\"tips-btn pink\">" + d.Type + "</span></div><div class=\"yjb-lists-right\"><div class=\"date\">" + moment(d.CreationTime).format("YYYY-MM-DD") + "</div><div class=\"number\">-￥" + d.Amount + "</div></div></div>";
+                            }
+                        });
+
+                        if (mod.pageIndex == 1) {
+                            $("#journalContent").html(htmlContent);
+                        } else {
+                            $("#journalContent").append(htmlContent);
+                        }
+                        if (result.Data.length < 20 && result.Data.length!=0) {
+                            $("#journalContent").append("<div class=\"no-more\">- 没有更多了 -</div>");
+                        }
+                    },
+                    error: function (err) {
+                        toast("获取易捷币流水异常！");
+                    }
+                });
+            };
+
+            return mod;
+        })(MYYJB || {}, window.Zepto);
+
+        $(function () {
+            if (!JsVilaDataNull(sessionStorage.userLoginOut)) {
+                saveContextDTOByUrl();
+            }
+            DealLoginPartial.initPartialPage();
+            loadMyYJBInfo();
+            MYYJB.initEvent();
+        });
+
+        function loadMyYJBInfo() {
+            $.get("/Mobile/GetMyYJB?userId=" + getQueryString('userId'), function (d) {
+                if (d.IsSuccess) {
+                    $("#yjb-count").text(d.Data.Money);
+                    // $("#yjbPrice").text(d.Data.Money);
+                    if (d.Data.ExpiredCountAfter60Days) {
+                        // $("#expiredDiv").show();
+                        $("#yjb-expired-count").text(d.Data.ExpiredCountAfter60DaysAmount);
+                    }
+                } else {
+                    toast(d.Message);
+                }
+            })
+        }
+    </script>
+}
+@*<div class="page">
+    <!--顶部导航-->
+    @*    <header class="bar bar-nav">
+        <a href="javascript:window.history.back();" class="pull-left fa"><img src="/Content/style/images/angle-left.png" alt="返回"/></a>
+        <h1 class="title">我的易捷币</h1>
+    </header>*@
+    @*<div class="yjb-header">
+        <div class="yjb-header-info">
+            <div class="yjb-header-pic">
+                <img src="/Content/style/images/recharge_yjb.png">
+            </div>
+            <div class="yjb-header-price-wrap">
+                <div class="yjb-header-title">
+                    易捷币余额</div>
+                <div class="yjb-header-count" style="margin-top:15px;">
+                    ￥<span class="num" id="yjbCount">0</span> 元</div>
+@*                <div class="yjb-header-price">
+                    合<span class="total-price">@Currency() <span id="yjbPrice">0</span> 元</span></div>*@
+@*</div>
+        </div>
+        <div class="tips" id="expiredDiv">
+            <div class="tips-content">
+                <div>即将过期易捷币</div>
+                <div class="tips-money"><span id="expiredCount">0</span>元</div>
+                <div>请您尽快使用~</div>
+            </div>
+        </div>
+        <ul class="yjb-header-nav">
+            <li class="list active"><a href="javascript: void(0)">全部</a></li>
+            <li class="list"><a href="javascript: void(0)">收入</a></li>
+            <li class="list"><a href="javascript: void(0)">支出</a></li>
+        </ul>
+    </div>
+    <div class="content padding-top194" id="journalContent">
+        <div style="padding-top: 80px; padding-bottom: 30px">
+            <div style="width: 60px; margin: 0 auto;">
+                <img src="/Content/style/images/record_empty.png"></div>
+            <div style="width: 210px; margin: 10px auto; color: #c4c4c4;">
+                您目前还没有易捷币充值记录</div>
+        </div>
+    </div>
+    <div style="padding:10px 0;font-size:14px;color:#999;text-align:center; display:none;" id="latestPage">已到最后一页</div>
+</div>*@
+
+
+
+<div class="page">
+    <!--顶部导航-->
+   <header class="header">
+       <div class="yjb-header">
+           <div class="yjb-count"><span id="yjb-count">0</span>易捷币</div>
+           <div class="yjb-expired-count">即将过期:<span id="yjb-expired-count">0</span>(元)</div>
+       </div>
+       <div class="bar-nav top20">
+           <span class="name">记录</span>
+           <div class="text"><span id="nav-text">全部</span><i class="angle-down"></i></div>
+       </div>
+   </header>
+    <div class="content">
+        <ul class="lists" id="journalContent">
+            <li class="list">
+               <div class="list-left">
+                   <div class="title">新人大礼包</div>
+                   <div class="time">2018-3-1</div>
+               </div>
+                <span class="list-right yellow">+10</span>
+            </li>
+            <li class="list">
+                <div class="list-left">
+                    <div class="name">下单抵现</div>
+                    <div class="title">2018-3-1</div>
+                </div>
+                <span class="list-right">-10</span>
+            </li>
+            <li class="list">
+                <div class="list-left">
+                    <div class="title">商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称使用</div>
+                    <div class="time">2018-3-1</div>
+                </div>
+                <span class="list-right">-10</span>
+            </li>
+        </ul>
+    </div>
+    <div id="modal-nav" class="modal-nav hide">
+        <ul class="nav-list">
+            <li class="item" data-tag="0">全部</li>
+            <li class="item" data-tag="1">获取</li>
+            <li class="item" data-tag="2">使用</li>
+        </ul>
+    </div>
+    <div class="no-more" id="latestPage">- 没有更多了 -</div>
+</div>
+<script src="../../Scripts/zepto.min.js" type="text/javascript"></script>
+

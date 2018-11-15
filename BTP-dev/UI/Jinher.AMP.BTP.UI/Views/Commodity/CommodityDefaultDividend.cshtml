@@ -1,0 +1,256 @@
+﻿@using Jinher.AMP.BTP.Common
+@{
+    ViewBag.Title = "CommodityDefaultDividend";
+    Jinher.AMP.BTP.Deploy.CustomDTO.AppExtensionDTO appExtension = ViewBag.AppExtensionDTO;
+}
+<head>
+ 
+<style>   
+    /*三级分销 */
+    #setCommodityDistributionDialog
+    {
+        color:#8C94A9;
+        font-size:14px;
+        line-height:20px;
+    }
+    #setCommodityDistributionDialog input
+    {
+        color:#8C94A9;
+        border:1px solid #ccc;
+    }
+      .btn120
+        {
+            display: inline-block;
+            width: 120px;
+            height: 28px;
+            line-height: 28px;
+            background: url(../Content/default/images/btn120.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+        }
+        .floa2 h1,
+		.bbtn h1{
+			font-size: 14px;
+			color: #8c94a9;
+			padding-bottom: 5px;
+			border-bottom: 1px solid #DDDDDD;	
+		}
+</style>
+    <script src="/Scripts/CommLib.js" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.jhtablebox.css" />
+    <script type="text/javascript" src="/Scripts/TableBox/jquery.ui.jhtablebox.js"></script>
+    <script type="text/javascript" src="/Scripts/jquery.watermark.js"></script>
+    <script type="text/javascript">
+        function Fixed100(callvalue) {
+            if (!callvalue) {
+                return "";
+            }
+            var tmp = (parseFloat(callvalue) * 100).toFixed(2);
+            var result = tmp.replace(/(((?!0*$)\d)*)0*$/g, "$1");
+            result = result.replace(/\.$/, "");
+            return result;
+        }
+        function decimalInput(item) {
+            var reg = /^0$|^(0|[1-9][0-9]?)(\.\d{1,2}){0,1}$|^100$/;
+            return reg.test(item);
+        }
+    </script>
+    <script type="text/javascript">
+        //加载完成时，若没有设置积分，则弹出提示并跳到积分设置页
+        var setScoreUrl = "/Payment/AddPayment"+window.location.search+"&&callBack=" + encodeURIComponent(window.location.href);
+        function closeScoreSetting() {
+            $("#ScoreSettingDiv").CloseDiv();
+        }
+        $(function () {
+            if ('@appExtension.IsCashForScore'.toLowerCase() == 'false') {
+                $("#ScoreSetting").attr("href", setScoreUrl);
+                $("#ScoreSettingDiv").OpenDiv();
+            } else {
+//                if ($("#ScoreSetting").attr("display") != "none") {
+//                    closeScoreSetting();  
+//                }
+            }
+        });
+    </script>
+<script type="text/javascript">
+    $(function () {
+        var L1Percent = Fixed100('@appExtension.DistributeL1Percent');
+        var L2Percent = Fixed100('@appExtension.DistributeL2Percent');
+        var L3Percent = Fixed100('@appExtension.DistributeL3Percent');
+        $("#L1Percent").val(L1Percent);
+        $("#L2Percent").val(L2Percent);
+        $("#L3Percent").val(L3Percent);
+
+        //验证输入
+        $("input[type=text]").live("blur", function () {
+            var result = $(this).val();
+            if (result == "") {
+
+            }
+            else if (result == 0) {
+                //可以为0
+            }
+            else if (!decimalInput(result)) {
+                alert("输入格式不正确！应当输入0到100之间，包括0和100的数值，最多可2位小数", "25px");
+                $(this).val("");
+                $(this).focus();
+                return;
+            }
+        });
+
+        $("#SetAccount").click(function () {
+            if (!decimalInput($("#L1Percent").val())) {
+                alert("输入格式不正确！应当输入0到100之间，包括0和100的数值，最多可2位小数", "25px");
+                $("#L1Percent").val("");
+                $("#L1Percent").focus();
+                return;
+            }
+            if (!decimalInput($("#L2Percent").val())) {
+                alert("输入格式不正确！应当输入0到100之间，包括0和100的数值，最多可2位小数", "25px");
+                $("#L2Percent").val("");
+                $("#L2Percent").focus();
+                return;
+            }
+            if (!decimalInput($("#L3Percent").val())) {
+                alert("输入格式不正确！应当输入0到100之间，包括0和100的数值，最多可2位小数", "25px");
+                $("#L2Percent").val("");
+                $("#L2Percent").focus();
+                return;
+            }
+            var L1Percent = parseFloat($("#L1Percent").val());
+            var L2Percent = parseFloat($("#L2Percent").val());
+            var L3Percent = parseFloat($("#L3Percent").val());
+            if ((L1Percent + L2Percent + L3Percent).toFixed(2) > 100) {
+                alert("佣金之和大于100%，请重新设置");
+                return;
+            }
+            AddCommodityDistribution();
+        });
+    });
+</script>
+<script type="text/javascript">
+
+    function AddCommodityDistribution() {
+
+        var model = {};
+        model.Id = "@appExtension.Id";
+        model.AppName = "@appExtension.AppName";
+        model.SubTime = "@appExtension.SubTime";
+        model.ModifiedOn = "@appExtension.ModifiedOn";
+        model.IsShowSearchMenu = "@appExtension.IsShowSearchMenu";
+        model.IsShowAddCart = "@appExtension.IsShowAddCart";
+        model.IsDividendAll = "@appExtension.IsDividendAll";
+        model.SharePercent = "@appExtension.SharePercent";
+        model.DistributeL1Percent = "" + parseFloat($("#L1Percent").val()) / 100;
+        model.DistributeL2Percent = "" + parseFloat($("#L2Percent").val()) / 100;
+        model.DistributeL3Percent = "" + parseFloat($("#L3Percent").val()) / 100;
+
+        var subDataJson = CommLib.ObjToString(model);
+
+        $.ajax({
+            url: '/Commodity/SetDefaulDistributionAccount',
+            type: 'post',
+            data: subDataJson,
+            async: true,
+            dataType: "json",
+            contentType: "application/json",
+            success: function (data) {
+                if (data.ResultCode != 0) {
+                    alert(data.Message);
+                    return;
+                }
+                alert("操作成功！");
+                //window.location.reload();
+            },
+            error: function () {
+                alert("请稍后再试");
+            }
+        });
+    }
+
+</script>
+</head>
+
+
+<div id="setCommodityDistributionDialog" style=" margin-top:50px;">
+    <div>       
+        <input type="hidden" id="CommodityDistributionID" comid="CommodityDistributionId" />
+        <div style=" margin-left:26px">
+            <div style="color:Red">
+                此佣金设置为所有分销商品统一设置佣金，若某个商品另行设置过分销佣金，则以商品设置的分销佣金为准
+            </div>
+            <div style="color:Red">
+                请到出售商品管理菜单中设置哪些商品参与分销，商品默认不参加分销
+            </div>
+        </div>
+      
+        <table border="0" cellspacing="5" cellpadding="0"  style=" margin-left:20px">
+            <tr><td style="height:30px;"></td><td style="height:30px;"></td></tr>
+            <tr>
+                <td>
+                    直属上级佣金比例：
+                </td>
+                <td>
+                    <input type="text" id="L1Percent" style="width:80px;text-align:right;" />%
+                </td>
+            </tr>           
+            <tr>
+                <td>
+                </td>
+                <td>
+                    分销商推荐买家购买后能拿到的佣金比例
+                </td>
+            </tr>
+            <tr><td style="height:30px;"></td><td style="height:30px;"></td></tr>
+            <tr>
+                <td>
+                    二级上级佣金比例：
+                </td>
+                <td>
+                    <input type="text" id="L2Percent" style="width:80px; text-align:right;" />%
+                </td>
+            </tr>
+            <tr>
+                <td>
+                </td>
+                <td>
+                    分销商的上级分销商能拿到的佣金比例
+                </td>
+            </tr>
+            <tr><td style="height:30px;"></td><td style="height:30px;"></td></tr>
+            <tr>
+                <td>
+                    三级上级佣金比例：
+                </td>
+                <td>
+                    <input type="text" id="L3Percent" style="width:80px;text-align:right;" />%
+                </td>
+            </tr>
+            <tr>
+                <td>
+                </td>
+                <td>
+                    分销商上级的上级分销商能拿到的佣金比例
+                </td>
+            </tr>
+        </table>
+        <div class="bbtn" style="text-align: center; margin-top:20px;">
+            <a href="javascript:;" id="SetAccount"
+               class="btn120" style="margin-top: 6px;">
+                保存</a>
+        </div>
+    </div>
+</div>
+<div id="ScoreSettingDiv" style="display: none;">
+    <div style="margin-bottom: 10px;">
+        <div style="font-size: 14px; line-height: 20px; margin:2px 12px; margin-top: 20px; margin-bottom: 0 ">佣金会以积分的形式计入分销商的积分账户，故请先进行积分兑换汇率设置，再设置佣金比例</div>
+        <div class="bbtn" style="text-align: center; margin-top:20px;">
+            <a href="javascript:;" id="ScoreSetting"
+               class="btn120" style="margin-top: 6px;">
+                确定</a>
+        </div>
+    </div>
+</div>
+

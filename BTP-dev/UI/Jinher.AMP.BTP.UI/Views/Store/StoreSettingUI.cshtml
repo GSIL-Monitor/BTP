@@ -1,0 +1,29 @@
+﻿<li><span>
+    <img src="/images/xin.png" /></span> <span>配送范围：</span>
+    <input type="text" id="txtDeliveryRange" value="公里" onfocus="javascript:if(this.value=='公里')this.value='';"
+        onblur="javascript:if(this.value=='')this.value='公里';" style="color: Gray; width: 317px;
+        height: 19px; line-height: 19px;" class="inp-txt" />
+</li>
+<li id="addworkTime"><span>
+    <img src="/images/xin.png" /></span> <span style="visibility: hidden">营业时间：</span>
+    <a href="javascript:void(0);" onclick="AddWrokTime();" style="position: relative;
+        top: 25px; left: 5px;">新增营业时间段</a> </li>
+<li><span>
+    <img src="/images/xin.png" /></span> <span>起送金额：</span>
+    <input type="text" id="txtDeliveryAmount" value="" style="color: Gray; width: 317px;
+        height: 19px; line-height: 19px;" class="inp-txt" /><span>元</span> </li>
+<li><span>
+    <img src="/images/xin.png" /></span> <span>&nbsp;&nbsp;&nbsp;配送费：</span>
+    <input type="text" id="txtDeliveryFee" value="" style="color: Gray; width: 130px;
+        height: 19px; line-height: 19px;" class="inp-txt" /><span>元</span>
+    <span>满</span>
+    <input type="text" id="txtFreeAmount" value="" style="color: Gray; width: 100px;
+        height: 19px; line-height: 19px;" class="inp-txt" /><span>元&nbsp;免配送费</span>
+</li>
+<li><span style="padding-left:10px;">配送费优惠：</span>
+    <input type="text" id="txtDeliveryS" value="" style="color: Gray; width: 100px; height: 19px;
+        line-height: 19px;" class="inp-txt" /><span>至</span><input type="text" id="txtDeliveryE"
+            value="" style="color: Gray; width: 100px; height: 19px; line-height: 19px;" class="inp-txt" />
+    <span>&nbsp;&nbsp;配送费</span><input type="text" id="txtDeliveryDis" value="" style="color: Gray;
+        width: 60px; height: 19px; line-height: 19px;" class="inp-txt" /><span>折</span>
+</li>

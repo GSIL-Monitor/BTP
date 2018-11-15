@@ -1,0 +1,232 @@
+body{
+    width: 100%;
+    max-width:500px;
+    margin: 0 auto;
+    font-size: 16px;
+    background-color: rgb(244,244,244);
+    font-family: Helvetica, Tahoma, Arial, "PingFang SC", "Hiragino Sans GB", "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+}
+* {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-text-size-adjust: none;
+    -webkit-tap-highlight-color: transparent
+}
+a{
+    text-decoration: none;
+}
+img{
+    border:0;
+}
+h1,h2,h3,h4,h5,h6,p{
+    padding: 0;
+    margin: 0;
+    font-weight: 400;
+    font-size: 12px;
+    font-weight: 400;
+}
+.top5{
+    margin-top: 10px!important;
+}
+.border-top{
+    border-top: 1px solid #e8e8e8;
+}
+.page>.content{
+    padding-bottom: 76px;
+}
+.ui-radio{
+    position: relative;
+    top: 0;
+    left:0;
+    cursor: pointer;
+}
+.ui-radio input{
+    position:absolute;
+    opacity: 0;
+}
+.ui-radio>.icon-checked{
+    padding-left: 21px;
+    font-size: 14px;
+    color: #333;
+}
+.ui-radio>.icon-checked:before{
+    position:absolute;
+    top:-4px;
+    left:-3px;
+    content:'';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-image:url(images/tuoyuan.png);
+    background-size: 100% 100%;
+}
+.ui-radio>input:checked+.icon-checked:before{
+    background-image:url(images/checkbox-active.png)
+}
+.invoice-type{
+    padding: 15px;
+    background-color: #fff;
+}
+.invoice-type .title{
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 14px;
+}
+.invoice-type-list{
+    display:-webkit-box;
+    display:-webkit-flex;
+    display: flex;
+    -webkit-flex: 1;
+    flex: 1;
+}
+.invoice-type-list>li{
+    margin-right: 15px;
+}
+.invoice-type-list>li:nth-child(3){
+    margin-right: 0;
+}
+/*鍏徃淇℃伅*/
+.invoice-company{
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+}
+.invoice-company-title{
+    height: 50px;
+    line-height: 50px;
+    padding-left: 15px;
+    font-size: 14px;
+    color: #333;
+    background-color: #fff;
+    border-bottom: 1px solid #e8e8e8
+}
+.invoice-company>.invoice-content{
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+    felx: 1;
+}
+.invoice-company>.invoice-content input{
+    display: block;
+    height: 50px;
+    line-height: 50px;
+    padding: 0 15px;
+    border: 0;
+    font-size: 15px;
+    color: #333;
+    margin: 0;
+    border: 0;
+    border-bottom: 1px solid #e8e8e8;
+    border-radius: 0;
+}
+.invoice-company>a{
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 60px;
+}
+.invoice-company>a:after{
+    position: absolute;
+    top: 50%;
+    right: 0;
+    margin-top: -11px;
+    content:'';
+    width: 22px;
+    height:22px;
+    background-image:url(images/angle-right2.png);
+    background-size: 100% 100%;
+}
+.footer{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-width: 500px;
+    margin: 0 auto;
+}
+.footer .info{
+    height: 22px;
+    line-height: 22px;
+    font-size: 10px;
+    color: #333;
+    padding-left: 15px;
+    background-color: #fbedd3;
+}
+.footer .btn{
+    display: block;
+    height: 44px;
+    line-height: 44px;
+    font-size: 17px;
+    background-color: #e4393c;
+    color: #fff;
+    border: 0;
+    padding: 0;
+    text-align: center;
+    border-radius: 0;
+}
+/*顶部是否开具发票*/
+.header{
+    padding: 15px;
+    background-color: #fff;
+}
+.header-content{
+    display: -webkit-box;
+    display:-webkit-flex;
+    display:flex;
+    align-items: center;
+}
+.header-content .title{
+    -webkit-flex: 1;
+    flex: 1;
+    color: #333;
+    font-size: 14px;
+}
+.header .tips{
+    margin-top: 12px;
+    font-size: 11px;
+    color: #999;
+}
+.switch{
+    width: 42px;
+    height: 25px;
+    border: 1px solid #e6e6e6;
+    background-color: #ddd;
+}
+.switch.active{
+    background-color: #d92b2f;
+    border-color:#e6e6e6;
+}
+.switch.active .switch-handle{
+    left: 18px;
+}
+input.invoice-input{
+    border: 0;
+    border-radius: 0;
+    border-top: 1px solid #e8e8e8;
+    font-size: 15px;
+    color: #333;
+    height: 50px;
+    margin-bottom: 0;
+}
+::-webkit-input-placeholder { /* WebKit browsers */
+    color: #ccc;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color:#ccc;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color: #ccc;
+}
+:-ms-input-placeholder { /* Internet Explorer 10+ */
+    color: #ccc;
+}
+.info{
+    padding:10px 15px;
+    background-color:#424855;
+    color: #fff;
+    font-size: 11px;
+    line-height: 11px;
+}
+.btn.unabled{
+    background-color:#424855;
+}

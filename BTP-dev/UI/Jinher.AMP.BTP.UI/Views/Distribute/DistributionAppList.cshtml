@@ -1,0 +1,48 @@
+﻿@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+}
+@section TitleHtml
+{
+    <title>分销品牌</title>
+}
+@section CssStyles{
+    <link href="/Content/Mobile/zphStyle/mobileKit-min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="/Content/Mobile/distribution.css" />
+}
+@section ClientScript
+{
+    <script type="text/javascript">
+        $(function () {
+            $.ajax({
+                url: '/Distribute/GetAppList?appId=' + getQueryString('appId'),
+                type: 'post',
+                dataType: "json",
+                contentType: "application/json",
+                error: function () {
+                    alert("请求错误，请稍后刷新进行操作.");
+                },
+                success: function (msg) {
+                    var data = msg.AppList;
+                    var i = 0;
+                    var content;
+                    for (; i < data.length; i++) {
+                        content = '<li class="distribution-list"> <a href="{Url}" class="distribution-list-content"><img class="distribution-list-content-pic" src="{AppIcon}"> <div class="distribution-list-content-title">{AppName}</div></a></li>';
+                        content = content.replace("{AppIcon}", data[i]["AppIcon"]).replace("{AppName}", data[i]["AppName"]);
+                        content = content.replace("{Url}", addSessionToUrl("/Distribute/Distribution?shopAppId=" + data[i]["AppId"]));
+                        $('#appContent').append($(content));
+                    }
+                }
+            });
+        });
+    </script>
+}
+<div class="page">
+    <div class="content">
+        <div class="distribution-wrap">
+            <ul id="appContent" class="clearfix">
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script src="/Content/js/mobile_cy/minmobilelayout.js"></script>

@@ -1,0 +1,168 @@
+﻿@{
+    ViewBag.Title = "渠道佣金设置";
+    Jinher.AMP.BTP.Deploy.CustomDTO.AppExtensionDTO appExtension = ViewBag.AppExtensionDTO;
+}
+ <title>渠道佣金设置</title>
+<style type="text/css">
+    #setCommodityDistributionDialog
+    {
+        color:#8C94A9;
+        font-size:14px;
+        line-height:20px;
+    }
+    #setCommodityDistributionDialog input
+    {
+        color:#8C94A9;
+        border:1px solid #ccc;
+    } 
+    .btn120
+    {
+        display: inline-block;
+        width: 120px;
+        height: 28px;
+        line-height: 28px;
+        background: url(../Content/default/images/btn120.png) no-repeat;
+        text-align: center;
+        vertical-align: middle;
+        color: #5F7392;
+        box-shadow: 1px 1px 2px #DBDBDB;
+    }
+</style>
+<script src="/Scripts/CommLib.js" type="text/javascript"></script>
+<script type="text/javascript" src="/Scripts/TableBox/jquery.ui.jhtablebox.js"></script>
+<script type="text/javascript" src="/Scripts/jquery.watermark.js"></script>
+<script type="text/javascript">
+    function Fixed100(callvalue) {
+        if (!callvalue) {
+            return "";
+        }
+        var tmp = (parseFloat(callvalue) * 100).toFixed(2);
+        var result = tmp.replace(/(((?!0*$)\d)*)0*$/g, "$1");
+        result = result.replace(/\.$/, "");
+        return result;
+    }
+    function decimalInput(item) {
+        var reg = /^0$|^(0|[1-9][0-9]?)(\.\d{1,2}){0,1}$|^100$/;
+        return reg.test(item);
+    }
+    //加载完成时，若没有设置积分，则弹出提示并跳到积分设置页
+    var setScoreUrl = "/Payment/AddPayment" + window.location.search + "&&callBack=" + encodeURIComponent(window.location.href);
+    function closeScoreSetting() {
+        $("#ScoreSettingDiv").CloseDiv();
+    }
+    $(function () {
+        if ('@appExtension.IsCashForScore'.toLowerCase() == 'false') {
+            $("#ScoreSetting").attr("href", setScoreUrl);
+            $("#ScoreSettingDiv").OpenDiv();
+        } else {
+           
+        }
+    });
+    $(function () {
+        var Percent = Fixed100('@appExtension.ChannelDistributePercent');
+        $("#Percent").val(Percent);
+
+        //验证输入
+        $("input[type=text]").live("blur", function () {
+            var result = $(this).val();
+            if (result == "") {
+                document.getElementById("Percent").value = 0;
+            }
+            else if (result == 0) {
+                document.getElementById("Percent").value = 0;
+            }
+            else if (!decimalInput(result)) {
+                alert("输入格式不正确！应当输入0到100之间，包括0和100的数值，最多可2位小数", "25px");
+                $(this).val("");
+                $(this).focus();
+                return;
+            }
+        });
+
+        $("#SetAccount").click(function () {
+            if ($("#Percent").val() == 0 || $("#Percent").val() == null) 
+            {
+                document.getElementById("Percent").value = 0;
+            }
+            if (!decimalInput($("#Percent").val())) {
+                alert("输入格式不正确！应当输入0到100之间，包括0和100的数值，最多可2位小数", "25px");
+                $("#Percent").val("");
+                $("#Percent").focus();
+                return;
+            }
+                        AddChannelDistribution();
+        });
+    });
+    function AddChannelDistribution() {
+
+        var model = {};
+        model.Id = "@appExtension.Id";
+        model.AppName = "@appExtension.AppName";
+        model.SubTime = "@appExtension.SubTime";
+        model.ModifiedOn = "@appExtension.ModifiedOn";
+        model.IsShowSearchMenu = "@appExtension.IsShowSearchMenu";
+        model.IsShowAddCart = "@appExtension.IsShowAddCart";
+        model.IsDividendAll = "@appExtension.IsDividendAll";
+        model.SharePercent = "@appExtension.SharePercent";
+        model.ChannelDistributePercent = "" + parseFloat($("#Percent").val()) / 100;
+
+        var subDataJson = CommLib.ObjToString(model);
+
+        $.ajax({
+            url: '/Channel/SetDefaultChannelAccount',
+            type: 'post',
+            data: subDataJson,
+            async: true,
+            dataType: "json",
+            contentType: "application/json",
+            success: function (data) {
+                if (data.ResultCode != 0) {
+                    alert(data.Message);
+                    return;
+                }
+                alert("操作成功！");
+               },
+            error: function () {
+                alert("请稍后再试");
+            }
+        });
+    }
+</script>
+<div id="setCommodityDistributionDialog" style=" margin-top:50px;">
+    <table border="0" cellspacing="5" cellpadding="0"  style=" margin-left:40px; margin-top: 5px;">
+        <tr style="height: 50px">
+            <td>
+                请设置佣金比例(为0，或空时不分成)
+            </td> 
+        </tr> 
+        <tr style="height: 80px">
+             <td>
+               推广用户佣金比例：<input id="Percent" style="width: 150px;text-align: right"/> %
+            </td> 
+        </tr>
+        <tr style="height: 120px">
+             <td>
+                <div style="color:red">注：平台统一设置佣金比例，入驻的所有厂商的所有产品均需支持平台设置的佣金比例，佣金=商品售价*佣金比例</div>
+            </td> 
+        </tr>
+        <tr style="height: 50px">
+             <td>
+                 <div style="text-align: center">
+                      <a href="javascript:;" id="SetAccount"
+               class="btn120" style="margin-top: 6px;">
+                保存</a>
+                 </div>
+            </td> 
+        </tr>
+    </table>
+</div>
+<div id="ScoreSettingDiv" style="display: none;">
+    <div style="margin-bottom: 10px;">
+        <div style="font-size: 14px; line-height: 20px; margin: 2px 12px; margin-top: 20px;
+                                                                                                                                                                             margin-bottom: 0">
+            佣金会以积分的形式计入推广用户的积分账户，故请先进行积分兑换汇率设置，再设置佣金比例</div>
+        <div class="bbtn" style="text-align: center; margin-top: 20px;">
+            <a href="javascript:;" id="ScoreSetting" class="btn120" style="margin-top: 6px;">确定</a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,164 @@
+﻿@{
+    ViewBag.Title = "SettingAccountHistoryRecord";
+    List<Jinher.AMP.BTP.Deploy.SettlingAccountDTO> comHistorylist = ViewBag.CommodityHistoryList;
+    int pageCurrent2 = ViewBag.PageCurrent2;
+}
+<head>
+<style type="text/css">
+        .bgstock
+        {
+            background-color: #fff2f2 !important;
+        }       
+        .item
+        {
+            line-height: 28px;
+            margin-bottom: 10px;
+            min-height: 28px;
+            padding-left: 10px;
+        }
+        
+        .lable
+        {
+            display: block;
+            float: left;
+            width: 125px;
+            line-height: 28px;
+            padding-right: 5px;
+            margin-left: -130px;
+            _display: inline;
+            text-align: right;
+        }
+        input.inp-txt
+        {
+            height: 18px;
+            line-height: 18px;
+            border: 1px solid #B6C0CD;
+            padding: 4px 5px;
+            vertical-align: middle;
+            border-radius: 3px;
+            box-shadow: inset 1px 1px 2px #DBDBDB;
+        }
+        .btn120
+        {
+            display: inline-block;
+            width: 120px;
+            height: 28px;
+            line-height: 28px;
+            background: url(../Content/default/images/btn120.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+        }
+        .floa2 h1,
+		.bbtn h1{
+			font-size: 14px;
+			color: #8c94a9;
+			padding-bottom: 5px;
+			border-bottom: 1px solid #DDDDDD;	
+		}
+		.close{
+			margin-top: 10px;
+			float: right;
+			display: inline-block;
+			*zoom:1;
+			*display: inline;
+			width: 7px;
+			height: 7px;
+			color:transparent;
+			background: url(/Images/shut.png) center no-repeat;
+		}
+		
+		
+		.floa2 ul {
+			padding: 0px 0 10px 10px;
+		}
+		
+		.floa2 ul li{
+			margin-top: 5px;
+			color:#8c94a9;
+		}
+		.addfloa2{
+			display: none; 
+			z-index: 3;
+			padding: 5px 10px;
+			height:auto;
+			border:1px solid #B8BFCF;
+			
+			-webkit-border-radius: 3px;
+			-moz-border-radius: 3px;
+			border-radius: 3px;
+		}
+		
+		/*erci*/
+		.btn60
+        {
+            display: inline-block;
+            width: 60px;
+            height: 28px;
+            line-height: 28px;
+            background: url(../Content/default/images/btn60.png) no-repeat;
+            text-align: center;
+            vertical-align: middle;
+            color: #5F7392;
+            box-shadow: 1px 1px 2px #DBDBDB;
+        }
+        
+          ul li.three input 
+          {
+             background-color:White;              
+  margin-right: 10px;
+  border: 1px solid #B8BFCF;
+  background: url('/images/time.jpg') no-repeat right center;
+    </style>
+    <script>
+        $(document).ready(function () {
+            //内容页
+            $("#pager").jhpager({
+                requestData: function () { return _searchEntity; },
+                dataType: 'html',
+                requestType: 'post',
+                dataSource: '/SettlingAccount/SettingAccountHistoryRecord',
+                async: true,
+                totalCount: _rowCount,
+                rowNum: 20,
+                requestSuccess: showContent,
+                beforeRequest: function () {
+                    $("#content_makes").empty();
+                    $(window.parent.document).scrollTop(0);
+                    ajaxLoading(1, '#content_makes');
+                },
+                requestFailure: function () {
+                }
+            });
+
+        });
+
+        function closeWindow() {
+            window.location.href = "/SettlingAccount/Index?appId=" + getQueryString("appId");
+        }
+    </script>
+    <script type="text/javascript">
+        try {
+            document.domain = "iuoooo.com";
+        }
+        catch (err) {
+        }
+    </script>
+</head>
+<div class="box" style="padding: 10px 0 10px 0px;">
+    <div class="content">
+        <div class="manag_bot manag_bot1" style="width: 100%; margin-top: 10px;">
+            <div id="divListParent">
+                <div id="content_makes">
+                    @Html.Action("SettingAccountHistoryPartialIndex", "SettlingAccount")
+                </div>
+            </div>
+            <div id="pager">
+            </div>
+        </div>
+          <div class="bbtn" style="text-align: center; width: 98%; margin-top: 20px; margin: 20px;">
+              <a href="javascript:;" class="btn120" onclick="closeWindow()" style="margin-left: 20px;">返回</a>
+          </div>
+    </div>
+</div>

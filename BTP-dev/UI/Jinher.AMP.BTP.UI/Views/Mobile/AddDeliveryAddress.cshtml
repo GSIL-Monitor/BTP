@@ -1,0 +1,105 @@
+﻿@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+}
+
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta content="telephone=no" name="format-detection">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <title>收货地址</title>
+    <link rel="stylesheet" href="/dist/css/common.css">
+    <link rel="stylesheet" href="/dist/css/addDeliveryAddress.css">
+</head>
+<body>
+<div id="app" class="page">
+    <div class="address-info-wrap">
+        <div class="address-hd">
+            <div class="address-hd-info">
+                <div class="address-info border-line">
+                    <span class="title">收货人</span>
+                    <input placeholder="姓名" v-model="userName">
+                </div>
+                <div class="address-info border-line">
+                    <span class="title">联系电话</span>
+                    <input placeholder="手机号" v-model="phone">
+                </div>
+            </div>
+            <!--现将选联系人隐藏，开发时在显示 （去掉 hide class 即可显示）-->
+            <div class="address-hd-select hide">
+                <img class="user" src="/Content/Mobile/yj-user.png">
+                <div>选联系人</div>
+            </div>
+        </div>
+        <div class="address-info border-line">
+            <span class="title">邮政编码</span>
+            <input placeholder="请输入邮政编码" v-model="zipCode">
+        </div>
+        <div class="address-info border-line" v-on:click="chooseAddress(selectProvinceCode,selectCityCode,selectDistrictCode,selectStreetCode)">
+            <span class="title">所在地区</span>
+            <input v-model="addressLabel" readonly placeholder="选择所在地区" class="pointer">
+            <i class="icon pointer"></i>
+        </div>
+        <div class="address-info" style="height:auto;align-items: normal;padding-top:10px;padding-bottom:10px;">
+            <span class="title">详细地址</span>
+            <textarea maxlength="100" placeholder="请输入街道、楼牌号等" v-model="addressWhere"></textarea>
+        </div>
+    </div>
+    <div class="address-default">
+        <span class="title">设置为默认地址</span>
+        <label><input class="mk-switch" type="checkbox" v-model="select" value="1" v-on:click="defaultAddress"></label>
+    </div>
+    <div class="choose-address-wrap" :class="{animate: chooseOpen}" v-on:click="chooseOpen= false">
+        <div class="choose-address-content" v-on:click.stop="">
+            <a class="choose-address-close" v-on:click="chooseOpen= false"></a>
+            <div class="choose-address-hd">所在地区</div>
+            <div class="choose-address-bd">
+                <div class="address-fix border-line">
+                    <ul class="address-select-ul clearfix">
+                        <li><a href="javascript:void(0)" v-bind:class="{selected: selectedIndex == 0}" v-on:click="addressClick(0)">{{selectProvince}}</a></li>
+                        <li><a href="javascript:void(0)" v-bind:class="{selected: selectedIndex == 1}" v-on:click="addressClick(1)">{{selectCity}}</a></li>
+                        <li><a href="javascript:void(0)" v-bind:class="{selected: selectedIndex == 2}" v-on:click="addressClick(2)">{{selectDistrict}}</a></li>
+                        <li><a href="javascript:void(0)" v-bind:class="{selected: selectedIndex == 3}" v-on:click="addressClick(3)">{{selectStreet}}</a></li>
+                    </ul>
+                </div>
+                <div class="address-container" v-bind:style="{'-webkit-transform':'translateX(' + transformX +')'}" style="-webkit-transition: transform .3s;">
+                    <ul class="address-ul">
+                        <li v-for="province in provinces" v-bind:class="{selected: selectProvinceCode == province.AreaCode}" v-on:click="provinceChange(province.AreaCode,province.Name)">{{province.Name}}</li>
+                    </ul>
+                    <ul class="address-ul">
+                        <li v-for="city in cityLists" v-bind:class="{selected: selectCityCode == city.AreaCode}" v-on:click="cityChange(city.AreaCode,city.Name)">{{city.Name}}</li>
+                    </ul>
+                    <ul class="address-ul">
+                        <li v-for="list in districtList" v-bind:class="{selected: selectDistrictCode == list.AreaCode}" v-on:click="districtChange(list.AreaCode,list.Name)">{{list.Name}}</li>
+                    </ul>
+                    <ul class="address-ul">
+                        <li v-for="list in streetList" v-bind:class="{selected: selectStreetCode == list.AreaCode}" v-on:click="selectedStreet(list.AreaCode,list.Name)">{{list.Name}}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="submit" v-on:click="save">保存</div>
+</div>
+</body>
+</html>
+
+<script type="text/javascript">
+    //测试
+    //var addressJsonString = '{"UserId":"baa8e821-c8e3-45d8-8c0b-dac91bd0935f","AddressId":"7aa36c20-043d-4f0c-a8f5-6f5e4ad284da","ReceiptUserName":"那忠瑞","ReceiptPhone":"13621050351","ReceiptAddress":"回龙观西大街东亚上北中心10号楼二单元六层608室","Province":"北京市","City":"昌平区","District":"六环以内","Street": "","AppId":"cea60082-fc49-4a89-937a-bc61a4e950c2","RecipientsZipCode":null,"IsDefault":1,"ProvinceCode":"1","CityCode":"2901","DistrictCode":"4135","StreetCode":""}'
+    var addressJsonString = decodeURIComponent("@ViewBag.AddressInfo");
+</script>
+
+<script src="../../dist/lib/vue.min.js"></script>
+<script src="../../dist/lib/vue-resource.min.js"></script>
+<script src="../../dist/lib/vue-mobileKit.js"></script>
+<script src="../../dist/lib/Common.js"></script>
+<script src="../../dist/lib/AreaFirst.js" type="text/javascript"></script>
+<script src="../../dist/lib/AreaSecond.js" type="text/javascript"></script>
+<script src="../../dist/lib/AreaThree.js" type="text/javascript"></script>
+<script src="../../dist/lib/Area.js" type="text/javascript"></script>
+<script src="../../dist/lib/CookieContextDTO.js"></script>
+<script src="../../dist/js/addDeliveryAddress.js"></script>
+
+

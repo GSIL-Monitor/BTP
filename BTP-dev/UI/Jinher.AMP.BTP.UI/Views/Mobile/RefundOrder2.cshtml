@@ -1,0 +1,146 @@
+﻿@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+    string tempPic = ViewBag.pic;
+    if (string.IsNullOrEmpty(tempPic))
+    {
+        tempPic = "0";
+    }
+    string tempAppId = ViewBag.appId.ToString();
+    string tempOrderId = ViewBag.orderId;
+    string tempState = ViewBag.state;
+    string tempUserId = ViewBag.userId;
+    string tempPay = ViewBag.pay;
+}
+@section TitleHtml
+{
+    <title>退款/退货申请</title>
+    <header class="mobile-header" style="display: none">
+	<h1 class="page-name" id="h1PageName">退款/退货申请</h1>
+</header>
+}
+@section CssStyles{
+    <link href="/Content/Mobile/mobileKit-min.css" rel="stylesheet" type="text/css" />
+    <link href="/dist/css/RefundOrder.css" rel="stylesheet" type="text/css" />
+}
+<div class="page">
+    <!--温馨提示-->
+    <section id="tips" class="tips">
+        <span class="tips-title">温馨提示：请与卖家协商后，在进行填写售后服务内容</span>
+        <img class="tips-close" src="/Content/Mobile/guanbi-bai.png">
+    </section>
+    <!--服务类型-->
+    <section class="type">
+        <div class="type-title">服务类型</div>
+        <div class="refund-btns">
+            @if (ViewBag.CanOnlyRefund)
+            {
+            <a href="javascript:void(0)" class="btns active" tag="1">仅退款</a>
+            }
+            <a href="javascript:void(0)" class="btns @(ViewBag.CanOnlyRefund ? "" : "active")" tag="2" id="radioType2">退款退货</a>
+        </div>
+    </section>
+    <input type="hidden" id="hidoptionsType" value="@(ViewBag.CanOnlyRefund ? "1" : "2")" />
+    <!--订单类表-->
+    @if(ViewBag.orderItemList != null)
+    {
+        foreach (var item in ViewBag.orderItemList)
+        { <div class="order-list">
+            <img class="pic" src="@item.Pic">
+            <div class="detail">
+                <div class="title">
+                    @item.Name</div>
+                <div class="size">
+                    @item.Size</div>
+                <div class="price-wrap">
+                    <div class="price">
+                        ￥<span class="num">@item.Price</span></div>
+                    <div class="count">
+                        @("x" + item.CommodityNumber)</div>
+                </div>
+            </div></div>
+        }
+    }
+    <!--退货原因-->
+    <div class="reason">
+        <span class="reason-title">退货原因</span> <span id="reason-text" class="reason-text">请选择</span>
+        <img class="reason-pic" src="/Content/Mobile/yj-angle-right.png">
+    </div>
+    <!--退货金额-->
+    <section class="refund-price-wrap">
+        <div class="price-wrap">
+            <span class="title">退款金额：</span>
+            <em>￥</em>
+            <input class="price" type="number"  value="@tempPic" id="RefundMoneyPic" placeholder="订单支付金额，可修改">
+        </div>
+        <div class="price-tips">若申请成功，退款金额将全部按照支付方式原路返回，若全部不符，请与卖家联系进行协调解决。</div>
+    </section>
+    <section class="refund-dec-wrap">
+        <div class="title">问题描述</div>
+        <textarea class="dec" placeholder="请您再次描述问题"></textarea>
+        <div id="uploadpicli">
+        <form id="picForm" method="post" on enctype="multipart/form-data" target="uploadframe"
+            action='/Handler/PhoneUploadHandler.ashx'>
+            <ul id="upload-wrap" class="upload-wrap">
+                @*<li class="upload-pic">
+                    <img class="img" src="http://placehold.it/118x118">
+                    <a href="javascript:void(0);" class="cancel"></a>
+                </li>
+                <li class="upload-pic">
+                    <img class="img" src="http://placehold.it/118x118">
+                    <a href="javascript:void(0);" class="cancel"></a>
+                </li>*@
+                <li id="addPicli" class="upload-pic add-pic-wrap">
+                    <img class="add-pic" src="/Content/Mobile/icon_add.png" >
+                    <span class="add-text">最多五张</span>
+                </li>
+            </ul>
+            <input type="file" id="add" name="add" accept="image/jpg, image/jpeg, image/png, image/gif" class="upload-input" onchange="uploadfun()" onclick="PreClickOnPic('add')" />
+        </form>
+        </div>
+    </section>
+@*    <section class="refund-method">
+        <div class="title">商品退回方式</div>
+        <div class="refund-btns">
+            <a href="javascript:void(0)" class="btns">上门取件</a>
+            <a href="javascript:void(0)" class="btns active">自选物流</a>
+        </div>
+    </section>
+    <section class="address-wrap">
+        <div class="address-hd">
+            <span class="address-name">收货人：张三</span>
+            <span class="address-tel">13234567890</span>
+        </div>
+        <div class="address">
+            <img class="pic" src="/Content/Mobile/zuobiao.png">
+            <span class="text">北京北京市朝阳区太阳宫街道xxx小区芍药居甲31号2单元1143室</span>
+            <img class="right" src="/Content/Mobile/yj-angle-right.png">
+        </div>
+    </section>*@
+    <div class="bottom-tips">
+        提交服务订单后，售后专员可能会与您电话沟通，请保持电话畅通</div>
+    <div class="bottom-btn" onclick="btnSubmit()">
+        提交</div>
+</div>
+<div id="modal" class="logistics-modal hide">
+    <div class="logistics-modal-content">
+        <div class="modal-hd">
+            <span class="title">退款原因</span>
+            <img class="close" src="/Content/Mobile/guanbi.png">
+        </div>
+        <div id="lists" class="modal-bd">
+        </div>
+    </div>
+</div>
+<input type="hidden" id="hidAppId" value="@tempAppId" />
+<input type="hidden" id="hidOrderId" value="@tempOrderId" />
+<input type="hidden" id="hidState" value="@tempState" />
+<input type="hidden" id="hidPay" value="@tempPay" />
+<input type="hidden" id="hidPic" value="@tempPic" />
+<iframe id="uploadframe" name="uploadframe" style="display: none"></iframe>
+<input type="hidden" id="isEditM" value="" />
+@section ClientScript
+{
+    <script src="/Scripts/zepto.min.js" type="text/javascript"></script>
+    <script src="/Scripts/mobileKit.min.js" type="text/javascript"></script>
+    <script src="/dist/js/RefundOrder.js" type="text/javascript"></script>
+}

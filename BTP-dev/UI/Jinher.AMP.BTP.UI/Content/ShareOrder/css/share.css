@@ -1,0 +1,377 @@
+*{	margin: 0;
+	padding: 0;
+}
+html{
+	font-size:62.5%;/*10/16*100%*/
+	background-color: #f8f1df;
+	color: #000;
+}  
+.container{
+	width: 100%;
+	max-width: 500px;
+    margin: 0 auto;
+}
+
+.banner{
+	background: url("../img/drawable-xhdpi/banner.png") no-repeat center center;
+	background-size: 100% 100%;
+    height: 0;
+    padding-bottom: 50.625%;/*图片长宽比*/
+	position: relative;
+}
+
+.share_middle{
+	padding: 15px 0 0 15px;
+}
+.share_text{
+	font-size: 1.1rem;
+	color: #464542;
+}
+.share_person_img,.share_talk_info{
+	display: inline-block;
+	color: #333;
+}
+
+.share_person_img{
+	display: inline-block;
+	width: 15%;
+	margin-right: 2px;
+	height: 0;
+    padding-bottom: 15%;
+	overflow: hidden;
+    border-radius: 50%;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.share_person_img img {
+	width: 100%;
+	border-radius: 50%;
+}
+.share_talk_info{
+	vertical-align: top;
+	width: 83%;
+	margin-top: 6px;
+}
+.share_person_name{
+	font-size: 1.5rem; 
+    margin-bottom: 3px;
+}
+
+.share_person_talk{
+    border: 1px solid #dabfa3;
+    padding: 15px;
+    
+    line-height: 5px;
+    background: #fcf8ef;
+    border-radius: 5px;
+    margin-top: 6px;
+    width: 89%;
+}
+
+.btn{
+    text-decoration: none;
+    display: inline-block;
+    border: 1px solid #999;
+    border-radius: 10px;
+    padding: 0.6rem 2rem;
+    margin: 0 0.5rem;
+    font-size: 1.1rem;
+    color: #6b6a6a;
+}
+.active{
+	border: 1px solid #e4393c;
+	color: #e4393c;
+}
+.hr{
+	display: inline-block;
+	height: 1px;
+	border-top:1px solid #dbd6d6;
+	width: 25%; 
+}
+.hr_info{
+	width: 3.5%;
+	position: relative;
+	left: 50%;
+	margin-left: -15px; 
+	padding: 15px;
+}
+.hr_info img{
+	width: 100%;
+}
+.list{
+    border-top: 4px solid #8c3f06;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    margin: 0 15px 15px 15px;
+}
+.list .item .info_text {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	overflow: hidden;
+}
+.bg{
+	background-color: #fff;
+}
+.item{
+    padding: 15px;
+    position: relative;
+}
+.item:active{
+	opacity: .6;
+}
+.item:after {
+	content: " ";
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	height: 1px;
+	border-bottom: 1px solid #E5E5E5;
+	color: #E5E5E5;
+	-webkit-transform-origin: 0 100%;
+	transform-origin: 0 100%;
+	-webkit-transform: scaleY(0.5);
+	transform: scaleY(0.5);
+}
+.pos_abs{
+	position: absolute;
+	bottom: 15px
+}
+.item_img,.item_info{
+    display: inline-block;
+}
+.item_img{
+	width: 30%;
+	height: 0;
+	padding-bottom: 30%;
+	overflow: hidden;
+}
+.item_img img {
+	width: 100%;
+}
+.info{
+    padding-left: 10px
+}
+.item_info{
+	vertical-align: top;
+	width: 60%;
+}
+.info_text{
+	font-size: 1.3rem;
+}
+.info_types{
+    padding: 3px 0 0px 0;
+}.info_type{
+	 display: -webkit-box;
+	 -webkit-box-orient: vertical;
+	 -webkit-line-clamp: 2;
+	 overflow: hidden;
+}
+.info_type,.share_yuan_num{
+	color: #999999;
+    font-size: 1.5rem;
+}
+.mrg-r-5{
+	margin-right: 5px;
+}
+.share_yuan_num{
+	text-decoration:line-through;
+}
+
+.btn_containt{
+	text-align: center;
+	padding: 30px 0;	
+}
+
+.list_yuan,.list_yuan_num{
+	display: inline-block;
+}
+.list_yuan{
+	color: #e4393c;
+	font-size: 1rem;
+}
+.list_yuan_num{
+	font-size: 1.4rem;
+}
+
+.list_name_long{
+	display: inline-block;
+    width: 95%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+@media screen and (max-width:640px) {
+	.share_text {
+	    font-size: 1.1rem;
+	    line-height: 15px;
+	}
+	.share_person_img {
+	    width: 13%;
+		margin-right: 2px;
+		height: 0;
+        padding-bottom: 13%;
+	    overflow: hidden;
+        border-radius: 50%;
+        background-repeat: no-repeat;
+        background-size: cover;
+	}
+	.share_person_img img{
+		border-radius: 50%;
+	}
+	.share_talk_info {
+	    width: 84%;
+	}
+	.share_person_talk {
+	    padding: 5px;
+	    line-height: 12px;
+	}
+}
+@media screen and (max-width:520px) {
+	.share_person_img {
+	    width: 13%;
+		margin-right: 2px;
+		height: 0;
+        padding-bottom: 13%;
+	    overflow: hidden;
+        border-radius: 50%;
+        background-repeat: no-repeat;
+        background-size: cover;
+	}
+	.share_person_img img{
+		border-radius: 50%;
+	}
+	.share_talk_info {
+	    width: 84%;
+	}
+	.share_person_talk {
+	    padding: 5px;
+	    line-height: 12px;
+	}
+}
+
+@media screen and (max-width:473px){
+	.info_text {
+	    font-size: 1.3rem;
+	}
+	.share_text {
+	    font-size: 1.1rem;
+	}
+	.info_type, .share_yuan_num {
+	    color: #999999;
+	    font-size: 1rem;
+	}
+	.share_person_img {
+	    width: 13%;
+		margin-right: 2px;
+		height: 0;
+        padding-bottom: 13%;
+	    overflow: hidden;
+        border-radius: 50%;
+        background-repeat: no-repeat;
+        background-size: cover;
+	}
+	.share_person_img img{
+		border-radius: 50%;
+	}
+	.share_talk_info {
+	    width: 84%;
+	}
+	.share_person_talk {
+	    padding: 5px;
+	    line-height: 11px;
+	    margin-top: 0;
+	}
+	.list_yuan_num {
+	    font-size: 1.4rem;
+	}
+	.list_yuan {
+	    font-size: 1rem;
+	}
+	
+}
+
+@media screen and (max-width:390px){
+	.info_text {
+	    font-size: 1.3rem;
+	}
+	.share_text {
+	    font-size: 1.1rem;
+	    line-height: 12px;
+	}
+	.share_person_img {
+	    width: 13%;
+		margin-right: 2px;
+		height: 0;
+        padding-bottom: 13%;
+	    overflow: hidden;
+        border-radius: 50%;
+        background-repeat: no-repeat;
+        background-size: cover;
+	}
+	.share_person_img img{
+		border-radius: 50%;
+	}
+	.share_talk_info {
+	    width: 84%;
+	}
+	.share_person_talk {
+	    padding: 5px;
+	    line-height: 11px;
+	    margin-top: 2px;
+	}
+	
+	.pos_abs {
+	    bottom: 15px;
+	}
+}
+
+@media screen and (max-width:340px){
+	.info_text {
+	    font-size: 1.3rem;
+	}
+	.share_talk_info {
+	    width: 84%;
+	    margin-top: 0;
+	}
+	.share_text {
+	    font-size: 1.1rem;
+	}
+	.share_person_img {
+	    width: 13%;
+		margin-right: 2px;
+		height: 0;
+        padding-bottom: 13%;
+	    overflow: hidden;
+        border-radius: 50%;
+        background-repeat: no-repeat;
+        background-size: cover;
+	}
+	.share_person_img img{
+		border-radius: 50%;
+	}
+	.share_person_talk {
+	    padding: 5px;
+	    line-height: 11px;
+	    margin-top: 0;
+	}
+	.info_types{
+		 padding: 3px 0 3px 0;
+	}
+	.info_type{
+		font-size: 1rem;
+	}
+
+	.list_yuan_num {
+	    font-size: 1.4rem;
+	}
+}
+
+@media screen and (max-width:340px){
+	.pos_abs {
+	    bottom: 15px;
+	}
+}

@@ -1,0 +1,66 @@
+﻿<div id="divDownPrintControl" style="display: none">
+    <div style="margin: 0 auto; padding: 10px; width: 100%; height: 100%; background: rgba(227, 227, 227, 1);">
+        <table cellpadding="0" cellspacing="0" style="color: Black; font-size: 14px; line-height: 26px;
+            text-align: center;">
+            <tr>
+                <td>
+                    <div style="padding-left: 140px; padding-top: 50px; padding-bottom: 50px;">
+                        <img src="../../Content/images/noPrint.png" /></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div style="padding-left: 160px; padding-bottom: 50px;">
+                        <p style="font-size: 16px; font-weight: 400; padding-bottom: 15px;">
+                            检测到您未安装打印控件，请先进行安装。</p>
+                        <p style="font-size: 16px; font-weight: 400;">
+                            请在控件安装完成后刷新订单页面并打印。</p>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="tanchu_r" style="width: auto; height: auto; text-align: center; padding-left: 150px;">
+                    <button onclick="DownPrintControl();" style="background:#3A5FCD; color: White;">
+                        安装</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<script type="text/javascript">
+
+    function CheckPrintIsReady() {
+        if (CheckIsInstallLodop()) return true;
+        OpenDownPrintControl();
+        return false;
+    }
+    function OpenDownPrintControl() {
+        $("#divDownPrintControl").jhtablebox({
+            title: "安装打印控件",
+            width: 600,
+            height: 460,
+            draggable: true,
+            modal: true,
+            resizable: false,
+            closedByHide: true,
+            beforeClose: function (e) {
+            }
+        });
+    }
+    function DownPrintControl() {
+        var url = "/OrderPrint/DownPrintFile";
+        url = window.WebSocket ? url : url += "?fileURL=jinherOrderPrint_Setup_for_Control32NT.exe";
+        window.open(url);
+    }
+    function CheckIsInstallLodop() {
+        try {
+            var LODOP = getLodop();
+            if (LODOP.VERSION) {
+                var s = LODOP.CVERSION;
+                return true;
+            };
+        } catch (err) {
+        }
+        return false;
+    }; 
+</script>

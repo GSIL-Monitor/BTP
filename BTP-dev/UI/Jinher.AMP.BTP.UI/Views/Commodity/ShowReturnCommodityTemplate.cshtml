@@ -1,0 +1,337 @@
+﻿@using Jinher.AMP.BTP.Deploy.CustomDTO
+@{
+    Layout = null; 
+}
+@model List<FreightDTO>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>退货运费管理</title>
+    <link rel="stylesheet" type="text/css" href="/Content/css/common.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.all.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/ui.jqgrid.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/default/jquery.ui.datepicker.css" />
+    <link rel="stylesheet" type="text/css" href="/Scripts/bigautocomplete/jquery.bigautocomplete.css" />
+    <style>
+        .ui-jqgrid tr.jqgrow td
+        {
+            white-space: normal !important;
+            height: auto;
+            vertical-align: text-top;
+            padding-top: 2px;
+        }
+        
+        /* 半透明的遮罩层 */
+        #overlay
+        {
+            background: #000;
+            filter: alpha(opacity=50); /* IE的透明度 */
+            opacity: 0.5; /* 透明度 */
+            display: none;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 100%;
+            height: 100%;
+            z-index: 100; /* 此处的图层要大于页面 */
+            display: none;
+            _background-color: #a0a0a0; /* 解决IE6的不透明问题 */
+        }
+        
+        #divLayContent
+        {
+            background: #fff;
+            z-index: 105;
+            display: block;
+            position: absolute;
+            min-height: 300px;
+            min-width: 400px;
+        }
+        
+        #divLayContent span
+        {
+            cursor: pointer;
+            float: right;
+        }
+    </style>
+</head>
+<body>
+    <!--查询条件-->
+    <div class="SearchArea ml10">
+        <div class="mt10">
+            <label class="w80" style="display: inline-block;">
+                商品名称</label>
+            <input type="text" id="txtGoodName" class="inp-txt w300" />
+            <input type="button" id="btnSearch" value="查询" />
+        </div>
+        <div class="mt10">
+            <label class="w80" style="display: inline-block;">
+                商品状态：</label>
+            <input type="radio" name="radGoodState" checked="checked" value="-1" />全部&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="radio" name="radGoodState" value="1" class="ml10" />出售中&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="radio" name="radGoodState" value="0" class="ml10" />已下架
+        </div>
+        <div class="mt10">
+            <label class="w80" style="display: inline-block;">
+                退货物流设置状态：</label>
+            <input type="radio" name="radReturnState" checked="checked" value="-1" />全部&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="radio" name="radReturnState" value="1" class="ml10" />已设置&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="radio" name="radReturnState" value="0" class="ml10" />未设置
+        </div>
+        <div class="mt10">
+            <input id="btnLogisticsSet" type="button" value="批量设置退货物流" onclick="showOverlay()" />
+            <input id="btnLogisticsTempSet" type="button" value="物流模板设置" onclick="window.location.href='/Freight/Index?flag=add&appId=@Request["Appid"]'" />
+        </div>
+    </div>
+    <!--金额合计-->
+    <div class="TotalArea mt10 tr mr20">
+    </div>
+    <!--表格-->
+    <div class="GridArea mt10 ml10">
+        <table id="jqGrid">
+        </table>
+        <div id="jqGridPager">
+        </div>
+    </div>
+    <div style="height: 10000px;">
+    </div>
+    <div id="overlay">
+    </div>
+    <div id="divLayContent" style="padding: 10px 20px; display: none;">
+        <label>
+            请选择退货运费模板</label>
+        <span>× </span>
+        <br />
+        @if (Model != null && Model.Count != 0)
+        {
+            <ul>
+                @foreach (var item in Model)
+                {
+                <li>
+                    <input type="radio" name="radFreight" value="@item.Id"/>@item.Name </li>
+                }
+            </ul>
+        }
+        else
+        { 
+            <p>
+                没有运费模板！请您先 <a href="/Freight/Index?flag=add&appId=@Request["Appid"]">设置物流模板</a> !
+            </p>
+        }
+        <br />
+        <input type="button" value="确定" onclick="updateSelCommontiy()" />
+    </div>
+    <!--打印frame-->
+    <iframe id="framePrint" style="display: none;"></iframe>
+</body>
+</html>
+<script type="text/javascript" src="/Scripts/jquery.js"></script>
+<script type="text/javascript" src="/Scripts/jquery.extend.js"></script>
+<script type="text/javascript" src="/Scripts/jquery.ui.base.js"></script>
+<script type="text/javascript" src="/Scripts/i18n/jquery.ui-zh.js"></script>
+<script type="text/javascript" src="/Scripts/Grid/jquery.grid.base.js"></script>
+<script type="text/javascript" src="/Scripts/Pager/jquery.ui.jhpager.js"></script>
+<script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.datepicker.js"></script>
+<script type="text/javascript" src="/Scripts/DatePicker/jquery.ui.jhdatetime.js"></script>
+<script type="text/javascript" src="/Scripts/i18n/jquery.ui.datepicker-zh.js"></script>
+<script type="text/javascript" src="/Scripts/bigautocomplete/jquery.bigautocomplete.js"></script>
+<script type="text/javascript" src="/Scripts/CommLib.js"></script>
+<script src="/Scripts/TableBox/jquery.ui.jhtablebox.js" type="text/javascript"></script>
+<script type="text/javascript">
+    var curSupplier = null;
+    //初始化表格
+    function InitGrid() {
+        var data = {   //查询提交数据
+            "goodName": $("#txtGoodName").val(),
+            "goodState": $("input:radio[name='radGoodState']:checked").val(),
+            "ReturnState": $("input:radio[name='radReturnState']:checked").val()
+        };
+        $("#jqGrid").jqGrid({
+            datatype: "json",
+            postData: data,
+            url: "GetReturnData?AppId=@Request["Appid"]",
+            mtype: 'POST',
+            colModel: [
+                { sortable: false, label: '商品编号', name: 'No_Code', width: 70 },
+                { sortable: false, label: '商品名称', name: 'goodName', width: 100 },
+                { sortable: false, label: '商品状态', name: 'State', width: 70 },
+                { sortable: false, label: '物流费用', name: 'FirstCountPrice', width: 150 },
+                { sortable: false, label: '退货物流费用', name: 'RefundFreightPrice', width: 140 },
+                { label: '操作', name: "edit", index: "edit", autowidth: "true", align: "center" }
+            ],
+            rowNum: 20,
+            pager: '#jqGridPager',
+            height: 700,
+            autowidth: true,
+            multiselect: true,
+            //shrinkToFit: false,
+            forceFit: true,
+            rownumbers: true,
+            gridComplete: function () {
+                var ids = jQuery("#jqGrid").jqGrid('getDataIDs');
+                for (var i = 0; i < ids.length; i++) {
+                    var id = ids[i];
+                    var editBtn = "<button onclick='showOverlay(\"" + id + "\")'> 设置退货物流 </button>";
+                    jQuery("#jqGrid").jqGrid('setRowData', ids[i], { edit: editBtn });
+                    var curChk = $("#" + ids[i] +"").find(":checkbox");
+                    curChk.attr('name', 'chkCommodity');
+                    curChk.attr('value', id);
+                }
+            },
+            onSelectRow: function (rowid, status) {
+                
+            },
+            onSelectAll: function (aRowids, status) {
+                var ids = jQuery("#jqGrid").jqGrid('getDataIDs');
+                for (var i = 0; i < ids.length; i++) {
+                    var cl = ids[i];
+                    var curRowData = jQuery("#jqGrid").jqGrid('getRowData', cl);
+                    var ckt = $("#listTable").find("input[id='jqg_" + cl + "']").attr("disabled");
+                    if (ckt) {
+                        $("#listTable").find("input[id='jqg_" + cl + "']").attr("checked", true);
+                    }
+                }
+            }
+        });
+    }
+
+    //刷新列表
+    function RefreshList(pageNo) {
+        var isPageNo = typeof (pageNo) == "number";
+        if (isPageNo) {
+            if (pageNo <= 0) pageNo = $("#jqGrid").getGridParam("page");
+        } else {
+            pageNo = $("#jqGrid").getGridParam("page");
+        }
+        var data = {
+            "goodName": $("#txtGoodName").val(),
+            "goodState": $("input:radio[name='radGoodState']:checked").val(),
+            "ReturnState": $("input:radio[name='radReturnState']:checked").val()
+        };
+        $('#jqGrid').jqGrid('setGridParam', {
+            datatype: "json",
+            postData: data,
+            url: "GetReturnData?Appid=@Request["Appid"]",
+            mtype: 'POST'
+        });
+        $('#jqGrid').trigger("reloadGrid", [{
+            page: pageNo
+        }]);
+    }
+
+    function setReturnLogistics(Ids) {
+        $.post("SetCommodityFreightTemp?Appid=@Request["Appid"]",{comIds:Ids,freightID: $("input:radio[name='radFreight']:checked").val()},function(data){
+            if(data == "faile") {
+                alert("有一部分商品可能设置失败了!");
+            }
+            else {
+                alert("设置成功!");
+            }
+        });
+        var page = $("#jqGrid").jqGrid("getGridParam", "page");      //获得当前的页数
+        RefreshList(page);
+    }
+
+    //提交后台设置模板
+    function updateSelCommontiy(){
+        var chk_value = "";
+        if(curSupplier==="" || curSupplier == null || curSupplier == undefined){
+            $("input[name='chkCommodity']:checked").each(function(){
+                chk_value += $(this).val() + ",";
+            });
+        }
+        else{
+            chk_value = curSupplier;
+        }
+        var tepId = $("input:radio[name='radFreight']:checked").val();
+
+        if( tepId == "" || tepId == undefined || tepId == null) {
+            alert("请选择退货模板!");
+            return;
+        }
+        setReturnLogistics(chk_value.trim(','));
+        hideOverlay();
+        $("#divLayContent").hide();
+    }
+
+    //调整页面布局
+    function AdjustLayout() {
+        $("#jqGrid").setGridWidth($(window).width() - 25);
+        $("#jqGrid").setGridHeight($(window).height() - $(".SearchArea").height() - $(".TotalArea").height() - 90);
+    }
+
+    //初始化事件
+    function InitEvent() {
+        //查询
+        $("#btnSearch").click(function () {
+            RefreshList();
+        });
+
+        $("#divLayContent > span").click(function () {
+            hideOverlay();
+            $("#divLayContent").hide();
+        });
+    }
+
+    function showOverlay(ids) {
+        var chk_value = "";
+        if(ids == "" || ids == undefined){
+            $("input[name='chkCommodity']:checked").each(function(){
+                chk_value += $(this).val() + ",";
+            });
+        }
+        else
+        {
+            chk_value = ids;
+            curSupplier = ids;
+        }
+
+        if(chk_value.length == 0)
+        {
+            alert("请您先选择商品数据!");
+            return;
+        }
+
+        $("#overlay").height(document.body.scrollHeight);
+        $("#overlay").width(document.body.scrollWidth);
+        // fadeTo第一个参数为速度，第二个为透明度
+        // 多重方式控制透明度，保证兼容性，但也带来修改麻烦的问题
+        $("#overlay").fadeTo(200, 0.5);
+        // 解决窗口缩小时放大后不全屏遮罩的问题
+        // 简单来说，就是窗口重置的问题
+        $(window).resize(function () {
+            $("#overlay").height(document.body.scrollHeight);
+            $("#overlay").width(document.body.scrollWidth);
+        });
+
+        $("#divLayContent").css("left", document.body.scrollLeft + 200);
+        $("#divLayContent").css("top", document.body.scrollTop + 200);
+        $("#divLayContent").show();
+        
+    }
+    /* 隐藏覆盖层 */
+    function hideOverlay() {
+        $("#overlay").fadeOut(200);
+    }    
+
+    //页面加载完成
+    $(function () {
+        //初始化事件
+        InitEvent();
+        //初始化表格
+        InitGrid();
+        //调整页面布局
+        AdjustLayout();
+        $(window).resize(function () {
+            AdjustLayout();
+        });
+
+        $("#btnSearch").click(function () {
+            RefreshList();
+        });
+
+    });
+</script>

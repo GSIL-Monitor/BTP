@@ -1,0 +1,997 @@
+﻿@using Jinher.JAP.MVC
+@using Jinher.JAP.MVC.UIJquery
+@using Jinher.JAP.MVC.UIJquery.Validate
+@using Jinher.JAP.Common.TypeDefine
+@using Jinher.AMP.BTP.Deploy.CustomDTO;
+@{
+   
+    Layout = "~/Views/Shared/_btpLayout.cshtml";
+    Jinher.AMP.BTP.Deploy.CustomDTO.ZPHProxyContentCDTO proxyContent = ViewBag.ProxyContent;
+
+    string dssUrl = Jinher.AMP.BTP.Common.CustomConfig.DSSUrl;
+    string dssReportUrl = dssUrl + "/ExtractPoint/Index" + HttpContext.Current.Request.Url.Query;
+}
+@section Css{
+    <link href="/Content/css/style.css" rel="stylesheet" type="text/css" />
+    @{Html.jQuery().StyleSheetRegistrar().DefaultGroup(group =>
+          group.Add("default/jquery.ui.all.css")
+          .Add("default/ui.jqgrid.css"));}
+}
+<style type="text/css">
+    .item
+    {
+        line-height: 28px;
+        margin-bottom: 10px;
+        min-height: 28px;
+        padding-left: 10px;
+    }
+    
+    .lable
+    {
+        display: block;
+        float: left;
+        width: 125px;
+        line-height: 28px;
+        padding-right: 5px;
+        margin-left: -130px;
+        _display: inline;
+        text-align: right;
+    }
+    input.inp-txt
+    {
+        height: 18px;
+        line-height: 18px;
+        border: 1px solid #B6C0CD;
+        padding: 4px 5px;
+        vertical-align: middle;
+        border-radius: 3px;
+        box-shadow: inset 1px 1px 2px #DBDBDB;
+    }
+    .btn120
+    {
+        display: inline-block;
+        width: 120px;
+        height: 28px;
+        line-height: 28px;
+        background: url(../Content/default/images/btn120.png) no-repeat;
+        text-align: center;
+        vertical-align: middle;
+        color: #5F7392;
+        box-shadow: 1px 1px 2px #DBDBDB;
+    }
+    
+    select
+    {
+        width: 70px;
+        height: 27px;
+        line-height: 27px;
+        padding: 3px;
+        border: 1px solid #B8BFCF;
+        border-radius: 3px;
+        text-align: center;
+        color: #8c94a9;
+    }
+    td.five a, td.eight a
+    {
+        color: #409FFF;
+    }
+    td.five a:hover, td.eight a:hover
+    {
+        color: #80BDE3;
+    }
+    
+    .btn60
+    {
+        display: inline-block;
+        width: 60px;
+        height: 28px;
+        line-height: 28px;
+        background: url(../Content/default/images/btn60.png) no-repeat;
+        text-align: center;
+        vertical-align: middle;
+        color: #5F7392;
+        box-shadow: 1px 1px 2px #DBDBDB;
+    }
+    
+    .red
+    {
+        color: Red;
+    }
+    .col1
+    {
+        margin-top: 5px;
+        float: left;
+        width: 80px;
+    }
+    .col2
+    {
+        float: left;
+    }
+    #divEditDialog ul
+    {
+        margin-left: 10px;
+    }
+    
+    #divEditDialog li
+    {
+        clear: both;
+        display: block;
+        margin-bottom: 10px;
+        float: left;
+        width: 450px;
+    }
+    #addManagerList div
+    {
+        margin-bottom: 10px;
+    }
+    #addManagerList div img
+    {
+        margin-left: 10px;
+    }
+</style>
+
+  <div class="tabs-box">
+        <div id="divTabs" class="tabs-top">
+            <a tag="_stsList" class="current" href="javascript:void(0)">自提点列表</a> 
+            <a tag="snsReport" href="javascript:void(0)">统计分析</a> 
+        </div>
+    </div>
+
+<div id="divSelfTakeStationList" class="box" style="padding: 10px 0 10px 0px;">
+    <div class="content">
+        <div style="margin-top: 10px; height: 45px; margin-left: 22px">
+            <span>体验柜名称：</span>
+            <input type="text" id="txtName" class="inp-txt" style="width: 70px; height: 19px;
+                margin-top: -7px;" maxlength="30" />
+            <a class="btn60" id="search" href="javascript:void(0);" style="margin-left: 12px;
+                margin-top: -7px;">查询</a> <a class="btn60" id="add" href="javascript:void(0);" style="margin-left: 12px;
+                    margin-top: -7px;">添加</a>
+        </div>
+    </div>
+    <div id="clsContent" style="margin-right: 50px; margin-top: 15px; margin-left: 22px">
+        <table id="selfTakeStationTable">
+        </table>
+        <div id="pager">
+        </div>
+    </div>
+    <div style="display: none;">
+        <div id="divEditDialog">
+            <div style="margin-top: -20px;">
+                <input type="hidden" id="Id" />
+                <input type="hidden" id="QRCodeUrl" />
+                <input type="hidden" id="SpreadCode" />
+                <input type="hidden" id="curChangeOrg" value="@proxyContent.changeOrg" />
+                <input type="hidden"" id="AppId" value="@proxyContent.AppId" />
+                <ul>
+                    <li>
+                        <div class="col1">
+                            <span class="red">*</span><span>所属代理：</span></div>
+                        <div class="col2">
+                            <select id="CityOwnerId" style="pointer-events: none; width: 312px;" disabled>
+                                <option value="@proxyContent.id">@proxyContent.proxyName</option>
+                            </select>
+                            @* <select id="CityOwnerId" style="width: 100%; pointer-events: none" disabled>
+                                <option value="CDC10C05-A98E-4B6B-BB41-09ED9408C945">北京金和</option>
+                            </select>*@
+                        </div>
+                    </li>
+                    <li>
+                        <div class="col1">
+                            <span class="red">*</span><span>体验柜名称：</span></div>
+                        <input type="text" id="Name" class="inp-txt" style="width: 300px;" maxlength="30" /></li>
+                    <li style="margin-bottom: 0;">
+                        <div class="col1" style="margin-top: 3px;">
+                            <span>负责人：</span>
+                        </div>
+                        <div id="addManagerList" style="float: left;">
+                            <div id="firstManager">
+                                <input type="text" name="userCodeManager" class="inp-txt" style="width: 200px;" placeholder="请输入负责人IU平台登录账号" /><input
+                                    type="hidden" name="userIdManager" /><input type="hidden" name="id" /><a href="javascript:void(0);"
+                                        class="add_userCode"><img src="/Images/jia.png" alt="添加" /></a><a href="javascript:void(0);"
+                                            class="del_userCodeFirst"><img src="/Images/jian.png" alt="删除" /></a></div>
+                        </div>
+                    </li>
+                    <li style="height: 60px;">
+                        <div class="col1">
+                            <span class="red">*</span><span>地理位置：</span></div>
+                        <select id="Province" style="width: 124px; pointer-events: none" disabled>
+                            <option value="@proxyContent.provinceCode"></option>
+                        </select>
+                        <select id="City" style="width: 120px; pointer-events: none" disabled>
+                            <option value="@proxyContent.cityCode"></option>
+                        </select>
+                        <div style="margin-left: 80px; margin-top: 5px;">
+                            <input type="text" id="Address" class="inp-txt" style="width: 300px;" maxlength="100" /></div>
+                    </li>
+                    <li>
+                        <div class="col1">
+                            <span class="red">*</span><span>推广地址：</span></div>
+                        <input type="text" id="SpreadUrl" class="inp-txt" style="pointer-events: none; width: 300px;"
+                            disabled /></li>
+                    <li style="height: 80px; position: relative;">
+                        <div style="display: inline-block; width: 75px; vertical-align: middle;">
+                            <span style="">二维码图标：</span></div>
+                        <div style="display: inline-block; vertical-align: middle;">
+                            <a id="QrCodeImg" href="javascript:void(0);">
+                                <img src="/Images/comment_pic5.png" alt="二维码图标" style="width: 60px; height: 60px;" />
+                                <br />
+                                <span style="padding-left: 5px;">重新上传</span></a>
+                        </div>
+                    </li>
+                </ul>
+                <div style="width: 100%; margin-top: 26px;">
+                    <div style="text-align: center;">
+                        <a class="btn60" style="cursor: pointer;" id="btnSave">保存</a> <a class="btn60" style="cursor: pointer;"
+                            id="btnCancel">取消</a>
+                    </div>
+                </div>
+                <div style="clear: both">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="loadImgDiv" style="overflow: hidden; width: auto; min-height: 0; height: 470px;
+        display: none;">
+        <iframe id="contentFrame" name="contentFrame" scrolling="no" src="" height="480"
+            width="630" frameborder="0" style="border: 0; overflow: hidden;"></iframe>
+    </div>
+    <div id="divuserCodeItemTemplate" style="display: none; clear: both;">
+        <div>
+            <input type="text" name="userCodeManager" class="inp-txt" style="width: 200px;" placeholder="请输入负责人IU平台登录账号" /><input
+                type="hidden" name="userIdManager" /><input type="hidden" name="id" /><a href="javascript:void(0);"
+                    class="del_userCode"><img src="/Images/jian.png" alt="删除" /></a></div>
+    </div>
+    <div id="divuserCodeItemEditTemplate" style="display: none; clear: both;">
+        <div>
+            <input type="text" name="userCodeManager" style="width: 200px; pointer-events: none;"
+                class="inp-txt" value="{UserCode}" readonly="readonly" placeholder="请输入负责人IU平台登录账号" /><input
+                    type="hidden" name="userIdManager" value="{UserId}" readonly="readonly" /><input
+                        type="hidden" name="id" value="{Id}" readonly="readonly" /><a href="javascript:void(0);"
+                            class="del_userCode"><img src="/Images/jian.png" alt="删除" /></a></div>
+    </div>
+</div>
+
+<div id="divDSSReport" style="display:none;">
+    <iframe  style="width:100%;min-height:720px;" src='@dssReportUrl'>
+    </iframe>
+</div>
+@section Script{
+    @{Html.jQuery().ScriptRegistrar().DefaultGroup(group => group.Add("jquery.extend.js")
+        .Add("i18n/jquery.ui-zh.js")
+        .Add("jquery.ui.base.js")
+        .Add("Grid/jquery.grid.base.js")
+        .Add("TableBox/jquery.ui.jhtablebox.js")
+        .Add("Pager/jquery.ui.jhpager.js")
+        );}
+}
+@section ClientScript{
+    <script src="/Scripts/CommLib.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.datepicker.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhdatetime.js" type="text/javascript"></script>
+    <script src="/Scripts/DatePicker/jquery.ui.jhstartandenddate.js" type="text/javascript"></script>
+    <script src="../../Content/Business/BusinessAllEvent.js" type="text/javascript"></script>
+    <script src="/Scripts/pcProvinceCity.js" type="text/javascript"></script>
+    <script src="/Scripts/jquery.placeholder.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        String.prototype.format = function (args) {
+            var result = this;
+            if (arguments.length > 0) {
+                if (arguments.length == 1 && typeof (args) == "object") {
+                    for (var key in args) {
+                        if (args[key] != undefined) {
+                            var reg = new RegExp("({" + key + "})", "g");
+                            result = result.replace(reg, args[key]);
+                        }
+                    }
+                }
+                else {
+                    for (var i = 0; i < arguments.length; i++) {
+                        if (arguments[i] != undefined) {
+                            var reg = new RegExp("({[" + i + "]})", "g");
+                            result = result.replace(reg, arguments[i]);
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+        var _delArry = [];
+        var _oeid = "";
+        var _noteTEXT = "";
+        var _pageSize = 20;
+        var _currentPage = 1;
+        //0：添加;1：编辑
+        var status = 0;
+        var curChangeOrg = "";
+        //初始化
+        $(function () {
+            $("#Province option").text(getAreaInfoByCode($("#Province option").val()).Name);
+            $("#City option").text(getAreaInfoByCode($("#City option").val()).Name);
+
+            //页面表格加载数据
+            initJqueryGrid();
+            //查询按扭
+            $("#search").on("click", function () {
+                reloadGrid();
+            });
+            //添加按扭
+            $("#add").on("click", function () {
+                status = 0;
+                showAdd("添加体验柜信息");
+            });
+            //弹出窗口的关闭按扭
+            $("#btnCancel").on("click", function () {
+                close();
+            });
+            //弹出窗口的保存按扭
+            $("#btnSave").on("click", function () {
+                if (!valid())
+                    return;
+                var count = $("#addManagerList input[name=userIdManager]").length;
+                var iCount = 0;
+                for (var i = 0; i < count; i++) {
+                    if ($("#addManagerList input[name=userIdManager]")[i].value != "") {
+                        iCount = iCount + 1;
+                    }
+                }
+                //                if (iCount < 1) {
+                //                    alert("负责人不能为空");
+                //                    return;
+                //                }
+                $("#btnSave").css({ "pointer-events": "none" });
+                //添加 
+                if (status == 0) {
+                    Add();
+                }
+                //修改
+                else if (status == 1) {
+                    Update();
+                }
+            });
+
+            //添加一列负责人
+            $(".add_userCode").click(function () {
+                $("#addManagerList").append($("#divuserCodeItemTemplate").html());
+            });
+
+            //第一个删除
+            $(".del_userCodeFirst").live("click", function () {
+                var focus = $(this);
+                //添加时
+                if (status == 0) {
+                    focus.siblings("input").val("");
+                }
+                else if (status == 1) {
+                    var id = focus.siblings("input[name=id]").val();
+                    if (id == "") {
+                        focus.siblings("input").val("");
+                    }
+                    else {
+                        var addId = focus.siblings("input[name=id]").val();
+                        var addUserIdManager = focus.siblings("input[name=userIdManager]").val();
+                        var addUserCodeManager = focus.siblings("input[name=userCodeManager]").val();
+                        AddDelUserCode(addUserCodeManager, addUserIdManager, addId);
+                        focus.siblings("input").val("");
+                    }
+                    //                    var cf = confirm("确定要删除该负责人吗？");
+                    //                    if (!cf) {
+                    //                        return;
+                    //                    }
+                    //                    $.ajax({
+                    //                        url: '/SelfTakeStation/DeleteSelfTakeStationManagerById',
+                    //                        type: 'post',
+                    //                        async: false,
+                    //                        data: { id: id },
+                    //                        dataType: "json",
+                    //                        beforeSend: function () {
+                    //                            ajaxLoading(1, '');
+                    //                        },
+                    //                        success: function (data) {
+                    //                            $("#ajaxLoadBlind").remove();
+                    //                            if (data.ResultCode != 0) {
+                    //                                alert(data.Message);
+                    //                                return;
+                    //                            }
+                    //                            focus.siblings("input").val("");
+                    //                        },
+                    //                        error: function () {
+                    //                            $("#ajaxLoadBlind").remove();
+                    //                        }
+                    //                    });
+                }
+                $("#firstManager input[name=userCodeManager]").removeAttr("readonly");
+                $("#firstManager input[name=userCodeManager]").css("pointer-events", "auto");
+            });
+
+            //删除负责人
+            $(".del_userCode").live("click", function () {
+                var focus = $(this);
+                //添加时
+                if (status == 0) {
+                    focus.parent("div").remove();
+                }
+                else if (status == 1) {
+                    var id = focus.siblings("input[name=id]").val();
+                    if (id == "") {
+                        focus.parent("div").remove();
+                    }
+                    else {
+                        var addId = focus.siblings("input[name=id]").val();
+                        var addUserIdManager = focus.siblings("input[name=userIdManager]").val();
+                        var addUserCodeManager = focus.siblings("input[name=userCodeManager]").val();
+                        AddDelUserCode(addUserCodeManager, addUserIdManager, addId);
+                        focus.parent("div").remove();
+                    }
+
+                    //                    var cf = confirm("确定要删除该负责人吗？");
+                    //                    if (!cf) {
+                    //                        return;
+                    //                    }
+
+                    //                    $.ajax({
+                    //                        url: '/SelfTakeStation/DeleteSelfTakeStationManagerById',
+                    //                        type: 'post',
+                    //                        async: false,
+                    //                        data: { id: id },
+                    //                        dataType: "json",
+                    //                        beforeSend: function () {
+                    //                            ajaxLoading(1, '');
+                    //                        },
+                    //                        success: function (data) {
+                    //                            $("#ajaxLoadBlind").remove();
+                    //                            if (data.ResultCode != 0) {
+                    //                                alert(data.Message);
+                    //                                return;
+                    //                            }
+                    //                            focus.parent("div").remove();
+                    //                        },
+                    //                        error: function () {
+                    //                            $("#ajaxLoadBlind").remove();
+                    //                        }
+                    //                    });
+
+                }
+            });
+
+            $("#addManagerList input[name=userCodeManager]").live("blur", function () {
+                //                alert("222");
+                //                $(this).css("background-color", "#D6D6FF");
+                if ($(this).val() == "") {
+                    return;
+                }
+                //                if ($(this).siblings("input[name=id]").val() != "") {
+                //                    return;
+                //                }
+
+                var focus = $(this);
+                var count = 0;
+                $("#addManagerList input[name=userCodeManager]").each(function () {
+                    if ($(this).val() == focus.val()) {
+                        count = count + 1;
+                    }
+                });
+                if (count > 1) {
+                    alert("不能输入重复的项");
+                    focus.focus();
+                    focus.val("");
+                    return;
+                }
+
+                //是否已在删除数组中
+                var isExit = 0;
+                if (status == 1) {
+                    if (isDelUserCode(focus.val())) {
+                        for (var m = 0; m < _delArry.length; m++) {
+                            if (_delArry[m].userCodeManager == focus.val()) {
+                                focus.siblings("input[name=userIdManager]").val(_delArry[m].userIdManager);
+                                focus.siblings("input[name=id]").val(_delArry[m].id);
+                            }
+                        }
+                        isExit = 1;
+                    }
+                }
+
+                //不在删除数组中时，需要验证
+                if (isExit == 0) {
+                    $.ajax({
+                        url: '/SelfTakeStation/CheckUserIDByUserCode',
+                        type: 'post',
+                        async: false,
+                        data: { userCode: focus.val() },
+                        dataType: "json",
+                        beforeSend: function () {
+                            ajaxLoading(1, '');
+                        },
+                        success: function (data) {
+                            $("#ajaxLoadBlind").remove();
+                            if (data.ResultCode == 1) {
+                                alert("[" + focus.val() + "]" + data.Message, "28px");
+                                focus.focus();
+                                focus.val("");
+                                //$(this).focus();
+                                return;
+                            }
+                            $("#addManagerList input[name=userIdManager]").each(function () {
+                                if ($(this).val() == data.UserId) {
+                                    alert("已输入了该负责人信息");
+                                    focus.focus();
+                                    focus.val("");
+                                    return;
+                                }
+                            });
+                            focus.siblings("input").val(data.UserId);
+                        }
+                    , error: function () {
+                        $("#ajaxLoadBlind").remove();
+                    }
+                    });
+                }
+            });
+
+            //是传图片生成二维码
+            $('#QrCodeImg').click(function () {
+                var self = this;
+                upImageCallback.callback_1 = function (data) {
+                    // alert(data);
+                    // self.src = data;                 
+
+                    $.ajax({
+                        url: '/SelfTakeStation/GenareteQRCode',
+                        type: 'post',
+                        async: false,
+                        data: { fileImg: data, replaceUrl: $("#SpreadUrl").val() },
+                        dataType: "json",
+                        beforeSend: function () {
+                            ajaxLoading(1, '');
+                        },
+                        success: function (data) {
+                            $("#ajaxLoadBlind").remove();
+                            if (!data) {
+                                alert("生成推广地址错误");
+                                return;
+                            }
+                            $('#QrCodeImg img').attr("src", data);
+                            $('#QRCodeUrl').val(data);
+                        }
+                        , error: function () {
+                            $("#ajaxLoadBlind").remove();
+                        }
+                    });
+                    dialogImgClosed();
+                };
+                ShowUpImg({
+                    imgPath: '',
+                    width: '512',
+                    height: '512',
+                    windowTitle: '二维码图片',
+                    callback: 'callback_1',
+                    upload: '0'
+                });
+            });
+
+
+
+            $("#divTabs > a").on("click", function (e) {
+                var tag = $(e.currentTarget).attr('tag');
+                $("#divTabs > a").removeClass("current");
+                $(e.currentTarget).addClass("current");
+                if (tag == "_stsList") {
+                    $("#divSelfTakeStationList").show();
+                    $("#divDSSReport").hide();
+                }
+                else if (tag == "snsReport") {
+                    $("#divSelfTakeStationList").hide();
+                    $("#divDSSReport").show();
+                }
+            });
+
+            $("#divDSSReport iframe").height($(window).height() - 45);
+        });
+
+
+        //初始化JqueryGrid
+        function initJqueryGrid() {
+            var name = jQuery("#txtName").val();
+
+            var data = { "Name": name, "PageSize": _pageSize, "PageNumber": 1, "SelfTakeStationType": 0 };
+
+            $("#selfTakeStationTable").jqGrid({
+                url: "/SelfTakeStation/GetAllSelfTakeStationGrid",
+                mtype: "post",
+                datatype: "json",
+                postData: data,
+                colNames: ["体验柜名称", "所属代理", "详细地址", "推广地址", "二维码", "操作"],
+                colModel: [
+            { name: 'Name', index: 'Name', width: 220, align: "center", sortable: false, title: false },
+            { name: 'CityOwnerName', index: 'CityOwnerName', width: 200, align: "center", sortable: false, title: false },
+            { name: 'AddressDetail', index: 'AddressDetail', width: 200, align: "center", sortable: false, title: false },
+            { name: 'SpreadUrl', index: 'SpreadUrl', width: 200, align: "center", sortable: false, title: false },
+            { name: 'QRCodeUrl', index: 'QRCodeUrl', width: 200, align: "center", sortable: false, title: false, formatter: FormatterDownloadQrcode },
+             { name: '操作', index: '操作', width: 200, align: "center", sortable: false, title: false, formatter: FormatterShowOperation },
+            ],
+                rowNum: _pageSize,
+                pager: "pager",
+                height: "100%",
+                rownumbers: true,
+                autowidth: true,
+                forceFit: true,
+                scroll: false,
+                shrinkToFit: true,
+                jsonReader: { repeatitems: true },
+                gridComplete: function () {
+                    reRegGridEvents();
+                    newSetIframeHeight();
+                }
+            });
+
+            function FormatterDownloadQrcode(callvalue, opts, rowdata) {
+                return "<div style='padding-top:4px;padding-bottom:4px;' oe-tag='noteRoot'>"
+                    + "<a href='" + callvalue + "'  >" + "二维码下载" + "</a></div>"
+            }
+            function FormatterShowOperation(callvalue, opts, rowdata) {
+                return "<div style='padding-top:4px;padding-bottom:4px;' oe-tag='noteRoot'><a href='javascript:void(0);' class='edit' onclick='showEdit(this)'>编辑</a>&nbsp;&nbsp;&nbsp;"
+                    + "<a href='javascript:void(0);' class='delete' onclick='showDelete(this)' >删除</a></div>"
+            }
+
+
+            function reRegGridEvents() {
+
+            }
+        }
+
+        /* 弹出窗口 */
+
+        //添加窗口
+        function showAdd(title) {
+            status = 0;
+            clear();
+            $.ajax({
+                url: '/SelfTakeStation/GenareteSpreadUrlAndCode',
+                data: { appId: '@proxyContent.AppId' },
+                type: 'post',
+                async: true,
+                dataType: "json",
+                beforeSend: function () {
+                    ajaxLoading(1, '');
+                },
+                success: function (data) {
+                    $("#ajaxLoadBlind").remove();
+                    if (!data) {
+                        alert("生成推广地址错误");
+                        return;
+                    }                   
+                    $("#SpreadUrl").val(data.SpreadUrl);
+                    $("#SpreadCode").val(data.SpreadCode);
+                    $("#firstManager input[name=userCodeManager]").removeAttr("readonly");
+                    $("#firstManager input[name=userCodeManager]").css("pointer-events", "auto");
+                    $("#divEditDialog").jhtablebox({
+                        height: 500,
+                        width: 500,
+                        resizable: false,
+                        title: title,
+                        modal: true,
+                        buttons: {},
+                        autoOpen: true,
+                        closedByHide: true
+                    });
+                }
+                , error: function () {
+                    $("#ajaxLoadBlind").remove();
+                }
+            });
+
+        }
+        //关闭添加/修改窗口
+        function close() {
+            $("#divEditDialog").jhtablebox("close");
+        }
+        //编辑窗口
+        function showEdit(obj) {
+            status = 1;
+            clear();
+            var id = $(obj).parents("tr", $("#selfTakeStationTable")).attr("id");
+            $.ajax({
+                url: '/SelfTakeStation/GetSelfTakeStationById',
+                type: 'post',
+                async: true,
+                dataType: "json",
+                data: { id: id },
+                beforeSend: function () {
+
+                },
+                success: function (data) {
+                    //附值
+                    $("#Id").val(data.Id);
+                    $("#CityOwnerId").val(data.CityOwnerId);
+                    $("#Name ").val(data.Name);
+                    $("#Province").val(data.Province);
+                    $("#City").val(data.City);
+                    $("#District ").val(data.District);
+                    $("#Address").val(data.Address);
+                    $("#SpreadUrl").val(data.SpreadUrl);
+                    //$("#Remark").val(data.Remark);
+                    $('#QrCodeImg img').attr("src", data.QRCodeUrl);
+                    $('#QRCodeUrl').val(data.QRCodeUrl);
+                    $("#SpreadCode").val(data.SpreadCode);
+
+                    if (data.SelfTakeStationManageList != undefined && data.SelfTakeStationManageList.length > 0) {
+                        var magagerCount = data.SelfTakeStationManageList.length;
+                        $("#firstManager input[name=userCodeManager]").val(data.SelfTakeStationManageList[0].UserCode);
+                        $("#firstManager input[name=userIdManager]").val(data.SelfTakeStationManageList[0].UserId);
+                        $("#firstManager input[name=id]").val(data.SelfTakeStationManageList[0].Id);
+                        $("#firstManager input[name=userCodeManager]").attr("readonly", "readonly");
+                        $("#firstManager input[name=userCodeManager]").css("pointer-events", "none");
+
+                        for (var i = 1; i < magagerCount; i++) {
+                            var tmpHtml = $("#divuserCodeItemEditTemplate").html().format(data.SelfTakeStationManageList[i]);
+                            $("#addManagerList").append(tmpHtml);
+                        }
+                    }
+
+                    //显示
+                    $("#divEditDialog").jhtablebox({
+                        height: 500,
+                        width: 500,
+                        resizable: false,
+                        title: "编辑体验柜信息",
+                        modal: true,
+                        buttons: {},
+                        autoOpen: true,
+                        closedByHide: true
+                    });
+                }
+                , error: function () {
+
+                }
+            });
+
+        }
+
+        //删除窗口
+        function showDelete(obj) {
+            var cf = confirm("确定要删除该体验柜吗？");
+            if (!cf) {
+                return;
+            }
+            var id = $(obj).parents("tr", $("#selfTakeStationTable")).attr("id");
+            Delete(id);
+
+        }
+
+        /* 数据库操作 */
+
+        //添加
+        function Add() {
+            var model = new Object();
+            //原来存总代，现改为存当前组织ID
+            model.CityOwnerId = $("#curChangeOrg").val();
+            model.Name = $("#Name").val();
+            model.Province = $("#Province").val();
+            model.City = $("#City").val();
+            model.District = "";
+            model.Address = $("#Address").val();
+            model.SpreadUrl = $("#SpreadUrl").val();
+            model.Remark = "";
+            model.QRCodeUrl = $("#QRCodeUrl").val();
+            model.SpreadCode = $("#SpreadCode").val();
+            model.AppId="@proxyContent.AppId";
+            model.selfTakeStationManager = new Array();
+            var count = $("#addManagerList input[name=userCodeManager]").length;
+            var icount = 0;
+            for (var i = 0; i < count; i++) {
+                if ($("#addManagerList input[name=userIdManager]")[i].value != "" && $("#addManagerList input[name=userCodeManager]")[i].value != "") {
+                    model.selfTakeStationManager[icount] = new Object();
+                    model.selfTakeStationManager[icount].UserCode = $("#addManagerList input[name=userCodeManager]")[i].value;
+                    model.selfTakeStationManager[icount].UserId = $("#addManagerList input[name=userIdManager]")[i].value;
+                    model.selfTakeStationManager[icount].SubTime = "";
+                    model.selfTakeStationManager[icount].ModifiedOn = "";
+                    model.selfTakeStationManager[icount].Id = "";
+                    model.selfTakeStationManager[icount].SelfTakeStationId = "";
+                    icount = icount + 1;
+                }
+            }
+            model.SaveSelfTakeStation = 0;
+            var subData = CommLib.ObjToStringWithQuot(model);
+
+            $.ajax({
+                url: '/SelfTakeStation/SaveSelfTakeStation',
+                type: 'post',
+                async: true,
+                dataType: "json",
+                contentType: "application/json",
+                data: subData,
+                beforeSend: function () {
+                    ajaxLoading(1, '');
+                },
+                success: function (data) {
+                    $("#ajaxLoadBlind").remove();
+                    if (data.ResultCode != 0) {
+                        alert(data.Message, "28px");
+                        return;
+                    }
+                 
+                    close();
+                    alert("保存成功");
+                    reloadGrid();
+                    $("#btnSave").css({ "pointer-events": "auto" });
+
+                }
+                , error: function () {
+                    $("#ajaxLoadBlind").remove();
+                    $("#btnSave").css({ "pointer-events": "auto" });
+                }
+            });
+        }
+        //修改
+        function Update() {
+            var model = new Object();
+            model.Id = $("#Id").val();
+            //原来存总代，现改为存当前组织ID
+            model.CityOwnerId = $("#curChangeOrg").val();
+            model.Name = $("#Name").val();
+            model.Province = $("#Province").val();
+            model.City = $("#City").val();
+            model.District = "";
+            model.Address = $("#Address").val();
+            model.SpreadUrl = $("#SpreadUrl").val();
+            model.Remark = "";
+            model.QRCodeUrl = $("#QRCodeUrl").val();
+            model.SpreadCode = $("#SpreadCode").val();
+
+            model.selfTakeStationManager = new Array();
+            var count = $("#addManagerList input[name=userCodeManager]").length;
+            var icount = 0;
+            for (var i = 0; i < count; i++) {
+                if ($("#addManagerList input[name=userIdManager]")[i].value != "" && $("#addManagerList input[name=userCodeManager]")[i].value != "") {
+                    model.selfTakeStationManager[icount] = new Object();
+                    model.selfTakeStationManager[icount].UserCode = $("#addManagerList input[name=userCodeManager]")[i].value;
+                    model.selfTakeStationManager[icount].UserId = $("#addManagerList input[name=userIdManager]")[i].value;
+                    model.selfTakeStationManager[icount].SubTime = "";
+                    model.selfTakeStationManager[icount].ModifiedOn = "";
+                    model.selfTakeStationManager[icount].Id = $("#addManagerList input[name=id]")[i].value;
+                    model.selfTakeStationManager[icount].SelfTakeStationId = "";
+                    icount = icount + 1;
+                }
+            }
+            var subData = CommLib.ObjToStringWithQuot(model);
+
+            $.ajax({
+                url: '/SelfTakeStation/UpdateSelfTakeStation',
+                type: 'post',
+                async: true,
+                dataType: "json",
+                contentType: "application/json",
+                data: subData,
+                beforeSend: function () {
+                    ajaxLoading(1, '');
+                },
+                success: function (data) {
+                    $("#ajaxLoadBlind").remove();
+                    if (data.ResultCode != 0) {
+                        alert(data.Message, "28px");
+                        return;
+                    }
+                   
+                    close();
+                    clear();
+                    alert("修改成功");
+                    reloadGrid();
+                    $("#btnSave").css({ "pointer-events": "auto" });
+                }
+                , error: function () {
+                    $("#ajaxLoadBlind").remove();
+                    $("#btnSave").css({ "pointer-events": "auto" });
+                }
+            });
+        }
+        //删除
+        function Delete(id) {
+            $.ajax({
+                url: '/SelfTakeStation/DeleteSelfTakeStations',
+                type: 'post',
+                async: true,
+                dataType: "json",
+                data: { id: id },
+                beforeSend: function () {
+                    ajaxLoading(1, '');
+                },
+                success: function (data) {
+                    $("#ajaxLoadBlind").remove();
+                    if (data.ResultCode != 0) {
+                        alert(data.Message, "28px");
+                        return;
+                    }                  
+                    alert("删除成功");
+                    reloadGrid();
+                }
+                , error: function () {
+                    $("#ajaxLoadBlind").remove();
+                }
+            });
+        }
+
+
+        /* 共用的方法 */
+
+        //清空添加/编辑框
+        function clear() {
+            $("#Id").val("");
+            $("#CityOwnerId").val("");
+            $("#Name ").val("");
+            $("#Province").val("");
+            $("#City").val("");
+            $("#District ").val("");
+            $("#Address").val("");
+            $("#SpreadUrl").val("");
+            $("#Remark").val("");
+            $('#QrCodeImg img').attr("src", "/Images/comment_pic5.png");
+            $('#QRCodeUrl').val("");
+            $('#SpreadCode').val("");
+            $("#firstManager").siblings("div").remove();
+            $("#firstManager").removeAttr("readonly");
+            $("#addManagerList input").val("");
+        }
+        //页面重新加载
+        function reloadGrid() {
+            var name = jQuery("#txtName").val();
+            var data = { "Name": name, "PageSize": _pageSize, "PageNumber": 1,"SelfTakeStationType":0
+            };
+
+            $('#selfTakeStationTable').jqGrid(
+                'setGridParam', {
+                    datatype: "json",
+                    postData: data,
+                    url: "/SelfTakeStation/GetAllSelfTakeStationGrid",
+                    mtype: "post"
+                }
+            );
+            $('#selfTakeStationTable').trigger("reloadGrid", [{ page: 1}]);
+        }
+
+        //是否已在删除数组中
+        function isDelUserCode(item) {
+            for (var i in _delArry) {
+                if (_delArry[i].userCodeManager == item) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        //加入删除数组
+        function AddDelUserCode(userCodeManager, userIdManager, id) {
+            for (var i in _delArry) {
+                if (_delArry[i].userCodeManager == userCodeManager) {
+                    return;
+                }
+            }
+            var tmp = {};
+            tmp.userCodeManager = userCodeManager;
+            tmp.userIdManager = userIdManager;
+            tmp.id = id;
+            _delArry.push(tmp);
+        }
+        function valid() {
+            if ($("#Name").val() == "") {
+                alert("体验柜名称不能为空");
+                return false;
+            }
+            if ($("#Address").val() == "") {
+                alert("地理位置不能为空");
+                return false;
+            }
+            if (!$("#Province").val()) {
+                alert("请选择所在省");
+                return false;
+            }
+            if (!$("#City").val()) {
+                alert("请选择所在市");
+                return false;
+            }
+            if (!$("#Address").val()) {
+                alert("请维护详细地址");
+                return false;
+            }
+            return true;
+        }
+    </script>
+}

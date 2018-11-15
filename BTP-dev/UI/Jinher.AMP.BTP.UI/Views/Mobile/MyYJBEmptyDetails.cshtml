@@ -1,0 +1,107 @@
+﻿@{
+    Layout = "~/Views/Shared/_MobileBaseLayout.cshtml";
+}
+@section TitleHtml
+{
+    <title>我的易捷币</title>
+}
+@helper Currency()
+{
+    @Jinher.AMP.BTP.UI.Util.MobileCookies.GetCurrency();
+}
+@section CssStyles{
+    <link rel="stylesheet" href="../../Content/style/css/mobileKit-min.css" />
+    <link rel="stylesheet" href="../../Content/style/css/index.css" />
+}
+@section ClientScript
+{
+    <script src="/Scripts/moment.min.js"></script>
+    <script type="text/javascript">
+        var MYYJB = (function (mod, $, undefined) {
+            mod.pageIndex = 1;
+            mod.lastPage = false;
+            mod.curSelectNav = 0; //0：全部 1：收入  2：支出
+            /**
+            * 初始化事件
+            */
+            mod.initEvent = function () {
+                var _this = this;
+                $('.yjb-header-nav').on('click', '.list', function () {
+                    var $index = $(this).index();
+                    if (mod.curSelectNav == $index) {
+                        return;
+                    }
+                    $(this).parent().find('.active').removeClass('active');
+                    $(this).addClass('active');
+                    _this.curSelectNav = $index;
+                    $("#journalContent").html("");
+                    mod.lastPage = false;
+                    mod.pageIndex = 1;
+                     _this.loadDate();
+                });
+                _this.loadDate();
+            };
+            /**
+            * 获取数据
+            */
+            mod.loadDate = function () {
+                // 显示无数据
+                var htmlContent = "";
+                if (mod.curSelectNav == 1) {
+                    htmlContent = "<div style=\"padding-top:100px;padding-bottom:30px\"><div style=\"width:60px;margin:0 auto;\"><img src=\"/Content/style/images/record_empty.png\"></div><div style=\"width:210px;margin:20px auto;\">您目前还没有易捷币充值记录</div></div>";
+                } else if (mod.curSelectNav == 2) {
+                    htmlContent = "<div style=\"padding-top:100px;padding-bottom:30px\"><div style=\"width:60px;margin:0 auto;\"><img src=\"/Content/style/images/record_empty.png\"></div><div style=\"width:210px;margin:20px auto;\">您目前还没有易捷币支出记录</div></div>";
+                } else {
+                    htmlContent = "<div style=\"padding-top:100px;padding-bottom:30px\"><div style=\"width:60px;margin:0 auto;\"><img src=\"/Content/style/images/record_empty.png\"></div><div style=\"width:210px;margin:20px auto;\">您目前还没有易捷币流水记录</div></div>";
+                }
+                $("#journalContent").html(htmlContent);
+            };
+
+            return mod;
+        })(MYYJB || {}, window.Zepto);
+
+        $(function () {
+            DealLoginPartial.initPartialPage();
+            // loadMyYJBInfo();
+            MYYJB.initEvent();
+        });
+
+        function loadMyYJBInfo() {
+            $.get("/Mobile/GetMyYJB", function (d) {
+                if (d.IsSuccess) {
+                    $("#yjbCount").text(d.Data.Count);
+                    $("#yjbPrice").text(d.Data.Money)
+                } else {
+                    toast(d.Message);
+                }
+            })
+        }
+    </script>
+}
+<div class="page">
+    <!--顶部导航-->
+@*    <header class="bar bar-nav">
+        <a href="javascript:window.history.back();" class="pull-left fa"><img src="/Content/style/images/angle-left.png" alt="返回"/></a>
+        <h1 class="title">我的易捷币</h1>
+    </header>*@
+    <div class="yjb-header">
+        <div class="yjb-header-info">
+            <div class="yjb-header-pic">
+                <img src="/Content/style/images/recharge_yjb.png">
+            </div>
+            <div class="yjb-header-price-wrap">
+                <div class="yjb-header-title">
+                    易捷币余额</div>
+                <div class="yjb-header-count" style="margin-top:15px;">
+                    ￥<span class="num" id="yjbCount">0</span>元</div>
+            </div>
+        </div>
+        <ul class="yjb-header-nav">
+            <li class="list active"><a href="javascript: void(0)">全部</a></li>
+            <li class="list"><a href="javascript: void(0)">收入</a></li>
+            <li class="list"><a href="javascript: void(0)">支出</a></li>
+        </ul>
+    </div>
+    <div class="content padding-top194" id="journalContent">       
+    </div>
+</div>

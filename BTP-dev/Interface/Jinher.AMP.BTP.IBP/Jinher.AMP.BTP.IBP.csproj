@@ -1,0 +1,340 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{AE8ED766-27DA-4992-8F96-ADF20AEF932E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Jinher.AMP.BTP.IBP</RootNamespace>
+    <AssemblyName>Jinher.AMP.BTP.IBP</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>obj\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>obj\Debug\Jinher.AMP.BTP.IBP.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\..\Lib\BizApp\Interface\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Jinher.JAP.BF.IBP">
+      <HintPath>..\..\..\..\..\Lib\JAP\Interface\Jinher.JAP.BF.IBP.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.ComponentModel.DataAnnotations">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel.DomainServices.Hosting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\Lib\TP\System.ServiceModel.DomainServices.Hosting.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.ServiceModel.DomainServices.Server, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\Lib\TP\System.ServiceModel.DomainServices.Server.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Jinher.JAP.BF.BE.Deploy">
+      <HintPath>..\..\..\..\..\Lib\JAP\Interface\Jinher.JAP.BF.BE.Deploy.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Jinher.JAP.Common">
+      <HintPath>..\..\..\..\..\Lib\JAP\Implement\Jinher.JAP.Common.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Agent\AllPaymentAgent.cs" />
+    <Compile Include="Agent\AppExtensionAgent.cs" />
+    <Compile Include="Agent\APPManageAgent.cs" />
+    <Compile Include="Agent\AppSelfTakeStationAgent.cs" />
+    <Compile Include="Agent\AppSetAgent.cs" />
+    <Compile Include="Agent\AuditCommodityAgent.cs" />
+    <Compile Include="Agent\BrandAgent.cs" />
+    <Compile Include="Agent\CategoryAdvertiseAgent.cs" />
+    <Compile Include="Agent\CategoryAgent.cs" />
+    <Compile Include="Agent\CategoryInnerBrandAgent.cs" />
+    <Compile Include="Agent\CateringSettingAgent.cs" />
+    <Compile Include="Agent\ComAttibuteAgent.cs" />
+    <Compile Include="Agent\CommodityAgent.cs" />
+    <Compile Include="Agent\CommodityCategoryAgent.cs" />
+    <Compile Include="Agent\CommodityChangeAgent.cs" />
+    <Compile Include="Agent\CommodityInnerBrandAgent.cs" />
+    <Compile Include="Agent\CommodityOrderAfterSalesAgent.cs" />
+    <Compile Include="Agent\CommodityOrderAgent.cs" />
+    <Compile Include="Agent\CommodityOrderExceptionAgent.cs" />
+    <Compile Include="Agent\CommodityOrderRefundAgent.cs" />
+    <Compile Include="Agent\CommodityOrderItemAgent.cs" />
+    <Compile Include="Agent\CommodityPriceFloatAgent.cs" />
+    <Compile Include="Agent\CouponRefundAgent.cs" />
+    <Compile Include="Agent\CrowdfundingAgent.cs" />
+    <Compile Include="Agent\DeliveryAddressAgent.cs" />
+    <Compile Include="Agent\DistributeAgent.cs" />
+    <Compile Include="Agent\DiyGroupAgent.cs" />
+    <Compile Include="Agent\ExpressAgent.cs" />
+    <Compile Include="Agent\ExpressOrderTemplateAgent.cs" />
+    <Compile Include="Agent\ExpressTraceAgent.cs" />
+    <Compile Include="Agent\FreightAgent.cs" />
+    <Compile Include="Agent\InnerCategoryAgent.cs" />
+    <Compile Include="Agent\InsuranceCompanyAgent.cs" />
+    <Compile Include="Agent\InvoiceAgent.cs" />
+    <Compile Include="Agent\JDAuditComAgent.cs" />
+    <Compile Include="Agent\JdEclpOrderAgent.cs" />
+    <Compile Include="Agent\JdCommodityAgent.cs" />
+    <Compile Include="Agent\JdJournalAgent.cs" />
+    <Compile Include="Agent\JdOrderItemAgent.cs" />
+    <Compile Include="Agent\MallApplyAgent.cs" />
+    <Compile Include="Agent\OrderExpressRouteAgent.cs" />
+    <Compile Include="Agent\OrderPrintAgent.cs" />
+    <Compile Include="Agent\OrderRefundAgent.cs" />
+    <Compile Include="Agent\OrderRefundInfoManageAgent.cs" />
+    <Compile Include="Agent\PaymentAgent.cs" />
+    <Compile Include="Agent\PaySourceAgent.cs" />
+    <Compile Include="Agent\PresentPromotionAgent.cs" />
+    <Compile Include="Agent\ProductDetailsPictureAgent.cs" />
+    <Compile Include="Agent\PromotionAgent.cs" />
+    <Compile Include="Agent\RefundExpressTraceAgent.cs" />
+    <Compile Include="Agent\ReviewAgent.cs" />
+    <Compile Include="Agent\SecondAttributeAgent.cs" />
+    <Compile Include="Agent\SelfTakeStationAgent.cs" />
+    <Compile Include="Agent\SettleAccountAgent.cs" />
+    <Compile Include="Agent\SettlingAccountAgent.cs" />
+    <Compile Include="Agent\ShareQueryAgent.cs" />
+    <Compile Include="Agent\ShiftManageAgent.cs" />
+    <Compile Include="Agent\SNAfterSaleAgent.cs" />
+    <Compile Include="Agent\SNCommodityAgent.cs" />
+    <Compile Include="Agent\SNExpressTraceAgent.cs" />
+    <Compile Include="Agent\SNOrderItemAgent.cs" />
+    <Compile Include="Agent\SpecificationsAgent.cs" />
+    <Compile Include="Agent\SpreadCategoryAgent.cs" />
+    <Compile Include="Agent\SpreadInfoAgent.cs" />
+    <Compile Include="Agent\StoreAgent.cs" />
+    <Compile Include="Agent\SupplierAgent.cs" />
+    <Compile Include="Agent\WeChatQRCodeAgent.cs" />
+    <Compile Include="Agent\BaseCommissionAgent.cs" />
+    <Compile Include="Agent\CategoryCommissionAgent.cs" />
+    <Compile Include="Agent\CommodityCommissionAgent.cs" />
+    <Compile Include="Agent\OrderFieldAgent.cs" />
+    <Compile Include="Agent\ServiceSettingsAgent.cs" />
+    <Compile Include="Agent\YJBDSFOrderInfoAgent.cs" />
+    <Compile Include="Agent\YJBJCardAgent.cs" />
+    <Compile Include="Agent\JdlogsAgent.cs" />
+    <Compile Include="Agent\YJEmployeeAgent.cs" />
+    <Compile Include="Agent\YPKCommodityAgent.cs" />
+    <Compile Include="Agent\YXCommodityAgent.cs" />
+    <Compile Include="Facade\AllPaymentFacade.cs" />
+    <Compile Include="Facade\AppExtensionFacade.cs" />
+    <Compile Include="Facade\APPManageFacade.cs" />
+    <Compile Include="Facade\AppSelfTakeStationFacade.cs" />
+    <Compile Include="Facade\AppSetFacade.cs" />
+    <Compile Include="Facade\AuditCommodityFacade.cs" />
+    <Compile Include="Facade\BaseCommissionFacade.cs" />
+    <Compile Include="Facade\BrandFacade.cs" />
+    <Compile Include="Facade\CategoryAdvertiseFacade.cs" />
+    <Compile Include="Facade\CategoryFacade.cs" />
+    <Compile Include="Facade\CategoryInnerBrandFacade.cs" />
+    <Compile Include="Facade\CateringSettingFacade.cs" />
+    <Compile Include="Facade\ComAttibuteFacade.cs" />
+    <Compile Include="Facade\CommodityCategoryFacade.cs" />
+    <Compile Include="Facade\CommodityChangeFacade.cs" />
+    <Compile Include="Facade\CommodityFacade.cs" />
+    <Compile Include="Facade\CommodityInnerBrandFacade.cs" />
+    <Compile Include="Facade\CommodityOrderAfterSalesFacade.cs" />
+    <Compile Include="Facade\CommodityOrderExceptionFacade.cs" />
+    <Compile Include="Facade\CommodityOrderFacade.cs" />
+    <Compile Include="Facade\CommodityOrderRefundFacade.cs" />
+    <Compile Include="Facade\CommodityOrderItemFacade.cs" />
+    <Compile Include="Facade\CommodityPriceFloatFacade.cs" />
+    <Compile Include="Facade\CouponRefundFacade.cs" />
+    <Compile Include="Facade\CrowdfundingFacade.cs" />
+    <Compile Include="Facade\DeliveryAddressFacade.cs" />
+    <Compile Include="Facade\DistributeFacade.cs" />
+    <Compile Include="Facade\DiyGroupFacade.cs" />
+    <Compile Include="Facade\ExpressFacade.cs" />
+    <Compile Include="Facade\ExpressOrderTemplateFacade.cs" />
+    <Compile Include="Facade\ExpressTraceFacade.cs" />
+    <Compile Include="Facade\FreightFacade.cs" />
+    <Compile Include="Facade\InnerCategoryFacade.cs" />
+    <Compile Include="Facade\InsuranceCompanyFacade.cs" />
+    <Compile Include="Facade\InvoiceFacade.cs" />
+    <Compile Include="Facade\JDAuditComFacade.cs" />
+    <Compile Include="Facade\JdEclpOrderFacade.cs" />
+    <Compile Include="Facade\JdCommodityFacade.cs" />
+    <Compile Include="Facade\JdJournalFacade.cs" />
+    <Compile Include="Facade\JdOrderItemFacade.cs" />
+    <Compile Include="Facade\OrderExpressRouteFacade.cs" />
+    <Compile Include="Facade\OrderPrintFacade.cs" />
+    <Compile Include="Facade\OrderRefundFacade.cs" />
+    <Compile Include="Facade\OrderRefundInfoManageFacade.cs" />
+    <Compile Include="Facade\PaymentFacade.cs" />
+    <Compile Include="Facade\PaySourceFacade.cs" />
+    <Compile Include="Facade\PresentPromotionFacade.cs" />
+    <Compile Include="Facade\ProductDetailsPictureFacade.cs" />
+    <Compile Include="Facade\PromotionFacade.cs" />
+    <Compile Include="Facade\RefundExpressTraceFacade.cs" />
+    <Compile Include="Facade\ReviewFacade.cs" />
+    <Compile Include="Facade\SecondAttributeFacade.cs" />
+    <Compile Include="Facade\SelectCommodityFacade.cs" />
+    <Compile Include="Facade\SelfTakeStationFacade.cs" />
+    <Compile Include="Facade\SettleAccountFacade.cs" />
+    <Compile Include="Facade\SettlingAccountFacade.cs" />
+    <Compile Include="Facade\ShareQueryFacade.cs" />
+    <Compile Include="Facade\ShiftManageFacade.cs" />
+    <Compile Include="Facade\SNAfterSaleFacade.cs" />
+    <Compile Include="Facade\SNCommodityFacade.cs" />
+    <Compile Include="Facade\SNExpressTraceFacade.cs" />
+    <Compile Include="Facade\SNOrderItemFacade.cs" />
+    <Compile Include="Facade\SpecificationsFacade.cs" />
+    <Compile Include="Facade\SpreadCategoryFacade.cs" />
+    <Compile Include="Facade\SpreadInfoFacade.cs" />
+    <Compile Include="Facade\StoreFacade.cs" />
+    <Compile Include="Facade\SupplierFacade.cs" />
+    <Compile Include="Facade\WeChatQRCodeFacade.cs" />
+    <Compile Include="Facade\MallApplyFacade.cs" />
+    <Compile Include="Facade\CategoryCommissionFacade.cs" />
+    <Compile Include="Facade\CommodityCommissionFacade.cs" />
+    <Compile Include="Facade\OrderFieldFacade.cs" />
+    <Compile Include="Facade\ServiceSettingsFacade.cs" />
+    <Compile Include="Facade\YJBDSFOrderInfoFacade.cs" />
+    <Compile Include="Facade\YJBJCardFacade.cs" />
+    <Compile Include="Facade\JdlogsFacade.cs" />
+    <Compile Include="Facade\YJEmployeeFacade.cs" />
+    <Compile Include="Facade\YPKCommodityFacade.cs" />
+    <Compile Include="Facade\YXCommodityFacade.cs" />
+    <Compile Include="IService\IAppMetaData.cs" />
+    <Compile Include="IService\IAppSelfTakeStation.cs" />
+    <Compile Include="IService\IAllPayment.cs" />
+    <Compile Include="IService\IAppExtension.cs" />
+    <Compile Include="IService\IAPPManage.cs" />
+    <Compile Include="IService\IAppSet.cs" />
+    <Compile Include="IService\IAuditCommodity.cs" />
+    <Compile Include="IService\IBaseCommission.cs" />
+    <Compile Include="IService\IBrand.cs" />
+    <Compile Include="IService\ICategoryAdvertise.cs" />
+    <Compile Include="IService\ICategoryInnerBrand.cs" />
+    <Compile Include="IService\ICategory.cs" />
+    <Compile Include="IService\ICategoryCommission.cs" />
+    <Compile Include="IService\ICateringSetting.cs" />
+    <Compile Include="IService\IComAttibute.cs" />
+    <Compile Include="IService\ICommodity.cs" />
+    <Compile Include="IService\ICommodityCategory.cs" />
+    <Compile Include="IService\ICommodityChange.cs" />
+    <Compile Include="IService\ICommodityCommission.cs" />
+    <Compile Include="IService\ICommodityInnerBrand.cs" />
+    <Compile Include="IService\ICommodityOrder.cs" />
+    <Compile Include="IService\ICommodityOrderAfterSales.cs" />
+    <Compile Include="IService\ICommodityOrderException.cs" />
+    <Compile Include="IService\ICommodityOrderRefund.cs" />
+    <Compile Include="IService\ICommodityOrderItem.cs" />
+    <Compile Include="IService\ICommodityPriceFloat.cs" />
+    <Compile Include="IService\ICouponRefund.cs" />
+    <Compile Include="IService\ICrowdfunding.cs" />
+    <Compile Include="IService\IDeliveryAddress.cs" />
+    <Compile Include="IService\IDistribute.cs" />
+    <Compile Include="IService\IDiyGroup.cs" />
+    <Compile Include="IService\IExpress.cs" />
+    <Compile Include="IService\IExpressOrderTemplate.cs" />
+    <Compile Include="IService\IExpressTrace.cs" />
+    <Compile Include="IService\IFreight.cs" />
+    <Compile Include="IService\IInsuranceCompany.cs" />
+    <Compile Include="IService\IJdEclpOrder.cs" />
+    <Compile Include="IService\IJdCommodity.cs" />
+    <Compile Include="IService\IJdJournal.cs" />
+    <Compile Include="IService\IJdOrderItem.cs" />
+    <Compile Include="IService\IMallApply.cs" />
+    <Compile Include="IService\IOrderPrint.cs" />
+    <Compile Include="IService\IOrderRefund.cs" />
+    <Compile Include="IService\IOrderRefundInfoManage.cs" />
+    <Compile Include="IService\IPaySource.cs" />
+    <Compile Include="IService\IInvoice.cs" />
+    <Compile Include="IService\IRefundExpressTrace.cs" />
+    <Compile Include="IService\ISelectCommodity.cs" />
+    <Compile Include="IService\IOrderExpressRoute.cs" />
+    <Compile Include="IService\ISettleAccount.cs" />
+    <Compile Include="IService\IShiftManage.cs" />
+    <Compile Include="IService\ISNAfterSale.cs" />
+    <Compile Include="IService\ISNCommodity.cs" />
+    <Compile Include="IService\ISNExpressTrace.cs" />
+    <Compile Include="IService\ISpecifications.cs" />
+    <Compile Include="IService\ISpreadInfo.cs" />
+    <Compile Include="IService\IPayment.cs" />
+    <Compile Include="IService\IProductDetailsPicture.cs" />
+    <Compile Include="IService\IPromotion.cs" />
+    <Compile Include="IService\IReview.cs" />
+    <Compile Include="IService\ISecondAttribute.cs" />
+    <Compile Include="IService\ISelfTakeStation.cs" />
+    <Compile Include="IService\ISettlingAccount.cs" />
+    <Compile Include="IService\IShareQuery.cs" />
+    <Compile Include="IService\IStore.cs" />
+    <Compile Include="IService\ISNOrderItem.cs" />
+    <Compile Include="IService\ISupplier.cs" />
+    <Compile Include="IService\IWeChatQRCode.cs" />
+    <Compile Include="IService\ISpreadCategory.cs" />
+    <Compile Include="IService\IOrderField.cs" />
+    <Compile Include="IService\IInnerCategory.cs" />
+    <Compile Include="IService\IServiceSettings.cs" />
+    <Compile Include="IService\IYJBDSFOrderInfo.cs" />
+    <Compile Include="IService\IYJBJCard.cs" />
+    <Compile Include="IService\IPresentPromotion.cs" />
+    <Compile Include="IService\IJdlogs.cs" />
+    <Compile Include="IService\IJDAuditCom.cs" />
+    <Compile Include="IService\IYJEmployee.cs" />
+    <Compile Include="IService\IYPKCommodity.cs" />
+    <Compile Include="IService\IYXCommodity.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Jinher.AMP.BTP.Deploy\Jinher.AMP.BTP.Deploy.csproj">
+      <Project>{77DC4033-3DB5-4A90-B490-A6180CC64E44}</Project>
+      <Name>Jinher.AMP.BTP.Deploy</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jinher.AMP.BTP.Deploy\Jinher.AMP.BTP.Deploy.csproj">
+      <Project>{77DC4033-3DB5-4A90-B490-A6180CC64E44}</Project>
+      <Name>Jinher.AMP.BTP.Deploy</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy $(TargetDir)$(TargetName).dll $(TargetDir)..\..\..\..\..\..\..\Lib\BizApp\Interface\ /y
+xcopy $(TargetDir)$(TargetName).pdb $(TargetDir)..\..\..\..\..\..\..\Lib\BizApp\Interface\ /y
+xcopy $(TargetDir)$(TargetName).xml $(TargetDir)..\..\..\..\..\..\..\Lib\BizApp\Interface\ /y
+xcopy $(TargetDir)$(TargetName).dll $(TargetDir)..\..\..\..\..\..\..\Product\Portal\BizApp\Interface\ /y
+xcopy $(TargetDir)$(TargetName).pdb $(TargetDir)..\..\..\..\..\..\..\Product\Portal\BizApp\Interface\ /y
+xcopy $(TargetDir)$(TargetName).xml $(TargetDir)..\..\..\..\..\..\..\Product\Portal\BizApp\Interface\ /y
+</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

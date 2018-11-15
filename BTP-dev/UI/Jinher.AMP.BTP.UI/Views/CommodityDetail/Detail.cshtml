@@ -1,0 +1,234 @@
+﻿@{
+    Layout = null;
+    ViewBag.Title = "Detail";
+    string content = ViewBag.Content as string;
+    string techSpecs = ViewBag.TechSpecs as string;
+    string saleService = ViewBag.SaleService as string;
+    string name = ViewBag.Name as string;
+    if (content != null)
+    {
+        //找出所有的图片
+        var regex = new System.Text.RegularExpressions.Regex("\\<[^\\>]*?img[^\\>]*?src[\\s\\S]*?\\>");
+        var matches = regex.Matches(content);
+        var urlRegex = new System.Text.RegularExpressions.Regex("src[\\s]*?=[\\s]*?[\\\"\\\'](?<url>[\\s\\S]*?)[\\\"\\\']");
+
+        content = regex.Replace(content, (match) =>
+        {
+            return urlRegex.Replace(match.Value, (match2) =>
+            {
+                var url = match2.Groups[1].Value;
+                url = "   src=\"" + url + "\"";
+                return url;
+            });
+        });
+    }
+    if (techSpecs != null)
+    {
+        //找出所有的图片
+        var regex = new System.Text.RegularExpressions.Regex("\\<[^\\>]*?img[^\\>]*?src[\\s\\S]*?\\>");
+        var matches = regex.Matches(techSpecs);
+        var urlRegex = new System.Text.RegularExpressions.Regex("src[\\s]*?=[\\s]*?[\\\"\\\'](?<url>[\\s\\S]*?)[\\\"\\\']");
+
+        techSpecs = regex.Replace(techSpecs, (match) =>
+        {
+            return urlRegex.Replace(match.Value, (match2) =>
+            {
+                var url = match2.Groups[1].Value;
+                url = "   src=\"" + url + "\"";
+                return url;
+            });
+        });
+    }
+    if (saleService != null)
+    {
+        //找出所有的图片
+        var regex = new System.Text.RegularExpressions.Regex("\\<[^\\>]*?img[^\\>]*?src[\\s\\S]*?\\>");
+        var matches = regex.Matches(saleService);
+        var urlRegex = new System.Text.RegularExpressions.Regex("src[\\s]*?=[\\s]*?[\\\"\\\'](?<url>[\\s\\S]*?)[\\\"\\\']");
+
+        saleService = regex.Replace(saleService, (match) =>
+        {
+            return urlRegex.Replace(match.Value, (match2) =>
+            {
+                var url = match2.Groups[1].Value;
+                url = "   src=\"" + url + "\"";
+                return url;
+            });
+        });
+    }
+}
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="x5-orientation" content="portrait">
+    <meta name="full-screen" content="yes">
+    <meta name="x5-fullscreen" content="true">
+    <meta name="browsermode" content="application">
+    <meta name="x5-page-mode" content="app">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="black" name="apple-mobile-web-app-status-bar-style">
+    <meta content="telephone=no" name="format-detection">
+    <title>详情</title>
+</head>
+<style>
+    html, body {
+        max-width: 500px;
+        margin: 0 auto;
+        background-color: rgb(248,248,248);
+        font-size: 16px;
+    }
+
+    em {
+        font-style: normal;
+    }
+
+    a {
+        text-decoration: none;
+        -webkit-tap-highlight-color: rgba(0,0,0,0);
+    }
+
+    i {
+        font-style: normal;
+    }
+
+    .detail-wrap {
+        padding: .6rem .4rem .2rem .4rem;
+        background-color: #fff;
+    }
+
+        .detail-wrap .detail-header {
+            position: relative;
+            top: 0;
+            left: 0;
+            height: .6rem;
+            line-height: .6rem;
+            margin: 0;
+            padding-left: .32rem;
+            font-size: .3rem;
+            color: #333;
+            background-color: rgb(248,248,248);
+            font-weight: 400;
+        }
+
+            .detail-wrap .detail-header:before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                width: .06rem;
+                background-color: rgb(207,173,91);
+            }
+
+        .detail-wrap .detail-list {
+            margin-top: .4rem;
+        }
+
+            .detail-wrap .detail-list > p {
+                padding: 0;
+                margin: 0;
+                font-size: .26rem;
+            }
+
+            .detail-wrap .detail-list img {
+                display: block;
+                width: 100%;
+                height: auto;
+            }
+
+            .detail-wrap .detail-list > p .context, .detail-wrap .detail-list > p .detail-context {
+                display: inline-block;
+                font-size: .26rem;
+            }
+
+            .detail-wrap .detail-list > p .detail-context {
+                margin-bottom: .35rem;
+            }
+
+    .detail-list table {
+        width: 100% !important;
+    }
+
+    .detail-list .ssd-module-wrap {
+        width: 100%;
+    }
+
+    .detail-wrap .detail-list div[moduleid] img {
+        width: 100% !important;
+        height: auto;
+    }
+</style>
+<script src="../../Scripts/zepto.min.js" type="text/javascript"></script>
+<body>
+    <div class="page">
+        <!--商品详情-->
+        <section class="detail-wrap">
+            <h2 class="detail-header">
+                商品详情
+            </h2>
+            <div class="detail-list">
+                <p><span class="detail-context">@name</span></p>
+                @Html.Raw(content)
+            </div>
+        </section>
+        <section class="detail-wrap">
+            <h2 class="detail-header">参数规格</h2>
+            <div class="detail-list">
+                @if (techSpecs != "没有更多了~")
+                {
+                    <p>@Html.Raw(techSpecs)</p>
+                }
+                else
+                {
+                    <p></p>
+                }
+            </div>
+        </section>
+        <section class="detail-wrap">
+            <h2 class="detail-header">包装售后</h2>
+            <div class="detail-list">
+                @if (saleService != "没有更多了~")
+                {
+                    <p>@Html.Raw(saleService)</p>
+                }
+                else
+                {
+                    <p></p>
+                }
+            </div>
+        </section>
+    </div>
+
+</body>
+
+
+<script type="text/javascript">
+    var deviceWidth;
+    var flex = function () {
+        deviceWidth = document.documentElement.clientWidth > 500 ? 500 : document.documentElement.clientWidth;
+        document.documentElement.style.fontSize = deviceWidth / 7.5 + 'px';
+    };
+    flex();
+    window.onresize = function () {
+        flex();
+    };
+    $(document).ready(function () {
+        // 解决苏宁商品显示bug
+        var images = $('div[moduleid] img');
+        for (var i = 0; i < images.length; i++) {
+            if (images[i].naturalWidth == 1 && images[i].naturalHeight == 1) {
+                images[i].style.display = 'none';
+            }
+        }
+        //京东商品样式调整
+        var dis = 0.8 * (deviceWidth / 7.5);
+        var scale = (deviceWidth - dis) / 640;
+        $('.JD-goods').css({
+            'transform': 'scale(' + scale + ')',
+            'width': '640px',
+            'transform-origin': '0 0 0'
+        })
+    })
+</script>
