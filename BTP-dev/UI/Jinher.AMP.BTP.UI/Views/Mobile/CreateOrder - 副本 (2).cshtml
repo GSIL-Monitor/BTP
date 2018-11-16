@@ -33,7 +33,7 @@
     <link rel="stylesheet" href="/Content/Mobile/zphStyle/placeOrder.css" />
     <link rel="stylesheet" href="/Content/style/mobiscroll.css" />
     <link rel="stylesheet" href="/Content/Mobile/zphStyle/MyCoupon.css">
-    <link rel="stylesheet" href="/Content/Mobile/verify-master/css/verify.css?23123">
+    <link rel="stylesheet" href="/Content/Mobile/verify-master/css/verify.css">
     <style type="text/css">
         .dialog {
             position: fixed;
@@ -312,7 +312,7 @@
 
             .picture-list [class^="icon-"]:before, [class*=" icon-"]:before {
                 text-decoration: inherit;
-                <!-- display: none; -->
+                display: none;
                 speak: none;
             }
 
@@ -4903,20 +4903,14 @@
     <div class="bottom-address hide" id="bottomAddress"></div>
     <!--底部地址信息 end-->
      <!--拼图验证 start-->
-     <div id="PicVerifyWarp" style="position:fixed ;left: 0;top:0;height:100%;width:100%;background: #00000094;display:none;z-index: 1000;">
-        <div id="mpanel" style="position: absolute;margin-left: -200px;left: 50%;top:50%;margin-top: -100px;">
+     <div id="mpanel" style="margin-top:50px;">
         </div>
-     </div>
-    
         <script type="text/javascript">
-        function PicVerify(){
-            jq('#mpanel').empty();
-            jq('#PicVerifyWarp').show();
-           jq('#mpanel').slideVerify({
+           $('#mpanel4').slideVerify({
 		    	type : 2,		//类型
         		vOffset : 5,	//误差量，根据需求自行调整
 		        vSpace : 5,	//间隔
-		        imgName : ['1.jpg', '2.jpg','3.jpg'],
+		        imgName : ['1.jpg', '2.jpg'],
 		        imgSize : {
 		        	width: '400px',
 		        	height: '200px',
@@ -4932,17 +4926,15 @@
 		        ready : function() {
 		    	},
 		        success : function() {
-                    setTimeout(function(){
-		        	jq('#PicVerifyWarp').hide();
-                    },1000)
+		        	alert('验证成功，添加你自己的代码！');
 		        	//......后续操作
 		        },
 		        error : function() {
 //		        	alert('验证失败！');
-		        }   
+		        }
 		        
 		    });
-		    }
+		    
         </script>
      <!--拼图验证 end-->
     <!--内容-->
